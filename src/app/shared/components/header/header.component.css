@@ -1,5 +1,6 @@
 .header-container {
     background-color: var(--header-background-color);
+    border-bottom: 3px solid var(--sidebar-background-color);
 }
 
 /* Estilo para el contenedor del logo */
@@ -66,7 +67,7 @@
 
 /* Efecto de sombra y cambio de color para los íconos al pasar el mouse */
 .btn-group .btn:hover svg {
-    fill: var(--primary-text-color); /* Cambia el color a negro */
+    fill: var(--sidebar-background-color); /* Cambia el color a negro */
     transform: scale(1.2);
 }
 
@@ -101,7 +102,7 @@
   
   /* Efecto de hover para los íconos */
   .toggle-button:hover .toggle-icon {
-    fill: var(--primary-text-color);
+    fill: var(--sidebar-background-color);
     transform: scale(1.1);
   }
   

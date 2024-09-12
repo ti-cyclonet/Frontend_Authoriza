@@ -18,9 +18,9 @@ export const ROOT_HOME = 'home';
 export const ROOT_CONFIGURATION= 'setup';
 
 //Variables para definir el color
-export const HEADER_BACKGROUND_COLOR = '#6600CC'
-export const HEADER_ICON_COLOR = '#000000'
-export const SIDEBAR_BACKGROUND_COLOR = '#333333'
-export const PRIMARY_TEXT_COLOR = '#E6E6E6';
-export const PRIMARY_ACTIVE_TEXT_COLOR = '#000000';
+export const HEADER_BACKGROUND_COLOR = '#E6E6E6'
+export const HEADER_ICON_COLOR = '#999999'
+export const SIDEBAR_BACKGROUND_COLOR = '#6600CC'
+export const PRIMARY_TEXT_COLOR = '#999999';
+export const PRIMARY_ACTIVE_TEXT_COLOR = '#FFFFFF';
 export const PRIMARY_BACKGROUND_COLOR = '#E6E6E6';
