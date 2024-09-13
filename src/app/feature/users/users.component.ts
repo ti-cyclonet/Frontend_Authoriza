@@ -7,24 +7,25 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './users.component.html',
-  styleUrl: './users.component.css',
+  styleUrls: ['./users.component.css'], // Asegúrate de que `styleUrls` esté en plural
 })
 export class UsersComponent implements OnInit {
   users: any[] = [];
+
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-    this.getUsers();
-  }
-
-  getUsers(): void {
-    this.userService.getUsers().subscribe({
-      next: (result) => {
-        this.users = result;
+    // Suscribirse al observable de usuarios para obtener los datos
+    this.userService.users$.subscribe({
+      next: (users) => {
+        this.users = users;
       },
       error: (e) => {
         console.log(e);
       },
     });
+
+    // Cargar los usuarios desde el servicio
+    this.userService.loadUsers();
   }
 }

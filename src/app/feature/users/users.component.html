@@ -8,6 +8,8 @@
 </div>
 <div class="card shadow m-3">
   <div class="card-body">
+    <h5 class="card-title text-nowrap bg-body-secondary border" style="width: 6rem;">High level  <b>User Management</b>.</h5>
+
     <table class="table">
       <thead>
         <tr>
@@ -22,7 +24,7 @@
         @for (user of users; track user.id) {
         <tr>
           <th scope="row">
-            <span class="badge bg-info">
+            <span class="badge" style="background-color: var(--header-icon-color);">
               {{ user.id }}
             </span>
           </th>
@@ -49,7 +51,7 @@
             </b>
           </td>
           <td>
-            <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+            <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">              
               <a href="#" class="text-danger">
                 <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
                   <use
