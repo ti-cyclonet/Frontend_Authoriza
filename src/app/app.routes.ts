@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { ROOT_CONFIGURATION, ROOT_HOME, ROOT_LOGIN, ROOT_REGISTER, ROOT_REQUIRES, ROOT_USUERS } from './config/config';
+import { ROOT_CONFIGURATION, ROOT_HOME, ROOT_LOGIN, ROOT_REGISTER, ROOT_ROLES, ROOT_USUERS } from './config/config';
 
 export const routes: Routes = [
     {
@@ -23,8 +23,8 @@ export const routes: Routes = [
                 loadComponent: () => import('./feature/users/users.component').then(m => m.UsersComponent)
             },
             {
-                path: ROOT_REQUIRES,
-                loadComponent: () => import('./feature/requests/requests.component').then(m => m.RequestsComponent)
+                path: ROOT_ROLES,
+                loadComponent: () => import('./feature/roles/roles.component').then(m => m.RolesComponent)
             },
             {
                 path: ROOT_CONFIGURATION,
@@ -39,6 +39,6 @@ export const routes: Routes = [
     },    
     {
         path: '**',
-        redirectTo: 'login'
+        redirectTo: 'home'
     }
 ];
