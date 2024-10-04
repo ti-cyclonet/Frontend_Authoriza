@@ -1,8 +1,6 @@
 <div class="header-container w-100 d-flex justify-content-between align-items-center">
  <!-- Botón de toggle para la barra lateral -->
-  <button (click)="onToggleSidebar()" title="Sidebar" class="toggle-button" data-bs-toggle="tooltip" data-bs-placement="top"
-  data-bs-custom-class="custom-tooltip"
-  data-bs-title="Sidebar">
+  <button (click)="onToggleSidebar()" title="Sidebar" class="toggle-button">
     <svg class="toggle-icon" viewBox="0 0 16 16">
       <use [attr.xlink:href]="!isSidebarVisible ? './assets/icons/bootstrap-icons.svg#layout-sidebar' : './assets/icons/bootstrap-icons.svg#layout-sidebar-inset'"></use>
     </svg>

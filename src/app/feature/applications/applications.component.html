@@ -1,0 +1,156 @@
+<div class="title-container">
+  <a href="/applications" class="title-link">
+    <svg viewBox="0 0 16 16">
+      <use xlink:href="./assets/icons/bootstrap-icons.svg#window-stack" />
+    </svg>
+    /applications
+  </a>
+</div>
+<div class="card shadow m-3">
+  <div class="card-body">
+    <div class="d-flex align-items-center w-100">
+      <h5
+        class="card-title text-nowrap bg-body-secondary border"
+        style="width: 6.7rem"
+      >
+        Application <b>Management</b>.
+      </h5>
+
+      <div class="btn-group ms-auto" style="margin-right: 4px">
+        <a
+          href="#"
+          class="text-success"
+          data-bs-toggle="modal"
+          data-bs-target="#staticBackdrop"
+        >
+          <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
+            <use
+              [attr.xlink:href]="
+                './assets/icons/bootstrap-icons.svg#plus-square-fill'
+              "
+            ></use>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <table class="table table-bordered border-secondary table-striped mt-3">
+      <thead>
+        <tr>
+          <th scope="col" class="id-col text-center">Id</th>
+          <!-- Aquí se ajusta la columna Id -->
+          <th scope="col" class="text-center">Name</th>
+          <th scope="col" class="text-center">Description</th>
+          <th scope="col" class="text-center">Logo</th>
+          <th class="actions-col text-center" scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (application of applications; track application.id) {
+        <tr>
+          <th scope="row" class="id-col text-end">
+            <!-- Aquí se ajusta la celda del ID -->
+            <span
+              class="badge rounded-badge"
+              style="background-color: var(--header-icon-color)"
+            >
+              {{ application.id }}
+            </span>
+          </th>
+          <td class="text-start">{{ application.strname.toUpperCase() }}</td>
+          <td class="text-start">{{ application.strdescription }}</td>
+          <td class="text-start">logo</td>
+          <td class="text-center actions-col">
+            <div>
+              <button
+                type="button"
+                class="btn btn-outline-dark btn-sm me-2"
+                data-bs-toggle="tooltip"
+                title="Details"
+              >
+                <svg
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                  class="status-icon"
+                >
+                  <use
+                    [attr.xlink:href]="
+                      './assets/icons/bootstrap-icons.svg#list-nested'
+                    "
+                  ></use>
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline-dark btn-sm me-2"
+                data-bs-toggle="tooltip"
+                title="Edit"
+              >
+                <svg
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                  class="status-icon"
+                >
+                  <use
+                    [attr.xlink:href]="
+                      './assets/icons/bootstrap-icons.svg#pencil'
+                    "
+                  ></use>
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline-dark btn-sm me-2"
+                data-bs-toggle="tooltip"
+                title="Delete"
+              >
+                <svg
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                  class="status-icon"
+                >
+                  <use
+                    [attr.xlink:href]="
+                      './assets/icons/bootstrap-icons.svg#trash3'
+                    "
+                  ></use>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal para crear una nueva aplicación -->
+<div
+  class="modal fade"
+  id="staticBackdrop"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header justify-content-end modal-header-custom">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">
+          New <b>Application</b>
+        </h1>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <app-cu-application></app-cu-application>
+        </div>
+      </div>
+            
+    </div>
+  </div>
+</div>
+<script src="./assets/script.js"></script>

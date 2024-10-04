@@ -1,0 +1,168 @@
+/* Contenido original del archivo app.component.scss cargado */
+
+.clearfix {
+  display: block;
+  content: '';
+  clear: both;
+}
+
+.sidebar {
+  background-color: var(--sidebar-background-color);
+  color: var(--primary-text-color);
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  overflow-x: hidden;
+  transition: 0.5s;
+  z-index: 10;
+}
+
+.sidebar.collapsed {
+  width: 0;
+}
+
+.sidebar .menu-item {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-size: 1.2rem;
+  color: var(--primary-text-color);
+  transition: 0.3s;
+}
+
+.sidebar .menu-item:hover {
+  background-color: var(--sidebar-hover-color);
+}
+
+.sidebar .menu-item svg {
+  margin-right: 10px;
+  fill: var(--icon-color);
+}
+
+.sidebar.collapsed .menu-item {
+  padding-left: 0;
+  justify-content: center;
+}
+
+.header {
+  background-color: var(--header-background-color);
+  color: var(--primary-text-color);
+  padding: 15px;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.main-content {
+  margin-left: 250px;
+  padding: 15px;
+  transition: margin-left 0.5s;
+}
+
+.main-content.collapsed {
+  margin-left: 0;
+}
+
+/* Nuevos estilos integrados */
+
+/* Estilo para el contenedor del título */
+.title-container {
+  display: flex;
+  align-items: center; /* Centra verticalmente el contenido */
+  font-size: 1rem; /* Tamaño del texto del título */
+  color: #6e6e6e; /* Color del texto del título */
+  margin-bottom: 1rem; /* Espacio debajo del título */
+  margin-top: 1rem;
+  padding-left: 1.5rem;
+}
+
+.title-container svg {
+  width: 20px; /* Tamaño del ícono SVG */
+  height: 20px; /* Tamaño del ícono SVG */
+  margin-right: 0.3rem; /* Espacio entre el ícono y el texto */
+  fill: #6e6e6e; /* Color del ícono SVG */
+}
+
+/* Estilo de los íconos para el Status */
+.status-icon {
+  margin-right: 0.3rem;
+  width: 16px; /* Ajusta el ancho a 16px o al tamaño que prefieras */
+  height: 16px; /* Ajusta la altura a 16px o al tamaño que prefieras */
+}
+
+/* Estilo de los íconos del título */
+.title-icon {
+  margin-right: 0.3rem;
+  width: 26px; 
+  height: 26px; 
+  color: #000;
+}
+
+.btn-spacing {
+  margin-right: 8px; 
+}
+
+.actions-col {
+  width: 1%; 
+  white-space: nowrap;
+}
+
+.id-col {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.actions-col button:hover {
+  background-color: var(--sidebar-background-color);
+  border-color: var(--sidebar-background-color); 
+}
+
+.rounded-badge {
+  display: inline-block;
+  width: 30px; /* Ajusta el tamaño según tu necesidad */
+  height: 30px;
+  line-height: 30px; /* Alinea el texto verticalmente */
+  border-radius: 50%;
+  text-align: center; /* Alinea el texto horizontalmente */
+  padding: 0; /* Asegúrate de que no haya padding adicional */
+}
+
+.modal-header-custom {
+  background-color: var(--sidebar-background-color); /* Usa el color del sidebar */
+  color: #cccccc;
+}
+
+.modal-title {
+  text-align: right;
+  width: 100%; /* Asegura que el título ocupe todo el ancho para alinearlo a la derecha */
+}
+
+/* Estilo para el enlace en el contenedor del título */
+.title-link {
+  display: flex;
+  align-items: center; /* Alinea el ícono y el texto verticalmente */
+  color: #6e6e6e; /* Color del texto del enlace (debe coincidir con el color del texto normal) */
+  text-decoration: none; /* Elimina el subrayado del enlace */
+}
+
+/* Efecto hover para el enlace (opcional) */
+.title-link:hover {
+  /* text-decoration: underline; Subraya el texto cuando se pasa el ratón sobre él */
+  color: #4a4a4a; /* Cambia el color del texto del enlace cuando se pasa el ratón sobre él (opcional) */
+}
+
+/* Estilo para la tarjeta de contenido */
+.card {
+  border: 1px solid #cccccc; /* Quitar el borde predeterminado de la tarjeta */
+  border-radius: 0.5rem; /* Bordes redondeados */
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1); /* Sombra de la tarjeta */
+  background-color: #fff; /* Fondo blanco para la tarjeta */
+}
+
+.card-body {
+  padding: 1.5rem; /* Espacio dentro de la tarjeta */
+  margin-top: 0.1rem;
+  /* color: var(--primary-text-color); Color del texto en la tarjeta */
+}

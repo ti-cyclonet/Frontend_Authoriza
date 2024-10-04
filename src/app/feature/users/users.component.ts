@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './users.component.html',
-  styleUrls: ['./users.component.css'], // Asegúrate de que `styleUrls` esté en plural
+  styleUrls: ['./users.component.css'], 
 })
 export class UsersComponent implements OnInit {
   users: any[] = [];
@@ -24,8 +24,5 @@ export class UsersComponent implements OnInit {
         console.log(e);
       },
     });
-
-    // Cargar los usuarios desde el servicio
-    this.userService.loadUsers();
   }
 }

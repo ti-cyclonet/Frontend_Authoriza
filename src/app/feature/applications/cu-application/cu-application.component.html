@@ -1,0 +1,399 @@
+<main class="multi-step-container">
+  <!-- <aside class="side-steps">
+    <div class="side-step" [ngClass]="{ active: carouselIndex === 0 }">
+      <div class="step-number"></div>
+      <div class="step-label">
+        <div>step</div>
+        <div>your info</div>
+      </div>
+    </div>
+    <div class="side-step" [ngClass]="{ active: carouselIndex === 1 }">
+      <div class="step-number"></div>
+      <div class="step-label">
+        <div>step</div>
+        <div>select plan</div>
+      </div>
+    </div>
+    <div class="side-step" [ngClass]="{ active: carouselIndex === 2 }">
+      <div class="step-number"></div>
+      <div class="step-label">
+        <div>step</div>
+        <div>add-ons</div>
+      </div>
+    </div>
+    <div class="side-step" [ngClass]="{ active: carouselIndex >= 3 }">
+      <div class="step-number"></div>
+      <div class="step-label">
+        <div>step</div>
+        <div>summary</div>
+      </div>
+    </div>
+  </aside> -->
+  <section class="form-section">
+    <ngb-carousel
+      [keyboard]="false"
+      [interval]="0"
+      [showNavigationArrows]="false"
+      [showNavigationIndicators]="false"
+      (slid)="onSlideEnd()"
+      (slide)="onSlideStart()"
+    >
+      <ng-template ngbSlide [id]="'info'">
+        <div class="form-step">
+          <h3>Personal info</h3>
+          <p class="p-sub-heading">
+            Please provide your name, email address, and phone number.
+          </p>
+          <form [formGroup]="infoForm" class="form-container">
+            <div
+              class="input-container"
+              *ngIf="infoForm.get('name') as nameControl"
+            >
+              <label for="name">Name</label>
+              <span
+                class="validation-error"
+                *ngIf="nameControl.touched && nameControl.hasError('required')"
+              >
+                This field is required
+              </span>
+              <input
+                id="name"
+                type="text"
+                pInputText
+                formControlName="name"
+                placeholder="e.g. Stephen King"
+              />
+            </div>
+
+            <div
+              class="input-container"
+              *ngIf="infoForm.get('email') as emailControl"
+            >
+              <label for="email-address">Email Address</label>
+              <span
+                class="validation-error"
+                *ngIf="emailControl.touched && emailControl.errors"
+              >
+                {{
+                  emailControl.hasError("required")
+                    ? "This field is required"
+                    : "Invalid email"
+                }}
+              </span>
+              <input
+                id="email-address"
+                type="email"
+                pInputText
+                formControlName="email"
+                placeholder="e.g. stephenking@lorem.com"
+              />
+            </div>
+
+            <div
+              class="input-container"
+              *ngIf="infoForm.get('phone') as phoneControl"
+            >
+              <label for="phone-number">Phone Number</label>
+              <span
+                class="validation-error"
+                *ngIf="phoneControl.touched && phoneControl.errors"
+              >
+                {{
+                  phoneControl.hasError("required")
+                    ? "This field is required"
+                    : "Invalid phone number"
+                }}
+              </span>
+              <input
+                id="phone-number"
+                type="tel"
+                pInputText
+                formControlName="phone"
+                placeholder="e.g. +1 234 567 890"
+              />
+            </div>
+          </form>
+        </div>
+      </ng-template>
+
+      <ng-template ngbSlide [id]="'plan'">
+        <div class="form-step">
+          <h3>Select your plan</h3>
+          <p class="p-sub-heading">
+            You have the option of monthly or yearly billing.
+          </p>
+
+          <form [formGroup]="planForm" class="form-container">
+            <p-listbox
+              [options]="availablePlans"
+              formControlName="plan"
+              styleClass="plan-list-box"
+            >
+              <ng-template let-item pTemplate="item">
+                <div class="plan-container">
+                  <img
+                    src="{{ 'assets/images/' + item.imgUrl }}"
+                    alt="{{ item.label + 'plan icon' }}"
+                  />
+                  <div class="plan-description">
+                    <p class="p-heading">
+                      {{ item.label | titlecase }}
+                    </p>
+                    <p class="p-sub-heading">
+                      ${{
+                        planForm.get("yearly")?.value
+                          ? item.yearPrice + "/yr"
+                          : item.monthPrice + "/mo"
+                      }}
+                    </p>
+                    <p class="p-smaller" *ngIf="planForm.get('yearly')?.value">
+                      2 months free
+                    </p>
+                  </div>
+                </div>
+              </ng-template>
+            </p-listbox>
+
+            <div class="switch-container bg-neutral">
+              <span [ngClass]="{ active: !planForm.get('yearly')?.value }">
+                Monthly
+              </span>
+              <p-inputSwitch formControlName="yearly"></p-inputSwitch>
+              <span [ngClass]="{ active: planForm.get('yearly')?.value }">
+                Yearly
+              </span>
+            </div>
+          </form>
+        </div>
+      </ng-template>
+
+      <ng-template ngbSlide [id]="'add-ons'">
+        <div class="form-step">
+          <h3>Pick add-ons</h3>
+          <p class="p-sub-heading">
+            Add-ons help enhance your gaming experience.
+          </p>
+          <!-- form -->
+          <form [formGroup]="addOnsForm" class="form-container">
+            <p-listbox
+              [multiple]="true"
+              [checkbox]="true"
+              [showToggleAll]="false"
+              [options]="availableAddOns"
+              formControlName="addOns"
+            >
+              <ng-template let-item pTemplate="item">
+                <div class="extras-description">
+                  <p class="p-heading">
+                    {{ item.service }}
+                  </p>
+                  <p class="p-sub-heading">
+                    {{ item.description }}
+                  </p>
+                </div>
+                <p class="extras-price">
+                  +${{
+                    planForm.get("yearly")?.value
+                      ? item.yearPrice + "/yr"
+                      : item.monthPrice + "/mo"
+                  }}
+                </p>
+              </ng-template>
+            </p-listbox>
+          </form>
+        </div>
+      </ng-template>
+
+      <ng-template ngbSlide [id]="'summary'">
+        <div class="form-step">
+          <h3>Finishing up</h3>
+          <p class="p-sub-heading">
+            Double-check everything looks OK before confirming.
+          </p>
+          <div class="summary-container">
+            <div class="summary-detail">
+              <div class="summary-plan">
+                <ng-container
+                  *ngIf="planForm.get('plan')?.value as selectedPlan"
+                >
+                  <div>
+                    <p class="p-heading">
+                      {{
+                        selectedPlan.label +
+                          " (" +
+                          (planForm.get("yearly")?.value
+                            ? "Yearly"
+                            : "Monthly") +
+                          ")"
+                      }}
+                    </p>
+                    <a
+                      class="p-sub-heading"
+                      href=""
+                      (click)="changePlan($event)"
+                      >Change</a
+                    >
+                  </div>
+                  <span class="p-heading"
+                    >${{
+                      planForm.get("yearly")?.value
+                        ? selectedPlan.yearPrice + "/yr"
+                        : selectedPlan.monthPrice + "/mo"
+                    }}</span
+                  >
+                </ng-container>
+              </div>
+              <ng-container *ngIf="addOnsForm.get('addOns')?.value as addons">
+                <hr *ngIf="addons.length" />
+                <div class="summary-extra" *ngFor="let extra of addons">
+                  <span>{{ extra.service }}</span>
+                  <span
+                    >+${{
+                      planForm.get("yearly")?.value
+                        ? extra.yearPrice + "/yr"
+                        : extra.monthPrice + "/mo"
+                    }}</span
+                  >
+                </div>
+              </ng-container>
+            </div>
+
+            <div class="summary-total">
+              <span>
+                {{
+                  "Total (per " +
+                    (planForm.get("yearly")?.value ? "year" : "month") +
+                    ")"
+                }}
+              </span>
+              <span>
+                ${{ getTotal
+                }}{{ planForm.get("yearly")?.value ? "/yr" : "/mo" }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template ngbSlide [id]="'completed'">
+        <div class="form-step final">
+          <img src="assets/images/icon-thank-you.svg" alt="thank-you icon" />
+          <h3>Thank you!</h3>
+          <p class="p-sub-heading">
+            Thanks for confirming your subscription! We hope you have fun using
+            our platform. If you ever need support, please feel free email us at
+          </p>
+          <button
+            pButton
+            [disabled]="btnDisabled"
+            type="button"
+            label="Reset"
+            aria-label="Reset form"
+            icon="pi pi-undo"
+            class="carousel-button reset-button p-button-text p-button-secondary"
+            (click)="onReset()"
+          ></button>
+        </div>
+      </ng-template>
+    </ngb-carousel>
+  </section>
+
+  <section class="form-controls" *ngIf="carouselIndex < 4">
+    <div class="modal-footer">
+      <button
+        pButton
+        [disabled]="btnDisabled"
+        type="button"
+        label="Go Back"
+        aria-label="Go Back"
+        *ngIf="carouselIndex !== 0"
+        [ngClass]="{ hidden: carouselIndex === 0 }"
+        class="carousel-button prev-button p-button-text p-button-secondary"
+        (click)="onBack()"
+      ></button>
+      <button
+        type="button"
+        class="btn btn-secondary cancel-button"
+        data-bs-dismiss="modal"
+      >
+        Cancel
+      </button>
+      <button
+        pButton
+        [disabled]="btnDisabled || infoForm.invalid"
+        type="button"
+        label="{{ carouselIndex === 3 ? 'Confirm' : 'Next Step' }}"
+        aria-label="Next"
+        [ngClass]="
+          carouselIndex === 3 ? 'p-button-primary' : 'p-button-secondary'
+        "
+        class="carousel-button next-button"
+        (click)="onNext()"
+      ></button>
+    </div>
+  </section>
+</main>
+
+<!-- CREDITS DIALOG -->
+<p-dialog
+  header="Multistep Form"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [(visible)]="displayDialog"
+>
+  <div class="credits-dialog">
+    <p>This is a Frontend Mentor project</p>
+    <p>
+      Go to:
+      <a
+        target="_blank"
+        href="https://www.frontendmentor.io/challenges/multistep-form-YVAnSdqQBJ"
+      >
+        multi-step-form challenge</a
+      >. <br />
+      Go to:
+      <a
+        target="_blank"
+        href="https://www.frontendmentor.io/solutions/multistep-form-solution-with-angular-dc9XEwgaIe"
+        >my solution on FEM</a
+      >.<br />
+      Go to:
+      <a target="_blank" href="https://github.com/simonem-f/FEM-multi-step-form"
+        >this solution on GitHub</a
+      >.
+    </p>
+    <p class="icons-container">
+      <a
+        target="_blank"
+        href="https://www.linkedin.com/in/simone-marco-fumagalli/"
+      >
+        <img
+          class="icon-linkedin"
+          src="https://icon.horse/icon/linkedin.com"
+          alt="Linkedin Logo"
+        />
+      </a>
+      <a target="_blank" href="https://www.frontendmentor.io/profile/simonem-f">
+        <img
+          class="icon-fem"
+          src="../assets/images/favicon-32x32.png"
+          alt="Frontend Mentor Logo"
+        />
+      </a>
+      <a target="_blank" href="https://github.com/simonem-f">
+        <img
+          class="icon-git-hub"
+          src="https://icon.horse/icon/github.com"
+          alt="GitHub Logo"
+        />
+      </a>
+    </p>
+    <p>Simone Marco Fumagalli - 2023</p>
+  </div>
+</p-dialog>
+
+<div
+  (click)="displayDialog = true"
+  class="pi pi-info-circle credits-button"
+></div>
