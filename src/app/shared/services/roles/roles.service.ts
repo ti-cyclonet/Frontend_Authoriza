@@ -14,17 +14,17 @@ export class RolesService {
 
   // Método para obtener los roles desde el servidor
   getRoles(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl); // Ajusta la URL según tu API
+    return this.http.get<any[]>(this.apiUrl);
   }
 
   // Método para cargar roles y actualizar el BehaviorSubject
   loadRoles(): void {
     this.getRoles().subscribe({
       next: (roles) => {
-        this.rolesSubject.next(roles); // Actualiza los roles en el BehaviorSubject
+        this.rolesSubject.next(roles);
       },
       error: (error) => {
-        console.error('Error al cargar roles', error);
+        console.error('Error loading roles.', error);
       }
     });
   }
