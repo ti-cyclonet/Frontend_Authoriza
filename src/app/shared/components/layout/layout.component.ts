@@ -7,6 +7,7 @@ import { RouterOutlet } from '@angular/router';
 import { FooterComponent } from '../footer/footer.component';
 import { RolesService } from '../../services/roles/roles.service';
 import { UserService } from '../../services/user/user.service';
+import { ApplicationsService } from '../../services/applications/applications.service';
 
 @Component({
   selector: 'app-layout',
@@ -27,17 +28,20 @@ export default class LayoutComponent implements OnInit {
   isSidebarVisible = true;
   isLargeScreen = false;
 
-  constructor(private rolesService: RolesService, private userService: UserService) {
+  constructor(
+    private rolesService: RolesService,
+    private userService: UserService,
+    private applicationsService: ApplicationsService
+  ) {
     if (typeof window !== 'undefined') {
       this.isLargeScreen = window.innerWidth >= 992;
     }
   }
 
   ngOnInit(): void {
-    // Cargar los roles al iniciar el LayoutComponent
-    this.rolesService.loadRoles();
-    // Cargar los usuarios al iniciar el LayoutComponent
-    this.userService.loadUsers(); // Llamamos al método para cargar los usuarios
+    this.rolesService.loadRoles(); // Cargamos los roles
+    this.userService.loadUsers(); // Cargamos los usuarios
+    this.applicationsService.loadApplications(); // Cargamos las aplicaciones
 
     // Configurar el menú
     this.optionsMenu = [
@@ -50,7 +54,7 @@ export default class LayoutComponent implements OnInit {
         type: 'main_menu',
         idMPather: null,
         order: '1',
-        idApplication: '3',
+        idApplication: '1',
       },
       {
         id: '2',
@@ -65,10 +69,10 @@ export default class LayoutComponent implements OnInit {
       },
       {
         id: '3',
-        name: 'rolesAuthoriza',
-        description: 'Roles',
-        url: '/roles',
-        icon: 'person-vcard',
+        name: 'applicationAuthoriza',
+        description: 'Applications',
+        url: '/applications',
+        icon: 'window-stack',
         type: 'main_menu',
         idMPather: null,
         order: '3',
