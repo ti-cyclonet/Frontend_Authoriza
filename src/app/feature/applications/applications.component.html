@@ -34,98 +34,100 @@
       </div>
     </div>
 
-    <table class="table table-bordered border-secondary table-striped mt-3">
-      <thead>
-        <tr>
-          <th scope="col" class="id-col text-center">Id</th>
-          <!-- Aquí se ajusta la columna Id -->
-          <th scope="col" class="text-center">Name</th>
-          <th scope="col" class="text-center">Description</th>
-          <th scope="col" class="text-center">Logo</th>
-          <th class="actions-col text-center" scope="col">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (application of applications; track application.id) {
-        <tr>
-          <th scope="row" class="id-col text-end">
-            <!-- Aquí se ajusta la celda del ID -->
-            <span
-              class="badge rounded-badge"
-              style="background-color: var(--header-icon-color)"
-            >
-              {{ application.id }}
-            </span>
-          </th>
-          <td class="text-start">{{ application.strname.toUpperCase() }}</td>
-          <td class="text-start">{{ application.strdescription }}</td>
-          <td class="text-start">logo</td>
-          <td class="text-center actions-col">
-            <div>
-              <button
-                type="button"
-                class="btn btn-outline-dark btn-sm me-2"
-                data-bs-toggle="tooltip"
-                title="Details"
+    <!-- Contenedor con scroll en pantallas pequeñas -->
+    <div class="table-responsive mt-3">
+      <table class="table table-bordered border-secondary table-striped">
+        <thead>
+          <tr>
+            <th scope="col" class="id-col text-center">Id</th>
+            <th scope="col" class="text-center">Name</th>
+            <th scope="col" class="text-center">Description</th>
+            <th scope="col" class="text-center">Logo</th>
+            <th class="actions-col text-center" scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (application of applications; track application.id) {
+          <tr>
+            <th scope="row" class="id-col text-end">
+              <span
+                class="badge rounded-badge"
+                style="background-color: var(--header-icon-color)"
               >
-                <svg
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                  class="status-icon"
+                {{ application.id }}
+              </span>
+            </th>
+            <td class="text-start">{{ application.strname.toUpperCase() }}</td>
+            <td class="text-start">{{ application.strdescription }}</td>
+            <td class="text-start">logo</td>
+            <td class="text-center actions-col">
+              <div>
+                <button
+                  type="button"
+                  class="btn btn-outline-dark btn-sm me-2"
+                  data-bs-toggle="tooltip"
+                  title="Details"
                 >
-                  <use
-                    [attr.xlink:href]="
-                      './assets/icons/bootstrap-icons.svg#list-nested'
-                    "
-                  ></use>
-                </svg>
-              </button>
+                  <svg
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                    class="status-icon"
+                  >
+                    <use
+                      [attr.xlink:href]="
+                        './assets/icons/bootstrap-icons.svg#list-nested'
+                      "
+                    ></use>
+                  </svg>
+                </button>
 
-              <button
-                type="button"
-                class="btn btn-outline-dark btn-sm me-2"
-                data-bs-toggle="tooltip"
-                title="Edit"
-              >
-                <svg
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                  class="status-icon"
+                <button
+                  type="button"
+                  class="btn btn-outline-dark btn-sm me-2"
+                  data-bs-toggle="tooltip"
+                  title="Edit"
                 >
-                  <use
-                    [attr.xlink:href]="
-                      './assets/icons/bootstrap-icons.svg#pencil'
-                    "
-                  ></use>
-                </svg>
-              </button>
+                  <svg
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                    class="status-icon"
+                  >
+                    <use
+                      [attr.xlink:href]="
+                        './assets/icons/bootstrap-icons.svg#pencil'
+                      "
+                    ></use>
+                  </svg>
+                </button>
 
-              <button
-                type="button"
-                class="btn btn-outline-dark btn-sm me-2"
-                data-bs-toggle="tooltip"
-                title="Delete"
-              >
-                <svg
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                  class="status-icon"
+                <button
+                  type="button"
+                  class="btn btn-outline-dark btn-sm me-2"
+                  data-bs-toggle="tooltip"
+                  title="Delete"
                 >
-                  <use
-                    [attr.xlink:href]="
-                      './assets/icons/bootstrap-icons.svg#trash3'
-                    "
-                  ></use>
-                </svg>
-              </button>
-            </div>
-          </td>
-        </tr>
-        }
-      </tbody>
-    </table>
+                  <svg
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                    class="status-icon"
+                  >
+                    <use
+                      [attr.xlink:href]="
+                        './assets/icons/bootstrap-icons.svg#trash3'
+                      "
+                    ></use>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
+
 
 <!-- Modal para crear una nueva aplicación -->
 <div
@@ -145,12 +147,8 @@
         </h1>
       </div>
       <div class="modal-body">
-        <div class="container">
-          <app-cu-application></app-cu-application>
-        </div>
+        <app-cu-application></app-cu-application>
       </div>
-            
     </div>
   </div>
 </div>
-<script src="./assets/script.js"></script>
