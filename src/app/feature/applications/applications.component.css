@@ -166,3 +166,16 @@
   margin-top: 0.1rem;
   /* color: var(--primary-text-color); Color del texto en la tarjeta */
 }
+
+/* Mantener el ancho de 100px en pantallas medianas o más grandes */
+.btn-fixed-width {
+  width: 100px;
+}
+
+/* Quitar el ancho fijo en pantallas pequeñas */
+@media (max-width: 768px) {
+  .btn-fixed-width {
+    width: auto;
+  }
+}
+

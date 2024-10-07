@@ -1,4 +1,3 @@
-import { NgbCarousel } from '@ng-bootstrap/ng-bootstrap';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApplicationsService } from '../../shared/services/applications/applications.service';
 import { CuApplicationComponent } from "./cu-application/cu-application.component";
@@ -8,12 +7,13 @@ import { CuApplicationComponent } from "./cu-application/cu-application.componen
   standalone: true,
   imports: [CuApplicationComponent],
   templateUrl: './applications.component.html',
-  styleUrl: './applications.component.css'
+  styleUrls: ['./applications.component.css'], // Corrige styleUrl a styleUrls
 })
-export class ApplicationsComponent implements OnInit{
+export class ApplicationsComponent implements OnInit {
+  @ViewChild(CuApplicationComponent) appCuApplication!: CuApplicationComponent;
   applications: any[] = [];
 
-  constructor(private applicationsService : ApplicationsService){}
+  constructor(private applicationsService: ApplicationsService) {}
 
   ngOnInit(): void {
     // Suscribirse a las aplicaciones cargadas en el servicio
@@ -26,5 +26,4 @@ export class ApplicationsComponent implements OnInit{
       },
     });
   }
-
 }
