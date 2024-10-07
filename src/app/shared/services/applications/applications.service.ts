@@ -1,17 +1,21 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators'; // Importa 'map' para transformar la respuesta
 
 @Injectable({
   providedIn: 'root'
 })
-export class ApplicationsService {private applicationsSubject = new BehaviorSubject<any[]>([]);
+export class ApplicationsService {
+  private applicationsSubject = new BehaviorSubject<any[]>([]);
   public applications$ = this.applicationsSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
   private apiUrl = 'http://localhost:3000/applications';
+  private validateNameUrl = 'http://localhost:3000/validateApplicationName'; // URL para verificar nombre
 
-  // Método para obtener los roles desde el servidor
+  constructor(private http: HttpClient) {}
+
+  // Método para obtener las aplicaciones desde el servidor
   getApplications(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
@@ -28,4 +32,15 @@ export class ApplicationsService {private applicationsSubject = new BehaviorSubj
     });
   }
 
+  // Método para verificar la disponibilidad del nombre de la aplicación (POST request)
+  checkApplicationName(name: string): Observable<boolean> {
+    const headers = { 'Content-Type': 'application/json' }; // Encabezado correcto
+    return this.http.post<{ available: boolean }>(
+      this.validateNameUrl, 
+      { name },
+      { headers }
+    ).pipe(
+      map(response => response.available)
+    );
+  }
 }
