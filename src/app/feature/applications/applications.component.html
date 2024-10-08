@@ -59,7 +59,13 @@
             </th>
             <td class="text-start">{{ application.strname.toUpperCase() }}</td>
             <td class="text-start">{{ application.strdescription }}</td>
-            <td class="text-start">logo</td>
+            <td class="text-start">
+              <img
+                src="./assets/img/logo_authoriza_v2.png"
+                style="width: 30%; height: auto"
+                alt=""
+              />
+            </td>
             <td class="text-center actions-col">
               <div>
                 <button
@@ -128,7 +134,6 @@
   </div>
 </div>
 
-
 <!-- Modal para crear una nueva aplicación -->
 <div
   class="modal fade"
@@ -141,13 +146,51 @@
 >
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header justify-content-end modal-header-custom">
+      <!-- Título del Modal con Íconos de Paso -->
+      <div class="modal-header justify-content-between modal-header-custom">
+        <!-- Íconos de Pasos con línea de unión -->
+        <div class="step-icons d-flex position-relative">
+          <!-- Ícono para el paso 1 -->
+          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon">
+            <use
+              [attr.xlink:href]="
+                cuApplication.applicationForm.valid ||
+                (cuApplication.isYellowVisible &&
+                  cuApplication.applicationForm.get('applicationName')?.valid &&
+                  cuApplication.applicationForm.get('description')?.valid) ||
+                (cuApplication.isBlueVisible &&
+                  cuApplication.applicationForm.get('logo')?.invalid)
+                  ? './assets/icons/bootstrap-icons.svg#1-circle-fill'
+                  : './assets/icons/bootstrap-icons.svg#1-circle'
+              "
+            ></use>
+          </svg>
+          <!-- Ícono para el paso 2 -->
+          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
+            <use
+              [attr.xlink:href]="
+                cuApplication.applicationForm.valid
+                  ? './assets/icons/bootstrap-icons.svg#2-circle-fill'
+                  : (cuApplication.isYellowVisible &&
+                      cuApplication.applicationForm.get('applicationName')
+                        ?.valid &&
+                      cuApplication.applicationForm.get('description')
+                        ?.valid) ||
+                    (cuApplication.isBlueVisible &&
+                      cuApplication.applicationForm.get('logo')?.invalid)
+                  ? './assets/icons/bootstrap-icons.svg#2-circle'
+                  : './assets/icons/bootstrap-icons.svg#2-circle'
+              "
+            ></use>
+          </svg>
+        </div>
         <h1 class="modal-title fs-5" id="staticBackdropLabel">
           New <b>Application</b>
         </h1>
       </div>
+
       <div class="modal-body">
-        <app-cu-application></app-cu-application>
+        <app-cu-application #cuApplication></app-cu-application>
       </div>
     </div>
   </div>

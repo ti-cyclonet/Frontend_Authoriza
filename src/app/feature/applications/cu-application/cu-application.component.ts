@@ -30,24 +30,37 @@ export class CuApplicationComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit() {
+    this.applicationForm = this.fb.group({
+      applicationName: ['', Validators.required],
+      description: ['', Validators.required],
+      logo: ['', Validators.required],
+    });
+  }
 
   // Validar los campos antes de avanzar al cuadro azul
-  onNext(): void {
-    const applicationNameControl = this.applicationForm.get('applicationName');
-    const descriptionControl = this.applicationForm.get('description');
+  // onNext(): void {
+  //   const applicationNameControl = this.applicationForm.get('applicationName');
+  //   const descriptionControl = this.applicationForm.get('description');
 
-    // Verifica si ambos campos son válidos
-    if (applicationNameControl?.valid && descriptionControl?.valid) {
-      this.isYellowVisible = false; // Oculta el cuadro amarillo
-      this.isBlueVisible = true; // Muestra el cuadro azul
-      this.showSendButton = true; // Muestra el botón "Send"
-      this.showNextButton = false; // Oculta el botón "Next"
-    } else {
-      // Marca los controles como tocados para mostrar los errores
-      applicationNameControl?.markAsTouched();
-      descriptionControl?.markAsTouched();
-      console.log('Please complete the required fields.');
+  //   // Verifica si ambos campos son válidos
+  //   if (applicationNameControl?.valid && descriptionControl?.valid) {
+  //     this.isYellowVisible = false; // Oculta el cuadro amarillo
+  //     this.isBlueVisible = true; // Muestra el cuadro azul
+  //     this.showSendButton = true; // Muestra el botón "Send"
+  //     this.showNextButton = false; // Oculta el botón "Next"
+  //   } else {
+  //     // Marca los controles como tocados para mostrar los errores
+  //     applicationNameControl?.markAsTouched();
+  //     descriptionControl?.markAsTouched();
+  //     console.log('Please complete the required fields.');
+  //   }
+  // }
+
+  onNext() {
+    if (this.isYellowVisible) {
+      this.isYellowVisible = false;
+      this.isBlueVisible = true;
     }
   }
 
@@ -67,11 +80,17 @@ export class CuApplicationComponent implements OnInit {
   }
 
   // Método para el botón "Previous"
-  onPrevious(): void {
-    this.isYellowVisible = true; // Muestra el cuadro amarillo
-    this.isBlueVisible = false; // Oculta el cuadro azul
-    this.showSendButton = false; // Oculta el botón "Send"
-    this.showNextButton = true; // Muestra el botón "Next"
+  // onPrevious(): void {
+  //   this.isYellowVisible = true; // Muestra el cuadro amarillo
+  //   this.isBlueVisible = false; // Oculta el cuadro azul
+  //   this.showSendButton = false; // Oculta el botón "Send"
+  //   this.showNextButton = true; // Muestra el botón "Next"
+  // }
+  onPrevious() {
+    if (this.isBlueVisible) {
+      this.isBlueVisible = false;
+      this.isYellowVisible = true;
+    }
   }
 
   onCancel(): void {
