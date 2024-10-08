@@ -94,7 +94,7 @@
         Cancel
       </button>
 
-      <!-- Botón Next -->
+      <!-- Botón Next (ocultar si el cuadro azul es visible) -->
       <button
         id="nextBtn"
         type="button"
@@ -102,7 +102,7 @@
         data-bs-toggle="tooltip"
         title="Next"
         (click)="onNext()"
-        *ngIf="showNextButton"
+        *ngIf="!isBlueVisible"
         [disabled]="isNextDisabled()"
       >
         <span class="d-none d-md-inline">Next</span>
@@ -118,25 +118,27 @@
         </svg>
       </button>
 
-      <!-- Botón Send -->
+      <!-- Botón Send (siempre visible si el cuadro azul es visible) -->
       <button
         id="sendBtn"
         type="submit"
         class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width"
         data-bs-toggle="tooltip"
         title="Send"
-        *ngIf="showSendButton"
+        *ngIf="isBlueVisible"
         [disabled]="!applicationForm.valid"
         data-bs-dismiss="modal"
       >
-        <span class="d-none d-md-inline">Send </span>
+        <span class="d-none d-md-inline">Send</span>
         <svg
           fill="currentColor"
           viewBox="0 0 16 16"
           class="status-icon"
           style="width: 1em; height: 1em"
         >
-          <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#send'"></use>
+          <use
+            [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#send'"
+          ></use>
         </svg>
       </button>
     </div>
