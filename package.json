@@ -1,5 +1,5 @@
 {
-  "name": "frontend-shotra-v2",
+  "name": "frontend-authorization-v2",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:Frontend_Shotra_v2": "node dist/frontend-shotra-v2/server/server.mjs"
+    "serve:ssr:Frontend_Authorization_v2": "node dist/frontend-shotra-v2/server/server.mjs"
   },
   "private": true,
   "dependencies": {
