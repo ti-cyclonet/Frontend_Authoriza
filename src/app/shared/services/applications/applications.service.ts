@@ -10,9 +10,9 @@ export class ApplicationsService {
   private applicationsSubject = new BehaviorSubject<any[]>([]);
   public applications$ = this.applicationsSubject.asObservable();
 
-  private apiUrl = 'http://localhost:3000/applications';
-  private validateNameUrl = 'http://localhost:3000/validateApplicationName'; // URL para verificar nombre
-  private createApplicationUrl = 'http://localhost:3000/createApplication'; // URL para crear aplicación
+  private apiUrl = '/api/applications';
+  private validateNameUrl = '/api/validateApplicationName'; // URL para verificar nombre
+  private createApplicationUrl = '/api/createApplication'; // URL para crear aplicación
 
   constructor(private http: HttpClient) {}
 
