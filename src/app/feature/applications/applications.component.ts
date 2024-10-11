@@ -26,4 +26,21 @@ export class ApplicationsComponent implements OnInit {
       },
     });
   }
+
+  // Método para eliminar una aplicación
+  deleteApplication(id: number) {
+    if (confirm('Are you sure you want to delete this application?')) {
+      this.applicationsService.deleteApplication(id).subscribe({
+        next: () => {
+          alert('Application deleted successfully');
+          // Actualiza la lista de aplicaciones después de la eliminación
+          this.applicationsService.loadApplications(); // Recargar la lista de aplicaciones
+        },
+        error: (error) => {
+          console.error('Error deleting application', error);
+          alert('There was an error deleting the application');
+        }
+      });
+    }
+  }
 }
