@@ -67,15 +67,27 @@ export class CuApplicationComponent implements OnInit {
   // Resetear el formulario y cerrar la ventana modal
   onSubmit(): void {
     if (this.applicationForm.valid) {
-      console.log('Formulario enviado:', this.applicationForm.value);
-      // Aquí puedes cerrar la ventana modal si es necesario
-      this.applicationForm.reset(); // Resetea el formulario
-      this.isYellowVisible = true; // Muestra nuevamente el cuadro amarillo
-      this.isBlueVisible = false; // Oculta el cuadro azul
-      this.showSendButton = false; // Oculta el botón "Send"
-      this.showNextButton = true; // Muestra el botón "Next"
-    } else {
-      console.log('Formulario no válido.');
+      const applicationData = {
+        strName: this.applicationForm.get('applicationName')?.value,
+        strDescription: this.applicationForm.get('description')?.value,
+        strLogo: this.applicationForm.get('logo')?.value
+      };
+
+      // Llamamos al método para crear la aplicación
+      this.applicationsService.createApplication(applicationData).subscribe({
+        next: (response) => {
+          console.log('Application created:', response);
+          this.applicationForm.reset(); // Resetea el formulario
+        },
+        error: (error) => {
+          console.error('Error creating application:', error);
+          if (error.status === 409) {
+            this.nameAvailabilityMessage = 'Application name already exists.';
+          } else {
+            this.nameAvailabilityMessage = 'Error creating application.';
+          }
+        }
+      });
     }
   }
 

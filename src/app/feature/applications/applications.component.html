@@ -1,138 +1,87 @@
-<div class="title-container">
-  <a href="/applications" class="title-link">
-    <svg viewBox="0 0 16 16">
-      <use xlink:href="./assets/icons/bootstrap-icons.svg#window-stack" />
-    </svg>
-    /applications
-  </a>
-</div>
-<div class="card shadow m-3">
-  <div class="card-body">
-    <div class="d-flex align-items-center w-100">
-      <h5
-        class="card-title text-nowrap bg-body-secondary border"
-        style="width: 6.7rem"
-      >
-        Application <b>Management</b>.
-      </h5>
 
-      <div class="btn-group ms-auto" style="margin-right: 4px">
-        <a
-          href="#"
-          class="text-success"
-          data-bs-toggle="modal"
-          data-bs-target="#staticBackdrop"
-        >
-          <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
-            <use
-              [attr.xlink:href]="
-                './assets/icons/bootstrap-icons.svg#plus-square-fill'
-              "
-            ></use>
-          </svg>
-        </a>
+  <div class="title-container">
+    <a href="/home" class="title-link">
+      <svg viewBox="0 0 16 16">
+        <use xlink:href="./assets/icons/bootstrap-icons.svg#window-stack"/>
+      </svg>
+      /applications
+    </a>
+  </div>
+  <div class="card shadow m-3">
+    <div class="card-body">
+      <div class="d-flex align-items-center w-100">
+        <h5 class="card-title text-nowrap bg-body-secondary border" style="width: 6.7rem">
+          Application <b>Management</b>.
+        </h5>
+
+        <div class="btn-group ms-auto" style="margin-right: 4px">
+          <a href="#" class="text-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+            <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
+              <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#plus-square-fill'"></use>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Contenedor con scroll en pantallas pequeñas -->
+      <div class="table-responsive mt-3">
+        <table class="table table-bordered border-secondary table-striped">
+          <thead>
+            <tr>
+              <th scope="col" class="id-col text-center">Id</th>
+              <th scope="col" class="text-center">Name</th>
+              <!-- Columnas "Description" y "Logo" ocultas en pantallas pequeñas y visibles solo en pantallas extra largas -->
+              <th scope="col" class="text-center d-none d-xl-table-cell">Description</th>
+              <th scope="col" class="text-center d-none d-xl-table-cell">Logo</th>
+              <th class="actions-col text-center" scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (application of applications; track application.id) {
+            <tr>
+              <th scope="row" class="id-col text-end">
+                <span class="badge rounded-badge" style="background-color: var(--header-icon-color)">
+                  {{ application.id }}
+                </span>
+              </th>
+              <td class="text-start">{{ application.strname.toUpperCase() }}</td>
+              <!-- Columna "Description" oculta en pantallas pequeñas y visibles solo en pantallas extra largas -->
+              <td class="text-start d-none d-xl-table-cell">{{ application.strdescription }}</td>
+              <!-- Columna "Logo" oculta en pantallas pequeñas y visibles solo en pantallas extra largas -->
+              <td class="text-start d-none d-xl-table-cell">
+                <img src="./assets/img/logo_authoriza_v2.png" style="width: 30%; height: auto" alt="Logo" />
+              </td>
+              <td class="text-center actions-col">
+                <div>
+                  <button type="button" class="btn btn-outline-dark btn-sm me-2" data-bs-toggle="tooltip" title="Details">
+                    <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+                      <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#list-nested'"></use>
+                    </svg>
+                  </button>
+
+                  <button type="button" class="btn btn-outline-dark btn-sm me-2" data-bs-toggle="tooltip" title="Edit">
+                    <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+                      <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#pencil'"></use>
+                    </svg>
+                  </button>
+
+                  <button type="button" class="btn btn-outline-dark btn-sm me-2" data-bs-toggle="tooltip" title="Delete">
+                    <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+                      <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#trash3'"></use>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
       </div>
     </div>
-
-    <!-- Contenedor con scroll en pantallas pequeñas -->
-    <div class="table-responsive mt-3">
-      <table class="table table-bordered border-secondary table-striped">
-        <thead>
-          <tr>
-            <th scope="col" class="id-col text-center">Id</th>
-            <th scope="col" class="text-center">Name</th>
-            <th scope="col" class="text-center">Description</th>
-            <th scope="col" class="text-center">Logo</th>
-            <th class="actions-col text-center" scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (application of applications; track application.id) {
-          <tr>
-            <th scope="row" class="id-col text-end">
-              <span
-                class="badge rounded-badge"
-                style="background-color: var(--header-icon-color)"
-              >
-                {{ application.id }}
-              </span>
-            </th>
-            <td class="text-start">{{ application.strname.toUpperCase() }}</td>
-            <td class="text-start">{{ application.strdescription }}</td>
-            <td class="text-start">
-              <img
-                src="./assets/img/logo_authoriza_v2.png"
-                style="width: 30%; height: auto"
-                alt=""
-              />
-            </td>
-            <td class="text-center actions-col">
-              <div>
-                <button
-                  type="button"
-                  class="btn btn-outline-dark btn-sm me-2"
-                  data-bs-toggle="tooltip"
-                  title="Details"
-                >
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    class="status-icon"
-                  >
-                    <use
-                      [attr.xlink:href]="
-                        './assets/icons/bootstrap-icons.svg#list-nested'
-                      "
-                    ></use>
-                  </svg>
-                </button>
-
-                <button
-                  type="button"
-                  class="btn btn-outline-dark btn-sm me-2"
-                  data-bs-toggle="tooltip"
-                  title="Edit"
-                >
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    class="status-icon"
-                  >
-                    <use
-                      [attr.xlink:href]="
-                        './assets/icons/bootstrap-icons.svg#pencil'
-                      "
-                    ></use>
-                  </svg>
-                </button>
-
-                <button
-                  type="button"
-                  class="btn btn-outline-dark btn-sm me-2"
-                  data-bs-toggle="tooltip"
-                  title="Delete"
-                >
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    class="status-icon"
-                  >
-                    <use
-                      [attr.xlink:href]="
-                        './assets/icons/bootstrap-icons.svg#trash3'
-                      "
-                    ></use>
-                  </svg>
-                </button>
-              </div>
-            </td>
-          </tr>
-          }
-        </tbody>
-      </table>
-    </div>
   </div>
-</div>
+
+
+
 
 <!-- Modal para crear una nueva aplicación -->
 <div
