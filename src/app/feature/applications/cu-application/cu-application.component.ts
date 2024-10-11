@@ -21,7 +21,7 @@ export class CuApplicationComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private applicationsService: ApplicationsService
+    private applicationsService: ApplicationsService,
   ) {
     this.applicationForm = this.fb.group({
       applicationName: ['', Validators.required],
@@ -77,7 +77,7 @@ export class CuApplicationComponent implements OnInit {
       this.applicationsService.createApplication(applicationData).subscribe({
         next: (response) => {
           console.log('Application created:', response);
-          this.applicationForm.reset(); // Resetea el formulario
+          this.applicationForm.reset();
         },
         error: (error) => {
           console.error('Error creating application:', error);
