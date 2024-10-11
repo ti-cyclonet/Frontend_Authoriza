@@ -78,3 +78,21 @@
   color: red; /* Cambia el color según sea necesario */
   margin-top: 5px;
 }
+
+/* Para pantallas pequeñas */
+@media (max-width: 576px) {
+  .form-buttons button {
+    min-width: 40px; /* Ajusta el ancho mínimo de los botones */
+    padding: 5px; /* Reduce el padding */
+    font-size: 0.8rem; /* Ajusta el tamaño de la fuente */
+  }
+
+  .form-buttons button span {
+    display: none; /* Oculta el texto en pantallas pequeñas */
+  }
+
+  .form-buttons button .status-icon {
+    width: 16px; /* Ancho del icono */
+    height: 16px; /* Alto del icono */
+  }
+}

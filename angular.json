@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "Frontend_Shotra_v2": {
+    "Frontend_Authorization_v2": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/frontend-shotra-v2",
+            "outputPath": "dist/frontend-authorization-v2",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": ["zone.js"],
@@ -70,12 +70,15 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": {
-              "buildTarget": "Frontend_Shotra_v2:build:production"
+              "buildTarget": "Frontend_Authorization_v2:build:production"
             },
             "development": {
-              "buildTarget": "Frontend_Shotra_v2:build:development"
+              "buildTarget": "Frontend_Authorization_v2:build:development"
             }
           },
           "defaultConfiguration": "development"
