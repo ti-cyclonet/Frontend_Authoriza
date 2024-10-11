@@ -10,7 +10,7 @@ export class RolesService {
   public roles$ = this.rolesSubject.asObservable();
 
   constructor(private http: HttpClient) {}
-  private apiUrl = 'http://localhost:3000/roles';
+  private apiUrl = '/api/roles';
 
   // Método para obtener los roles desde el servidor
   getRoles(): Observable<any[]> {
