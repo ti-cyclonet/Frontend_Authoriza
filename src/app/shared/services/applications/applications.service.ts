@@ -41,7 +41,7 @@ export class ApplicationsService {
       .pipe(map((response) => response.available));
   }
 
-  // Método para crear una nueva aplicación (POST request)
+  // Método para crear una nueva aplicación
   createApplication(applicationData: {
     strName: string;
     strDescription: string;
@@ -51,9 +51,16 @@ export class ApplicationsService {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Referer': 'http://localhost:4200'
-    }; // Encabezado correcto
-    return this.http.post<any>(this.createApplicationUrl, applicationData, {
-      headers,
-    });
+    };
+    return this.http.post<any>(this.createApplicationUrl, applicationData, { headers })
+      .pipe(map(response => {
+        this.loadApplications(); // Recargar la lista de aplicaciones
+        return response;
+      }));
+  }
+
+   // Método para eliminar una aplicación
+   deleteApplication(id: number): Observable<any> {
+    return this.http.delete(`/api/application/${id}`);
   }
 }
