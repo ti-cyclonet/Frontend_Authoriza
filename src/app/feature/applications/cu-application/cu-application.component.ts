@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ApplicationsService } from '../../../shared/services/applications/applications.service';
@@ -18,6 +18,7 @@ export class CuApplicationComponent implements OnInit {
   isBlueVisible: boolean = false; // Inicializa el cuadro azul oculto
   showSendButton: boolean = false; // Inicializa el botón "Send" oculto
   showNextButton: boolean = true; // Inicializa el botón "Next" visible
+  @Output() applicationCreated = new EventEmitter<void>();  // Emitimos este evento al crear la aplicación
 
   constructor(
     private fb: FormBuilder,
@@ -37,25 +38,6 @@ export class CuApplicationComponent implements OnInit {
       logo: ['', Validators.required],
     });
   }
-
-  // Validar los campos antes de avanzar al cuadro azul
-  // onNext(): void {
-  //   const applicationNameControl = this.applicationForm.get('applicationName');
-  //   const descriptionControl = this.applicationForm.get('description');
-
-  //   // Verifica si ambos campos son válidos
-  //   if (applicationNameControl?.valid && descriptionControl?.valid) {
-  //     this.isYellowVisible = false; // Oculta el cuadro amarillo
-  //     this.isBlueVisible = true; // Muestra el cuadro azul
-  //     this.showSendButton = true; // Muestra el botón "Send"
-  //     this.showNextButton = false; // Oculta el botón "Next"
-  //   } else {
-  //     // Marca los controles como tocados para mostrar los errores
-  //     applicationNameControl?.markAsTouched();
-  //     descriptionControl?.markAsTouched();
-  //     console.log('Please complete the required fields.');
-  //   }
-  // }
 
   onNext() {
     if (this.isYellowVisible) {
@@ -77,7 +59,9 @@ export class CuApplicationComponent implements OnInit {
       this.applicationsService.createApplication(applicationData).subscribe({
         next: (response) => {
           console.log('Application created:', response);
-          this.applicationForm.reset();
+          // Emitimos el evento para notificar que la aplicación fue creada
+          this.applicationCreated.emit();
+          this.onCancel();
         },
         error: (error) => {
           console.error('Error creating application:', error);
@@ -91,13 +75,6 @@ export class CuApplicationComponent implements OnInit {
     }
   }
 
-  // Método para el botón "Previous"
-  // onPrevious(): void {
-  //   this.isYellowVisible = true; // Muestra el cuadro amarillo
-  //   this.isBlueVisible = false; // Oculta el cuadro azul
-  //   this.showSendButton = false; // Oculta el botón "Send"
-  //   this.showNextButton = true; // Muestra el botón "Next"
-  // }
   onPrevious() {
     if (this.isBlueVisible) {
       this.isBlueVisible = false;
