@@ -139,8 +139,8 @@
 /* Estilo de los íconos del título */
 .title-icon {
   margin-right: 0.3rem;
-  width: 26px; 
-  height: 26px; 
+  width: 30px; 
+  height: 30px; 
   color: #000;
 }
 
@@ -215,6 +215,9 @@
 .btn-fixed-width {
   width: 100px;
 }
+.btn-fixed-width-cnf {
+  width: 100px;
+}
 
 /* Quitar el ancho fijo en pantallas pequeñas */
 @media (max-width: 768px) {
@@ -223,3 +226,6 @@
   }
 }
 
+.custom-modal-header {
+  border-bottom: 2px solid rgb(148, 77, 77);
+}

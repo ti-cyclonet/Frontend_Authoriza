@@ -1,3 +1,15 @@
+.main-content {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Mantiene el alto del contenedor */
+}
+
+.router-outlet-container {
+  overflow-y: auto; /* Desplazamiento vertical */
+  flex-grow: 1; /* Permite que el contenedor ocupe el espacio restante */
+}
+
+
 /* Estilo general para el contenedor principal cuando el sidebar está visible */
 .main-content.reduced-width {
   margin-left: 100px; /* Ajuste según el ancho del sidebar */

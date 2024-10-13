@@ -1,0 +1,7 @@
+.footer {
+    background-color: var(--header-background-color);
+    padding: 5px 0px;    
+}
+.footer .small-text {
+    font-size: 0.8rem; /* Ajusta este valor según el tamaño que desees */
+  }
