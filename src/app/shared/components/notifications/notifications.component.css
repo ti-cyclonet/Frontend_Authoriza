@@ -1,0 +1,90 @@
+.toast {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.toast.show {
+  opacity: 1;
+}
+
+.toast-body {
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.notification-container {
+  position: fixed; /* Fijar la posición */
+  bottom: 20px; /* Espaciado desde el fondo */
+  right: 20px; /* Espaciado desde la derecha */
+  z-index: 9999; /* Asegurarte de que esté por encima de otros elementos */
+}
+
+.notification-card {
+  display: flex; /* Para alinear el icono y el texto */
+  align-items: center; /* Centrar verticalmente */
+  background-color: white; /* Color de fondo */
+  border: 1px solid; /* Bordes */
+  border-radius: 4px; /* Bordes redondeados */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Sombra */
+  padding: 10px; /* Espaciado interno */
+  transition: opacity 0.5s ease; /* Transición suave */
+  opacity: 1; /* Inicialmente visible */
+}
+
+.notification-card.success {
+  border-color: green; /* Color del borde para éxito */
+  background-color: #d5fddf;
+}
+
+.notification-card.warning {
+  border-color: orange; /* Color del borde para advertencias */
+  background-color: #f2f7c6;
+}
+
+.notification-card.danger {
+  border-color: red; /* Color del borde para errores */
+  background-color: #ffcfcf;
+}
+
+/* Colores del icono según el tipo de notificación */
+.notification-icon.success {
+  fill: green; /* Color del icono para éxito */
+}
+
+.notification-icon.warning {
+  fill: orange; /* Color del icono para advertencias */
+}
+
+.notification-icon.danger {
+  fill: red; /* Color del icono para errores */
+}
+
+
+.bg-success {
+  background-color: #7fe997; /* Verde */
+}
+
+.bg-danger {
+  background-color: #f17d89; /* Rojo */
+}
+
+.bg-warning {
+  background-color: #fdda70; /* Amarillo */
+}
+
+.notification-card svg {
+  width: 1.5rem; /* Establece el ancho */
+  height: 1.5rem; /* Establece la altura */
+  margin-right: 8px; /* Espaciado a la derecha */
+}
+
+
+.notification-card {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 5px;
+  color: rgb(0, 0, 0); /* Cambia esto si necesitas un color diferente */
+}
