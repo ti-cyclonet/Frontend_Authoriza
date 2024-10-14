@@ -144,6 +144,20 @@
   color: #000;
 }
 
+.notification-container {
+  position: fixed; /* Para hacerlo flotante */
+  top: 10px; /* Ajusta la distancia desde la parte superior */
+  right: 10px; /* Ajusta la distancia desde el lado derecho */
+  width: 300px; /* Ajusta el ancho según lo necesites */
+  background-color: transparent; /* Fondo con opacidad */
+  border-radius: 5px;
+  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); Añade una sombra */
+  z-index: 1000; /* Asegúrate de que esté por encima de otros elementos */
+  padding: 5px;
+  transform: translateX(0); /* Alineado inicial */
+}
+
+
 .btn-spacing {
   margin-right: 8px; 
 }

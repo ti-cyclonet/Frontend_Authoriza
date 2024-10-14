@@ -87,4 +87,5 @@
   margin: 5px;
   border-radius: 5px;
   color: rgb(0, 0, 0); /* Cambia esto si necesitas un color diferente */
+  background-color: rgba(0, 0, 0, 0.5);
 }
