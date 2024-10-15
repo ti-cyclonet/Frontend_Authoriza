@@ -14,71 +14,59 @@
 }
 
 .notification-container {
-  position: fixed; /* Fijar la posición */
-  bottom: 20px; /* Espaciado desde el fondo */
-  right: 20px; /* Espaciado desde la derecha */
-  z-index: 9999; /* Asegurarte de que esté por encima de otros elementos */
+  position: fixed;
+  bottom: 20px;
+  right: 20px; 
+  z-index: 9999;
 }
 
 .notification-card {
-  display: flex; /* Para alinear el icono y el texto */
-  align-items: center; /* Centrar verticalmente */
-  background-color: white; /* Color de fondo */
-  border: 1px solid; /* Bordes */
-  border-radius: 4px; /* Bordes redondeados */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Sombra */
-  padding: 10px; /* Espaciado interno */
-  transition: opacity 0.5s ease; /* Transición suave */
-  opacity: 1; /* Inicialmente visible */
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 1px solid;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  transition: opacity 0.5s ease;
+  opacity: 1;
 }
 
 .notification-card.success {
-  border-color: green; /* Color del borde para éxito */
-  background-color: #d5fddf;
+  border-color: green;
+  background-color: #03240b;
+  color: #d5fddf;
 }
 
 .notification-card.warning {
-  border-color: orange; /* Color del borde para advertencias */
-  background-color: #f2f7c6;
+  border-color: orange;
+  background-color: #362302;
+  color: #ffe6b3;
 }
 
 .notification-card.danger {
-  border-color: red; /* Color del borde para errores */
-  background-color: #ffcfcf;
+  border-color: red;
+  background-color: #400000;
+  color: #fdd5d5;
 }
 
-/* Colores del icono según el tipo de notificación */
 .notification-icon.success {
-  fill: green; /* Color del icono para éxito */
+  fill: green;
 }
 
 .notification-icon.warning {
-  fill: orange; /* Color del icono para advertencias */
+  fill: orange; 
 }
 
 .notification-icon.danger {
-  fill: red; /* Color del icono para errores */
-}
-
-
-.bg-success {
-  background-color: #7fe997; /* Verde */
-}
-
-.bg-danger {
-  background-color: #f17d89; /* Rojo */
-}
-
-.bg-warning {
-  background-color: #fdda70; /* Amarillo */
+  fill: red;
 }
 
 .notification-card svg {
-  width: 1.5rem; /* Establece el ancho */
-  height: 1.5rem; /* Establece la altura */
-  margin-right: 8px; /* Espaciado a la derecha */
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 8px;
 }
-
 
 .notification-card {
   display: flex;
@@ -86,6 +74,6 @@
   padding: 10px;
   margin: 5px;
   border-radius: 5px;
-  color: rgb(0, 0, 0); /* Cambia esto si necesitas un color diferente */
+  color: rgb(0, 0, 0);
   background-color: rgba(0, 0, 0, 0.5);
 }

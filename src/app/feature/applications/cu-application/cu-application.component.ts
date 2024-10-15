@@ -59,9 +59,9 @@ export class CuApplicationComponent implements OnInit {
       this.applicationsService.createApplication(applicationData).subscribe({
         next: (response) => {
           console.log('Application created:', response);
+          this.onCancel();
           // Emitimos el evento para notificar que la aplicación fue creada
           this.applicationCreated.emit();
-          this.onCancel();
         },
         error: (error) => {
           console.error('Error creating application:', error);
