@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ApplicationsService } from '../../shared/services/applications/applications.service';
-import { CuApplicationComponent } from "./cu-application/cu-application.component";
+import { CuApplicationComponent } from './cu-application/cu-application.component';
 import { NotificationsComponent } from '../../shared/components/notifications/notifications.component';
 import { CommonModule } from '@angular/common';
 
@@ -12,15 +12,29 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./applications.component.css'], // Corrige styleUrl a styleUrls
 })
 export class ApplicationsComponent implements OnInit {
-  selectedApplication: any; 
+  selectedApplication: any;
   @ViewChild(CuApplicationComponent) appCuApplication!: CuApplicationComponent;
   applications: any[] = [];
-  isModalOpen = false;  // Controla si el modal está abierto
+  isModalOpen = false; // Controla si el modal está abierto
   toastTitle: string = '';
   toastType: 'success' | 'warning' | 'danger' = 'success';
-  isVisible: boolean = false;
+  isVisible: boolean = true;
+  notifications: Array<{
+    title: string;
+    type: 'success' | 'warning' | 'danger';
+  }> = [];
 
-  constructor(private applicationsService: ApplicationsService) {}
+  constructor(
+    private applicationsService: ApplicationsService,
+    private cdr: ChangeDetectorRef
+  ) {
+    this.notifications = [];
+  }
+
+  // Método para agregar una nueva notificación
+  addNotification(title: string, type: 'success' | 'warning' | 'danger') {
+    this.notifications.push({ title, type });
+  }
 
   ngOnInit(): void {
     // Suscribirse a las aplicaciones cargadas en el servicio
@@ -46,8 +60,8 @@ export class ApplicationsComponent implements OnInit {
 
   // Método que se ejecuta cuando se crea una aplicación exitosamente
   onApplicationCreated() {
-    this.showToast('Application created successfully', 'success');  // Mostrar el toast
-    this.closeModal();  // Cerrar el modal
+    this.showToast('Application created successfully', 'success');
+    this.closeModal();
   }
 
   // Método para abrir el modal y establecer la aplicación seleccionada
@@ -68,14 +82,17 @@ export class ApplicationsComponent implements OnInit {
         this.applicationsService.loadApplications();
       },
       error: (error) => {
-        this.showToast('There was an error deleting the application', 'danger');
-      }
+        this.addNotification(
+          'There was an error deleting the application',
+          'danger'
+        );
+      },
     });
   }
   // Función para obtener las clases del Toast dinámicamente
   getClass() {
     return {
-      'show': this.isVisible,
+      show: this.isVisible,
       'bg-success': this.toastType === 'success',
       'bg-danger': this.toastType === 'danger',
     };
@@ -93,14 +110,12 @@ export class ApplicationsComponent implements OnInit {
   }
   // Función para mostrar el toast con el mensaje y tipo correctos
   showToast(message: string, type: 'success' | 'warning' | 'danger') {
-    this.toastTitle = message;
-    this.toastType = type;
-    this.isVisible = true;
-  
+    this.addNotification(message, type);
+    this.cdr.detectChanges();
+
     // Ocultar el toast después de 3 segundos
     setTimeout(() => {
       this.isVisible = false;
     }, 5000);
   }
-  
 }
