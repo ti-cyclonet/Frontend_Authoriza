@@ -41,8 +41,38 @@
     <!-- Caja azul -->
     <div *ngIf="isBlueVisible" class="blue-box">
       <div class="form-group">
+        <!-- Centrando el botón "Choose file" -->
         <label for="logo">Logo URL</label>
-        <input id="logo" formControlName="logo" type="text" />
+
+        <button
+          type="button"
+          mat-stroked-button
+          class="btn btn-outline-dark text-light btn-sm me-4 btn-fixed-width"
+          [disabled]="selectedFile"
+        >
+          <label for="upload">
+            <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+              <use
+                [attr.xlink:href]="
+                  './assets/icons/bootstrap-icons.svg#file-earmark-arrow-up'
+                "
+              ></use>
+            </svg>
+            <span> Choose file </span>
+            <input
+              class="file-sing"
+              #fileToSing
+              #fileInput
+              type="file" 
+              hidden
+              id="upload"
+              accept=".jpg,.jpeg,.png"
+              (change)="onFileSelected($event)"
+              formControlName="logo"
+            />
+          </label>
+        </button>
+
         <div
           *ngIf="
             applicationForm.get('logo')?.invalid &&
@@ -51,6 +81,42 @@
           class="error"
         >
           Logo URL is required.
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12 text-center">
+          <div class="wrapper-file d-inline-block">
+            <div class="file">
+              <img
+                *ngIf="selectedFile"
+                [src]="imagePreview"
+                width="300"
+                height="auto"
+                alt="Image preview"
+              />
+            </div>
+          </div>
+
+          <div class="wrapper-action text-center">
+            <span>{{ selectedFile?.name }}</span>
+
+            <button
+              *ngIf="selectedFile"
+              class="btn-no-style"
+              matTooltip="Remove file"
+              matTooltipPosition="above"
+              (click)="clearFile(fileInput)"
+            >
+              <svg fill="red" viewBox="0 0 16 16" class="status-icon">
+                <use
+                  [attr.xlink:href]="
+                    './assets/icons/bootstrap-icons.svg#x-circle'
+                  "
+                ></use>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
