@@ -23,6 +23,8 @@ export class ApplicationsComponent implements OnInit {
     title: string;
     type: 'success' | 'warning' | 'danger';
   }> = [];
+  imagePreview: string | ArrayBuffer | null = null;
+  fileName: string = '';
 
   constructor(
     private applicationsService: ApplicationsService,
@@ -46,6 +48,28 @@ export class ApplicationsComponent implements OnInit {
         console.log(e);
       },
     });
+  }
+
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.fileName = file.name;
+      
+      // Solo procesar si el archivo es una imagen
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.imagePreview = reader.result; // Establece la vista previa
+        };
+        reader.readAsDataURL(file); // Lee el archivo como URL de datos
+      }
+    }
+  }
+
+  clearFile() {
+    this.imagePreview = null;
+    this.fileName = '';
+    // También puedes restablecer el input file si es necesario
   }
 
   // Método para abrir el modal
