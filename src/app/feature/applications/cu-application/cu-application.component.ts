@@ -27,6 +27,8 @@ export class CuApplicationComponent implements OnInit {
   imagePreview: string | ArrayBuffer | null = null;
   selectedFile: File | null = null; // Para almacenar el archivo seleccionado
   fileName: string | null = null; // Para almacenar el nombre del archivo
+  fileTmp: any;
+
 
 
   constructor(
@@ -36,7 +38,7 @@ export class CuApplicationComponent implements OnInit {
     this.applicationForm = this.fb.group({
       applicationName: ['', Validators.required],
       description: ['', Validators.required],
-      logo: [null, Validators.required]
+      logo: [null, Validators.required],
     });
     this.fileName = '';
   }
@@ -49,31 +51,39 @@ export class CuApplicationComponent implements OnInit {
     });
   }
 
-  onFileSelected(event: Event): void {
+  onFileSelected(event: any): void {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
-      this.fileName = this.selectedFile.name; // Guardar el nombre del archivo
-      this.imagePreview = URL.createObjectURL(this.selectedFile); // Para la vista previa
 
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.fileTmp = {
+        fileRaw: file,
+        fileName: file.name
+      }
+      console.log('ARCHIVO: ', this.fileTmp);
+
+      this.selectedFile = file;
+      this.fileName = this.selectedFile.name ?? null;
+      this.imagePreview = URL.createObjectURL(this.selectedFile);
       // Actualiza el valor del control de formulario
       this.applicationForm.patchValue({
-        logo: this.selectedFile // Asignar el archivo al control
+        logo: this.selectedFile,
       });
     } else {
       this.selectedFile = null;
-      this.fileName = null; // Reiniciar el nombre si no hay archivo
+      this.fileName = null;
       this.applicationForm.patchValue({
-        logo: null // Reiniciar el control
+        logo: null,
       });
     }
+    console.log('SELECTED FILE: ', this.selectedFile);
   }
 
   clearFile(fileInput: HTMLInputElement) {
     this.selectedFile = null;
     this.imagePreview = null;
     fileInput.value = ''; // Resetea el input
-    this.applicationForm.get('logo')?.setValue(null); // Resetea el control del formulario
+    this.applicationForm.get('logo')?.setValue(null);
   }
 
   onNext() {
@@ -102,23 +112,21 @@ export class CuApplicationComponent implements OnInit {
   onSubmit(): void {
     if (this.applicationForm.valid) {
       const applicationData = new FormData();
+      applicationData.append('logo', this.fileTmp.fileRaw, this.fileTmp.fileName);
 
-      applicationData.append(
-        'strName',
-        this.applicationForm.get('applicationName')?.value
-      );
-      applicationData.append(
-        'strDescription',
-        this.applicationForm.get('description')?.value
-      );
-
-      // Agrega el archivo del formulario si ha sido seleccionado
-      const logoFile = this.applicationForm.get('logo')?.value;
-      if (logoFile) {
-        applicationData.append('strLogo', logoFile, logoFile.name);
+      const appName = this.applicationForm.get('applicationName')?.value;
+      const appDescription = this.applicationForm.get('description')?.value;
+      if (appName) {
+        applicationData.append('strName', appName);
+      } else {
+        console.warn('Application name is empty or invalid.');
+      }
+      if (appDescription) {
+        applicationData.append('strDescription', appDescription);
+      } else {
+        console.warn('Application description is empty or invalid.');
       }
 
-      console.log('FORMDATA: ', applicationData);
 
       // Llamada al servicio
       this.applicationsService.createApplication(applicationData).subscribe({
