@@ -88,3 +88,10 @@
     height: 16px; /* Alto del icono */
   }
 }
+.btn-no-style {
+  background: none;
+  border: none;
+  padding: 5px;
+  margin: 0;
+  cursor: pointer;
+}

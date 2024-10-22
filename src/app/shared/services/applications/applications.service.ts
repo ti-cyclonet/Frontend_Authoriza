@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators'; // Importa 'map' para transformar la respuesta
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators'; // Importa 'map' para transformar la respuesta
 
 @Injectable({
   providedIn: 'root',
@@ -42,23 +42,20 @@ export class ApplicationsService {
   }
 
   // Método para crear una nueva aplicación
-  createApplication(applicationData: {
-    strName: string;
-    strDescription: string;
-    strLogo: string;
-  }): Observable<any> {
-    const headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Referer': 'http://localhost:4200'
-    };
-    return this.http.post<any>(this.createApplicationUrl, applicationData, { headers })
-      .pipe(map(response => {
-        this.loadApplications(); // Recargar la lista de aplicaciones
-        return response;
-      }));
+  createApplication(applicationData: FormData): Observable<any> {
+    console.log('FORMDATA RECIBIDO: ', applicationData);
+    return this.http.post<any>(this.createApplicationUrl, applicationData)
+      .pipe(
+        map(response => {
+          this.loadApplications(); // Recargar la lista de aplicaciones
+          return response;
+        }),
+        catchError(error => {
+          console.error('Error creating application:', error);
+          return throwError(error); // Re-lanzar el error para que lo maneje el componente
+        })
+      );
   }
-
    // Método para eliminar una aplicación
    deleteApplication(id: number): Observable<any> {
     return this.http.delete(`/api/application/${id}`);
