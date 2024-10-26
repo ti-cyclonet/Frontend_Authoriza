@@ -1,8 +1,9 @@
 <div *ngIf="isVisible" class="notification-container">
-  <app-notifications 
-    *ngFor="let notification of notifications" 
-    [title]="notification.title" 
-    [type]="notification.type">
+  <app-notifications
+    *ngFor="let notification of notifications"
+    [title]="notification.title"
+    [type]="notification.type"
+  >
   </app-notifications>
 </div>
 
@@ -30,7 +31,7 @@
           class="text-success"
           data-bs-toggle="modal"
           data-bs-target="#crearAplicacion"
-          (click)="openModal()"
+          (click)="openModal(false)"
         >
           <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
             <use
@@ -75,7 +76,10 @@
               {{ application.strdescription }}
             </td>
             <!-- Columna "Logo" oculta en pantallas pequeñas y visibles solo en pantallas extra largas -->
-            <td class="text-start d-none d-xl-table-cell text-center" style="width: 200px">
+            <td
+              class="text-start d-none d-xl-table-cell text-center"
+              style="width: 200px"
+            >
               <img
                 src="{{ application.strlogo }}"
                 style="width: 30%; height: auto"
@@ -107,6 +111,9 @@
                   type="button"
                   class="btn btn-outline-dark btn-sm me-2"
                   data-bs-toggle="tooltip"
+                  data-bs-toggle="modal"
+                  data-bs-target="#crearAplicacion"
+                  (click)="openModal(true, application.id)"
                   title="Edit"
                 >
                   <svg
@@ -204,14 +211,16 @@
             ></use>
           </svg>
         </div>
-        <h1 class="modal-title fs-5" id="staticBackdropLabel">
-          New <b>Application</b>
-        </h1>
+        <h1 class="modal-title fs-5" id="staticBackdropLabel" [innerHTML]="getModalTitle()"></h1>
       </div>
 
       <div class="modal-body">
         <!-- <app-cu-application #cuApplication></app-cu-application> -->
-        <app-cu-application (applicationCreated)="onApplicationCreated()" #cuApplication></app-cu-application>
+        <app-cu-application
+          (applicationCreated)="onApplicationCreated()"
+          [idApplication]="applicationsService.getIdApplication()"
+          #cuApplication
+        ></app-cu-application>
       </div>
     </div>
   </div>
@@ -236,7 +245,7 @@
         </h1>
       </div>
       <div class="modal-body text-center">
-        Are you sure you want to delete this application? <br><br>
+        Are you sure you want to delete this application? <br /><br />
         <h3>{{ selectedApplication?.strname.toUpperCase() }}</h3>
       </div>
       <div class="modal-footer w-100 bg bg-light d-flex justify-content-center">
