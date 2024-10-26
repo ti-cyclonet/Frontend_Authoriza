@@ -1,4 +1,11 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+} from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -15,7 +22,8 @@ import { ApplicationsService } from '../../../shared/services/applications/appli
   templateUrl: './cu-application.component.html',
   styleUrls: ['./cu-application.component.css'],
 })
-export class CuApplicationComponent implements OnInit {
+export class CuApplicationComponent implements OnInit, OnChanges {
+  @Input() idApplication: number = 0; // Recibe el idApplication desde el componente padre
   applicationForm: FormGroup;
   nameAvailabilityMessage: string | null = null;
   isNameValid: boolean = false;
@@ -28,12 +36,14 @@ export class CuApplicationComponent implements OnInit {
   selectedFile: File | null = null; // Para almacenar el archivo seleccionado
   fileName: string | null = null; // Para almacenar el nombre del archivo
   fileTmp: any;
-
-
+  isEditMode: boolean = false;  
+  originalApplicationName: string = '';
+  isFileChosen: boolean = false; // Controla si hay un archivo seleccionado
+  imageTmp: string = '';
 
   constructor(
     private fb: FormBuilder,
-    private applicationsService: ApplicationsService
+    public applicationsService: ApplicationsService
   ) {
     this.applicationForm = this.fb.group({
       applicationName: ['', Validators.required],
@@ -44,11 +54,63 @@ export class CuApplicationComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (this.applicationsService.getIdApplication()) {
+      this.isEditMode = true;
+      this.loadApplicationData();
+    }
+
     this.applicationForm = this.fb.group({
       applicationName: ['', Validators.required],
       description: ['', Validators.required],
-      logo: [null, Validators.required],
+      logo: [null, this.isEditMode ? null : Validators.required],
     });
+  }
+
+  ngOnChanges() {
+    if (this.idApplication) {
+      this.applicationsService.editMode = true;
+      this.loadApplicationData();
+    }
+  }
+
+  loadApplicationData() {
+    if (this.applicationsService.getIdApplication() == 0) return;
+
+    this.applicationsService
+      .getApplicationById(this.applicationsService.getIdApplication())
+      .subscribe({
+        next: (applications: any) => {
+          const application = applications[0];
+          this.originalApplicationName = application.strname;
+          this.applicationForm.patchValue({
+            applicationName: application.strname,
+            description: application.strdescription,
+            logo: null,
+          });
+
+          if (!this.applicationForm.valid) {
+            console.log('Formulario NO válido en modo edición.');
+          }
+
+          this.imageTmp = application.strlogo;
+          this.isFileChosen = !!this.imageTmp;
+
+          if (this.isEditMode && this.imageTmp) {
+            this.applicationForm.get('logo')?.clearValidators();
+            this.applicationForm.get('logo')?.updateValueAndValidity();
+          }
+
+          this.applicationForm.markAsTouched();
+          this.applicationForm.markAsDirty();
+
+          if (this.applicationForm.valid) {
+            console.log('Formulario válido en modo edición.');
+          }
+        },
+        error: (error) => {
+          console.error('Error loading application data:', error);
+        },
+      });
   }
 
   onFileSelected(event: any): void {
@@ -58,13 +120,13 @@ export class CuApplicationComponent implements OnInit {
       const file = input.files[0];
       this.fileTmp = {
         fileRaw: file,
-        fileName: file.name
-      }
-      console.log('ARCHIVO: ', this.fileTmp);
+        fileName: file.name,
+      };
 
       this.selectedFile = file;
       this.fileName = this.selectedFile.name ?? null;
       this.imagePreview = URL.createObjectURL(this.selectedFile);
+      this.isFileChosen = true;
       // Actualiza el valor del control de formulario
       this.applicationForm.patchValue({
         logo: this.selectedFile,
@@ -76,29 +138,46 @@ export class CuApplicationComponent implements OnInit {
         logo: null,
       });
     }
-    console.log('SELECTED FILE: ', this.selectedFile);
   }
 
   clearFile(fileInput: HTMLInputElement) {
     this.selectedFile = null;
     this.imagePreview = null;
-    fileInput.value = ''; // Resetea el input
+    fileInput.value = ''; 
     this.applicationForm.get('logo')?.setValue(null);
+    this.isFileChosen = false;
+  }
+
+  clearFileLocal() {
+    this.selectedFile = null;
+    this.imagePreview = null;
+    this.imageTmp = '';
+    this.applicationForm.get('logo')?.setValue(null);
+    this.isFileChosen = false;
   }
 
   onNext() {
     const applicationName = this.applicationForm.get('applicationName')?.value;
 
-    // Llama al servicio para verificar el nombre de la aplicación
+    // Si estamos en modo edición y el nombre no ha cambiado, proceder sin verificar
+    if (
+      this.applicationsService.getEditMode() &&
+      applicationName === this.originalApplicationName
+    ) {
+      this.isYellowVisible = false;
+      this.isBlueVisible = true;
+      this.nameAvailabilityMessage = null;
+      return; // Salir de la función sin verificar disponibilidad
+    }
+
+    // Verificar disponibilidad del nombre de la aplicación
     this.applicationsService.checkApplicationName(applicationName).subscribe({
       next: (isAvailable) => {
         if (isAvailable) {
-          // Si el nombre está disponible, avanzar al siguiente paso
           this.isYellowVisible = false;
           this.isBlueVisible = true;
-          this.nameAvailabilityMessage = null; // Limpiar mensajes anteriores
+          this.nameAvailabilityMessage = null;
         } else {
-          // Si el nombre ya está registrado, mostrar mensaje
           this.nameAvailabilityMessage = 'Application name is already taken.';
         }
       },
@@ -112,38 +191,53 @@ export class CuApplicationComponent implements OnInit {
   onSubmit(): void {
     if (this.applicationForm.valid) {
       const applicationData = new FormData();
-      applicationData.append('logo', this.fileTmp.fileRaw, this.fileTmp.fileName);
+      applicationData.append(
+        'logo',
+        this.fileTmp.fileRaw,
+        this.fileTmp.fileName
+      );
 
       const appName = this.applicationForm.get('applicationName')?.value;
       const appDescription = this.applicationForm.get('description')?.value;
-      if (appName) {
-        applicationData.append('strName', appName);
-      } else {
-        console.warn('Application name is empty or invalid.');
-      }
-      if (appDescription) {
-        applicationData.append('strDescription', appDescription);
-      } else {
-        console.warn('Application description is empty or invalid.');
-      }
 
+      if (this.isEditMode && this.idApplication) {
+        // Actualizar la aplicación existente
+        this.applicationsService
+          .updateApplication(this.idApplication, applicationData)
+          .subscribe({
+            next: (response) => {
+              console.log('Application updated:', response);
+              this.onCancel();
+            },
+            error: (error) => {
+              console.error('Error updating application:', error);
+            },
+          });
+      } else {
+        // Crear nueva aplicación
+        if (appName) {
+          applicationData.append('strName', appName);
+        }
+        if (appDescription) {
+          applicationData.append('strDescription', appDescription);
+        }
 
-      // Llamada al servicio
-      this.applicationsService.createApplication(applicationData).subscribe({
-        next: (response) => {
-          console.log('Application created:', response);
-          this.onCancel();
-          // Aquí debes emitir el evento de aplicación creada, si es necesario
-        },
-        error: (error) => {
-          console.error('Error creating application:', error);
-          if (error.status === 409) {
-            this.nameAvailabilityMessage = 'Application name already exists.';
-          } else {
-            this.nameAvailabilityMessage = 'Error creating application.';
-          }
-        },
-      });
+        this.applicationsService.createApplication(applicationData).subscribe({
+          next: (response) => {
+            console.log('Application created:', response);
+            this.applicationCreated.emit(); // Emitir el evento
+            this.onCancel();
+          },
+          error: (error) => {
+            console.error('Error creating application:', error);
+            if (error.status === 409) {
+              this.nameAvailabilityMessage = 'Application name already exists.';
+            } else {
+              this.nameAvailabilityMessage = 'Error creating application.';
+            }
+          },
+        });
+      }
     }
   }
 
@@ -160,6 +254,7 @@ export class CuApplicationComponent implements OnInit {
     this.isBlueVisible = false;
     this.showSendButton = false;
     this.showNextButton = true;
+    this.imagePreview = null;
     this.clearFile(this.fileTmp);
   }
 
@@ -172,5 +267,10 @@ export class CuApplicationComponent implements OnInit {
       this.applicationForm.get('applicationName')?.valid &&
       this.applicationForm.get('description')?.valid
     );
+  }
+
+  // Método para obtener el ID de la aplicación, si es necesario
+  getApplicationId(): number | null {
+    return this.idApplication;
   }
 }
