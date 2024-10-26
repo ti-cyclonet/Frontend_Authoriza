@@ -160,6 +160,7 @@ export class CuApplicationComponent implements OnInit {
     this.isBlueVisible = false;
     this.showSendButton = false;
     this.showNextButton = true;
+    this.clearFile(this.fileTmp);
   }
 
   isPreviousDisabled(): boolean {
