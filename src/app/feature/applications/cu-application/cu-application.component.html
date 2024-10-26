@@ -3,7 +3,7 @@
     <!-- Caja amarilla -->
     <div *ngIf="isYellowVisible" class="yellow-box">
       <div class="form-group">
-        <label for="applicationName">Application Name</label>
+        <label for="applicationName">Application Name </label>
         <input
           id="applicationName"
           formControlName="applicationName"
@@ -48,7 +48,7 @@
           type="button"
           mat-stroked-button
           class="btn btn-outline-dark text-light btn-sm me-4 btn-fixed-width"
-          [disabled]="selectedFile"
+          [disabled]="selectedFile || !!imageTmp"
         >
           <label for="upload">
             <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
@@ -63,12 +63,12 @@
               class="file-sing"
               #fileToSing
               #fileInput
-              type="file" 
+              type="file"
               hidden
               id="upload"
               accept=".jpg,.jpeg,.png"
               (change)="onFileSelected($event)"
-              name="logo"
+              formControlName="logo"
             />
           </label>
         </button>
@@ -88,25 +88,52 @@
         <div class="col-12 text-center">
           <div class="wrapper-file d-inline-block">
             <div class="file">
+              <!-- Mostrar imagen desde la URL en modo edición o desde el archivo seleccionado -->
               <img
-                *ngIf="selectedFile"
+                *ngIf="imagePreview"
                 [src]="imagePreview"
                 width="300"
                 height="auto"
                 alt="Image preview"
               />
             </div>
+            <img
+              *ngIf="imageTmp"
+              [src]="imageTmp"
+              alt="Image preview"
+              width="300"
+              height="auto"
+            />
           </div>
 
           <div class="wrapper-action text-center">
+            <!-- Nombre del archivo seleccionado (si existe) -->
             <span>{{ selectedFile?.name }}</span>
 
+            <!-- Botón para eliminar archivo local -->
             <button
               *ngIf="selectedFile"
               class="btn-no-style"
               matTooltip="Remove file"
               matTooltipPosition="above"
               (click)="clearFile(fileInput)"
+            >
+              <svg fill="red" viewBox="0 0 16 16" class="status-icon">
+                <use
+                  [attr.xlink:href]="
+                    './assets/icons/bootstrap-icons.svg#x-circle'
+                  "
+                ></use>
+              </svg>
+            </button>
+
+            <!-- Botón para cambiar archivo en la nube -->
+            <button
+              *ngIf="!!imageTmp"
+              class="btn-no-style"
+              matTooltip="Remove file"
+              matTooltipPosition="above"
+              (click)="clearFileLocal()"
             >
               <svg fill="red" viewBox="0 0 16 16" class="status-icon">
                 <use
@@ -171,16 +198,31 @@
       </button>
 
       <button
+        *ngIf="!isEditMode && isBlueVisible"
         id="sendBtn"
         type="submit"
         class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width"
         data-bs-toggle="tooltip"
         title="Send"
-        *ngIf="isBlueVisible"
         [disabled]="!applicationForm.valid"
         data-bs-dismiss="modal"
       >
         <span class="d-none d-md-inline">Send</span>
+        <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+          <use
+            [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#send'"
+          ></use>
+        </svg>
+      </button>
+
+      <button
+        *ngIf="isEditMode"
+        id="updateBtn"
+        type="submit"
+        class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width"
+        [disabled]="!applicationForm.valid"
+      >
+        <span class="d-none d-md-inline">Update</span>
         <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
           <use
             [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#send'"

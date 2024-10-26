@@ -1,5 +1,6 @@
 export interface Application {
-    strName: string;
-    strDescription: string;
-    strLogo: File | null;
-  }
+  id: number;
+  name: string;
+  description: string;
+  logoUrl: string;
+}
