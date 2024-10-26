@@ -25,9 +25,10 @@ export class ApplicationsComponent implements OnInit {
   }> = [];
   imagePreview: string | ArrayBuffer | null = null;
   fileName: string = '';
+  public selectedApplicationId: number | null = null;
 
   constructor(
-    private applicationsService: ApplicationsService,
+    public applicationsService: ApplicationsService,
     private cdr: ChangeDetectorRef
   ) {
     this.notifications = [];
@@ -55,7 +56,6 @@ export class ApplicationsComponent implements OnInit {
     if (file) {
       this.fileName = file.name;
       
-      // Solo procesar si el archivo es una imagen
       if (file.type.startsWith('image/')) {
         const reader = new FileReader();
         reader.onload = () => {
@@ -69,12 +69,34 @@ export class ApplicationsComponent implements OnInit {
   clearFile() {
     this.imagePreview = null;
     this.fileName = '';
-    // También puedes restablecer el input file si es necesario
   }
 
   // Método para abrir el modal
-  openModal() {
-    this.isModalOpen = true;
+  openModal(edit: boolean, id?: number) {
+    // Establece el modo de edición según el parámetro
+    this.applicationsService.setEditMode(edit);
+    if (id){
+      this.applicationsService.setIdApplication(id);
+    }else{
+      this.applicationsService.setIdApplication(0);
+    }
+
+    if (edit && id) {
+      // Si está en modo edición, guarda el ID de la aplicación
+      this.selectedApplicationId = id;
+    } else {
+      // Si es modo creación, resetea el ID
+      this.selectedApplicationId = null;
+    }
+  }
+
+  // Método que retorna el título del modal
+  getModalTitle(): string {
+    if (this.applicationsService.getEditMode() && this.selectedApplicationId) {
+      return `Application <b>ID</b> <span class="badge rounded-pill text-bg-light">${this.selectedApplicationId}</span>`;
+    } else {
+      return `New <b>Application</b>`;
+    }
   }
 
   // Método para cerrar el modal
