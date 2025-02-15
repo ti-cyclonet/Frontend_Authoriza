@@ -37,11 +37,9 @@
         </div>
       </div>
     </div>
-
-    <!-- Caja azul -->
+    
     <div *ngIf="isBlueVisible" class="blue-box">
-      <div class="form-group">
-        <!-- Centrando el botón "Choose file" -->
+      <div class="form-group">        
         <label for="logo">Logo URL</label>
 
         <button
@@ -106,8 +104,7 @@
             />
           </div>
 
-          <div class="wrapper-action text-center">
-            <!-- Nombre del archivo seleccionado (si existe) -->
+          <div class="wrapper-action text-center">            
             <span>{{ selectedFile?.name }}</span>
 
             <!-- Botón para eliminar archivo local -->
@@ -144,6 +141,37 @@
               </svg>
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tags -->
+    <div *ngIf="!isTagsVisible" class="tags-box">
+      <div class="form-group">
+        <label for="tags">Tags</label>
+        <div formArrayName="strTags">
+          <div *ngFor="let tag of strTags.controls; let i = index" [formGroupName]="i" class="tag-item">
+            <input
+              type="text"
+              formControlName="tag"
+              placeholder="Enter a tag"
+              class="form-control"
+            />
+            <button type="button" class="btn btn-danger" (click)="removeTag(i)">Remove</button>
+          </div>
+        </div>
+        <button
+          type="button"
+          class="btn btn-outline-dark"
+          (click)="addTag()"
+        >
+          Add Tag
+        </button>
+        <div
+          *ngIf="applicationForm.get('strTags')?.invalid && applicationForm.get('strTags')?.touched"
+          class="error"
+        >
+          At least one tag is required.
         </div>
       </div>
     </div>

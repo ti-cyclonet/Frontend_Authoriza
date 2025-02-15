@@ -1,5 +1,5 @@
 import { Component, HostListener, OnInit } from '@angular/core';
-import { OptionMenu } from '../../model/option_menu';
+
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
@@ -8,6 +8,18 @@ import { FooterComponent } from '../footer/footer.component';
 import { RolesService } from '../../services/roles/roles.service';
 import { UserService } from '../../services/user/user.service';
 import { ApplicationsService } from '../../services/applications/applications.service';
+import { MenuOption } from '../../model/menu_option';
+interface OptionMenu {
+  id: string;
+  name: string;
+  description: string;
+  url: string;
+  icon: string;
+  type: string;
+  idMPather: string | null;
+  order: string;
+  idApplication: string;
+}
 
 @Component({
   selector: 'app-layout',
@@ -23,11 +35,14 @@ import { ApplicationsService } from '../../services/applications/applications.se
   styleUrls: ['./layout.component.css'],
 })
 export default class LayoutComponent implements OnInit {
+
+  
+  // optionsMenu: MenuOption[] = [];
   optionsMenu: OptionMenu[] = [];
 
   isSidebarVisible = true;
   isLargeScreen = false;
-
+  
   constructor(
     private rolesService: RolesService,
     private userService: UserService,
@@ -39,8 +54,8 @@ export default class LayoutComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.rolesService.loadRoles(); // Cargamos los roles
-    this.userService.loadUsers(); // Cargamos los usuarios
+    // this.rolesService.loadRoles(); // Cargamos los roles
+    // this.userService.loadUsers(); // Cargamos los usuarios
     this.applicationsService.loadApplications(); // Cargamos las aplicaciones
 
     // Configurar el menú

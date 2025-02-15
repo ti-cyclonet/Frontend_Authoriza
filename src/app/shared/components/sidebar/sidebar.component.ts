@@ -1,7 +1,19 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule, NgStyle } from '@angular/common';
-import { OptionMenu } from '../../model/option_menu';
+import { MenuOption } from '../../model/menu_option';
+
+interface OptionMenu {
+  id: string;
+  name: string;
+  description: string;
+  url: string;
+  icon: string;
+  type: string;
+  idMPather: string | null;
+  order: string;
+  idApplication: string;
+}
 
 @Component({
   selector: 'app-sidebar',
