@@ -1,4 +1,46 @@
-/* Contenido original del archivo app.component.scss cargado */
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.selected {
+  background-color:rgb(200, 204, 219) !important; /* O el color que prefieras */
+}
+
+.roles-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* Título */
+.roles-title {
+  margin: 0;
+  font-size: 0.8rem;
+  /* font-weight: bold; */
+}
+
+/* Contenedor de botones */
+.roles-buttons {
+  display: flex;
+  gap: 12px; /* Espacio entre botones */
+}
+
+/* Estilo de los botones */
+.btn-role {
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Efecto hover */
+.btn-role:hover {
+  background-color: #333;
+}
 
 .clearfix {
   display: block;
@@ -158,6 +200,17 @@
   gap: 10px; 
 }
 
+.table tbody tr td {
+  font-size: 0.875rem;
+}
+
+.btn:disabled {
+  background-color: #d6d6d6 !important; 
+  color: #808080 !important;
+  border-color: #c0c0c0 !important;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
 
 .btn-spacing {
   margin-right: 8px; 
@@ -178,50 +231,63 @@
   border-color: var(--sidebar-background-color); 
 }
 
+.badge-default {
+  background-color: var(--header-icon-color);
+}
+
+.badge-selected {
+  background-color: #000000; 
+  color: white;
+}
+
 .rounded-badge {
   display: inline-block;
-  width: 30px; /* Ajusta el tamaño según tu necesidad */
-  height: 30px;
-  line-height: 30px; /* Alinea el texto verticalmente */
+  width: 25px;
+  height: 25px;
+  line-height: 25px;
   border-radius: 50%;
-  text-align: center; /* Alinea el texto horizontalmente */
-  padding: 0; /* Asegúrate de que no haya padding adicional */
+  text-align: center;
+  padding: 0;
+  font-size: 0.65rem;
+}
+
+.border-danger {
+  border: 2px solid #b33a3a; /* Rojo oscuro */
 }
 
 .modal-header-custom {
-  background-color: var(--sidebar-background-color); /* Usa el color del sidebar */
+  background-color: var(--sidebar-background-color);
   color: #cccccc;
 }
 
 .modal-title {
   text-align: right;
-  width: 100%; /* Asegura que el título ocupe todo el ancho para alinearlo a la derecha */
+  width: 100%;
 }
 
 /* Estilo para el enlace en el contenedor del título */
 .title-link {
   display: flex;
-  align-items: center; /* Alinea el ícono y el texto verticalmente */
-  color: #6e6e6e; /* Color del texto del enlace (debe coincidir con el color del texto normal) */
-  text-decoration: none; /* Elimina el subrayado del enlace */
+  align-items: center;
+  color: #6e6e6e;
 }
 
 /* Efecto hover para el enlace (opcional) */
 .title-link:hover {
   /* text-decoration: underline; Subraya el texto cuando se pasa el ratón sobre él */
-  color: #4a4a4a; /* Cambia el color del texto del enlace cuando se pasa el ratón sobre él (opcional) */
+  color: #4a4a4a;
 }
 
 /* Estilo para la tarjeta de contenido */
 .card {
-  border: 1px solid #cccccc; /* Quitar el borde predeterminado de la tarjeta */
-  border-radius: 0.5rem; /* Bordes redondeados */
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1); /* Sombra de la tarjeta */
-  background-color: #fff; /* Fondo blanco para la tarjeta */
+  border: 1px solid #cccccc;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  background-color: #fff;
 }
 
 .card-body {
-  padding: 1.5rem; /* Espacio dentro de la tarjeta */
+  padding: 1.5rem;
   margin-top: 0.1rem;
   /* color: var(--primary-text-color); Color del texto en la tarjeta */
 }

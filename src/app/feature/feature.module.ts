@@ -9,7 +9,6 @@ import { RolesComponent } from './roles/roles.component';
 import { ApplicationsComponent } from './applications/applications.component';
 import { CuApplicationComponent } from './applications/cu-application/cu-application.component';
 import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
-
 @NgModule({
   declarations: [],
   imports: [
@@ -22,7 +21,7 @@ import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
     UsersComponent,
     ApplicationsComponent,
     CuApplicationComponent,
-    NgbCarouselModule 
+    NgbCarouselModule
   ]
 })
 export class FeatureModule { }
