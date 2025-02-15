@@ -9,6 +9,7 @@ import {
 import {
   FormBuilder,
   FormGroup,
+  FormArray,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -23,7 +24,7 @@ import { ApplicationsService } from '../../../shared/services/applications/appli
   styleUrls: ['./cu-application.component.css'],
 })
 export class CuApplicationComponent implements OnInit, OnChanges {
-  @Input() idApplication: number = 0; // Recibe el idApplication desde el componente padre
+  @Input() idApplication: string = ''; 
   applicationForm: FormGroup;
   nameAvailabilityMessage: string | null = null;
   isNameValid: boolean = false;
@@ -33,13 +34,14 @@ export class CuApplicationComponent implements OnInit, OnChanges {
   showNextButton: boolean = true;
   @Output() applicationCreated = new EventEmitter<void>();
   imagePreview: string | ArrayBuffer | null = null;
-  selectedFile: File | null = null; // Para almacenar el archivo seleccionado
-  fileName: string | null = null; // Para almacenar el nombre del archivo
+  selectedFile: File | null = null; 
+  fileName: string | null = null; 
   fileTmp: any;
   isEditMode: boolean = false;  
   originalApplicationName: string = '';
-  isFileChosen: boolean = false; // Controla si hay un archivo seleccionado
+  isFileChosen: boolean = false; 
   imageTmp: string = '';
+  isTagsVisible = false;
 
   constructor(
     private fb: FormBuilder,
@@ -49,6 +51,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
       applicationName: ['', Validators.required],
       description: ['', Validators.required],
       logo: [null, Validators.required],
+      strTags: this.fb.array([this.createTag()]),
     });
     this.fileName = '';
   }
@@ -58,12 +61,6 @@ export class CuApplicationComponent implements OnInit, OnChanges {
       this.isEditMode = true;
       this.loadApplicationData();
     }
-
-    this.applicationForm = this.fb.group({
-      applicationName: ['', Validators.required],
-      description: ['', Validators.required],
-      logo: [null, this.isEditMode ? null : Validators.required],
-    });
   }
 
   ngOnChanges() {
@@ -73,8 +70,31 @@ export class CuApplicationComponent implements OnInit, OnChanges {
     }
   }
 
+  // Get tags form array
+  get strTags() {
+    return this.applicationForm.get('strTags') as FormArray;
+  }
+
+  // Create a new tag
+  createTag(): FormGroup {
+    return this.fb.group({
+      tag: ['', Validators.required],
+    });
+  }
+
+  // Add a new tag
+  addTag(): void {
+    this.strTags.push(this.createTag());
+  }
+
+  // Remove a tag
+  removeTag(index: number): void {
+    this.strTags.removeAt(index);
+  }
+
+  // Load application data when editing
   loadApplicationData() {
-    if (this.applicationsService.getIdApplication() == 0) return;
+    if (this.applicationsService.getIdApplication() == '') return;
 
     this.applicationsService
       .getApplicationById(this.applicationsService.getIdApplication())
@@ -113,6 +133,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
       });
   }
 
+  // Handle file selection
   onFileSelected(event: any): void {
     const input = event.target as HTMLInputElement;
 
@@ -127,7 +148,8 @@ export class CuApplicationComponent implements OnInit, OnChanges {
       this.fileName = this.selectedFile.name ?? null;
       this.imagePreview = URL.createObjectURL(this.selectedFile);
       this.isFileChosen = true;
-      // Actualiza el valor del control de formulario
+
+      // Update form control value
       this.applicationForm.patchValue({
         logo: this.selectedFile,
       });
@@ -140,14 +162,16 @@ export class CuApplicationComponent implements OnInit, OnChanges {
     }
   }
 
+  // Clear file input
   clearFile(fileInput: HTMLInputElement) {
     this.selectedFile = null;
     this.imagePreview = null;
-    fileInput.value = ''; 
+    fileInput.value = '';
     this.applicationForm.get('logo')?.setValue(null);
     this.isFileChosen = false;
   }
 
+  // Clear file locally
   clearFileLocal() {
     this.selectedFile = null;
     this.imagePreview = null;
@@ -156,10 +180,11 @@ export class CuApplicationComponent implements OnInit, OnChanges {
     this.isFileChosen = false;
   }
 
+  // Handle Next button click
   onNext() {
     const applicationName = this.applicationForm.get('applicationName')?.value;
 
-    // Si estamos en modo edición y el nombre no ha cambiado, proceder sin verificar
+    // If in edit mode and name hasn't changed, proceed without checking availability
     if (
       this.applicationsService.getEditMode() &&
       applicationName === this.originalApplicationName
@@ -167,10 +192,10 @@ export class CuApplicationComponent implements OnInit, OnChanges {
       this.isYellowVisible = false;
       this.isBlueVisible = true;
       this.nameAvailabilityMessage = null;
-      return; // Salir de la función sin verificar disponibilidad
+      return;
     }
 
-    // Verificar disponibilidad del nombre de la aplicación
+    // Check availability of the application name
     this.applicationsService.checkApplicationName(applicationName).subscribe({
       next: (isAvailable) => {
         if (isAvailable) {
@@ -188,6 +213,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
     });
   }
 
+  // Handle form submission
   onSubmit(): void {
     if (this.applicationForm.valid) {
       const applicationData = new FormData();
@@ -201,7 +227,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
       const appDescription = this.applicationForm.get('description')?.value;
 
       if (this.isEditMode && this.idApplication) {
-        // Actualizar la aplicación existente
+        // Update existing application
         this.applicationsService
           .updateApplication(this.idApplication, applicationData)
           .subscribe({
@@ -214,7 +240,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
             },
           });
       } else {
-        // Crear nueva aplicación
+        // Create new application
         if (appName) {
           applicationData.append('strName', appName);
         }
@@ -225,7 +251,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
         this.applicationsService.createApplication(applicationData).subscribe({
           next: (response) => {
             console.log('Application created:', response);
-            this.applicationCreated.emit(); // Emitir el evento
+            this.applicationCreated.emit(); // Emit event
             this.onCancel();
           },
           error: (error) => {
@@ -241,22 +267,24 @@ export class CuApplicationComponent implements OnInit, OnChanges {
     }
   }
 
-  onPrevious() {
-    if (this.isBlueVisible) {
-      this.isBlueVisible = false;
-      this.isYellowVisible = true;
-    }
-  }
-
-  onCancel(): void {
-    this.applicationForm.reset();
-    this.isYellowVisible = true;
+ // Handle Previous button click
+ onPrevious() {
+  if (this.isBlueVisible) {
     this.isBlueVisible = false;
-    this.showSendButton = false;
-    this.showNextButton = true;
-    this.imagePreview = null;
-    this.clearFile(this.fileTmp);
+    this.isYellowVisible = true;
   }
+}
+
+ // Cancel the form
+ onCancel(): void {
+  this.applicationForm.reset();
+  this.isYellowVisible = true;
+  this.isBlueVisible = false;
+  this.showSendButton = false;
+  this.showNextButton = true;
+  this.imagePreview = null;
+  this.selectedFile = null;
+}
 
   isPreviousDisabled(): boolean {
     return this.isYellowVisible;
@@ -270,7 +298,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
   }
 
   // Método para obtener el ID de la aplicación, si es necesario
-  getApplicationId(): number | null {
+  getApplicationId(): string | null {
     return this.idApplication;
   }
 }

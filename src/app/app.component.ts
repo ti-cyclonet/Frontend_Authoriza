@@ -7,7 +7,6 @@ import { SidebarComponent } from "./shared/components/sidebar/sidebar.component"
 import LayoutComponent from "./shared/components/layout/layout.component";
 import { LoginComponent } from './shared/components/login/login.component';
 import { isPlatformBrowser } from '@angular/common';
-import { OptionMenu } from './shared/model/option_menu';
 
 @Component({
   selector: 'app-root',

@@ -43,6 +43,13 @@
   cursor: pointer;
 }
 
+.tags-box .tag-item {
+  margin-bottom: 10px;
+}
+.tags-box .btn-danger {
+  margin-left: 10px;
+}
+
 .btn-fixed-width {
   min-width: 100px;
 }
