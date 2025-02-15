@@ -3,29 +3,41 @@ import { ApplicationsService } from '../../shared/services/applications/applicat
 import { CuApplicationComponent } from './cu-application/cu-application.component';
 import { NotificationsComponent } from '../../shared/components/notifications/notifications.component';
 import { CommonModule } from '@angular/common';
+import { Application } from '../../shared/model/application.model';
+import { MenuOption } from '../../shared/model/menu_option';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-applications',
   standalone: true,
-  imports: [CuApplicationComponent, NotificationsComponent, CommonModule],
+  imports: [CuApplicationComponent, NotificationsComponent, CommonModule, FormsModule],
   templateUrl: './applications.component.html',
-  styleUrls: ['./applications.component.css'], // Corrige styleUrl a styleUrls
+  styleUrls: ['./applications.component.css'],
 })
 export class ApplicationsComponent implements OnInit {
-  selectedApplication: any;
   @ViewChild(CuApplicationComponent) appCuApplication!: CuApplicationComponent;
-  applications: any[] = [];
-  isModalOpen = false; // Controla si el modal está abierto
+  applications: Application[] = [];
+  isModalOpen = false;
   toastTitle: string = '';
   toastType: 'success' | 'warning' | 'danger' = 'success';
   isVisible: boolean = true;
+  selectedApplication: Application | null = null;
   notifications: Array<{
     title: string;
     type: 'success' | 'warning' | 'danger';
   }> = [];
   imagePreview: string | ArrayBuffer | null = null;
   fileName: string = '';
-  public selectedApplicationId: number | null = null;
+  isRolesTableVisible = false;
+  isMenuTableVisible = false;
+  selectedMenuOptions: MenuOption[] = [];
+  selectedRol: any = null;
+  selectedSubmenus: any[] = []; 
+  selectedMenuOption: any | null = null; 
+  isSubmenuTableVisible: boolean = false;
+  public selectedApplicationId: string | null = null;
+  deleteConfirmationText: string = '';
+  isDeleteConfirmed: boolean = false;
 
   constructor(
     public applicationsService: ApplicationsService,
@@ -51,6 +63,44 @@ export class ApplicationsComponent implements OnInit {
     });
   }
 
+  showRoles(application: Application) {
+    this.selectedApplication = application;
+    this.isRolesTableVisible = true;
+    // console.log('APLICACION SELECCIONADA: ', this.selectedApplication);
+  }
+  toggleRolesTable() {
+    this.isRolesTableVisible = !this.isRolesTableVisible;
+    if (!this.isRolesTableVisible) {
+      this.selectedApplication = null;
+    }
+  }
+  onSelectRol(rol: any) {
+    this.selectedRol = rol;
+    this.selectedMenuOptions = rol.menuOptions || [];
+    this.isMenuTableVisible = true;
+  }
+  clearSelectedRole() {
+    this.selectedRol = null; 
+    this.selectedMenuOptions = [];
+    this.isMenuTableVisible = false;
+  }
+  onSelectMenu(menu: any): void {
+    if (menu.strSubmenus && menu.strSubmenus.length > 0) {
+      this.selectedSubmenus = menu.strSubmenus; // Guarda los submenús
+      this.selectedMenuOption = menu; // Guarda la opción de menú seleccionada
+      this.isSubmenuTableVisible = true; // Muestra la tabla de submenús
+    }
+  }
+  
+  clearSelectedMenu(): void {
+    this.selectedSubmenus = [];
+    this.selectedMenuOption = null;
+    this.isSubmenuTableVisible = false; // Oculta la tabla de submenús
+  }
+  trackByApplication(index: number, item: any): number {
+    return item.id;
+  }
+
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     if (file) {
@@ -59,9 +109,9 @@ export class ApplicationsComponent implements OnInit {
       if (file.type.startsWith('image/')) {
         const reader = new FileReader();
         reader.onload = () => {
-          this.imagePreview = reader.result; // Establece la vista previa
+          this.imagePreview = reader.result;
         };
-        reader.readAsDataURL(file); // Lee el archivo como URL de datos
+        reader.readAsDataURL(file);
       }
     }
   }
@@ -72,13 +122,13 @@ export class ApplicationsComponent implements OnInit {
   }
 
   // Método para abrir el modal
-  openModal(edit: boolean, id?: number) {
+  openModal(edit: boolean, id?: string) {
     // Establece el modo de edición según el parámetro
     this.applicationsService.setEditMode(edit);
     if (id){
       this.applicationsService.setIdApplication(id);
     }else{
-      this.applicationsService.setIdApplication(0);
+      this.applicationsService.setIdApplication('');
     }
 
     if (edit && id) {
@@ -111,17 +161,27 @@ export class ApplicationsComponent implements OnInit {
   }
 
   // Método para abrir el modal y establecer la aplicación seleccionada
-  setSelectedApplication(application: any) {
+  setSelectedApplication(application: Application) {
     this.selectedApplication = application;
   }
 
   // Método para confirmar la eliminación de la aplicación
-  confirmDelete() {
-    this.deleteApplication(this.selectedApplication.id);
+  confirmDelete(): void {
+    if (this.isDeleteConfirmed) {
+      console.log("Application deleted!"); // Aquí puedes llamar al servicio de eliminación
+      // Lógica para eliminar la aplicación
+    }
+    // Reiniciar el input después de cerrar el modal
+    this.deleteConfirmationText = '';
+    this.isDeleteConfirmed = false;
+  }
+
+  validateDeleteInput(): void {
+    this.isDeleteConfirmed = this.deleteConfirmationText.trim().toLowerCase() === 'delete';
   }
 
   // Método para eliminar una aplicación
-  deleteApplication(id: number) {
+  deleteApplication(id: string) {
     this.applicationsService.deleteApplication(id).subscribe({
       next: () => {
         this.showToast('Application deleted successfully', 'success');
