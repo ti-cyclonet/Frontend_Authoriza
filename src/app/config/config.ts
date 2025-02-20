@@ -1,3 +1,5 @@
+export const BASE_URL = "http://localhost:3000";
+
 export const NAME_APP_LONG = "AUTHORIZA - Access control for CycloNet applications.";
 export const NAME_APP_SHORT = "AUTHORIZA";
 export const DESCRIPTION_APP = "Access control for CycloNet applications.";

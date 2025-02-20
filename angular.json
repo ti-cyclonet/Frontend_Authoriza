@@ -74,7 +74,8 @@
             "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
-            "production": {
+            "production": {              
+              "proxyConfig": "proxy.config.prod.json",
               "buildTarget": "Frontend_Authorization_v2:build:production"
             },
             "development": {
