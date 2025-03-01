@@ -37,9 +37,9 @@
         </div>
       </div>
     </div>
-    
+
     <div *ngIf="isBlueVisible" class="blue-box">
-      <div class="form-group">        
+      <div class="form-group">
         <label for="logo">Logo URL</label>
 
         <button
@@ -104,7 +104,7 @@
             />
           </div>
 
-          <div class="wrapper-action text-center">            
+          <div class="wrapper-action text-center">
             <span>{{ selectedFile?.name }}</span>
 
             <!-- Botón para eliminar archivo local -->
@@ -145,30 +145,49 @@
       </div>
     </div>
 
-    <!-- Tags -->
-    <div *ngIf="!isTagsVisible" class="tags-box">
+    <div *ngIf="isGreenVisible" class="tags-box">
       <div class="form-group">
         <label for="tags">Tags</label>
-        <div formArrayName="strTags">
-          <div *ngFor="let tag of strTags.controls; let i = index" [formGroupName]="i" class="tag-item">
-            <input
-              type="text"
-              formControlName="tag"
-              placeholder="Enter a tag"
-              class="form-control"
-            />
-            <button type="button" class="btn btn-danger" (click)="removeTag(i)">Remove</button>
-          </div>
-        </div>
-        <button
-          type="button"
-          class="btn btn-outline-dark"
-          (click)="addTag()"
-        >
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Tag</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody formArrayName="strTags">
+            <tr
+              *ngFor="let tag of strTags.controls; let i = index"
+              [formGroupName]="i"
+            >
+              <td>
+                <input
+                  type="text"
+                  formControlName="tag"
+                  placeholder="Enter a tag"
+                  class="form-control"
+                />
+              </td>
+              <td>
+                <button
+                  type="button"
+                  class="btn btn-danger"
+                  (click)="removeTag(i)"
+                >
+                  Remove
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <button type="button" class="btn btn-outline-dark" (click)="addTag()">
           Add Tag
         </button>
         <div
-          *ngIf="applicationForm.get('strTags')?.invalid && applicationForm.get('strTags')?.touched"
+          *ngIf="
+            applicationForm.get('strTags')?.invalid &&
+            applicationForm.get('strTags')?.touched
+          "
           class="error"
         >
           At least one tag is required.
@@ -207,6 +226,7 @@
         Cancel
       </button>
 
+      <!-- Botón Next (Visible en pasos 1 y 2) -->
       <button
         id="nextBtn"
         type="button"
@@ -214,7 +234,7 @@
         data-bs-toggle="tooltip"
         title="Next"
         (click)="onNext()"
-        *ngIf="!isBlueVisible"
+        *ngIf="isYellowVisible || isBlueVisible"
         [disabled]="isNextDisabled()"
       >
         <span class="d-none d-md-inline">Next</span>
@@ -225,8 +245,9 @@
         </svg>
       </button>
 
+      <!-- Botón Send (Visible solo en el paso 3) -->
       <button
-        *ngIf="!isEditMode && isBlueVisible"
+        *ngIf="isGreenVisible"
         id="sendBtn"
         type="submit"
         class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width"

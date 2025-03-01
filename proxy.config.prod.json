@@ -1,0 +1,9 @@
+{
+    "/api": {
+      "target": "https://inout.cyclonet.com.co",
+      "secure": true,
+      "changeOrigin": true,
+      "logLevel": "debug"
+    }
+  }
+  
