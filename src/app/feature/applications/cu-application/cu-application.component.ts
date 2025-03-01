@@ -24,24 +24,26 @@ import { ApplicationsService } from '../../../shared/services/applications/appli
   styleUrls: ['./cu-application.component.css'],
 })
 export class CuApplicationComponent implements OnInit, OnChanges {
-  @Input() idApplication: string = ''; 
+  @Input() idApplication: string = '';
   applicationForm: FormGroup;
   nameAvailabilityMessage: string | null = null;
   isNameValid: boolean = false;
   isYellowVisible: boolean = true;
   isBlueVisible: boolean = false;
+  isGreenVisible: boolean = false;
   showSendButton: boolean = false;
   showNextButton: boolean = true;
   @Output() applicationCreated = new EventEmitter<void>();
   imagePreview: string | ArrayBuffer | null = null;
-  selectedFile: File | null = null; 
-  fileName: string | null = null; 
+  selectedFile: File | null = null;
+  fileName: string | null = null;
   fileTmp: any;
-  isEditMode: boolean = false;  
+  isEditMode: boolean = false;
   originalApplicationName: string = '';
-  isFileChosen: boolean = false; 
+  isFileChosen: boolean = false;
   imageTmp: string = '';
   isTagsVisible = false;
+  isFileSelected = false;
 
   constructor(
     private fb: FormBuilder,
@@ -136,6 +138,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
   // Handle file selection
   onFileSelected(event: any): void {
     const input = event.target as HTMLInputElement;
+    this.isFileSelected = !!input.files?.length;
 
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
@@ -166,6 +169,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
   clearFile(fileInput: HTMLInputElement) {
     this.selectedFile = null;
     this.imagePreview = null;
+    this.isFileSelected = false;
     fileInput.value = '';
     this.applicationForm.get('logo')?.setValue(null);
     this.isFileChosen = false;
@@ -176,31 +180,34 @@ export class CuApplicationComponent implements OnInit, OnChanges {
     this.selectedFile = null;
     this.imagePreview = null;
     this.imageTmp = '';
+    this.isFileSelected = false;
     this.applicationForm.get('logo')?.setValue(null);
     this.isFileChosen = false;
   }
 
-  // Handle Next button click
+  // Maneja el clic en el botón Next
   onNext() {
     const applicationName = this.applicationForm.get('applicationName')?.value;
 
-    // If in edit mode and name hasn't changed, proceed without checking availability
     if (
       this.applicationsService.getEditMode() &&
       applicationName === this.originalApplicationName
     ) {
-      this.isYellowVisible = false;
-      this.isBlueVisible = true;
+      this.advanceStep();
       this.nameAvailabilityMessage = null;
       return;
     }
 
-    // Check availability of the application name
     this.applicationsService.checkApplicationName(applicationName).subscribe({
       next: (isAvailable) => {
         if (isAvailable) {
-          this.isYellowVisible = false;
-          this.isBlueVisible = true;
+          if (this.isYellowVisible) {
+            this.isYellowVisible = false;
+            this.isBlueVisible = true;
+          } else if (this.isBlueVisible) {
+            this.isBlueVisible = false;
+            this.isGreenVisible = true;
+          }
           this.nameAvailabilityMessage = null;
         } else {
           this.nameAvailabilityMessage = 'Application name is already taken.';
@@ -211,6 +218,17 @@ export class CuApplicationComponent implements OnInit, OnChanges {
         this.nameAvailabilityMessage = 'Error checking name availability.';
       },
     });
+  }
+
+  // Avanza al siguiente paso
+  private advanceStep() {
+    if (this.isYellowVisible) {
+      this.isYellowVisible = false;
+      this.isBlueVisible = true;
+    } else if (this.isBlueVisible) {
+      this.isBlueVisible = false;
+      this.isGreenVisible = true;
+    }
   }
 
   // Handle form submission
@@ -267,34 +285,40 @@ export class CuApplicationComponent implements OnInit, OnChanges {
     }
   }
 
- // Handle Previous button click
- onPrevious() {
-  if (this.isBlueVisible) {
-    this.isBlueVisible = false;
-    this.isYellowVisible = true;
+  // Handle Previous button click
+  onPrevious() {
+    if (this.isGreenVisible) {
+      this.isGreenVisible = false;
+      this.isBlueVisible = true;
+    } else if (this.isBlueVisible) {
+      this.isBlueVisible = false;
+      this.isYellowVisible = true;
+    }
   }
-}
 
- // Cancel the form
- onCancel(): void {
-  this.applicationForm.reset();
-  this.isYellowVisible = true;
-  this.isBlueVisible = false;
-  this.showSendButton = false;
-  this.showNextButton = true;
-  this.imagePreview = null;
-  this.selectedFile = null;
-}
+  // Cancel the form
+  onCancel(): void {
+    this.applicationForm.reset();
+    this.isYellowVisible = true;
+    this.isBlueVisible = false;
+    this.showSendButton = false;
+    this.showNextButton = true;
+    this.imagePreview = null;
+    this.selectedFile = null;
+  }
 
   isPreviousDisabled(): boolean {
     return this.isYellowVisible;
   }
 
   isNextDisabled(): boolean {
-    return !(
-      this.applicationForm.get('applicationName')?.valid &&
-      this.applicationForm.get('description')?.valid
-    );
+    if (this.isYellowVisible) {
+      return false;
+    }
+    if (this.isBlueVisible) {
+      return !this.isFileSelected;
+    }
+    return true;
   }
 
   // Método para obtener el ID de la aplicación, si es necesario
