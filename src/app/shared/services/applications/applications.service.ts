@@ -66,9 +66,9 @@ loadApplications(): void {
   // Método para crear una nueva aplicación
   createApplication(applicationData: FormData): Observable<any> {
     console.log('DTO DE LA APLICACION A CREAR:');
-  applicationData.forEach((value, key) => {
-    console.log(key, value); // Muestra las claves y valores del FormData
-  });
+    applicationData.forEach((value, key) => {
+      console.log(key, value); // Muestra las claves y valores del FormData
+    });
     return this.http.post<any>(this.createApplicationUrl, applicationData).pipe(
       map((response) => {
         this.loadApplications(); // Recargar la lista de aplicaciones
@@ -98,5 +98,10 @@ loadApplications(): void {
         return throwError(error); // Re-lanzar el error para que lo maneje el componente
       })
     );
+  }
+
+  // Método para obtener una aplicación por nombre
+  getApplicationByName(strName: string): Observable<Application> {
+    return this.http.get<Application>(`${this.apiUrl}/${strName}`);    
   }
 }
