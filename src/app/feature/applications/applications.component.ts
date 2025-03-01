@@ -51,6 +51,10 @@ export class ApplicationsComponent implements OnInit {
     this.notifications.push({ title, type });
   }
 
+  get selectedFile() {
+    return this.appCuApplication?.selectedFile;
+  }
+
   ngOnInit(): void {
     // Suscribirse a las aplicaciones cargadas en el servicio
     this.applicationsService.applications$.subscribe({
