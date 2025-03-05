@@ -10,17 +10,6 @@ import { UserService } from '../../services/user/user.service';
 import { ApplicationsService } from '../../services/applications/applications.service';
 import { MenuOption } from '../../model/menu_option';
 import { Application } from '../../model/application.model';
-interface OptionMenu {
-  id: string;
-  name: string;
-  description: string;
-  url: string;
-  icon: string;
-  type: string;
-  idMPather: string | null;
-  order: string;
-  idApplication: string;
-}
 
 @Component({
   selector: 'app-layout',
@@ -37,7 +26,7 @@ interface OptionMenu {
 })
 export default class LayoutComponent implements OnInit {
 
-  optionsMenu: OptionMenu[] = [];
+  optionsMenu: MenuOption[] = [];
 
   isSidebarVisible = true;
   isLargeScreen = false;
@@ -71,14 +60,13 @@ export default class LayoutComponent implements OnInit {
         this.optionsMenu = this.application?.strRoles?.flatMap(role =>
           role?.menuOptions?.map(menu => ({
             id: menu?.id ?? '',
-            name: menu?.strName ?? 'Unnamed Menu',
-            description: menu?.strDescription ?? '',
-            url: menu?.strUrl ?? '#',
-            icon: menu?.strIcon ?? 'default-icon',
-            type: menu?.strType ?? 'main_menu',
-            idMPather: null,
-            order: menu?.ingOrder ?? '99',
-            idApplication: this.application?.id ?? '',
+            strName: menu?.strName ?? 'Unnamed Menu',
+            strDescription: menu?.strDescription ?? '',
+            strUrl: menu?.strUrl ?? '#',
+            strIcon: menu?.strIcon ?? 'default-icon',
+            strType: menu?.strType ?? 'main_menu',            
+            ingOrder: menu?.ingOrder ?? '99',
+            strSubmenus: menu?.strSubmenus ?? []
           })) || []
         ) || [];  
       },
