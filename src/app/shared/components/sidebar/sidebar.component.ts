@@ -3,38 +3,31 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule, NgStyle } from '@angular/common';
 import { MenuOption } from '../../model/menu_option';
 
-interface OptionMenu {
-  id: string;
-  name: string;
-  description: string;
-  url: string;
-  icon: string;
-  type: string;
-  idMPather: string | null;
-  order: string;
-  idApplication: string;
-}
-
 @Component({
   selector: 'app-sidebar',
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive, NgStyle],
   templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.css']
+  styleUrls: ['./sidebar.component.css'],
 })
 export class SidebarComponent implements OnInit {
-  @Input() optionsMenu: OptionMenu[] = [];
+  @Input() optionsMenu: MenuOption[] = [];
   @Output() sidebarToggle = new EventEmitter<void>();
   private openSubmenuId: string | null = null;
 
   ngOnInit(): void {
-    this.optionsMenu.sort((a, b) => parseInt(a.order, 10) - parseInt(b.order, 10));
+    this.optionsMenu.sort(
+      (a, b) => parseInt(a.ingOrder, 10) - parseInt(b.ingOrder, 10)
+    );
   }
 
-  getSubmenus(id: string): OptionMenu[] {
-    return this.optionsMenu
-      .filter(option => option.idMPather === id)
-      .sort((a, b) => parseInt(a.order, 10) - parseInt(b.order, 10));
+  getSubmenus(id: string): MenuOption[] {
+    const menu = this.optionsMenu.find((option) => option.id === id);
+    return (
+      menu?.strSubmenus.sort(
+        (a, b) => parseInt(a.ingOrder, 10) - parseInt(b.ingOrder, 10)
+      ) || []
+    );
   }
 
   toggleSubmenu(id: string) {
