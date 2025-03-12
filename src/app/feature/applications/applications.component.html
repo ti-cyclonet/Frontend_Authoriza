@@ -237,16 +237,11 @@
           </a>
 
           <!-- Botón para agregar un nuevo rol -->
-          <a>
-            <img
-              src="assets/icons/plus-square-fill.svg"
-              alt="Agregar"
-              width="23"
-            />
-          </a>
-        </div>
-      </div>
-
+          <!-- Botón para abrir el modal -->
+<a data-bs-toggle="modal" data-bs-target="#roleModal">
+  <img src="assets/icons/plus-square-fill.svg" alt="Agregar" width="23" />
+</a>
+      
       <!-- Tabla de roles -->
       <table class="table table-bordered border-secondary">
         <thead>
@@ -785,6 +780,37 @@
   </div>
 </div>
 
+<!-- Modal para crear un nuevo rol-->
+<!-- Modal Bootstrap -->
+<div class="modal fade" id="roleModal" tabindex="-1" aria-labelledby="roleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="roleModalLabel">Agregar Nuevo Rol</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="roleName" class="form-label">Nombre del Rol</label>
+            <input id="roleName" formControlName="roleName" type="text" class="form-control" required />
+          </div>
+
+          <div class="mb-3">
+            <label for="description" class="form-label">Descripción</label>
+            <textarea id="description" formControlName="description" class="form-control" required></textarea>
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Modal -->
 <app-image-modal
   [imageUrl]="selectedImageUrl"
