@@ -7,13 +7,14 @@ import { Application } from '../../shared/model/application.model';
 import { MenuOption } from '../../shared/model/menu_option';
 import { FormBuilder, FormGroup, FormsModule, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ImageModalComponent } from '../../shared/components/image-modal/image-modal.component';
+import { CuRolComponent } from "./cu-rol/cu-rol.component";
 declare var bootstrap: any;
 
 
 @Component({
   selector: 'app-applications',
   standalone: true,
-  imports: [CuApplicationComponent, NotificationsComponent, CommonModule, FormsModule, ImageModalComponent, ReactiveFormsModule ],
+  imports: [CuApplicationComponent, NotificationsComponent, CommonModule, FormsModule, ImageModalComponent, ReactiveFormsModule, CuRolComponent],
   templateUrl: './applications.component.html',
   styleUrls: ['./applications.component.css'],
 })
