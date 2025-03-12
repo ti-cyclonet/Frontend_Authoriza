@@ -6,11 +6,12 @@ import { CommonModule } from '@angular/common';
 import { Application } from '../../shared/model/application.model';
 import { MenuOption } from '../../shared/model/menu_option';
 import { FormsModule } from '@angular/forms';
+import { ImageModalComponent } from '../../shared/components/image-modal/image-modal.component';
 
 @Component({
   selector: 'app-applications',
   standalone: true,
-  imports: [CuApplicationComponent, NotificationsComponent, CommonModule, FormsModule],
+  imports: [CuApplicationComponent, NotificationsComponent, CommonModule, FormsModule, ImageModalComponent],
   templateUrl: './applications.component.html',
   styleUrls: ['./applications.component.css'],
 })
@@ -39,11 +40,23 @@ export class ApplicationsComponent implements OnInit {
   deleteConfirmationText: string = '';
   isDeleteConfirmed: boolean = false;
 
+  selectedImageUrl: string = '';
+  showModal: boolean = false;
+
   constructor(
     public applicationsService: ApplicationsService,
     private cdr: ChangeDetectorRef
   ) {
     this.notifications = [];
+  }
+
+  openImageModal(imageUrl: string) {
+    this.selectedImageUrl = imageUrl;
+    this.showModal = true;
+  }
+
+  closeImageModal() {
+    this.showModal = false;
   }
 
   // Método para agregar una nueva notificación
@@ -72,22 +85,26 @@ export class ApplicationsComponent implements OnInit {
     this.isRolesTableVisible = true;
     // console.log('APLICACION SELECCIONADA: ', this.selectedApplication);
   }
+  
   toggleRolesTable() {
     this.isRolesTableVisible = !this.isRolesTableVisible;
     if (!this.isRolesTableVisible) {
       this.selectedApplication = null;
     }
   }
+
   onSelectRol(rol: any) {
     this.selectedRol = rol;
     this.selectedMenuOptions = rol.menuOptions || [];
     this.isMenuTableVisible = true;
   }
+
   clearSelectedRole() {
     this.selectedRol = null; 
     this.selectedMenuOptions = [];
     this.isMenuTableVisible = false;
   }
+
   onSelectMenu(menu: any): void {
     if (menu.strSubmenus && menu.strSubmenus.length > 0) {
       this.selectedSubmenus = menu.strSubmenus; // Guarda los submenús
@@ -101,6 +118,7 @@ export class ApplicationsComponent implements OnInit {
     this.selectedMenuOption = null;
     this.isSubmenuTableVisible = false; // Oculta la tabla de submenús
   }
+
   trackByApplication(index: number, item: any): number {
     return item.id;
   }
