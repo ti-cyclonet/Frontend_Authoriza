@@ -100,14 +100,16 @@
               {{ application?.strDescription || "[N/A]" }}
             </td>
             <td
-              class="text-start d-none d-xl-table-cell text-center"
+              class="d-none d-xl-table-cell text-center"
+              (click)="openImageModal(application.strUrlImage)"
               [ngClass]="{ selected: application === selectedApplication }"
               style="width: 200px"
             >
               <img
-                src="{{ application.strUrlImage }}"
-                style="width: 30%; height: auto"
+                [src]="application.strUrlImage"
+                style="width: 30px; height: 20px; cursor: pointer"
                 alt="Logo"
+                title="Ampliar"
               />
             </td>
             <td
@@ -672,7 +674,8 @@
                   cuApplication.applicationForm.get('description')?.valid) ||
                 (cuApplication.isBlueVisible &&
                   cuApplication.applicationForm.get('logo')?.invalid) ||
-                (cuApplication.isGreenVisible && selectedFile)
+                (cuApplication.isGreenVisible &&
+                  cuApplication.strTags.length > 0)
                   ? './assets/icons/bootstrap-icons.svg#1-circle-fill'
                   : './assets/icons/bootstrap-icons.svg#1-circle'
               "
@@ -682,17 +685,11 @@
           <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
             <use
               [attr.xlink:href]="
-                cuApplication.applicationForm.valid ||
-                cuApplication.isGreenVisible 
-                  ? './assets/icons/bootstrap-icons.svg#2-circle-fill'
-                  : (cuApplication.isYellowVisible &&
-                      cuApplication.applicationForm.get('applicationName')
-                        ?.valid &&
-                      cuApplication.applicationForm.get('description')
-                        ?.valid) ||
-                    (cuApplication.isBlueVisible &&
-                      cuApplication.applicationForm.get('logo')?.invalid) ||
-                      selectedFile
+                cuApplication.applicationForm.valid ||                
+                (cuApplication.isBlueVisible &&
+                  cuApplication.applicationForm.get('logo')?.invalid) ||
+                (cuApplication.isGreenVisible &&
+                  cuApplication.strTags.length > 0)
                   ? './assets/icons/bootstrap-icons.svg#2-circle-fill'
                   : './assets/icons/bootstrap-icons.svg#2-circle'
               "
@@ -787,3 +784,11 @@
     </div>
   </div>
 </div>
+
+<!-- Modal -->
+<app-image-modal
+  [imageUrl]="selectedImageUrl"
+  [isVisible]="showModal"
+  (closeModalEvent)="closeImageModal()"
+>
+</app-image-modal>

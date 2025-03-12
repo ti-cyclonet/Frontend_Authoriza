@@ -1,0 +1,7 @@
+<div *ngIf="isVisible" class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <span class="close-btn" (click)="closeModal()">&times;</span>
+      <img [src]="imageUrl" alt="Imagen ampliada" />
+    </div>
+  </div>
+  
