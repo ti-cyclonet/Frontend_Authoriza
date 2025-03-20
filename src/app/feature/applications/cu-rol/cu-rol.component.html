@@ -28,7 +28,11 @@
       </div>
   
       <!-- Botón de envío -->
-      <button type="submit" class="btn btn-primary" [disabled]="applicationForm.invalid">Submit</button>
+      <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary me-2" [disabled]="applicationForm.invalid">Save</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="onCancel()">Cancel</button>
+    </div>
     </form>
   </div>
+  
   
