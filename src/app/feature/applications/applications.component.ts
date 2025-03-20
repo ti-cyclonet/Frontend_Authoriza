@@ -5,13 +5,16 @@ import { NotificationsComponent } from '../../shared/components/notifications/no
 import { CommonModule } from '@angular/common';
 import { Application } from '../../shared/model/application.model';
 import { MenuOption } from '../../shared/model/menu_option';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ImageModalComponent } from '../../shared/components/image-modal/image-modal.component';
+import { CuRolComponent } from "./cu-rol/cu-rol.component";
+declare var bootstrap: any;
+
 
 @Component({
   selector: 'app-applications',
   standalone: true,
-  imports: [CuApplicationComponent, NotificationsComponent, CommonModule, FormsModule, ImageModalComponent],
+  imports: [CuApplicationComponent, NotificationsComponent, CommonModule, FormsModule, ImageModalComponent, ReactiveFormsModule, CuRolComponent],
   templateUrl: './applications.component.html',
   styleUrls: ['./applications.component.css'],
 })
@@ -20,9 +23,11 @@ export class ApplicationsComponent implements OnInit {
   applications: Application[] = [];
   isModalOpen = false;
   toastTitle: string = '';
+  roleForm: FormGroup;
   toastType: 'success' | 'warning' | 'danger' = 'success';
   isVisible: boolean = true;
   selectedApplication: Application | null = null;
+  isModalRolOpen = false;
   notifications: Array<{
     title: string;
     type: 'success' | 'warning' | 'danger';
@@ -45,11 +50,22 @@ export class ApplicationsComponent implements OnInit {
 
   constructor(
     public applicationsService: ApplicationsService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private fb: FormBuilder
   ) {
     this.notifications = [];
+    this.roleForm = this.fb.group({
+      roleName: ['', Validators.required],
+      description: ['', Validators.required],
+    });
   }
-
+  onSubmit() {
+    if (this.roleForm.valid) {
+      console.log('Rol guardado:', this.roleForm.value);
+      this.roleForm.reset(); // Resetear el formulario después de guardar
+      this.closeModal();
+    }
+  }
   openImageModal(imageUrl: string) {
     this.selectedImageUrl = imageUrl;
     this.showModal = true;
@@ -246,4 +262,17 @@ export class ApplicationsComponent implements OnInit {
       this.isVisible = false;
     }, 5000);
   }
+  // funcion para abrir y cerrar ventana modal de crear rol
+  openModalRol() {
+    this.isModalRolOpen = true;
+  }
+
+  closeModalRol() {
+    const modalElement = document.getElementById('roleModal');
+    if (modalElement) {
+      const modal = bootstrap.Modal.getInstance(modalElement);
+      modal?.hide();
+    }
+  }
 }
+
