@@ -809,10 +809,12 @@
   tabindex="-1"
   aria-labelledby="staticBackdropLabel"
   aria-hidden="true"
+  #modalRef
 >
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-header justify-content-between modal-header-custom w-100">
       <!-- Título del Modal con Íconos de Paso -->
+      <div class="modal-content">
       <div class="modal-header justify-content-between modal-header-custom">
         <!-- Íconos de Pasos con línea de unión -->
         <div class="step-icons d-flex position-relative">
@@ -833,10 +835,11 @@
       </div>
 
       <div class="modal-body">
-        <app-cu-rol></app-cu-rol>
+      <app-cu-rol></app-cu-rol>
       </div>
     </div>
   </div>
+</div>
 </div>
 
 <!-- Modal para mostrar una vista previa de las imágenes-->
