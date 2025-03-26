@@ -9,18 +9,18 @@
         </div>
       </div>
   
-      <!-- Campo Description 1 -->
+      <!-- Campo Description A -->
       <div class="mb-3">
-        <label for="description1" class="form-label">Description 1</label>
+        <label for="description1" class="form-label">Description A</label>
         <textarea id="description1" class="form-control" formControlName="description1"></textarea>
         <div *ngIf="applicationForm.get('description1')?.invalid && applicationForm.get('description1')?.touched" class="text-danger">
           Description 1 is required (max 100 characters)
         </div>
       </div>
   
-      <!-- Campo Description 2 -->
+      <!-- Campo Description B -->
       <div class="mb-3">
-        <label for="description2" class="form-label">Description 2</label>
+        <label for="description2" class="form-label">Description B</label>
         <textarea id="description2" class="form-control" formControlName="description2"></textarea>
         <div *ngIf="applicationForm.get('description2')?.invalid && applicationForm.get('description2')?.touched" class="text-danger">
           Description 2 is required (max 100 characters)
@@ -28,7 +28,11 @@
       </div>
   
       <!-- Botón de envío -->
-      <button type="submit" class="btn btn-primary" [disabled]="applicationForm.invalid">Submit</button>
+      <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary me-2" [disabled]="applicationForm.invalid">Save</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="onCancel()">Cancel</button>
+    </div>
     </form>
   </div>
+  
   
