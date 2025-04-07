@@ -1,0 +1,60 @@
+/* .card {
+    max-width: 600px;
+    width: 90%;
+  }
+   */
+   .forgot-password-link {
+    color: rgb(39, 28, 28); /* Cambia el color a blanco */
+    text-decoration: none; /* Elimina el subrayado predeterminado */
+  }
+  
+  .forgot-password-link:hover {
+    text-decoration: underline; /* Si deseas un subrayado al pasar el ratón */
+    color: rgb(12, 13, 99); /* Mantiene el color blanco también al pasar el ratón */
+  }
+  .login-container .custom-btn {
+    background-color:  rgb(115, 115, 194);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100vw;
+    padding: 20px;
+    margin: 0;
+  }
+  
+/* Redondear el botón de "Sign in" */
+.custom-btn {
+  border-radius: 30px; /* Asegúrate de que el botón también sea redondeado */
+}
+.custom-card {
+  max-width: 400px; /* Evita que el formulario sea demasiado ancho */
+  width: 100%;
+  background-color: var(--header-background-color); 
+  color: white; /* Color del texto */
+  border-radius: 10px; /* Bordes redondeados */
+  border: 2px solid #eafcfb; /* Borde verde oscuro */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra suave */
+}
+.custom-welcome {
+  color: rgb(43, 32, 32); /* Cambia "red" por el color que desees */
+  animation: fadeIn 1.5s forwards;
+  font-family: 'Poppins', sans-serif;
+  font-size: 30px;
+  font-weight: bold;
+
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
