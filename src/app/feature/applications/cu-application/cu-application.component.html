@@ -168,15 +168,22 @@
                   class="form-control"
                 />
               </td>
-              <td>
+              <td class="text-center">
                 <button
                   type="button"
-                  class="btn btn-danger"
                   (click)="removeTag(i)"
+                  class="icon-button"
                 >
-                  Remove
+                  <svg fill="red" viewBox="0 0 16 16" class="status-icon">
+                    <use
+                      [attr.xlink:href]="
+                        './assets/icons/bootstrap-icons.svg#x-circle'
+                      "
+                    ></use>
+                  </svg>
                 </button>
               </td>
+              
             </tr>
           </tbody>
         </table>
@@ -252,14 +259,14 @@
         type="submit"
         class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width"
         data-bs-toggle="tooltip"
-        title="Send"
+        title="Add"
         [disabled]="!applicationForm.valid"
         data-bs-dismiss="modal"
       >
         <span class="d-none d-md-inline">Send</span>
         <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
           <use
-            [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#send'"
+            [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#plus-square-fill'"
           ></use>
         </svg>
       </button>
