@@ -1,0 +1,111 @@
+.container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .form-group input,
+  .form-group textarea {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .form-buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .form-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .form-buttons button {
+    min-width: 100px;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .tags-box .tag-item {
+    margin-bottom: 10px;
+  }
+  .tags-box .btn-danger {
+    margin-left: 10px;
+  }
+  
+  .btn-fixed-width {
+    min-width: 100px;
+  }
+  
+  .error {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+  
+  .box {
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .status-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 5px; /* Espacio entre el icono y el texto */
+  }
+  
+  .availability-message {
+    color: red; /* Cambia el color según sea necesario */
+    margin-top: 5px;
+  }
+  
+  /* Para pantallas pequeñas */
+  @media (max-width: 576px) {
+    .form-buttons button {
+      min-width: 40px; /* Ajusta el ancho mínimo de los botones */
+      padding: 5px; /* Reduce el padding */
+      font-size: 0.8rem; /* Ajusta el tamaño de la fuente */
+    }
+  
+    .form-buttons button span {
+      display: none; /* Oculta el texto en pantallas pequeñas */
+    }
+  
+    .form-buttons button .status-icon {
+      width: 16px; /* Ancho del icono */
+      height: 16px; /* Alto del icono */
+    }
+  }
+  .btn-no-style {
+    background: none;
+    border: none;
+    padding: 5px;
+    margin: 0;
+    cursor: pointer;
+  }
+  /*.modal-header {
+    background-color: white !important;
+    border-bottom: none !important;
+  }
+    */
+  
+  
