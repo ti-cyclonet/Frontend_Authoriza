@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+
+import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { ApplicationsService } from '../../shared/services/applications/applications.service';
 import { CuApplicationComponent } from './cu-application/cu-application.component';
 import { NotificationsComponent } from '../../shared/components/notifications/notifications.component';
@@ -8,6 +9,8 @@ import { MenuOption } from '../../shared/model/menu_option';
 import { FormBuilder, FormGroup, FormsModule, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ImageModalComponent } from '../../shared/components/image-modal/image-modal.component';
 import { CuRolComponent } from "./cu-rol/cu-rol.component";
+import { Subject, takeUntil } from 'rxjs';
+import { isApplicationDTOValid } from '../../shared/utils/validation.utils';
 declare var bootstrap: any;
 
 
@@ -19,19 +22,27 @@ declare var bootstrap: any;
   styleUrls: ['./applications.component.css'],
 })
 export class ApplicationsComponent implements OnInit {
+  private destroy$ = new Subject<void>();
+  @Input() applications: Application[] = [];
+  @Input() localApplications: Application[] = [];
   @ViewChild(CuApplicationComponent) appCuApplication!: CuApplicationComponent;
-  applications: Application[] = [];
+  
   isModalOpen = false;
+  isDTOValid: boolean = false;
   toastTitle: string = '';
   roleForm: FormGroup;
-  toastType: 'success' | 'warning' | 'danger' = 'success';
+  toastType: 'success' | 'warning' | 'danger' | 'primary' = 'success';
   isVisible: boolean = true;
   selectedApplication: Application | null = null;
   isModalRolOpen = false;
   notifications: Array<{
     title: string;
-    type: 'success' | 'warning' | 'danger';
+    type: 'success' | 'warning' | 'danger' | 'primary';
+    alertType: 'A' | 'B';
+    container: 0 | 1;
+    visible: boolean;
   }> = [];
+  
   imagePreview: string | ArrayBuffer | null = null;
   fileName: string = '';
   isRolesTableVisible = false;
@@ -45,8 +56,11 @@ export class ApplicationsComponent implements OnInit {
   deleteConfirmationText: string = '';
   isDeleteConfirmed: boolean = false;
 
+  SWNTF: number = 0;
+
   selectedImageUrl: string = '';
   showModal: boolean = false;
+  showSaveButton = false;
 
   constructor(
     public applicationsService: ApplicationsService,
@@ -59,13 +73,18 @@ export class ApplicationsComponent implements OnInit {
       description: ['', Validators.required],
     });
   }
+
   onSubmit() {
-    if (this.roleForm.valid) {
-      console.log('Rol guardado:', this.roleForm.value);
-      this.roleForm.reset(); // Resetear el formulario después de guardar
+    if (this.roleForm.valid) {      
+      this.roleForm.reset();
       this.closeModal();
     }
   }
+
+  get allApplications() {
+    return [...this.applications, ...this.localApplications];
+  }
+
   openImageModal(imageUrl: string) {
     this.selectedImageUrl = imageUrl;
     this.showModal = true;
@@ -75,9 +94,12 @@ export class ApplicationsComponent implements OnInit {
     this.showModal = false;
   }
 
-  // Método para agregar una nueva notificación
-  addNotification(title: string, type: 'success' | 'warning' | 'danger') {
-    this.notifications.push({ title, type });
+  addNotification(title: string, type: 'success' | 'warning' | 'danger' | 'primary', alertType: 'A' | 'B', container: 0 | 1) {
+    this.notifications.push({ title, type, alertType, container, visible: true });
+  }
+
+  removeNotification(index: number) {
+    this.notifications.splice(index, 1);
   }
 
   get selectedFile() {
@@ -85,17 +107,20 @@ export class ApplicationsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Suscribirse a las aplicaciones cargadas en el servicio
-    this.applicationsService.applications$.subscribe({
-      next: (applications) => {
-        this.applications = applications;
-      },
-      error: (e) => {
-        console.log(e);
-      },
-    });
+    this.applicationsService.applications$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(apps => this.applications = apps);
+
+    this.applicationsService.applications$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(apps => { this.localApplications = apps;});
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+  
   showRoles(application: Application) {
     this.selectedApplication = application;
     this.isRolesTableVisible = true;
@@ -123,16 +148,16 @@ export class ApplicationsComponent implements OnInit {
 
   onSelectMenu(menu: any): void {
     if (menu.strSubmenus && menu.strSubmenus.length > 0) {
-      this.selectedSubmenus = menu.strSubmenus; // Guarda los submenús
-      this.selectedMenuOption = menu; // Guarda la opción de menú seleccionada
-      this.isSubmenuTableVisible = true; // Muestra la tabla de submenús
+      this.selectedSubmenus = menu.strSubmenus;
+      this.selectedMenuOption = menu;
+      this.isSubmenuTableVisible = true;
     }
   }
   
   clearSelectedMenu(): void {
     this.selectedSubmenus = [];
     this.selectedMenuOption = null;
-    this.isSubmenuTableVisible = false; // Oculta la tabla de submenús
+    this.isSubmenuTableVisible = false;
   }
 
   trackByApplication(index: number, item: any): number {
@@ -159,7 +184,6 @@ export class ApplicationsComponent implements OnInit {
     this.fileName = '';
   }
 
-  // Método para abrir el modal
   openModal(edit: boolean, id?: string) {
     // Establece el modo de edición según el parámetro
     this.applicationsService.setEditMode(edit);
@@ -178,7 +202,6 @@ export class ApplicationsComponent implements OnInit {
     }
   }
 
-  // Método que retorna el título del modal
   getModalTitle(): string {
     if (this.applicationsService.getEditMode() && this.selectedApplicationId) {
       return `Application <b>ID</b> <span class="badge rounded-pill text-bg-light">${this.selectedApplicationId}</span>`;
@@ -187,29 +210,30 @@ export class ApplicationsComponent implements OnInit {
     }
   }
 
-  // Método para cerrar el modal
   closeModal() {
     this.isModalOpen = false;
   }
 
-  // Método que se ejecuta cuando se crea una aplicación exitosamente
-  onApplicationCreated() {
-    this.showToast('Application created successfully', 'success');
+  onApplicationCreated() {    
+    // this.showToast('Application was created successfully.', 'success', 'A', 0);
+    this.showSaveButton = true;
+    this.showToast(`The app has been added <b>temporarily</b>. You must assign at least one role and its menu options before saving it to the backend.`, 'warning', 'B', 1);
     this.closeModal();
+    
+    // Validar DTO
+    const dto = this.applicationsService.getApplicationDTO(); // o como lo estés accediendo
+    this.isDTOValid = isApplicationDTOValid(dto as any); // puedes adaptar validación para ApplicationDTO si lo prefieres
   }
 
-  // Método para abrir el modal y establecer la aplicación seleccionada
   setSelectedApplication(application: Application) {
     this.selectedApplication = application;
   }
 
-  // Método para confirmar la eliminación de la aplicación
   confirmDelete(): void {
     if (this.isDeleteConfirmed) {
-      console.log("Application deleted!"); // Aquí puedes llamar al servicio de eliminación
-      // Lógica para eliminar la aplicación
-    }
-    // Reiniciar el input después de cerrar el modal
+      console.log("Application deleted!");
+      
+    }    
     this.deleteConfirmationText = '';
     this.isDeleteConfirmed = false;
   }
@@ -222,13 +246,14 @@ export class ApplicationsComponent implements OnInit {
   deleteApplication(id: string) {
     this.applicationsService.deleteApplication(id).subscribe({
       next: () => {
-        this.showToast('Application deleted successfully', 'success');
+        this.showToast('Application deleted successfully', 'success', 'A', 0);
         this.applicationsService.loadApplications();
       },
       error: (error) => {
         this.addNotification(
           'There was an error deleting the application',
-          'danger'
+          'danger', "A",
+          0
         );
       },
     });
@@ -239,28 +264,44 @@ export class ApplicationsComponent implements OnInit {
       show: this.isVisible,
       'bg-success': this.toastType === 'success',
       'bg-danger': this.toastType === 'danger',
+      'bg-warning': this.toastType === 'warning',
+      'bg-primary': this.toastType === 'primary',
     };
   }
+
   // Función para obtener el ícono del Toast dinámicamente
   getIcon() {
     switch (this.toastType) {
       case 'success':
-        return 'bi-check-circle';
+        return 'check-circle';
       case 'danger':
-        return 'bi-exclamation-circle';
+        return 'x-circle';
+      case 'warning':
+        return 'exclamation-triangle';
+      case 'primary':
+        return 'exclamation-triangle';
       default:
-        return 'bi-info-circle';
+        return 'info-circle';
     }
   }
   // Función para mostrar el toast con el mensaje y tipo correctos
-  showToast(message: string, type: 'success' | 'warning' | 'danger') {
-    this.addNotification(message, type);
+  showToast(message: string, type: 'success' | 'warning' | 'danger' | 'primary', alertType: 'A' | 'B',  container: 0 | 1 ) {
+    const notification = {
+      title: message,
+      type,
+      alertType,
+      container,
+      visible: true
+    };
+    this.notifications.push(notification);
     this.cdr.detectChanges();
 
-    // Ocultar el toast después de 3 segundos
-    setTimeout(() => {
-      this.isVisible = false;
-    }, 5000);
+    if (alertType === 'A') {
+      setTimeout(() => {
+        notification.visible = false;
+        this.cdr.detectChanges();
+      }, 5000);
+    }
   }
   // funcion para abrir y cerrar ventana modal de crear rol
   openModalRol() {
