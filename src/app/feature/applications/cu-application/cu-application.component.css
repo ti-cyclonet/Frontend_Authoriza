@@ -70,13 +70,30 @@
   width: 16px;
   height: 16px;
   vertical-align: middle;
-  margin-right: 5px; /* Espacio entre el icono y el texto */
+  margin-right: 5px;
 }
 
 .availability-message {
-  color: red; /* Cambia el color según sea necesario */
+  color: red;
   margin-top: 5px;
 }
+
+.icon-button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  opacity: 0.7;
+}
+
+.status-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
 
 /* Para pantallas pequeñas */
 @media (max-width: 576px) {

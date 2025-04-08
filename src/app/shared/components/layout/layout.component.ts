@@ -31,6 +31,9 @@ export default class LayoutComponent implements OnInit {
   isSidebarVisible = true;
   isLargeScreen = false;
   application: Application | undefined;
+
+  applications: Application[] = [];
+  localApplications: Application[] = [];
   
   constructor(
     private rolesService: RolesService,
@@ -45,6 +48,10 @@ export default class LayoutComponent implements OnInit {
   ngOnInit(): void {
     this.applicationsService.loadApplications();
     this.fetchApplication('Authoriza'); 
+  } 
+
+  addLocalApplication(app: any) {
+    this.localApplications.push({ ...app, isUnsaved: true });
   }
 
   fetchApplication(name: string): void {

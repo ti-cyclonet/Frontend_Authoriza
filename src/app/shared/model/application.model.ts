@@ -7,6 +7,6 @@ export interface Application {
   strUrlImage: string;
   strSlug: string;
   strTags: string[];
-  strImages: string[];
+  strState: string;
   strRoles: Rol[];
 }
