@@ -74,11 +74,9 @@
     transform: scale(1.2);
 }
 
-/* Ocultar la flecha del dropdown-toggle */
 .btn.dropdown-toggle::after {
     display: none;
 }
-
 
 /* Estilo para el botón toggle */
 .toggle-button {
@@ -108,4 +106,12 @@
     fill: var(--sidebar-background-color);
     transform: scale(1.1);
   }
+  .user-img {
+    width: 50px;             /* o el tamaño que prefieras */
+    height: 50px;
+    border-radius: 50%;      /* <-- Esto hace que sea redonda */
+    object-fit: cover;       /* Mantiene el aspecto sin deformarla */
+    border: 2px solid #ccc;  /* (opcional) borde gris suave */
+}
+
   
