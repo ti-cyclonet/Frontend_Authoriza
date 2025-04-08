@@ -1,11 +1,27 @@
-<!-- Notificaciones -->
-<div *ngIf="isVisible" class="notification-container">
-  <app-notifications
-    *ngFor="let notification of notifications"
-    [title]="notification.title"
-    [type]="notification.type"
-  >
-  </app-notifications>
+<!-- Contenedor flotante (derecha) -->
+<div class="notification-container">
+  <ng-container *ngFor="let notification of notifications; let i = index">
+    <app-notifications
+      *ngIf="notification.container === 0 && notification.visible"
+      [title]="notification.title"
+      [type]="notification.type"
+      [alertType]="notification.alertType"
+      (close)="removeNotification(i)"
+    ></app-notifications>
+  </ng-container>
+</div>
+
+<!-- Contenedor superior (todo el ancho) -->
+<div>
+  <ng-container *ngFor="let notification of notifications; let i = index">
+    <app-notifications
+      *ngIf="notification.container === 1 && notification.visible"
+      [title]="notification.title"
+      [type]="notification.type"
+      [alertType]="notification.alertType"
+      (close)="removeNotification(i)"
+    ></app-notifications>
+  </ng-container>
 </div>
 
 <!-- Cabecera -->
@@ -31,8 +47,24 @@
 
       <div class="btn-group ms-auto" style="margin-right: 4px">
         <a
+          *ngIf="showSaveButton"
+          [class.disabled-icon]="!isDTOValid"
+          [class.enabled-icon]="isDTOValid"
+          [attr.aria-disabled]="!isDTOValid"
+          [attr.tabindex]="!isDTOValid ? -1 : 0"
           href="#"
-          class="text-success"
+          (click)="isDTOValid"
+        >
+          <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
+            <use
+              [attr.xlink:href]="
+                './assets/icons/bootstrap-icons.svg#floppy2-fill'
+              "
+            ></use>
+          </svg>
+        </a>
+        <a
+          href="#"
           data-bs-toggle="modal"
           data-bs-target="#crearAplicacion"
           (click)="openModal(false)"
@@ -48,7 +80,7 @@
       </div>
     </div>
 
-    <!-- Contenedor con scroll en pantallas pequeñas -->
+    <!-- Contenedor Aplicaciones -->
     <div class="table-responsive mt-3" [class.disabled]="isRolesTableVisible">
       <div class="roles-header">
         <!-- Título alineado a la izquierda -->
@@ -59,7 +91,6 @@
           <tr>
             <th scope="col" class="id-col text-center">Item</th>
             <th scope="col" class="text-center">Name</th>
-            <!-- Columnas "Description" y "Logo" ocultas en pantallas pequeñas y visibles solo en pantallas extra largas -->
             <th scope="col" class="text-center d-none d-xl-table-cell">
               Description
             </th>
@@ -74,7 +105,10 @@
           <tr *ngFor="let application of applications; let index = index">
             <th
               scope="row"
-              [ngClass]="{ selected: application === selectedApplication }"
+              [ngClass]="{
+                selected: application === selectedApplication,
+                'bg-temp text-dark': application.strState === 'TEMPORARY' && application !== selectedApplication
+              }"
             >
               <span
                 class="badge rounded-badge"
@@ -86,23 +120,34 @@
                 {{ index + 1 }}
               </span>
             </th>
+        
             <td
               class="text-start"
-              [ngClass]="{ selected: application === selectedApplication }"
+              [ngClass]="{
+                selected: application === selectedApplication,
+                'bg-temp text-dark': application.strState === 'TEMPORARY' && application !== selectedApplication
+              }"
             >
               {{ application?.strName?.toUpperCase() || "[N/A]" }}
             </td>
-
+        
             <td
               class="text-start d-none d-xl-table-cell"
-              [ngClass]="{ selected: application === selectedApplication }"
+              [ngClass]="{
+                selected: application === selectedApplication,
+                'bg-temp text-dark': application.strState === 'TEMPORARY' && application !== selectedApplication
+              }"
             >
               {{ application?.strDescription || "[N/A]" }}
             </td>
+        
             <td
               class="d-none d-xl-table-cell text-center"
               (click)="openImageModal(application.strUrlImage)"
-              [ngClass]="{ selected: application === selectedApplication }"
+              [ngClass]="{
+                selected: application === selectedApplication,
+                'bg-temp text-dark': application.strState === 'TEMPORARY' && application !== selectedApplication
+              }"
               style="width: 200px"
             >
               <img
@@ -112,32 +157,50 @@
                 title="Ampliar"
               />
             </td>
+        
             <td
               class="text-start d-none d-xl-table-cell text-center"
-              [ngClass]="{ selected: application === selectedApplication }"
+              [ngClass]="{
+                selected: application === selectedApplication,
+                'bg-temp text-dark': application.strState === 'TEMPORARY' && application !== selectedApplication
+              }"
             >
               {{ application?.strSlug || "[N/A]" }}
             </td>
+        
             <td
               class="text-start d-none d-xl-table-cell text-center"
-              [ngClass]="{ selected: application === selectedApplication }"
+              [ngClass]="{
+                selected: application === selectedApplication,
+                'bg-temp text-dark': application.strState === 'TEMPORARY' && application !== selectedApplication
+              }"
             >
               {{ application?.strTags || "[N/A]" }}
             </td>
+        
             <td
-              [ngClass]="{ selected: application === selectedApplication }"
               class="text-center"
+              [ngClass]="{
+                selected: application === selectedApplication,
+                'bg-temp text-dark': application.strState === 'TEMPORARY' && application !== selectedApplication
+              }"
             >
-              <span
-                class="badge mt-1"
-                style="background-color: #007f00; color: white"
+              <span class="badge mt-1"
+                [ngClass]="{
+                  'bg-temp text-dark': application.strState === 'TEMPORARY',
+                  'bg-success': application.strState !== 'TEMPORARY'
+                }"
               >
-                ACTIVE
+                {{ application.strState === 'TEMPORARY' ? 'NOT SAVED' : 'ACTIVE' }}
               </span>
             </td>
+        
             <td
               class="text-center actions-col"
-              [ngClass]="{ selected: application === selectedApplication }"
+              [ngClass]="{
+                selected: application === selectedApplication,
+                'bg-temp text-dark': application.strState === 'TEMPORARY' && application !== selectedApplication
+              }"
             >
               <div>
                 <button
@@ -147,71 +210,50 @@
                   title="Details"
                   (click)="showRoles(application)"
                 >
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    class="status-icon"
-                  >
-                    <use
-                      [attr.xlink:href]="
-                        './assets/icons/bootstrap-icons.svg#list-nested'
-                      "
-                    ></use>
+                  <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+                    <use xlink:href="./assets/icons/bootstrap-icons.svg#list-nested"></use>
                   </svg>
                 </button>
-
+        
                 <button
                   type="button"
                   class="btn btn-outline-dark btn-sm me-2"
                   data-bs-toggle="tooltip"
-                  data-bs-toggle="modal"
                   data-bs-target="#crearAplicacion"
                   (click)="openModal(true, application.id)"
                   title="Edit"
                 >
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    class="status-icon"
-                  >
-                    <use
-                      [attr.xlink:href]="
-                        './assets/icons/bootstrap-icons.svg#pencil'
-                      "
-                    ></use>
+                  <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+                    <use xlink:href="./assets/icons/bootstrap-icons.svg#pencil"></use>
                   </svg>
                 </button>
-
+        
                 <button
                   type="button"
                   class="btn btn-outline-dark btn-sm me-2"
                   data-bs-toggle="tooltip"
                   title="Delete"
                   (click)="setSelectedApplication(application)"
-                  data-bs-toggle="modal"
                   data-bs-target="#confirmDelete"
                 >
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    class="status-icon"
-                  >
-                    <use
-                      [attr.xlink:href]="
-                        './assets/icons/bootstrap-icons.svg#trash3'
-                      "
-                    ></use>
+                  <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+                    <use xlink:href="./assets/icons/bootstrap-icons.svg#trash3"></use>
                   </svg>
                 </button>
               </div>
             </td>
           </tr>
         </tbody>
+        
       </table>
     </div>
 
     <!-- Contenedor de información de Roles -->
-    <div *ngIf="isRolesTableVisible" class="table-responsive mt-3" [class.disabled]="isMenuTableVisible">
+    <div
+      *ngIf="isRolesTableVisible"
+      class="table-responsive mt-3"
+      [class.disabled]="isMenuTableVisible"
+    >
       <div class="roles-header">
         <!-- Título alineado a la izquierda -->
         <h6 class="roles-title">
@@ -244,123 +286,119 @@
         </div>
       </div>
 
-        <!-- Tabla de roles -->
-        <table class="table table-bordered border-secondary">
-          <thead>
-            <tr>
-              <th scope="col" class="id-col text-center">Item</th>
-              <th scope="col" class="text-center d-none d-xl-table-cell">
-                Name
-              </th>
-              <th scope="col" class="text-center">Description</th>
-              <th scope="col" class="text-center d-none d-xl-table-cell">
-                State
-              </th>
-              <th class="actions-col text-center" scope="col">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              *ngFor="let rol of selectedApplication?.strRoles; let i = index"
+      <!-- Tabla de roles -->
+      <table class="table table-bordered border-secondary">
+        <thead>
+          <tr>
+            <th scope="col" class="id-col text-center">Item</th>
+            <th scope="col" class="text-center d-none d-xl-table-cell">Name</th>
+            <th scope="col" class="text-center">Description</th>
+            <th scope="col" class="text-center d-none d-xl-table-cell">
+              State
+            </th>
+            <th class="actions-col text-center" scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let rol of selectedApplication?.strRoles; let i = index">
+            <th [ngClass]="{ selected: rol === selectedRol }" scope="row">
+              <span
+                class="badge rounded-badge"
+                [ngClass]="{
+                  'badge-selected': rol === selectedRol,
+                  'badge-default': rol !== selectedRol
+                }"
+              >
+                {{ i + 1 }}
+              </span>
+            </th>
+            <td
+              [ngClass]="{ selected: rol === selectedRol }"
+              class="d-none d-xl-table-cell"
             >
-              <th [ngClass]="{ selected: rol === selectedRol }" scope="row">
-                <span
-                  class="badge rounded-badge"
-                  [ngClass]="{
-                    'badge-selected': rol === selectedRol,
-                    'badge-default': rol !== selectedRol
-                  }"
+              {{ rol.strName }}
+            </td>
+            <td [ngClass]="{ selected: rol === selectedRol }">
+              {{ rol.strDescription1.toUpperCase() }}
+            </td>
+            <td
+              [ngClass]="{ selected: rol === selectedRol }"
+              class="text-center d-none d-xl-table-cell"
+            >
+              <span
+                class="badge mt-1"
+                style="background-color: #007f00; color: white"
+              >
+                ACTIVE
+              </span>
+            </td>
+            <td
+              [ngClass]="{ selected: rol === selectedRol }"
+              class="text-center actions-col"
+            >
+              <div>
+                <button
+                  type="button"
+                  class="btn btn-outline-dark btn-sm me-2"
+                  data-bs-toggle="tooltip"
+                  title="Details"
+                  (click)="onSelectRol(rol)"
                 >
-                  {{ i + 1 }}
-                </span>
-              </th>
-              <td
-                [ngClass]="{ selected: rol === selectedRol }"
-                class="d-none d-xl-table-cell"
-              >
-                {{ rol.strName }}
-              </td>
-              <td [ngClass]="{ selected: rol === selectedRol }">
-                {{ rol.strDescription1.toUpperCase() }}
-              </td>
-              <td
-                [ngClass]="{ selected: rol === selectedRol }"
-                class="text-center d-none d-xl-table-cell"
-              >
-                <span
-                  class="badge mt-1"
-                  style="background-color: #007f00; color: white"
+                  <svg
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                    class="status-icon"
+                  >
+                    <use
+                      [attr.xlink:href]="
+                        './assets/icons/bootstrap-icons.svg#list-nested'
+                      "
+                    ></use>
+                  </svg>
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-outline-dark btn-sm me-2"
+                  title="Edit"
                 >
-                  ACTIVE
-                </span>
-              </td>
-              <td
-                [ngClass]="{ selected: rol === selectedRol }"
-                class="text-center actions-col"
-              >
-                <div>
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    data-bs-toggle="tooltip"
-                    title="Details"
-                    (click)="onSelectRol(rol)"
+                  <svg
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                    class="status-icon"
                   >
-                    <svg
-                      fill="currentColor"
-                      viewBox="0 0 16 16"
-                      class="status-icon"
-                    >
-                      <use
-                        [attr.xlink:href]="
-                          './assets/icons/bootstrap-icons.svg#list-nested'
-                        "
-                      ></use>
-                    </svg>
-                  </button>
+                    <use
+                      [attr.xlink:href]="
+                        './assets/icons/bootstrap-icons.svg#pencil'
+                      "
+                    ></use>
+                  </svg>
+                </button>
 
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    title="Edit"
+                <button
+                  type="button"
+                  class="btn btn-outline-dark btn-sm me-2"
+                  title="Delete"
+                >
+                  <svg
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                    class="status-icon"
                   >
-                    <svg
-                      fill="currentColor"
-                      viewBox="0 0 16 16"
-                      class="status-icon"
-                    >
-                      <use
-                        [attr.xlink:href]="
-                          './assets/icons/bootstrap-icons.svg#pencil'
-                        "
-                      ></use>
-                    </svg>
-                  </button>
-
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    title="Delete"
-                  >
-                    <svg
-                      fill="currentColor"
-                      viewBox="0 0 16 16"
-                      class="status-icon"
-                    >
-                      <use
-                        [attr.xlink:href]="
-                          './assets/icons/bootstrap-icons.svg#trash3'
-                        "
-                      ></use>
-                    </svg>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                    <use
+                      [attr.xlink:href]="
+                        './assets/icons/bootstrap-icons.svg#trash3'
+                      "
+                    ></use>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-       
+
     <!-- Contenedor de información de Opciones de menu -->
     <div
       *ngIf="selectedMenuOptions.length > 0"
@@ -459,9 +497,7 @@
               class="text-center d-none d-xl-table-cell"
             >
               {{
-                menu.strSubmenus && menu.strSubmenus.length > 0
-                  ? "SI"
-                  : "NO"
+                menu.strSubmenus && menu.strSubmenus.length > 0 ? "SI" : "NO"
               }}
             </td>
             <td
@@ -544,6 +580,7 @@
         </tbody>
       </table>
     </div>
+
     <!-- Contenedor de información de Submenús -->
     <div *ngIf="isSubmenuTableVisible" class="table-responsive mt-3">
       <div class="roles-header">
@@ -674,30 +711,21 @@
               [attr.xlink:href]="
                 cuApplication.applicationForm.valid ||
                 (cuApplication.isYellowVisible &&
-                  cuApplication.applicationForm.get('applicationName')
-                    ?.valid &&
-                  cuApplication.applicationForm.get('description')
-                    ?.valid) ||
-                (cuApplication.isBlueVisible &&
-                  cuApplication.applicationForm.get('logo')?.invalid) ||
-                (cuApplication.isGreenVisible &&
-                  cuApplication.strTags.length > 0)
+                  cuApplication.applicationForm.get('applicationName')?.valid &&
+                  cuApplication.applicationForm.get('description')?.valid) ||
+                (cuApplication.isBlueVisible && cuApplication.isBlueVisible) ||
+                cuApplication.isGreenVisible
                   ? './assets/icons/bootstrap-icons.svg#1-circle-fill'
                   : './assets/icons/bootstrap-icons.svg#1-circle'
               "
             ></use>
           </svg>
           <!-- Ícono para el paso 2 -->
-          <svg
-            viewBox="0 0 16 16"
-            fill="currentColor"
-            class="step-icon ms-2"
-          >
+          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
             <use
               [attr.xlink:href]="
                 cuApplication.applicationForm.valid ||
-                (cuApplication.isBlueVisible &&
-                  cuApplication.applicationForm.get('logo')?.invalid) ||
+                (cuApplication.isBlueVisible && cuApplication.isFileSelected) ||
                 (cuApplication.isGreenVisible &&
                   cuApplication.strTags.length > 0)
                   ? './assets/icons/bootstrap-icons.svg#2-circle-fill'
@@ -706,11 +734,7 @@
             ></use>
           </svg>
           <!-- Ícono para el paso 3 -->
-          <svg
-            viewBox="0 0 16 16"
-            fill="currentColor"
-            class="step-icon ms-2"
-          >
+          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
             <use
               [attr.xlink:href]="
                 cuApplication.applicationForm.valid
@@ -729,11 +753,11 @@
         ></h1>
       </div>
 
-      <div class="modal-body">        
+      <div class="modal-body">
         <app-cu-application
           (applicationCreated)="onApplicationCreated()"
-          [idApplication]="applicationsService.getIdApplication()"
           #cuApplication
+          (newApplication)="localApplications.push($event)"
         ></app-cu-application>
       </div>
     </div>
@@ -776,9 +800,7 @@
           }"
         />
       </div>
-      <div
-        class="modal-footer w-100 bg-light d-flex justify-content-center"
-      >
+      <div class="modal-footer w-100 bg-light d-flex justify-content-center">
         <button
           type="button"
           class="btn btn-danger btn-sm me-4 btn-fixed-width-cnf"
@@ -800,10 +822,10 @@
   </div>
 </div>
 
-<!-- Modal para crear un nuevo rol-->    
-<div 
-  class="modal fade" 
-  id="rolModal" 
+<!-- Modal para crear un nuevo rol-->
+<div
+  class="modal fade"
+  id="rolModal"
   data-bs-backdrop="static"
   data-bs-keyboard="false"
   tabindex="-1"
@@ -834,14 +856,17 @@
         <h1 class="modal-title fs-5" id="staticBackdropLabel" >New <b>Rol</b></h1>
       </div>
 
-      <div class="modal-body">
-      <app-cu-rol></app-cu-rol>
+        <div class="modal-body">
+          <app-cu-rol></app-cu-rol>
+        </div>
       </div>
     </div>
   </div>
 </div>
-</div>
 
 <!-- Modal para mostrar una vista previa de las imágenes-->
-<app-image-modal [imageUrl]="selectedImageUrl" [isVisible]="showModal" (closeModalEvent)="closeImageModal()"></app-image-modal>
-
+<app-image-modal
+  [imageUrl]="selectedImageUrl"
+  [isVisible]="showModal"
+  (closeModalEvent)="closeImageModal()"
+></app-image-modal>
