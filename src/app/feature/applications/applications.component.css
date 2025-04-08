@@ -155,7 +155,8 @@
   left: 0;
   right: 0;
   height: 2px; /* Grosor de la línea */
-  background-color: #7011ce; /* Color de la línea */
+  background-color: var(--header-background-color);
+  opacity: 0.3; /* Opacidad de la línea */
   z-index: 0; /* La línea queda detrás de los íconos */
 }
 
@@ -310,6 +311,82 @@
 .custom-modal-header {
   border-bottom: 2px solid rgb(148, 77, 77);
 }
+/* Modal personalizada para crear rol */
+/* Encabezado con fondo morado y texto blanco */
+.custom-role-modal .modal-header-custom {
+  background-color: #7011ce !important; /* Morado */
+  color: white !important;
+  font-weight: bold;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: none !important;
+}
+
+/* Estilo de los iconos de pasos */
+.step-icons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.step-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Formulario con etiquetas azules */
+.custom-role-modal label {
+  font-weight: bold;
+  color: #0056b3;
+  font-size: 0.9rem;
+}
+
+/* Campos de entrada */
+.custom-role-modal input,
+.custom-role-modal textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 1rem;
+}
+
+/* Estilo de los botones */
+.custom-role-modal .btn {
+  border: 2px solid black;
+  background-color: white;
+  color: black;
+  padding: 8px 15px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.custom-role-modal .btn:hover {
+  background-color: #f8f8f8;
+}
+
+/* Espaciado entre botones */
+.btn-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+
 /* estilo para la ventana modal de crear rol */
 /* .modal-overlay {
   position: fixed;
