@@ -34,6 +34,11 @@
     }
 }
 
+.dropdown-menu {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--sidebar-background-color);
+}
+
 /* Ajustar margen izquierdo en pantallas pequeñas */
 .btn-group {
     display: flex;
