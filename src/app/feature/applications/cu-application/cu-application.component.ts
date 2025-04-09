@@ -144,7 +144,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
       this.isFileSelected = !!input.files?.length;
   
       if (input.files && input.files.length > 0) {
-        const file = input.files[0];
+        const file = input.files[0];        
   
         // Validar que el archivo sea una imagen
         if (!file.type.includes('image')) {
@@ -174,6 +174,12 @@ export class CuApplicationComponent implements OnInit, OnChanges {
   
         this.imagePreview = URL.createObjectURL(file);
         this.isFileChosen = true;
+
+        // ✅ Guardar la imagen y archivo en el DTO parcialmente
+        this.applicationsService.updateApplicationDTO({
+          strUrlImage: this.imagePreview,
+          imageFile: file
+        });
   
         // Actualizar solo el nombre en el formulario
         this.applicationForm.patchValue({

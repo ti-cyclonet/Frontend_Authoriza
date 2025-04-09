@@ -14,7 +14,8 @@ export interface ApplicationDTO {
   strSlug: string;
   strTags: string[];
   strState: string;
-  strRoles: any[]; // Puedes reemplazar 'any' con una interfaz de rol si la tienes
+  strRoles: any[]; 
+  imageFile?: File;
 }
 
 @Injectable({
@@ -34,6 +35,7 @@ export class ApplicationsService {
     strTags: [],
     strState: '',
     strRoles: [],
+    
   };
 
   private apiUrl = '/api/applications';

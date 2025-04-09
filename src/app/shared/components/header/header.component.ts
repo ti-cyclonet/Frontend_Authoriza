@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Inject, Input, OnInit, Output, PLATFORM_ID } from '@angular/core';
 import { DESCRIPTION_APP } from '../../../config/config';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { AuthService } from '../../services/auth/auth.service';
+
 import { Router } from '@angular/router';
 
 @Component({
@@ -9,8 +9,7 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css'],
-  providers: [AuthService]
+  styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
   
@@ -33,8 +32,7 @@ export class HeaderComponent implements OnInit {
   nombreApp = DESCRIPTION_APP;
 
   constructor(
-    @Inject(PLATFORM_ID) private platformId: Object, 
-    private authService: AuthService, 
+    @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router 
   ) {}
 
