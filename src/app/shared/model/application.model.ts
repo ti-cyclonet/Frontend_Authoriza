@@ -9,4 +9,5 @@ export interface Application {
   strTags: string[];
   strState: string;
   strRoles: Rol[];
+  imageFile?: File;
 }
