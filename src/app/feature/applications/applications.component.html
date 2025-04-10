@@ -107,12 +107,13 @@
               scope="row"
               [ngClass]="{
                 selected: application === selectedApplication,
-                'bg-temp text-dark': application.strState === 'TEMPORARY' && application !== selectedApplication
+                'bg-temp': application.strState === 'TEMPORARY' && application !== selectedApplication
               }"
             >
               <span
                 class="badge rounded-badge"
                 [ngClass]="{
+                  'bgd': application.strState === 'TEMPORARY',
                   'badge-selected': application === selectedApplication,
                   'badge-default': application !== selectedApplication
                 }"
@@ -125,7 +126,7 @@
               class="text-start"
               [ngClass]="{
                 selected: application === selectedApplication,
-                'bg-temp text-dark': application.strState === 'TEMPORARY' && application !== selectedApplication
+                'bg-temp': application.strState === 'TEMPORARY' && application !== selectedApplication
               }"
             >
               {{ application?.strName?.toUpperCase() || "[N/A]" }}
@@ -135,7 +136,7 @@
               class="text-start d-none d-xl-table-cell"
               [ngClass]="{
                 selected: application === selectedApplication,
-                'bg-temp text-dark': application.strState === 'TEMPORARY' && application !== selectedApplication
+                'bg-temp': application.strState === 'TEMPORARY' && application !== selectedApplication
               }"
             >
               {{ application?.strDescription || "[N/A]" }}
@@ -146,7 +147,7 @@
               (click)="openImageModal(application.strUrlImage)"
               [ngClass]="{
                 selected: application === selectedApplication,
-                'bg-temp text-dark': application.strState === 'TEMPORARY' && application !== selectedApplication
+                'bg-temp': application.strState === 'TEMPORARY' && application !== selectedApplication
               }"
               style="width: 200px"
             >
@@ -162,7 +163,7 @@
               class="text-start d-none d-xl-table-cell text-center"
               [ngClass]="{
                 selected: application === selectedApplication,
-                'bg-temp text-dark': application.strState === 'TEMPORARY' && application !== selectedApplication
+                'bg-temp': application.strState === 'TEMPORARY' && application !== selectedApplication
               }"
             >
               {{ application?.strSlug || "[N/A]" }}
@@ -172,7 +173,7 @@
               class="text-start d-none d-xl-table-cell text-center"
               [ngClass]="{
                 selected: application === selectedApplication,
-                'bg-temp text-dark': application.strState === 'TEMPORARY' && application !== selectedApplication
+                'bg-temp': application.strState === 'TEMPORARY' && application !== selectedApplication
               }"
             >
               {{ application?.strTags || "[N/A]" }}
@@ -182,12 +183,12 @@
               class="text-center"
               [ngClass]="{
                 selected: application === selectedApplication,
-                'bg-temp text-dark': application.strState === 'TEMPORARY' && application !== selectedApplication
+                'bg-temp': application.strState === 'TEMPORARY' && application !== selectedApplication
               }"
             >
               <span class="badge mt-1"
                 [ngClass]="{
-                  'bg-temp text-dark': application.strState === 'TEMPORARY',
+                  'bg-warning text-dark': application.strState === 'TEMPORARY',
                   'bg-success': application.strState !== 'TEMPORARY'
                 }"
               >
