@@ -215,21 +215,6 @@ a.enabled-icon {
   gap: 10px; 
 }
 
-/* .stick-notification-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background-color: transparent;
-  z-index: 1000;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-} */
-
-
 .table tbody tr td {
   font-size: 0.875rem;
 }
@@ -271,7 +256,14 @@ a.enabled-icon {
 }
 
 .bg-temp{
-  background-color: #FFBC11;
+  background-color: #f8f0dc;
+  font-weight: bold;
+  color: #0056b3;
+}
+.bgd {
+  background-color: #0056b3;
+  font-weight: bold;
+  color: white;
 }
 
 .rounded-badge {

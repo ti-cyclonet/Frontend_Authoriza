@@ -29,19 +29,23 @@ export class ApplicationsComponent implements OnInit {
   
   isModalOpen = false;
   isDTOValid: boolean = false;
-  toastTitle: string = '';
   roleForm: FormGroup;
-  toastType: 'success' | 'warning' | 'danger' | 'primary' = 'success';
   isVisible: boolean = true;
   selectedApplication: Application | null = null;
   isModalRolOpen = false;
-  notifications: Array<{
-    title: string;
-    type: 'success' | 'warning' | 'danger' | 'primary';
-    alertType: 'A' | 'B';
-    container: 0 | 1;
-    visible: boolean;
-  }> = [];
+
+  // configuración notificaciones tipo toast
+    toastTitle: string = '';
+    toastType: 'success' | 'warning' | 'danger' | 'primary' = 'success';
+    notifications: Array<{
+      title: string;
+      type: 'success' | 'warning' | 'danger' | 'primary';
+      alertType: 'A' | 'B';
+      container: 0 | 1;
+      visible: boolean;
+    }> = [];
+    SWNTF: number = 0;
+  // ----------------------------------------------
   
   imagePreview: string | ArrayBuffer | null = null;
   fileName: string = '';
@@ -55,8 +59,6 @@ export class ApplicationsComponent implements OnInit {
   public selectedApplicationId: string | null = null;
   deleteConfirmationText: string = '';
   isDeleteConfirmed: boolean = false;
-
-  SWNTF: number = 0;
 
   selectedImageUrl: string = '';
   showModal: boolean = false;
@@ -94,13 +96,34 @@ export class ApplicationsComponent implements OnInit {
     this.showModal = false;
   }
 
-  addNotification(title: string, type: 'success' | 'warning' | 'danger' | 'primary', alertType: 'A' | 'B', container: 0 | 1) {
-    this.notifications.push({ title, type, alertType, container, visible: true });
-  }
+  // Funciones para NOTIFICACIONES
+    addNotification(title: string, type: 'success' | 'warning' | 'danger' | 'primary', alertType: 'A' | 'B', container: 0 | 1) {
+      this.notifications.push({ title, type, alertType, container, visible: true });
+    }
 
-  removeNotification(index: number) {
-    this.notifications.splice(index, 1);
-  }
+    removeNotification(index: number) {
+      this.notifications.splice(index, 1);
+    }
+  
+    showToast(message: string, type: 'success' | 'warning' | 'danger' | 'primary', alertType: 'A' | 'B',  container: 0 | 1 ) {
+      const notification = {
+        title: message,
+        type,
+        alertType,
+        container,
+        visible: true
+      };
+      this.notifications.push(notification);
+      this.cdr.detectChanges();
+
+      if (alertType === 'A') {
+        setTimeout(() => {
+          notification.visible = false;
+          this.cdr.detectChanges();
+        }, 5000);
+      }
+    }
+  // ----------------------------------------------
 
   get selectedFile() {
     return this.appCuApplication?.selectedFile;
@@ -284,25 +307,7 @@ export class ApplicationsComponent implements OnInit {
         return 'info-circle';
     }
   }
-  // Función para mostrar el toast con el mensaje y tipo correctos
-  showToast(message: string, type: 'success' | 'warning' | 'danger' | 'primary', alertType: 'A' | 'B',  container: 0 | 1 ) {
-    const notification = {
-      title: message,
-      type,
-      alertType,
-      container,
-      visible: true
-    };
-    this.notifications.push(notification);
-    this.cdr.detectChanges();
-
-    if (alertType === 'A') {
-      setTimeout(() => {
-        notification.visible = false;
-        this.cdr.detectChanges();
-      }, 5000);
-    }
-  }
+  
   // funcion para abrir y cerrar ventana modal de crear rol
   openModalRol() {
     this.isModalRolOpen = true;
