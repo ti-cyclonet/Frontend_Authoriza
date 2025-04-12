@@ -1,5 +1,6 @@
 <div class="container">
   <form [formGroup]="applicationForm" (ngSubmit)="onSubmit()">
+    
     <!-- Caja amarilla -->
     <div *ngIf="isYellowVisible" class="yellow-box">
       <div class="form-group">
@@ -286,5 +287,6 @@
         </svg>
       </button>
     </div>
+
   </form>
 </div>

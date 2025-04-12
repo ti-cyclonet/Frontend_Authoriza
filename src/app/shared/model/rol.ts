@@ -5,5 +5,6 @@ export interface Rol {
     strName: string;
     strDescription1: string;
     strDescription2: string;
+    strState?: string;
     menuOptions: MenuOption[];
   }  
