@@ -23,8 +23,15 @@
 /* Estilo para la marca de la aplicación */
 .navbar-brand {
     text-align: center;
-    color: var(--primary-text-color); /* Color del texto de la aplicación */
+    color: var(--header-icon-color);
     font-size: 1.5rem;
+}
+
+.navbar-brand:hover {
+    color: var(--header-icon-color);
+    text-decoration: none; 
+    background-color: transparent;
+    cursor: default;
 }
 
 /* Ocultar el título en pantallas medianas o menores */
@@ -56,8 +63,8 @@
 
 /* Estilo para los íconos SVG dentro de los botones */
 .btn-group .btn svg {
-    fill: var(--header-icon-color); /* Color inicial de los íconos */
-    width: 36px; /* Tamaño del ícono */
+    fill: var(--header-icon-color); 
+    width: 36px; 
     height: 36px;
     transition: transform 0.3s ease, fill 0.3s ease;
 }
@@ -69,13 +76,13 @@
         height: 30px;
     }
     .toggle-button svg {
-        margin-left: 30px; /* Ajusta este valor según sea necesario */
+        margin-left: 30px;
     }
 }
 
 /* Efecto de sombra y cambio de color para los íconos al pasar el mouse */
 .btn-group .btn:hover svg {
-    fill: var(--sidebar-background-color); /* Cambia el color a negro */
+    fill: var(--sidebar-background-color);
     transform: scale(1.2);
 }
 

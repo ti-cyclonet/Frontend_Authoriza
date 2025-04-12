@@ -1,6 +1,8 @@
+// src/app/services/roles.service.ts
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -8,29 +10,14 @@ import { HttpClient } from '@angular/common/http';
 export class RolesService {
   private rolesSubject = new BehaviorSubject<any[]>([]);
   public roles$ = this.rolesSubject.asObservable();
-
-  constructor(private http: HttpClient) {}
   private apiUrl = '/api/roles';
 
-  // Método para obtener los roles desde el servidor
-  getRoles(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
-  }
+  constructor(private http: HttpClient) {}
 
-  // Método para cargar roles y actualizar el BehaviorSubject
-  loadRoles(): void {
-    this.getRoles().subscribe({
-      next: (roles) => {
-        this.rolesSubject.next(roles);
-      },
-      error: (error) => {
-        console.error('Error loading roles.', error);
-      }
-    });
-  }
-
-  // Método para acceder a los roles actuales
-  getCurrentRoles(): any[] {
-    return this.rolesSubject.getValue();
+  checkApplicationName(strName: string): Observable<boolean> {
+    const params = { strName };
+    return this.http
+      .get<{ available: boolean }>(`${this.apiUrl}/check-name`, { params })
+      .pipe(map((res) => res.available));
   }
 }

@@ -5,7 +5,6 @@ import { MenuOption } from '../model/menu_option';
 export function isApplicationDTOValid(applicationDTO: Application): boolean {
   if (!applicationDTO) return false;
 
-  // Validar campos principales
   const { strName, strDescription, strUrlImage, strSlug, strTags, strRoles } = applicationDTO;
 
   if (
@@ -19,7 +18,6 @@ export function isApplicationDTOValid(applicationDTO: Application): boolean {
     return false;
   }
 
-  // Validar cada rol
   for (const rol of strRoles) {
     const { strName, strDescription1, strDescription2, menuOptions } = rol as any;
 
@@ -32,7 +30,6 @@ export function isApplicationDTOValid(applicationDTO: Application): boolean {
       return false;
     }
 
-    // Validar cada opción de menú
     for (const menu of menuOptions) {
       const {
         strName,
@@ -46,12 +43,11 @@ export function isApplicationDTOValid(applicationDTO: Application): boolean {
         !strName?.trim() ||
         !strDescription?.trim() ||
         !strType?.trim() ||
-        typeof ingOrder !== 'number'
+        isNaN(Number(ingOrder))
       ) {
         return false;
       }
 
-      // Validar submenús si existen
       if (Array.isArray(strSubmenus)) {
         for (const submenu of strSubmenus) {
           const {
@@ -66,7 +62,7 @@ export function isApplicationDTOValid(applicationDTO: Application): boolean {
             !strName?.trim() ||
             !strDescription?.trim() ||
             !strType?.trim() ||
-            typeof ingOrder !== 'number' ||
+            isNaN(Number(ingOrder)) ||
             !strUrl?.trim()
           ) {
             return false;

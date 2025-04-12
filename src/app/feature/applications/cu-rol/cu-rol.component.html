@@ -1,20 +1,26 @@
 <div class="container">
-    <form [formGroup]="applicationForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="rolesForm" (ngSubmit)="onSubmit()">
       <!-- Campo Name -->
       <div class="mb-3">
         <label for="name" class="form-label">Name</label>
         <input type="text" id="name" class="form-control" formControlName="name">
-        <div *ngIf="applicationForm.get('name')?.invalid && applicationForm.get('name')?.touched" class="text-danger">
-          Name is required (max 50 characters)
+      
+        <div *ngIf="rolesForm.get('name')?.errors?.['required'] && rolesForm.get('name')?.touched" class="text-danger">
+          Rol name is required.
+        </div>
+      
+        <div *ngIf="rolesForm.get('name')?.errors?.['notAvailable'] && !rolesForm.get('name')?.errors?.['required'] && rolesForm.get('name')?.touched" class="text-danger">
+          The rol name is already taken.  Please try another.
         </div>
       </div>
+      
   
       <!-- Campo Description A -->
       <div class="mb-3">
         <label for="description1" class="form-label">Description A</label>
         <textarea id="description1" class="form-control" formControlName="description1"></textarea>
-        <div *ngIf="applicationForm.get('description1')?.invalid && applicationForm.get('description1')?.touched" class="text-danger">
-          Description 1 is required (max 100 characters)
+        <div *ngIf="rolesForm.get('description1')?.invalid && rolesForm.get('description1')?.touched" class="text-danger">
+          Description 1 is required.
         </div>
       </div>
   
@@ -22,16 +28,16 @@
       <div class="mb-3">
         <label for="description2" class="form-label">Description B</label>
         <textarea id="description2" class="form-control" formControlName="description2"></textarea>
-        <div *ngIf="applicationForm.get('description2')?.invalid && applicationForm.get('description2')?.touched" class="text-danger">
-          Description 2 is required (max 100 characters)
+        <div *ngIf="rolesForm.get('description2')?.invalid && rolesForm.get('description2')?.touched" class="text-danger">
+          Description 2 is required.
         </div>
       </div>
   
       <!-- Botón de envío -->
       <div class="d-flex justify-content-end">
-        <button type="submit" class="btn btn-primary me-2" [disabled]="applicationForm.invalid">Crear</button>
+        <button type="submit" class="btn btn-primary me-2" data-bs-dismiss="modal" [disabled]="rolesForm.invalid">Add</button>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="onCancel()">Cancel</button>
-    </div>
+      </div>
     </form>
   </div>
   

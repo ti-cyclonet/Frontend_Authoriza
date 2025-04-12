@@ -12,7 +12,7 @@
 </div>
 
 <!-- Contenedor superior (todo el ancho) -->
-<div>
+<div class="p-1">
   <ng-container *ngFor="let notification of notifications; let i = index">
     <app-notifications
       *ngIf="notification.container === 1 && notification.visible"
@@ -53,7 +53,7 @@
           [attr.aria-disabled]="!isDTOValid"
           [attr.tabindex]="!isDTOValid ? -1 : 0"
           href="#"
-          (click)="isDTOValid"
+          (click)="(isDTOValid)"
         >
           <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
             <use
@@ -107,13 +107,15 @@
               scope="row"
               [ngClass]="{
                 selected: application === selectedApplication,
-                'bg-temp': application.strState === 'TEMPORARY' && application !== selectedApplication
+                'bg-temp':
+                  application.strState === 'TEMPORARY' &&
+                  application !== selectedApplication
               }"
             >
               <span
                 class="badge rounded-badge"
                 [ngClass]="{
-                  'bgd': application.strState === 'TEMPORARY',
+                  bgd: application.strState === 'TEMPORARY',
                   'badge-selected': application === selectedApplication,
                   'badge-default': application !== selectedApplication
                 }"
@@ -121,33 +123,39 @@
                 {{ index + 1 }}
               </span>
             </th>
-        
+
             <td
               class="text-start"
               [ngClass]="{
                 selected: application === selectedApplication,
-                'bg-temp': application.strState === 'TEMPORARY' && application !== selectedApplication
+                'bg-temp':
+                  application.strState === 'TEMPORARY' &&
+                  application !== selectedApplication
               }"
             >
               {{ application?.strName?.toUpperCase() || "[N/A]" }}
             </td>
-        
+
             <td
               class="text-start d-none d-xl-table-cell"
               [ngClass]="{
                 selected: application === selectedApplication,
-                'bg-temp': application.strState === 'TEMPORARY' && application !== selectedApplication
+                'bg-temp':
+                  application.strState === 'TEMPORARY' &&
+                  application !== selectedApplication
               }"
             >
               {{ application?.strDescription || "[N/A]" }}
             </td>
-        
+
             <td
               class="d-none d-xl-table-cell text-center"
               (click)="openImageModal(application.strUrlImage)"
               [ngClass]="{
                 selected: application === selectedApplication,
-                'bg-temp': application.strState === 'TEMPORARY' && application !== selectedApplication
+                'bg-temp':
+                  application.strState === 'TEMPORARY' &&
+                  application !== selectedApplication
               }"
               style="width: 200px"
             >
@@ -158,49 +166,60 @@
                 title="Ampliar"
               />
             </td>
-        
+
             <td
               class="text-start d-none d-xl-table-cell text-center"
               [ngClass]="{
                 selected: application === selectedApplication,
-                'bg-temp': application.strState === 'TEMPORARY' && application !== selectedApplication
+                'bg-temp':
+                  application.strState === 'TEMPORARY' &&
+                  application !== selectedApplication
               }"
             >
               {{ application?.strSlug || "[N/A]" }}
             </td>
-        
+
             <td
               class="text-start d-none d-xl-table-cell text-center"
               [ngClass]="{
                 selected: application === selectedApplication,
-                'bg-temp': application.strState === 'TEMPORARY' && application !== selectedApplication
+                'bg-temp':
+                  application.strState === 'TEMPORARY' &&
+                  application !== selectedApplication
               }"
             >
               {{ application?.strTags || "[N/A]" }}
             </td>
-        
+
             <td
               class="text-center"
               [ngClass]="{
                 selected: application === selectedApplication,
-                'bg-temp': application.strState === 'TEMPORARY' && application !== selectedApplication
+                'bg-temp':
+                  application.strState === 'TEMPORARY' &&
+                  application !== selectedApplication
               }"
             >
-              <span class="badge mt-1"
+              <span
+                class="badge mt-1"
                 [ngClass]="{
                   'bg-warning text-dark': application.strState === 'TEMPORARY',
                   'bg-success': application.strState !== 'TEMPORARY'
                 }"
               >
-                {{ application.strState === 'TEMPORARY' ? 'NOT SAVED' : 'ACTIVE' }}
+                {{
+                  application.strState === "TEMPORARY" ? "NOT SAVED" : "ACTIVE"
+                }}
               </span>
             </td>
-        
+
             <td
               class="text-center actions-col"
               [ngClass]="{
                 selected: application === selectedApplication,
-                'bg-temp text-dark': application.strState === 'TEMPORARY' && application !== selectedApplication
+                'bg-temp text-dark':
+                  application.strState === 'TEMPORARY' &&
+                  application !== selectedApplication
               }"
             >
               <div>
@@ -211,11 +230,17 @@
                   title="Details"
                   (click)="showRoles(application)"
                 >
-                  <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
-                    <use xlink:href="./assets/icons/bootstrap-icons.svg#list-nested"></use>
+                  <svg
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                    class="status-icon"
+                  >
+                    <use
+                      xlink:href="./assets/icons/bootstrap-icons.svg#list-nested"
+                    ></use>
                   </svg>
                 </button>
-        
+
                 <button
                   type="button"
                   class="btn btn-outline-dark btn-sm me-2"
@@ -224,11 +249,17 @@
                   (click)="openModal(true, application.id)"
                   title="Edit"
                 >
-                  <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
-                    <use xlink:href="./assets/icons/bootstrap-icons.svg#pencil"></use>
+                  <svg
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                    class="status-icon"
+                  >
+                    <use
+                      xlink:href="./assets/icons/bootstrap-icons.svg#pencil"
+                    ></use>
                   </svg>
                 </button>
-        
+
                 <button
                   type="button"
                   class="btn btn-outline-dark btn-sm me-2"
@@ -237,15 +268,20 @@
                   (click)="setSelectedApplication(application)"
                   data-bs-target="#confirmDelete"
                 >
-                  <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
-                    <use xlink:href="./assets/icons/bootstrap-icons.svg#trash3"></use>
+                  <svg
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                    class="status-icon"
+                  >
+                    <use
+                      xlink:href="./assets/icons/bootstrap-icons.svg#trash3"
+                    ></use>
                   </svg>
                 </button>
               </div>
             </td>
           </tr>
         </tbody>
-        
       </table>
     </div>
 
@@ -293,7 +329,10 @@
           <tr>
             <th scope="col" class="id-col text-center">Item</th>
             <th scope="col" class="text-center d-none d-xl-table-cell">Name</th>
-            <th scope="col" class="text-center">Description</th>
+            <th scope="col" class="text-center">Description A</th>
+            <th scope="col" class="text-centerd-none d-xl-table-cell">
+              Description B
+            </th>
             <th scope="col" class="text-center d-none d-xl-table-cell">
               State
             </th>
@@ -301,11 +340,21 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let rol of selectedApplication?.strRoles; let i = index">
-            <th [ngClass]="{ selected: rol === selectedRol }" scope="row">
+          <tr
+            *ngFor="let rol of selectedApplication?.strRoles; let i = index"
+            [ngClass]="{ 'bg-temp': rol.strState === 'TEMPORARY' }"
+          >
+            <th
+              scope="row"
+              [ngClass]="{
+                selected: rol === selectedRol,
+                'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
+              }"
+            >
               <span
                 class="badge rounded-badge"
                 [ngClass]="{
+                  bgd: rol.strState === 'TEMPORARY',
                   'badge-selected': rol === selectedRol,
                   'badge-default': rol !== selectedRol
                 }"
@@ -314,27 +363,54 @@
               </span>
             </th>
             <td
-              [ngClass]="{ selected: rol === selectedRol }"
+              [ngClass]="{
+                selected: rol === selectedRol,
+                'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
+              }"
               class="d-none d-xl-table-cell"
             >
               {{ rol.strName }}
             </td>
-            <td [ngClass]="{ selected: rol === selectedRol }">
+            <td
+              [ngClass]="{
+                selected: rol === selectedRol,
+                'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
+              }"
+            >
               {{ rol.strDescription1.toUpperCase() }}
             </td>
             <td
-              [ngClass]="{ selected: rol === selectedRol }"
+              [ngClass]="{
+                selected: rol === selectedRol,
+                'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
+              }"
+              class="d-none d-xl-table-cell"
+            >
+              {{ rol.strDescription2 }}
+            </td>
+            <td
+              [ngClass]="{
+                selected: rol === selectedRol,
+                'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
+              }"
               class="text-center d-none d-xl-table-cell"
             >
               <span
                 class="badge mt-1"
-                style="background-color: #007f00; color: white"
+                [ngClass]="{
+                  'bg-warning text-dark': rol.strState === 'TEMPORARY',
+                  'bg-success': rol.strState !== 'TEMPORARY'
+                }"
               >
-                ACTIVE
+                {{ rol.strState === "TEMPORARY" ? "NOT SAVED" : "ACTIVE" }}
               </span>
             </td>
+
             <td
-              [ngClass]="{ selected: rol === selectedRol }"
+              [ngClass]="{
+                selected: rol === selectedRol,
+                'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
+              }"
               class="text-center actions-col"
             >
               <div>
@@ -832,33 +908,58 @@
   tabindex="-1"
   aria-labelledby="staticBackdropLabel"
   aria-hidden="true"
-  #modalRef
 >
-  <div class="modal-dialog modal-dialog-centered">> 
-    <div class=" justify-content-between modal-header-custom w-100">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="justify-content-between modal-header-custom w-100">
       <!-- Título del Modal con Íconos de Paso -->
       <div class="modal-content custom-role-modal">
-      <div class="modal-header justify-content-between modal-header-custom">
-        <!-- Íconos de Pasos con línea de unión -->
-        <div class="step-icons d-flex position-relative">
-          <!-- Ícono para el paso 1 -->
-          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon" hidden>
-            <use [attr.href]="'assets/icons/bootstrap-icons.svg#1-circle'" [attr.xlink:href]="'assets/icons/bootstrap-icons.svg#1-circle'"></use>
-          </svg>
-          <!-- Ícono para el paso 2 -->
-          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2" hidden>
-            <use [attr.href]="'assets/icons/bootstrap-icons.svg#2-circle'" [attr.xlink:href]="'assets/icons/bootstrap-icons.svg#2-circle'"></use>
-          </svg>
-          <!-- Ícono para el paso 3 -->
-          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2" hidden>
-            <use [attr.href]="'assets/icons/bootstrap-icons.svg#3-circle'" [attr.xlink:href]="'assets/icons/bootstrap-icons.svg#3-circle'"></use>
-          </svg>
+        <div class="modal-header justify-content-between modal-header-custom">
+          <!-- Íconos de Pasos con línea de unión -->
+          <div class="step-icons d-flex position-relative">
+            <!-- Ícono para el paso 1 -->
+            <svg
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              class="step-icon"
+              hidden
+            >
+              <use
+                [attr.href]="'assets/icons/bootstrap-icons.svg#1-circle'"
+                [attr.xlink:href]="'assets/icons/bootstrap-icons.svg#1-circle'"
+              ></use>
+            </svg>
+            <!-- Ícono para el paso 2 -->
+            <svg
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              class="step-icon ms-2"
+              hidden
+            >
+              <use
+                [attr.href]="'assets/icons/bootstrap-icons.svg#2-circle'"
+                [attr.xlink:href]="'assets/icons/bootstrap-icons.svg#2-circle'"
+              ></use>
+            </svg>
+            <!-- Ícono para el paso 3 -->
+            <svg
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              class="step-icon ms-2"
+              hidden
+            >
+              <use
+                [attr.href]="'assets/icons/bootstrap-icons.svg#3-circle'"
+                [attr.xlink:href]="'assets/icons/bootstrap-icons.svg#3-circle'"
+              ></use>
+            </svg>
+          </div>
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">
+            New <b>Rol</b>
+          </h1>
         </div>
-        <h1 class="modal-title fs-5" id="staticBackdropLabel" >New <b>Rol</b></h1>
-      </div>
 
         <div class="modal-body">
-          <app-cu-rol></app-cu-rol>
+          <app-cu-rol (rolCreado)="onRolCreado($event)"></app-cu-rol>
         </div>
       </div>
     </div>
