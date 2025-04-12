@@ -1,5 +1,5 @@
 
-import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { ApplicationsService } from '../../shared/services/applications/applications.service';
 import { CuApplicationComponent } from './cu-application/cu-application.component';
 import { NotificationsComponent } from '../../shared/components/notifications/notifications.component';
@@ -11,6 +11,8 @@ import { ImageModalComponent } from '../../shared/components/image-modal/image-m
 import { CuRolComponent } from "./cu-rol/cu-rol.component";
 import { Subject, takeUntil } from 'rxjs';
 import { isApplicationDTOValid } from '../../shared/utils/validation.utils';
+import { Rol } from '../../shared/model/rol';
+import { BsModalRef } from 'ngx-bootstrap/modal';
 declare var bootstrap: any;
 
 
@@ -22,16 +24,23 @@ declare var bootstrap: any;
   styleUrls: ['./applications.component.css'],
 })
 export class ApplicationsComponent implements OnInit {
+  rolesModal?: BsModalRef;
   private destroy$ = new Subject<void>();
   @Input() applications: Application[] = [];
   @Input() localApplications: Application[] = [];
   @ViewChild(CuApplicationComponent) appCuApplication!: CuApplicationComponent;
+  @ViewChild('rolesModal') rolesModalElement!: ElementRef;
   
   isModalOpen = false;
-  isDTOValid: boolean = false;
-  roleForm: FormGroup;
+  isDTOValid: boolean = false;  
   isVisible: boolean = true;
+
   selectedApplication: Application | null = null;
+  selectedMenuOptions: MenuOption[] = [];
+  selectedRol: any = null;
+  selectedSubmenus: any[] = []; 
+  selectedMenuOption: any | null = null; 
+
   isModalRolOpen = false;
 
   // configuración notificaciones tipo toast
@@ -50,11 +59,7 @@ export class ApplicationsComponent implements OnInit {
   imagePreview: string | ArrayBuffer | null = null;
   fileName: string = '';
   isRolesTableVisible = false;
-  isMenuTableVisible = false;
-  selectedMenuOptions: MenuOption[] = [];
-  selectedRol: any = null;
-  selectedSubmenus: any[] = []; 
-  selectedMenuOption: any | null = null; 
+  isMenuTableVisible = false;  
   isSubmenuTableVisible: boolean = false;
   public selectedApplicationId: string | null = null;
   deleteConfirmationText: string = '';
@@ -67,20 +72,10 @@ export class ApplicationsComponent implements OnInit {
   constructor(
     public applicationsService: ApplicationsService,
     private cdr: ChangeDetectorRef,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    public modalRef: BsModalRef
   ) {
-    this.notifications = [];
-    this.roleForm = this.fb.group({
-      roleName: ['', Validators.required],
-      description: ['', Validators.required],
-    });
-  }
-
-  onSubmit() {
-    if (this.roleForm.valid) {      
-      this.roleForm.reset();
-      this.closeModal();
-    }
+    this.notifications = [];    
   }
 
   get allApplications() {
@@ -145,7 +140,7 @@ export class ApplicationsComponent implements OnInit {
   }
   
   showRoles(application: Application) {
-    this.selectedApplication = application;
+    this.setSelectedApplication(application);
     this.isRolesTableVisible = true;
     // console.log('APLICACION SELECCIONADA: ', this.selectedApplication);
   }
@@ -237,21 +232,45 @@ export class ApplicationsComponent implements OnInit {
     this.isModalOpen = false;
   }
 
-  onApplicationCreated() {    
-    // this.showToast('Application was created successfully.', 'success', 'A', 0);
+  onApplicationCreated() {
     this.showSaveButton = true;
     this.showToast(`The app has been added <b>temporarily</b>. You must assign at least one role and its menu options before saving it to the backend.`, 'warning', 'B', 1);
     this.closeModal();
     
     // Validar DTO
-    const dto = this.applicationsService.getApplicationDTO(); // o como lo estés accediendo
-    this.isDTOValid = isApplicationDTOValid(dto as any); // puedes adaptar validación para ApplicationDTO si lo prefieres
+    const dto = this.applicationsService.getApplicationDTO();
+    this.isDTOValid = isApplicationDTOValid(dto as any);
   }
 
   setSelectedApplication(application: Application) {
     this.selectedApplication = application;
+    this.applicationsService.updateApplicationDTO(application);
   }
 
+  onRolCreado(nuevoRol: Rol): void {    
+    if (this.selectedApplication) {
+      const newRoles = this.applicationsService.getTemporaryRoles();
+    
+      newRoles.forEach((role) => {
+        const exists = this.selectedApplication!.strRoles.some(
+          (r) => r.id === role.id
+        );
+        if (!exists) {
+          this.selectedApplication!.strRoles.push(role);
+        }
+      });
+    }
+
+    this.showSaveButton = true;
+    this.showToast(
+      `The roles were added temporarily. You must assign at least one menu option before saving to the database.`,
+      'warning', 'B', 1
+    );
+
+    this.closeModalRol();
+  }
+
+  
   confirmDelete(): void {
     if (this.isDeleteConfirmed) {
       console.log("Application deleted!");
@@ -314,11 +333,9 @@ export class ApplicationsComponent implements OnInit {
   }
 
   closeModalRol() {
-    const modalElement = document.getElementById('roleModal');
-    if (modalElement) {
-      const modal = bootstrap.Modal.getInstance(modalElement);
-      modal?.hide();
-    }
+    console.log("Modal closed!");
+    this.modalRef.hide();
   }
+  
 }
 
