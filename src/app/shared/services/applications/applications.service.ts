@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Application } from '../../model/application.model';
 import { isApplicationDTOValid } from '../../utils/validation.utils';
-
+import { Rol } from '../../model/rol';
 
 export interface ApplicationDTO {
   id?: string;
@@ -14,8 +14,12 @@ export interface ApplicationDTO {
   strSlug: string;
   strTags: string[];
   strState: string;
-  strRoles: any[]; 
+  strRoles: Rol[];
   imageFile?: File;
+}
+
+export interface TempRol extends Rol {
+  isTemporary?: boolean;
 }
 
 @Injectable({
@@ -25,7 +29,6 @@ export class ApplicationsService {
   private applicationsSubject = new BehaviorSubject<Application[]>([]);
   public applications$ = this.applicationsSubject.asObservable();
 
-  // ✅ DTO inicializado con valores por defecto
   public applicationDTO: ApplicationDTO = {
     id: '',
     strName: '',
@@ -35,7 +38,6 @@ export class ApplicationsService {
     strTags: [],
     strState: '',
     strRoles: [],
-    
   };
 
   private apiUrl = '/api/applications';
@@ -45,12 +47,9 @@ export class ApplicationsService {
 
   public editMode: boolean = false;
   public idApplication: string = '';
+  private temporaryRoles: TempRol[] = [];
 
   constructor(private http: HttpClient) {}
-
-  // ---------------------------------------
-  // Modo edición y control de ID
-  // ---------------------------------------
 
   setEditMode(sw: boolean) {
     this.editMode = sw;
@@ -68,7 +67,6 @@ export class ApplicationsService {
     return this.idApplication;
   }
 
-
   setApplicationDTO(dto: ApplicationDTO): void {
     this.applicationDTO = dto;
   }
@@ -82,15 +80,15 @@ export class ApplicationsService {
       ...this.applicationDTO,
       ...fields,
     };
-    console.log('DTO actualizado:', this.applicationDTO);
 
+    console.log('DTO actualizado:', this.applicationDTO);
     const isValid = isApplicationDTOValid(this.applicationDTO as any);
     console.log('¿Es válido el ApplicationDTO?', isValid);
   }
 
-  // ---------------------------------------
-  // CRUD de Aplicaciones
-  // ---------------------------------------
+  // ===================
+  // Aplicaciones
+  // ===================
 
   getApplicationById(id: string): Observable<Application> {
     return this.http.get<Application>(`${this.getApplicationByIdUrl}/${id}`);
@@ -105,7 +103,6 @@ export class ApplicationsService {
     const updatedApps = [...currentApps, app];
     this.applicationsSubject.next(updatedApps);
 
-    // ✅ Actualizar applicationDTO con los datos recibidos
     this.setApplicationDTO({
       id: app.id || '',
       strName: app.strName || '',
@@ -120,7 +117,9 @@ export class ApplicationsService {
 
   updateTemporaryApplication(updatedApp: Application): void {
     const apps = this.applicationsSubject.getValue();
-    const updatedApps = apps.map(app => app.id === updatedApp.id ? updatedApp : app);
+    const updatedApps = apps.map(app =>
+      app.id === updatedApp.id ? updatedApp : app
+    );
     this.applicationsSubject.next(updatedApps);
   }
 
@@ -155,7 +154,7 @@ export class ApplicationsService {
       }),
       catchError((error) => {
         console.error('Error creating application:', error);
-        return throwError(error);
+        return throwError(() => error);
       })
     );
   }
@@ -173,12 +172,54 @@ export class ApplicationsService {
       }),
       catchError((error) => {
         console.error('Error updating application:', error);
-        return throwError(error);
+        return throwError(() => error);
       })
     );
   }
 
   getApplicationByName(strName: string): Observable<Application> {
     return this.http.get<Application>(`${this.apiUrl}/${strName}`);
+  }
+
+  // ===================
+  // Roles Temporales
+  // ===================
+
+  addTemporaryRole(role: Rol): void {
+    const tempRole: TempRol = { ...role, isTemporary: true };
+  
+    // 1. Añadir a lista temporal interna
+    this.temporaryRoles.push(tempRole);
+  
+    // 2. Añadir al DTO
+    this.applicationDTO.strRoles.push(tempRole);
+  
+    // 3. También actualizar los roles de la aplicación seleccionada en la lista (si corresponde)
+    const apps = this.applicationsSubject.getValue();
+    const updatedApps = apps.map(app => {
+      if (app.id === this.idApplication) {
+        const existingRoles = app.strRoles || [];
+        // Solo agregar si aún no existe (por id)
+        const exists = existingRoles.some(r => r.id === tempRole.id);
+        if (!exists) {
+          return {
+            ...app,
+            strRoles: [...existingRoles, tempRole],
+          };
+        }
+      }
+      return app;
+    });
+  
+    this.applicationsSubject.next(updatedApps);
+  }
+
+  getTemporaryRoles(): TempRol[] {
+    return this.temporaryRoles;
+  }
+
+  clearTemporaryRoles(): void {
+    this.temporaryRoles = [];
+    this.applicationDTO.strRoles = this.applicationDTO.strRoles.filter((r: TempRol) => !r.isTemporary);
   }
 }
