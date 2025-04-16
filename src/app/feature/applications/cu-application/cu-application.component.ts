@@ -282,12 +282,14 @@ export class CuApplicationComponent implements OnInit, OnChanges {
   onSubmit(): void {
     if (this.applicationForm.valid) {
       const tagsArray = this.strTags.controls.map(control => control.get('tag')?.value);
+      const appName = this.applicationForm.get('applicationName')?.value;
+      const generatedSlug = this.generateSlug(appName);
       const newApplication: Application = {
         id: 'temp-' + Math.random().toString(36).substr(2, 9),
         strName: this.applicationForm.get('applicationName')?.value,
         strDescription: this.applicationForm.get('description')?.value,
         strUrlImage: this.imagePreview || '',
-        strSlug: '[N/A]',
+        strSlug: generatedSlug,
         strTags: tagsArray,
         strState: 'TEMPORARY',
         strRoles: []
@@ -297,7 +299,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
         strName: this.applicationForm.get('applicationName')?.value,
         strDescription: this.applicationForm.get('description')?.value,
         strUrlImage: this.imagePreview || '',
-        strSlug: '[N/A]',
+        strSlug: generatedSlug,
         strTags: tagsArray,
         strState: 'TEMPORARY',
         strRoles: []
@@ -312,6 +314,14 @@ export class CuApplicationComponent implements OnInit, OnChanges {
       this.onCancel();
     }
   }
+
+  private generateSlug(name: string): string {
+    return name
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '_')
+      .concat('_app');
+  }  
 
   onPrevious() {
     if (this.isGreenVisible) {

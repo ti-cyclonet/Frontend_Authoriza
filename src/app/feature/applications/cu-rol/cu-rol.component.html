@@ -1,8 +1,8 @@
 <div class="container">
     <form [formGroup]="rolesForm" (ngSubmit)="onSubmit()">
       <!-- Campo Name -->
-      <div class="mb-3">
-        <label for="name" class="form-label">Name</label>
+      <div class="form-group mb-3">        
+        <label for="name">Rol Name </label>
         <input type="text" id="name" class="form-control" formControlName="name">
       
         <div *ngIf="rolesForm.get('name')?.errors?.['required'] && rolesForm.get('name')?.touched" class="text-danger">
@@ -16,7 +16,7 @@
       
   
       <!-- Campo Description A -->
-      <div class="mb-3">
+      <div class="form-group mb-3">
         <label for="description1" class="form-label">Description A</label>
         <textarea id="description1" class="form-control" formControlName="description1"></textarea>
         <div *ngIf="rolesForm.get('description1')?.invalid && rolesForm.get('description1')?.touched" class="text-danger">
@@ -25,18 +25,17 @@
       </div>
   
       <!-- Campo Description B -->
-      <div class="mb-3">
+      <div class="form-group mb-3">
         <label for="description2" class="form-label">Description B</label>
         <textarea id="description2" class="form-control" formControlName="description2"></textarea>
         <div *ngIf="rolesForm.get('description2')?.invalid && rolesForm.get('description2')?.touched" class="text-danger">
           Description 2 is required.
         </div>
       </div>
-  
-      <!-- Botón de envío -->
-      <div class="d-flex justify-content-end">
-        <button type="submit" class="btn btn-primary me-2" data-bs-dismiss="modal" [disabled]="rolesForm.invalid">Add</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="onCancel()">Cancel</button>
+      
+      <div class="d-flex justify-content-between">
+        <button type="button" class="btn btn-outline-dark btn-sm mx-4" style="width: 100px" data-bs-dismiss="modal" (click)="onCancel()">Cancel</button>
+        <button type="submit" class="btn btn-outline-dark btn-sm mx-4" style="width: 100px" data-bs-dismiss="modal" [disabled]="rolesForm.invalid">Add</button>
       </div>
     </form>
   </div>

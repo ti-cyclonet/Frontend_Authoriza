@@ -21,6 +21,12 @@
   /* font-weight: bold; */
 }
 
+.disabled-icon {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+
 /* Contenedor de botones */
 .roles-buttons {
   display: flex;
@@ -181,10 +187,23 @@
 }
 /* Estilo de los íconos del título */
 .title-icon {
-  margin-right: 0.3rem;
-  width: 30px; 
-  height: 30px; 
+  /* margin-right: 0.3rem; */
+  width: 25px; 
+  height: 25px; 
   color: #000;
+}
+
+.custom-btn-group {
+  padding: 5px;
+  border: 1px solid var(--sidebar-background-color);
+  border-radius: 5px;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+
+  /* Centrado y separación */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem; /* equivalente a gap-2 de Bootstrap */
 }
 
 a.disabled-icon {
@@ -255,13 +274,30 @@ a.enabled-icon {
   color: white;
 }
 
-.bg-temp{
+/* .bg-temp{
   background-color: #f8f0dc;
   font-weight: bold;
   color: #0056b3;
+} */
+.badge-app {
+  background-color: #b30000;
 }
+
+/* Badge circular sin texto */
+.badge-app-circle {
+  background-color: var(--sidebar-background-color);
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  position: absolute;
+  top: 6px;
+  right: 1px;
+  transform: translate(50%, -50%);
+  border: 2px solid white;
+}
+
 .bgd {
-  background-color: #0056b3;
+  /* background-color: #0056b3; */
   font-weight: bold;
   color: white;
 }
