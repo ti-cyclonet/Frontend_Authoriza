@@ -1,4 +1,3 @@
-
 import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { ApplicationsService } from '../../shared/services/applications/applications.service';
 import { CuApplicationComponent } from './cu-application/cu-application.component';
@@ -34,7 +33,7 @@ export class ApplicationsComponent implements OnInit {
   isModalOpen = false;
   isDTOValid: boolean = false;  
   isVisible: boolean = true;
-
+  
   selectedApplication: Application | null = null;
   selectedMenuOptions: MenuOption[] = [];
   selectedRol: any = null;
@@ -67,7 +66,8 @@ export class ApplicationsComponent implements OnInit {
 
   selectedImageUrl: string = '';
   showModal: boolean = false;
-  showSaveButton = false;
+  showSaveButton = false;  
+
 
   constructor(
     public applicationsService: ApplicationsService,
@@ -205,20 +205,18 @@ export class ApplicationsComponent implements OnInit {
   openModal(edit: boolean, id?: string) {
     // Establece el modo de edición según el parámetro
     this.applicationsService.setEditMode(edit);
-    if (id){
-      this.applicationsService.setIdApplication(id);
-    }else{
-      this.applicationsService.setIdApplication('');
-    }
-
-    if (edit && id) {
-      // Si está en modo edición, guarda el ID de la aplicación
-      this.selectedApplicationId = id;
-    } else {
-      // Si es modo creación, resetea el ID
-      this.selectedApplicationId = null;
+    this.applicationsService.setIdApplication(id || '');
+  
+    this.selectedApplicationId = edit && id ? id : null;
+  
+    // Mostrar el modal manualmente usando Bootstrap
+    const modalElement = document.getElementById('crearAplicacion');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
     }
   }
+  
 
   getModalTitle(): string {
     if (this.applicationsService.getEditMode() && this.selectedApplicationId) {
@@ -236,6 +234,7 @@ export class ApplicationsComponent implements OnInit {
     this.showSaveButton = true;
     this.showToast(`The app has been added <b>temporarily</b>. You must assign at least one role and its menu options before saving it to the backend.`, 'warning', 'B', 1);
     this.closeModal();
+    
     
     // Validar DTO
     const dto = this.applicationsService.getApplicationDTO();
@@ -268,8 +267,16 @@ export class ApplicationsComponent implements OnInit {
     );
 
     this.closeModalRol();
+    this.applicationsService.checkTemporaryStatusForAllApplications();
+    this.cdr.detectChanges();
   }
 
+  handleClickNewApp() {
+    if (!this.selectedApplication) {
+      this.openModal(false);
+    }
+  }
+  
   
   confirmDelete(): void {
     if (this.isDeleteConfirmed) {
