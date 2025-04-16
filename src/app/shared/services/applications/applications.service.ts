@@ -99,6 +99,9 @@ export class ApplicationsService {
   }
 
   addTemporaryApplication(app: Application): void {
+    if (!app.id) {
+      app.id = `TEMP-${Date.now()}`;
+    }
     const currentApps = this.applicationsSubject.getValue();
     const updatedApps = [...currentApps, app];
     this.applicationsSubject.next(updatedApps);
@@ -185,26 +188,17 @@ export class ApplicationsService {
   // Roles Temporales
   // ===================
 
-  addTemporaryRole(role: Rol): void {
-    const tempRole: TempRol = { ...role, isTemporary: true };
-  
-    // 1. Añadir a lista temporal interna
-    this.temporaryRoles.push(tempRole);
-  
-    // 2. Añadir al DTO
-    this.applicationDTO.strRoles.push(tempRole);
-  
-    // 3. También actualizar los roles de la aplicación seleccionada en la lista (si corresponde)
+  updateApplicationRoles(appId: string, newRole: TempRol): void {
     const apps = this.applicationsSubject.getValue();
+  
     const updatedApps = apps.map(app => {
-      if (app.id === this.idApplication) {
+      if (app.id === appId) {
         const existingRoles = app.strRoles || [];
-        // Solo agregar si aún no existe (por id)
-        const exists = existingRoles.some(r => r.id === tempRole.id);
-        if (!exists) {
+        const roleExists = existingRoles.some(r => r.id === newRole.id);
+        if (!roleExists) {
           return {
             ...app,
-            strRoles: [...existingRoles, tempRole],
+            strRoles: [...existingRoles, newRole],
           };
         }
       }
@@ -213,13 +207,88 @@ export class ApplicationsService {
   
     this.applicationsSubject.next(updatedApps);
   }
+  
+
+  addTemporaryRole(role: Rol): void {
+    const tempRole: TempRol = { ...role, isTemporary: true };
+    this.temporaryRoles.push(tempRole);
+    this.applicationDTO.strRoles.push(tempRole);
+  
+    this.updateTemporaryApplicationsAfterRoleChange();
+  
+    this.temporaryRoles = [];
+  
+    console.log('DTO actualizado:', this.applicationDTO);
+    const isValid = isApplicationDTOValid(this.applicationDTO as any);
+    console.log('¿Es válido el ApplicationDTO?', isValid);
+  }
+  
 
   getTemporaryRoles(): TempRol[] {
     return this.temporaryRoles;
   }
 
+  hasTemporaryChanges(application: ApplicationDTO): boolean {
+    // Verifica si algún rol tiene estado TEMPORARY
+    const hasTempRole = application.strRoles.some(role => role.strState === 'TEMPORARY' || (role as TempRol).isTemporary);
+  
+    // Verifica si alguna opción de menú tiene estado TEMPORARY
+    const hasTempMenuOption = application.strRoles.some(role =>
+      role.menuOptions?.some(menu =>
+        menu.strState === 'TEMPORARY' || 
+        menu.strSubmenus?.some(sub => sub.strState === 'TEMPORARY')
+      )
+    );
+  
+    return hasTempRole || hasTempMenuOption;
+  }
+  
+
   clearTemporaryRoles(): void {
     this.temporaryRoles = [];
     this.applicationDTO.strRoles = this.applicationDTO.strRoles.filter((r: TempRol) => !r.isTemporary);
   }
+  
+  checkTemporaryStatusForAllApplications(): void {
+    const updatedApps = this.applicationsSubject.getValue().map(app => {
+      if (app.strState === 'TEMPORARY') {
+        return app; // No tocar si ya es TEMPORARY
+      }
+  
+      const hasTemporaryRole = app.strRoles?.some(role =>
+        role.strState === 'TEMPORARY' || (role as TempRol).isTemporary
+      );
+  
+      return {
+        ...app,
+        strState: hasTemporaryRole ? 'TEMPORARY' : 'ACTIVE',
+      };
+    });
+  
+    this.applicationsSubject.next(updatedApps);
+  }
+  
+  updateTemporaryApplicationsAfterRoleChange(): void {
+    const apps = this.applicationsSubject.getValue();
+    const updatedApps = apps.map(app => {
+      if (app.id === this.idApplication) {
+        const existingRoles = app.strRoles || [];
+        const exists = existingRoles.some(r => r.id === this.temporaryRoles[0]?.id);
+        if (!exists) {
+          const updatedRoles = [...existingRoles, ...this.temporaryRoles];
+  
+          // Actualizamos el estado a 'TEMPORARY'
+          return {
+            ...app,
+            strRoles: updatedRoles,
+            strState: 'TEMPORARY',
+          };
+        }
+      }
+      return app;
+    });
+  
+    this.applicationsSubject.next(updatedApps);
+  }
+  
 }

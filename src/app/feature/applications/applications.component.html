@@ -11,7 +11,7 @@
   </ng-container>
 </div>
 
-<!-- Contenedor superior (todo el ancho) -->
+<!-- Contenedor superior -->
 <div class="p-1">
   <ng-container *ngFor="let notification of notifications; let i = index">
     <app-notifications
@@ -45,7 +45,7 @@
         Application <b>Management</b>.
       </h5>
 
-      <div class="btn-group ms-auto" style="margin-right: 4px">
+      <div class="btn-group ms-auto custom-btn-group">
         <a
           *ngIf="showSaveButton"
           [class.disabled-icon]="!isDTOValid"
@@ -54,6 +54,7 @@
           [attr.tabindex]="!isDTOValid ? -1 : 0"
           href="#"
           (click)="(isDTOValid)"
+          title="Save"
         >
           <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
             <use
@@ -64,10 +65,11 @@
           </svg>
         </a>
         <a
-          href="#"
-          data-bs-toggle="modal"
-          data-bs-target="#crearAplicacion"
-          (click)="openModal(false)"
+          [class.disabled-icon]="selectedApplication"
+          [attr.aria-disabled]="selectedApplication ? 'true' : null"
+          [attr.tabindex]="selectedApplication ? -1 : 0"
+          (click)="handleClickNewApp()"
+          title="Add new app"
         >
           <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
             <use
@@ -113,7 +115,7 @@
               }"
             >
               <span
-                class="badge rounded-badge"
+                class="badge rounded-badge position-relative d-inline-block"
                 [ngClass]="{
                   bgd: application.strState === 'TEMPORARY',
                   'badge-selected': application === selectedApplication,
@@ -121,11 +123,18 @@
                 }"
               >
                 {{ index + 1 }}
+
+                <!-- Badge circular sin texto -->
+                <span
+                  *ngIf="application.strState === 'TEMPORARY'"
+                  class="badge-app-circle"
+                  title="Aplicación con novedades"
+                ></span>
               </span>
             </th>
 
             <td
-              class="text-start"
+              class="text-start align-middle"
               [ngClass]="{
                 selected: application === selectedApplication,
                 'bg-temp':
@@ -133,7 +142,9 @@
                   application !== selectedApplication
               }"
             >
-              {{ application?.strName?.toUpperCase() || "[N/A]" }}
+              <span class="position-relative d-inline-block">
+                {{ application?.strName?.toUpperCase() || "[N/A]" }}
+              </span>
             </td>
 
             <td
@@ -302,9 +313,9 @@
         </h6>
 
         <!-- Contenedor de botones alineado a la derecha -->
-        <div class="roles-buttons">
+        <div class="roles-buttons btn-group ms-auto custom-btn-group">
           <!-- Botón para cerrar -->
-          <a (click)="toggleRolesTable()">
+          <a (click)="toggleRolesTable()" title="Go up a level">
             <img
               src="assets/icons/arrow-up-square-fill.svg"
               alt="Cerrar"
@@ -313,7 +324,7 @@
           </a>
 
           <!-- Botón para agregar un nuevo rol -->
-          <a data-bs-toggle="modal" data-bs-target="#rolModal">
+          <a data-bs-toggle="modal" data-bs-target="#rolModal" title="Add new role">
             <img
               src="assets/icons/plus-square-fill.svg"
               alt="Agregar"
@@ -330,12 +341,10 @@
             <th scope="col" class="id-col text-center">Item</th>
             <th scope="col" class="text-center d-none d-xl-table-cell">Name</th>
             <th scope="col" class="text-center">Description A</th>
-            <th scope="col" class="text-centerd-none d-xl-table-cell">
+            <th scope="col" class="text-center d-none d-xl-table-cell">
               Description B
             </th>
-            <th scope="col" class="text-center d-none d-xl-table-cell">
-              State
-            </th>
+            <th scope="col" class="text-center">State</th>
             <th class="actions-col text-center" scope="col">Actions</th>
           </tr>
         </thead>
@@ -352,7 +361,7 @@
               }"
             >
               <span
-                class="badge rounded-badge"
+                class="badge rounded-badge position-relative d-inline-block"
                 [ngClass]="{
                   bgd: rol.strState === 'TEMPORARY',
                   'badge-selected': rol === selectedRol,
@@ -360,6 +369,13 @@
                 }"
               >
                 {{ i + 1 }}
+
+                <!-- Badge circular sin texto -->
+                <span
+                  *ngIf="rol.strState === 'TEMPORARY'"
+                  class="badge-app-circle"
+                  title="Nuevo rol"
+                ></span>
               </span>
             </th>
             <td
@@ -393,7 +409,7 @@
                 selected: rol === selectedRol,
                 'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
               }"
-              class="text-center d-none d-xl-table-cell"
+              class="text-center"
             >
               <span
                 class="badge mt-1"
@@ -493,9 +509,9 @@
         </h6>
 
         <!-- Contenedor de botones alineado a la derecha -->
-        <div class="roles-buttons">
+        <div class="roles-buttons btn-group ms-auto custom-btn-group">
           <!-- Botón para cerrar -->
-          <a (click)="clearSelectedRole()" style="cursor: pointer">
+          <a (click)="clearSelectedRole()" style="cursor: pointer" title="Go up a level">
             <img
               src="assets/icons/arrow-up-square-fill.svg"
               alt="Cerrar"
@@ -504,7 +520,7 @@
           </a>
 
           <!-- Botón para agregar una nueva opción de menú -->
-          <a>
+          <a title="Add new menu option">
             <img
               src="assets/icons/plus-square-fill.svg"
               alt="Agregar"
@@ -514,7 +530,7 @@
         </div>
       </div>
 
-      <!-- Tabla de roles -->
+      <!-- Tabla de opciones de menu -->
       <table class="table table-bordered border-secondary">
         <thead>
           <tr>
@@ -667,8 +683,8 @@
             selectedMenuOption?.strDescription.toUpperCase()
           }}</span>
         </h6>
-        <div class="roles-buttons">
-          <a (click)="clearSelectedMenu()" style="cursor: pointer">
+        <div class="roles-buttons btn-group ms-auto custom-btn-group">
+          <a (click)="clearSelectedMenu()" style="cursor: pointer" title="Go up a level">
             <img
               src="assets/icons/arrow-up-square-fill.svg"
               alt="Cerrar"
@@ -676,7 +692,7 @@
             />
           </a>
           <!-- Botón para agregar un nuevo submenu -->
-          <a>
+          <a title="Add new submenu option">
             <img
               src="assets/icons/plus-square-fill.svg"
               alt="Agregar"

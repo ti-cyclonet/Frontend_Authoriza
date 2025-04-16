@@ -46,6 +46,7 @@ export default class LayoutComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadSidebarPreference();
     this.applicationsService.loadApplications();
     this.fetchApplication('Authoriza'); 
   } 
@@ -73,6 +74,7 @@ export default class LayoutComponent implements OnInit {
             strIcon: menu?.strIcon ?? 'default-icon',
             strType: menu?.strType ?? 'main_menu',            
             ingOrder: menu?.ingOrder ?? '99',
+            strState: menu?.strState ?? 'active',
             strSubmenus: menu?.strSubmenus ?? []
           })) || []
         ) || [];  
@@ -85,6 +87,20 @@ export default class LayoutComponent implements OnInit {
 
   toggleSidebar() {
     this.isSidebarVisible = !this.isSidebarVisible;
+    if (typeof window !== 'undefined' && localStorage) {
+      localStorage.setItem('sidebarVisible', JSON.stringify(this.isSidebarVisible));
+    }
+  }
+
+  loadSidebarPreference(): void {
+    if (typeof window !== 'undefined' && localStorage) {
+      const storedValue = localStorage.getItem('sidebarVisible');
+      if (storedValue !== null) {
+        this.isSidebarVisible = JSON.parse(storedValue);
+      } else {
+        this.isSidebarVisible = this.isLargeScreen;
+      }
+    }
   }
 
   @HostListener('window:resize', ['$event'])

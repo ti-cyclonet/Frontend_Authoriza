@@ -91,7 +91,7 @@
               <img
                 *ngIf="imagePreview"
                 [src]="imagePreview"
-                width="300"
+                width="250"
                 height="auto"
                 alt="Image preview"
               />
@@ -148,8 +148,9 @@
 
     <div *ngIf="isGreenVisible" class="tags-box">
       <div class="form-group">
-        <label for="tags">Tags</label>
-        <table class="table table-bordered">
+        <label for="tags">Tags </label>
+        <h6 class="roles-title">(Identifies, classifies, or labels information.)</h6>
+        <table class="table table-bordered mt-2">
           <thead>
             <tr>
               <th>Tag</th>
