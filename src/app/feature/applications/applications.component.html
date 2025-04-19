@@ -520,12 +520,11 @@
           </a>
 
           <!-- Botón para agregar una nueva opción de menú -->
-          <a title="Add new menu option">
-            <img
-              src="assets/icons/plus-square-fill.svg"
-              alt="Agregar"
-              width="23"
-            />
+          <a title="Add new menu option" data-bs-toggle="modal" data-bs-target="#optionMenuModal" style="cursor: pointer">
+            <img 
+            src="assets/icons/plus-square-fill.svg" 
+            alt="Agregar" 
+            width="23" />
           </a>
         </div>
       </div>
@@ -988,3 +987,82 @@
   [isVisible]="showModal"
   (closeModalEvent)="closeImageModal()"
 ></app-image-modal>
+
+<!-- Modal de Bootstrap para opción de menú -->
+<div
+  class="modal fade"
+  id="optionMenuModal"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="optionMenuModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <!-- Header con íconos de pasos -->
+      <div class="modal-header justify-content-between modal-header-custom">
+        <div class="step-icons d-flex position-relative">
+          <!-- Paso 1 -->
+          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon">
+            <use
+              [attr.xlink:href]="
+                cuOptionMenu.optionMenuForm.valid ||
+                (cuOptionMenu.isYellowVisible &&
+                  cuOptionMenu.optionMenuForm.get('name')?.valid &&
+                  cuOptionMenu.optionMenuForm.get('description')?.valid) ||
+                cuOptionMenu.isBlueVisible ||
+                cuOptionMenu.isGreenVisible
+                  ? './assets/icons/bootstrap-icons.svg#1-circle-fill'
+                  : './assets/icons/bootstrap-icons.svg#1-circle'
+              "
+            ></use>
+          </svg>
+
+          <!-- Paso 2 -->
+          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
+            <use
+              [attr.xlink:href]="
+                cuOptionMenu.optionMenuForm.valid ||
+                (cuOptionMenu.isBlueVisible &&
+                  cuOptionMenu.optionMenuForm.get('url')?.valid &&
+                  cuOptionMenu.optionMenuForm.get('icon')?.valid) ||
+                cuOptionMenu.isGreenVisible
+                  ? './assets/icons/bootstrap-icons.svg#2-circle-fill'
+                  : './assets/icons/bootstrap-icons.svg#2-circle'
+              "
+            ></use>
+          </svg>
+
+          <!-- Paso 3 -->
+          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
+            <use
+              [attr.xlink:href]="
+                cuOptionMenu.optionMenuForm.valid
+                  ? './assets/icons/bootstrap-icons.svg#3-circle-fill'
+                  : cuOptionMenu.isGreenVisible
+                  ? './assets/icons/bootstrap-icons.svg#3-circle'
+                  : './assets/icons/bootstrap-icons.svg#3-circle'
+              "
+            ></use>
+          </svg>
+        </div>
+
+        <h5 class="modal-title" id="optionMenuModalLabel">
+          Add Menu Option
+        </h5>
+      </div>
+
+      <!-- Cuerpo del modal con el componente -->
+      <div class="modal-body">
+        <app-cuoptionmenu
+          #cuOptionMenu
+          (onSave)="handleOptionMenuSave($event)"
+          (onCancel)="closeOptionMenuModal()"
+        ></app-cuoptionmenu>
+      </div>
+    </div>
+  </div>
+</div>
+
