@@ -207,21 +207,17 @@
     <!-- Footer con los botones -->
     <div class="form-buttons">
       <button
-        id="prevBtn"
-        type="button"
-        class="btn btn-outline-dark btn-sm me-4 btn-fixed-width"
-        data-bs-toggle="tooltip"
-        title="Previous"
-        [disabled]="isPreviousDisabled()"
-        (click)="onPrevious()"
-      >
-        <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
-          <use
-            [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#arrow-left'"
-          ></use>
-        </svg>
-        <span class="d-none d-md-inline">Previous</span>
-      </button>
+  *ngIf="isBlueVisible || isGreenVisible"
+  id="prevBtn"
+  type="button"
+  class="btn btn-outline-dark btn-sm me-4 btn-fixed-width"
+  (click)="onPrevious()"
+>
+  <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+    <use xlink:href="./assets/icons/bootstrap-icons.svg#arrow-left"></use>
+  </svg>
+  <span class="d-none d-md-inline">Previous</span>
+</button>
 
       <button
         type="button"

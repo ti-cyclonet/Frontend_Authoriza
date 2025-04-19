@@ -12,13 +12,15 @@ import { Subject, takeUntil } from 'rxjs';
 import { isApplicationDTOValid } from '../../shared/utils/validation.utils';
 import { Rol } from '../../shared/model/rol';
 import { BsModalRef } from 'ngx-bootstrap/modal';
+import { Modal } from 'bootstrap';
+import { CuOptionMenuComponent } from './cu-optionmenu/cu-optionmenu.component';
 declare var bootstrap: any;
 
 
 @Component({
   selector: 'app-applications',
   standalone: true,
-  imports: [CuApplicationComponent, NotificationsComponent, CommonModule, FormsModule, ImageModalComponent, ReactiveFormsModule, CuRolComponent],
+  imports: [CuApplicationComponent, NotificationsComponent, CommonModule, FormsModule, ImageModalComponent, ReactiveFormsModule, CuRolComponent, CuOptionMenuComponent],
   templateUrl: './applications.component.html',
   styleUrls: ['./applications.component.css'],
 })
@@ -29,6 +31,20 @@ export class ApplicationsComponent implements OnInit {
   @Input() localApplications: Application[] = [];
   @ViewChild(CuApplicationComponent) appCuApplication!: CuApplicationComponent;
   @ViewChild('rolesModal') rolesModalElement!: ElementRef;
+  @ViewChild('optionMenuModal') optionMenuModal!: ElementRef;
+
+  handleOptionMenuSave(data: any) {
+    console.log('Guardado:', data);
+    this.closeOptionMenuModal();
+  }
+  
+  closeOptionMenuModal() {
+    const modalEl = document.getElementById('optionMenuModal');
+    if (modalEl) {
+      const bsModal = Modal.getInstance(modalEl) || new Modal(modalEl);
+      bsModal.hide();
+    }
+  }
   
   isModalOpen = false;
   isDTOValid: boolean = false;  
@@ -345,4 +361,5 @@ export class ApplicationsComponent implements OnInit {
   }
   
 }
+
 

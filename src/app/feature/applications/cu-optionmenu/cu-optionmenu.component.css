@@ -1,0 +1,150 @@
+.container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .form-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .form-buttons button {
+    min-width: 100px;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px 0;
+  }
+  
+  .tags-box .tag-item {
+    margin-bottom: 10px;
+  }
+  .tags-box .btn-danger {
+    margin-left: 10px;
+  }
+  
+  .btn-fixed-width {
+    min-width: 100px;
+  }
+  
+  .error {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+  
+  .box {
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .status-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    vertical-align: middle;
+    margin-right: 5px;
+  }
+  
+  .availability-message {
+    color: red;
+    margin-top: 5px;
+  }
+  
+  .icon-button {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+  
+  .roles-title {
+    margin: 0;
+    font-size: 0.8rem;
+  }
+  
+  /* Paso 1, 2 y 3 con colores de fondo suaves */
+  /* .yellow-box {
+    background-color: #fffbe6;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border-left: 4px solid #ffc107;
+  }
+  
+  .blue-box {
+    background-color: #e7f1ff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border-left: 4px solid #0d6efd;
+  }
+  
+  .tags-box {
+    background-color: #e6ffed;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border-left: 4px solid #198754;
+  } */
+  
+  /* Barra de pasos */
+  .row.text-center > .col > div {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  /* Responsive para móviles */
+  @media (max-width: 576px) {
+    .form-buttons button {
+      min-width: 40px;
+      padding: 5px;
+      font-size: 0.8rem;
+    }
+  
+    .form-buttons button span {
+      display: none;
+    }
+  
+    .form-buttons button .status-icon {
+      width: 16px;
+      height: 16px;
+    }
+  }
+  
+  .btn-no-style {
+    background: none;
+    border: none;
+    padding: 5px;
+    margin: 0;
+    cursor: pointer;
+  }
+  
