@@ -446,3 +446,11 @@ a.enabled-icon {
   justify-content: space-between;
   margin-top: 15px;
 }
+
+/* option menu */
+/* Solo la modal optionMenuModal */
+#optionMenuModal .modal-dialog {
+  max-width: 80vw;
+  width: 35%;
+  max-width: 1000px;
+}
