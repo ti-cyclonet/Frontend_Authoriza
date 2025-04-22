@@ -324,7 +324,11 @@
           </a>
 
           <!-- Botón para agregar un nuevo rol -->
-          <a data-bs-toggle="modal" data-bs-target="#rolModal" title="Add new role">
+          <a
+            data-bs-toggle="modal"
+            data-bs-target="#rolModal"
+            title="Add new role"
+          >
             <img
               src="assets/icons/plus-square-fill.svg"
               alt="Agregar"
@@ -494,14 +498,14 @@
 
     <!-- Contenedor de información de Opciones de menu -->
     <div
-      *ngIf="selectedMenuOptions.length > 0"
+      *ngIf="isMenuTableVisible"
       class="table-responsive mt-3"
       [class.disabled]="isSubmenuTableVisible"
     >
       <div class="roles-header">
         <!-- Título alineado a la izquierda -->
         <h6 class="roles-title">
-          Options menu for
+          Menu options for
           <span class="text-primary">{{
             (selectedRol?.strDescription1 || "").toUpperCase()
           }}</span>
@@ -511,7 +515,18 @@
         <!-- Contenedor de botones alineado a la derecha -->
         <div class="roles-buttons btn-group ms-auto custom-btn-group">
           <!-- Botón para cerrar -->
-          <a (click)="clearSelectedRole()" style="cursor: pointer" title="Go up a level">
+          <button
+            *ngIf="tempAssignedMenuOptions.length > 0"
+            class="btn btn-outline-danger btn-sm"
+            (click)="cancelTemporaryChanges()"
+          >
+            Cancel Temporary Changes
+          </button>
+          <a
+            (click)="clearSelectedRole()"
+            style="cursor: pointer"
+            title="Go up a level"
+          >
             <img
               src="assets/icons/arrow-up-square-fill.svg"
               alt="Cerrar"
@@ -520,11 +535,17 @@
           </a>
 
           <!-- Botón para agregar una nueva opción de menú -->
-          <a title="Add new menu option" data-bs-toggle="modal" data-bs-target="#optionMenuModal" style="cursor: pointer">
-            <img 
-            src="assets/icons/plus-square-fill.svg" 
-            alt="Agregar" 
-            width="23" />
+          <a
+            title="Add new menu option"
+            data-bs-toggle="modal"
+            data-bs-target="#optionMenuModal"
+            style="cursor: pointer"
+          >
+            <img
+              src="assets/icons/plus-square-fill.svg"
+              alt="Agregar"
+              width="23"
+            />
           </a>
         </div>
       </div>
@@ -540,24 +561,38 @@
             <th class="text-center d-none d-xl-table-cell">Icon</th>
             <th class="text-center d-none d-xl-table-cell">Type</th>
             <th class="text-center d-none d-xl-table-cell">Submenu</th>
-            <th class="text-center">Estado</th>
-            <th class="actions-col text-center" scope="col">Acciones</th>
+            <th class="text-center">State</th>
+            <th class="actions-col text-center" scope="col">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let menu of selectedMenuOptions; let i = index">
+          <tr
+            *ngFor="let menu of selectedMenuOptions; let i = index"
+            [ngClass]="{ 'bg-temp': menu.strState === 'TEMPORARY' }"
+          >
             <th
               scope="row"
-              [ngClass]="{ selected: menu === selectedMenuOption }"
+              [ngClass]="{
+                selected: menu === selectedMenuOption,
+                'bg-temp': menu.strState === 'TEMPORARY' && menu !== selectedMenuOption
+              }"
             >
               <span
-                class="badge rounded-badge"
+                class="badge rounded-badge position-relative d-inline-block"
                 [ngClass]="{
+                  bgd: menu.strState === 'TEMPORARY',
                   'badge-selected': menu === selectedMenuOption,
                   'badge-default': menu !== selectedMenuOption
                 }"
               >
-                {{ menu.ingOrder }}
+                {{ i + 1 }}
+
+                <!-- Badge circular sin texto -->
+                <span
+                  *ngIf="menu.strState === 'TEMPORARY'"
+                  class="badge-app-circle"
+                  title="Nedw option menu"
+                ></span>
               </span>
             </th>
             <td
@@ -593,14 +628,20 @@
               }}
             </td>
             <td
-              [ngClass]="{ selected: menu === selectedMenuOption }"
+              [ngClass]="{
+                selected: menu === selectedMenuOption,
+                'bg-temp': menu.strState === 'TEMPORARY' && menu !== selectedMenuOption
+              }"
               class="text-center"
             >
               <span
                 class="badge mt-1"
-                style="background-color: #007f00; color: white"
+                [ngClass]="{
+                  'bg-warning text-dark': menu.strState === 'TEMPORARY',
+                  'bg-success': menu.strState !== 'TEMPORARY'
+                }"
               >
-                ACTIVE
+                {{ menu.strState === "TEMPORARY" ? "NOT SAVED" : "ACTIVE" }}
               </span>
             </td>
             <td
@@ -671,6 +712,52 @@
           </tr>
         </tbody>
       </table>
+
+      <!-- Opciones de menú disponibles en la aplicación -->
+      <div class="mt-4">
+        <h6 class="roles-title">Available Menu Options</h6>
+        <table class="table table-bordered table-light mt-3">
+          <thead>
+            <tr>
+              <th>Select</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Assigned</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let option of allMenuOptionsForApp">
+              <td>
+                <input
+                  type="checkbox"
+                  [checked]="isOptionSelected(option)"
+                  (change)="toggleMenuOption(option)"
+                  [ngClass]="{ 'temporary-option': isTemporary(option) }"
+                />
+              </td>
+              <td>{{ option.strName }}</td>
+              <td>{{ option.strDescription }}</td>
+              <td>
+                <span
+                  class="badge"
+                  [ngClass]="{
+                    'bg-success': isOptionAlreadyInRol(option),
+                    'bg-warning text-dark': isTemporary(option)
+                  }"
+                >
+                  {{
+                    isOptionAlreadyInRol(option)
+                      ? "Already assigned"
+                      : isTemporary(option)
+                      ? "New"
+                      : "Available"
+                  }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- Contenedor de información de Submenús -->
@@ -683,7 +770,11 @@
           }}</span>
         </h6>
         <div class="roles-buttons btn-group ms-auto custom-btn-group">
-          <a (click)="clearSelectedMenu()" style="cursor: pointer" title="Go up a level">
+          <a
+            (click)="clearSelectedMenu()"
+            style="cursor: pointer"
+            title="Go up a level"
+          >
             <img
               src="assets/icons/arrow-up-square-fill.svg"
               alt="Cerrar"
@@ -988,7 +1079,7 @@
   (closeModalEvent)="closeImageModal()"
 ></app-image-modal>
 
-<!-- Modal de Bootstrap para opción de menú -->
+<!-- Modal para agregar una nueva opción de menú -->
 <div
   class="modal fade"
   id="optionMenuModal"
@@ -1000,7 +1091,6 @@
 >
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
-
       <!-- Header con íconos de pasos -->
       <div class="modal-header justify-content-between modal-header-custom">
         <div class="step-icons d-flex position-relative">
@@ -1049,9 +1139,7 @@
           </svg>
         </div>
 
-        <h5 class="modal-title" id="optionMenuModalLabel">
-          Add Menu Option
-        </h5>
+        <h5 class="modal-title" id="optionMenuModalLabel">Add Menu Option</h5>
       </div>
 
       <!-- Cuerpo del modal con el componente -->
@@ -1060,9 +1148,9 @@
           #cuOptionMenu
           (onSave)="handleOptionMenuSave($event)"
           (onCancel)="closeOptionMenuModal()"
+          (menuOptionCreated)="handleOptionMenuSave($event)"
         ></app-cuoptionmenu>
       </div>
     </div>
   </div>
 </div>
-

@@ -1,12 +1,17 @@
 <div class="container">
   <form [formGroup]="optionMenuForm" (ngSubmit)="onSubmit()">
-    
     <!-- Paso 1 -->
     <div *ngIf="isYellowVisible" class="yellow-box">
       <div class="form-group">
         <label for="name">Name</label>
         <input id="name" formControlName="name" type="text" />
-        <div *ngIf="optionMenuForm.get('name')?.invalid && optionMenuForm.get('name')?.touched" class="error">
+        <div
+          *ngIf="
+            optionMenuForm.get('name')?.invalid &&
+            optionMenuForm.get('name')?.touched
+          "
+          class="error"
+        >
           Name is required.
         </div>
       </div>
@@ -14,7 +19,13 @@
       <div class="form-group">
         <label for="description">Description</label>
         <textarea id="description" formControlName="description"></textarea>
-        <div *ngIf="optionMenuForm.get('description')?.invalid && optionMenuForm.get('description')?.touched" class="error">
+        <div
+          *ngIf="
+            optionMenuForm.get('description')?.invalid &&
+            optionMenuForm.get('description')?.touched
+          "
+          class="error"
+        >
           Description is required.
         </div>
       </div>
@@ -25,7 +36,13 @@
       <div class="form-group">
         <label for="url">URL</label>
         <input id="url" formControlName="url" type="text" />
-        <div *ngIf="optionMenuForm.get('url')?.invalid && optionMenuForm.get('url')?.touched" class="error">
+        <div
+          *ngIf="
+            optionMenuForm.get('url')?.invalid &&
+            optionMenuForm.get('url')?.touched
+          "
+          class="error"
+        >
           URL is required.
         </div>
       </div>
@@ -33,7 +50,13 @@
       <div class="form-group">
         <label for="icon">Icon</label>
         <input id="icon" formControlName="icon" type="text" />
-        <div *ngIf="optionMenuForm.get('icon')?.invalid && optionMenuForm.get('icon')?.touched" class="error">
+        <div
+          *ngIf="
+            optionMenuForm.get('icon')?.invalid &&
+            optionMenuForm.get('icon')?.touched
+          "
+          class="error"
+        >
           Icon is required.
         </div>
       </div>
@@ -44,7 +67,13 @@
       <div class="form-group">
         <label for="type">Type</label>
         <input id="type" formControlName="type" type="text" />
-        <div *ngIf="optionMenuForm.get('type')?.invalid && optionMenuForm.get('type')?.touched" class="error">
+        <div
+          *ngIf="
+            optionMenuForm.get('type')?.invalid &&
+            optionMenuForm.get('type')?.touched
+          "
+          class="error"
+        >
           Type is required.
         </div>
       </div>
@@ -52,7 +81,13 @@
       <div class="form-group">
         <label for="order">Order</label>
         <input id="order" formControlName="order" type="number" />
-        <div *ngIf="optionMenuForm.get('order')?.invalid && optionMenuForm.get('order')?.touched" class="error">
+        <div
+          *ngIf="
+            optionMenuForm.get('order')?.invalid &&
+            optionMenuForm.get('order')?.touched
+          "
+          class="error"
+        >
           Order must be a number.
         </div>
       </div>
@@ -64,7 +99,13 @@
           <option value="yes">Yes</option>
           <option value="no">No</option>
         </select>
-        <div *ngIf="optionMenuForm.get('submenu')?.invalid && optionMenuForm.get('submenu')?.touched" class="error">
+        <div
+          *ngIf="
+            optionMenuForm.get('submenu')?.invalid &&
+            optionMenuForm.get('submenu')?.touched
+          "
+          class="error"
+        >
           Please select an option.
         </div>
       </div>
@@ -73,26 +114,26 @@
     <!-- Botones -->
     <div class="form-buttons">
       <button
-  *ngIf="isBlueVisible || isGreenVisible"
-  id="prevBtn"
-  type="button"
-  class="btn btn-outline-dark btn-sm me-4 btn-fixed-width"
-  (click)="onPrevious()"
->
-  <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
-    <use xlink:href="./assets/icons/bootstrap-icons.svg#arrow-left"></use>
-  </svg>
-  <span class="d-none d-md-inline">Previous</span>
-</button>
+        *ngIf="isBlueVisible || isGreenVisible"
+        id="prevBtn"
+        type="button"
+        class="btn btn-outline-dark btn-sm me-4 btn-fixed-width"
+        (click)="onPrevious()"
+      >
+        <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+          <use xlink:href="./assets/icons/bootstrap-icons.svg#arrow-left"></use>
+        </svg>
+        <span class="d-none d-md-inline">Previous</span>
+      </button>
 
-<button
-type="button"
-class="btn btn-outline-dark btn-sm mx-4 btn-fixed-width"
-data-bs-dismiss="modal"
-(click)="onCancel()"
->
-Cancel
-</button>
+      <button
+        type="button"
+        class="btn btn-outline-dark btn-sm mx-4 btn-fixed-width"
+        data-bs-dismiss="modal"
+        (click)="onCancel()"
+      >
+        Cancel
+      </button>
 
       <!-- Botón Next (Visible en pasos 1 y 2) -->
       <button
@@ -105,7 +146,9 @@ Cancel
       >
         <span class="d-none d-md-inline">Next</span>
         <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
-          <use xlink:href="./assets/icons/bootstrap-icons.svg#arrow-right"></use>
+          <use
+            xlink:href="./assets/icons/bootstrap-icons.svg#arrow-right"
+          ></use>
         </svg>
       </button>
 
@@ -117,8 +160,12 @@ Cancel
         class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width"
         [disabled]="!optionMenuForm.valid"
       >
-        <span class="d-none d-md-inline">Send</span>
-        
+        <span class="d-none d-md-inline">Add</span>
+        <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+          <use
+            xlink:href="./assets/icons/bootstrap-icons.svg#plus-square-fill"
+          ></use>
+        </svg>
       </button>
     </div>
   </form>

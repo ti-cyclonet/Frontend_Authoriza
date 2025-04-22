@@ -35,7 +35,7 @@
       
       <div class="d-flex justify-content-between">
         <button type="button" class="btn btn-outline-dark btn-sm mx-4" style="width: 100px" data-bs-dismiss="modal" (click)="onCancel()">Cancel</button>
-        <button type="submit" class="btn btn-outline-dark btn-sm mx-4" style="width: 100px" data-bs-dismiss="modal" [disabled]="rolesForm.invalid">Add</button>
+        <button type="submit" class="btn btn-outline-dark btn-sm mx-4" style="width: 100px" [disabled]="rolesForm.invalid">Add</button>
       </div>
     </form>
   </div>

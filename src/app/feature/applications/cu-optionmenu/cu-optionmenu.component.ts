@@ -1,6 +1,8 @@
-import { Component, OnInit,} from '@angular/core';
+import { Component, OnInit, Output, EventEmitter} from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ApplicationsService } from '../../../shared/services/applications/applications.service';
+import { MenuOption } from '../../../shared/model/menu_option';
 
 
 @Component({
@@ -15,8 +17,10 @@ export class CuOptionMenuComponent implements OnInit {
   isYellowVisible = true;
   isBlueVisible = false;
   isGreenVisible = false;
+  @Output() menuOptionCreated = new EventEmitter<MenuOption>();
 
-  constructor(private fb: FormBuilder) {
+
+  constructor(private fb: FormBuilder, private applicationsService: ApplicationsService) {
     this.optionMenuForm = this.fb.group({
       name: ['', Validators.required],
       description: ['', Validators.required],
@@ -65,9 +69,29 @@ export class CuOptionMenuComponent implements OnInit {
 
   onSubmit() {
     if (this.optionMenuForm.valid) {
-      console.log('Form submitted:', this.optionMenuForm.value);
+      const newOption: MenuOption = {
+        id: `TEMP-${Date.now()}`,
+        strName: this.optionMenuForm.get('name')?.value,
+        strDescription: this.optionMenuForm.get('description')?.value,
+        strUrl: this.optionMenuForm.get('url')?.value,
+        strIcon: this.optionMenuForm.get('icon')?.value,
+        strType: this.optionMenuForm.get('type')?.value,
+        ingOrder: parseInt(this.optionMenuForm.get('order')?.value, 10).toString(),
+        strState: 'TEMPORARY',
+        strSubmenus: [],
+        hasSubmenu: this.optionMenuForm.get('submenu')?.value === 'yes',
+      };
+  
+      this.applicationsService.addTemporaryOptionMenu(newOption);
+      this.menuOptionCreated.emit(newOption);
+  
+      this.onCancel();
+    } else {
+      this.optionMenuForm.markAllAsTouched();
     }
   }
+  
+  
 
   onCancel() {
     this.optionMenuForm.reset();
