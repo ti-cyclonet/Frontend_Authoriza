@@ -1,13 +1,26 @@
-import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { ApplicationsService } from '../../shared/services/applications/applications.service';
 import { CuApplicationComponent } from './cu-application/cu-application.component';
 import { NotificationsComponent } from '../../shared/components/notifications/notifications.component';
 import { CommonModule } from '@angular/common';
 import { Application } from '../../shared/model/application.model';
 import { MenuOption } from '../../shared/model/menu_option';
-import { FormBuilder, FormGroup, FormsModule, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { ImageModalComponent } from '../../shared/components/image-modal/image-modal.component';
-import { CuRolComponent } from "./cu-rol/cu-rol.component";
+import { CuRolComponent } from './cu-rol/cu-rol.component';
 import { Subject, takeUntil } from 'rxjs';
 import { isApplicationDTOValid } from '../../shared/utils/validation.utils';
 import { Rol } from '../../shared/model/rol';
@@ -16,11 +29,19 @@ import { Modal } from 'bootstrap';
 import { CuOptionMenuComponent } from './cu-optionmenu/cu-optionmenu.component';
 declare var bootstrap: any;
 
-
 @Component({
   selector: 'app-applications',
   standalone: true,
-  imports: [CuApplicationComponent, NotificationsComponent, CommonModule, FormsModule, ImageModalComponent, ReactiveFormsModule, CuRolComponent, CuOptionMenuComponent],
+  imports: [
+    CuApplicationComponent,
+    NotificationsComponent,
+    CommonModule,
+    FormsModule,
+    ImageModalComponent,
+    ReactiveFormsModule,
+    CuRolComponent,
+    CuOptionMenuComponent,
+  ],
   templateUrl: './applications.component.html',
   styleUrls: ['./applications.component.css'],
 })
@@ -36,8 +57,17 @@ export class ApplicationsComponent implements OnInit {
   handleOptionMenuSave(data: any) {
     console.log('Guardado:', data);
     this.closeOptionMenuModal();
+  
+    // 🔄 Actualizar la lista visual
+    this.updateAvailableMenuOptions();
+  
+    this.showToast(
+      `New menu option "${data.strName}" was added temporarily.`,
+      'primary', 'A', 1
+    );
   }
   
+
   closeOptionMenuModal() {
     const modalEl = document.getElementById('optionMenuModal');
     if (modalEl) {
@@ -45,36 +75,38 @@ export class ApplicationsComponent implements OnInit {
       bsModal.hide();
     }
   }
-  
+
   isModalOpen = false;
-  isDTOValid: boolean = false;  
+  isDTOValid: boolean = false;
   isVisible: boolean = true;
-  
+
   selectedApplication: Application | null = null;
   selectedMenuOptions: MenuOption[] = [];
   selectedRol: any = null;
-  selectedSubmenus: any[] = []; 
-  selectedMenuOption: any | null = null; 
+  selectedSubmenus: any[] = [];
+  selectedMenuOption: any | null = null;
+  allMenuOptionsForApp: MenuOption[] = [];
+  tempAssignedMenuOptions: MenuOption[] = [];
 
   isModalRolOpen = false;
 
   // configuración notificaciones tipo toast
-    toastTitle: string = '';
-    toastType: 'success' | 'warning' | 'danger' | 'primary' = 'success';
-    notifications: Array<{
-      title: string;
-      type: 'success' | 'warning' | 'danger' | 'primary';
-      alertType: 'A' | 'B';
-      container: 0 | 1;
-      visible: boolean;
-    }> = [];
-    SWNTF: number = 0;
+  toastTitle: string = '';
+  toastType: 'success' | 'warning' | 'danger' | 'primary' = 'success';
+  notifications: Array<{
+    title: string;
+    type: 'success' | 'warning' | 'danger' | 'primary';
+    alertType: 'A' | 'B';
+    container: 0 | 1;
+    visible: boolean;
+  }> = [];
+  SWNTF: number = 0;
   // ----------------------------------------------
-  
+
   imagePreview: string | ArrayBuffer | null = null;
   fileName: string = '';
   isRolesTableVisible = false;
-  isMenuTableVisible = false;  
+  isMenuTableVisible = false;
   isSubmenuTableVisible: boolean = false;
   public selectedApplicationId: string | null = null;
   deleteConfirmationText: string = '';
@@ -82,8 +114,7 @@ export class ApplicationsComponent implements OnInit {
 
   selectedImageUrl: string = '';
   showModal: boolean = false;
-  showSaveButton = false;  
-
+  showSaveButton = false;
 
   constructor(
     public applicationsService: ApplicationsService,
@@ -91,7 +122,7 @@ export class ApplicationsComponent implements OnInit {
     private fb: FormBuilder,
     public modalRef: BsModalRef
   ) {
-    this.notifications = [];    
+    this.notifications = [];
   }
 
   get allApplications() {
@@ -108,32 +139,48 @@ export class ApplicationsComponent implements OnInit {
   }
 
   // Funciones para NOTIFICACIONES
-    addNotification(title: string, type: 'success' | 'warning' | 'danger' | 'primary', alertType: 'A' | 'B', container: 0 | 1) {
-      this.notifications.push({ title, type, alertType, container, visible: true });
-    }
+  addNotification(
+    title: string,
+    type: 'success' | 'warning' | 'danger' | 'primary',
+    alertType: 'A' | 'B',
+    container: 0 | 1
+  ) {
+    this.notifications.push({
+      title,
+      type,
+      alertType,
+      container,
+      visible: true,
+    });
+  }
 
-    removeNotification(index: number) {
-      this.notifications.splice(index, 1);
-    }
-  
-    showToast(message: string, type: 'success' | 'warning' | 'danger' | 'primary', alertType: 'A' | 'B',  container: 0 | 1 ) {
-      const notification = {
-        title: message,
-        type,
-        alertType,
-        container,
-        visible: true
-      };
-      this.notifications.push(notification);
-      this.cdr.detectChanges();
+  removeNotification(index: number) {
+    this.notifications.splice(index, 1);
+  }
 
-      if (alertType === 'A') {
-        setTimeout(() => {
-          notification.visible = false;
-          this.cdr.detectChanges();
-        }, 5000);
-      }
+  showToast(
+    message: string,
+    type: 'success' | 'warning' | 'danger' | 'primary',
+    alertType: 'A' | 'B',
+    container: 0 | 1
+  ) {
+    const notification = {
+      title: message,
+      type,
+      alertType,
+      container,
+      visible: true,
+    };
+    this.notifications.push(notification);
+    this.cdr.detectChanges();
+
+    if (alertType === 'A') {
+      setTimeout(() => {
+        notification.visible = false;
+        this.cdr.detectChanges();
+      }, 5000);
     }
+  }
   // ----------------------------------------------
 
   get selectedFile() {
@@ -143,24 +190,26 @@ export class ApplicationsComponent implements OnInit {
   ngOnInit(): void {
     this.applicationsService.applications$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(apps => this.applications = apps);
+      .subscribe((apps) => (this.applications = apps));
 
     this.applicationsService.applications$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(apps => { this.localApplications = apps;});
+      .subscribe((apps) => {
+        this.localApplications = apps;
+      });
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
-  
+
   showRoles(application: Application) {
     this.setSelectedApplication(application);
     this.isRolesTableVisible = true;
     // console.log('APLICACION SELECCIONADA: ', this.selectedApplication);
   }
-  
+
   toggleRolesTable() {
     this.isRolesTableVisible = !this.isRolesTableVisible;
     if (!this.isRolesTableVisible) {
@@ -169,15 +218,129 @@ export class ApplicationsComponent implements OnInit {
   }
 
   onSelectRol(rol: any) {
+    this.isMenuTableVisible = true;
     this.selectedRol = rol;
     this.selectedMenuOptions = rol.menuOptions || [];
+    if (this.selectedApplication) {
+      this.allMenuOptionsForApp = this.getAllMenuOptionsFromApp(
+        this.selectedApplication
+      );
+    }
+
     this.isMenuTableVisible = true;
   }
 
   clearSelectedRole() {
-    this.selectedRol = null; 
+    this.selectedRol = null;
     this.selectedMenuOptions = [];
     this.isMenuTableVisible = false;
+  }
+
+  getAllMenuOptionsFromApp(app: Application): MenuOption[] {
+    const allOptions = new Map<string, MenuOption>();
+    app.strRoles.forEach((role) => {
+      role.menuOptions.forEach((opt) => {
+        if (!allOptions.has(opt.id)) {
+          allOptions.set(opt.id, opt);
+        }
+      });
+    });
+    return Array.from(allOptions.values());
+  }
+
+  cancelTemporaryChanges() {
+    if (!this.selectedRol) return;
+
+    // Remover del rol todas las opciones marcadas como TEMPORARY
+    this.selectedRol.menuOptions = this.selectedRol.menuOptions.filter(
+      (opt: MenuOption) => opt.strState !== 'TEMPORARY'
+    );
+
+    this.tempAssignedMenuOptions = [];
+    this.selectedRol = { ...this.selectedRol };
+
+    this.showToast(
+      `All temporary menu options for "${this.selectedRol.strName}" were removed.`,
+      'warning',
+      'A',
+      1
+    );
+    this.cdr.detectChanges();
+  }
+
+  isOptionAlreadyInRol(option: MenuOption): boolean {
+    return (
+      this.selectedRol?.menuOptions?.some(
+        (m: MenuOption) => m.id === option.id
+      ) ?? false
+    );
+  }
+
+  isOptionSelected(option: MenuOption): boolean {
+    return (
+      this.isOptionAlreadyInRol(option) ||
+      this.tempAssignedMenuOptions.some((m: MenuOption) => m.id === option.id)
+    );
+  }
+
+  isTemporary(option: MenuOption): boolean {
+    return this.tempAssignedMenuOptions.some(
+      (m: MenuOption) => m.id === option.id
+    );
+  }
+
+  updateAvailableMenuOptions() {
+    if (this.selectedApplication) {
+      this.allMenuOptionsForApp = this.getAllMenuOptionsFromApp(this.selectedApplication);
+      this.cdr.detectChanges();
+    }
+  }  
+
+  toggleMenuOption(option: MenuOption): void {
+    if (!this.selectedRol) return;
+
+    const isAlreadyAssigned = this.isOptionAlreadyInRol(option);
+    const isTemp = this.tempAssignedMenuOptions.some(
+      (m: MenuOption) => m.id === option.id
+    );
+
+    if (isAlreadyAssigned && !isTemp) {
+      // No permitir remover opciones ya asignadas permanentemente
+      return;
+    }
+
+    if (isTemp) {
+      // Si es temporal y ya está asignada, eliminarla de ambas listas
+      this.tempAssignedMenuOptions = this.tempAssignedMenuOptions.filter(
+        (m: MenuOption) => m.id !== option.id
+      );
+
+      this.selectedRol.menuOptions = this.selectedRol.menuOptions.filter(
+        (m: MenuOption) => m.id !== option.id
+      );
+
+      this.showToast(
+        `"${option.strName}" was removed from the role temporarily.`,
+        'warning',
+        'A',
+        1
+      );
+    } else {
+      // Si no está, agregar como temporal
+      const tempOption: MenuOption = { ...option, strState: 'TEMPORARY' };
+
+      this.tempAssignedMenuOptions.push(tempOption);
+      this.selectedRol.menuOptions.push(tempOption);
+
+      this.showToast(
+        `"${option.strName}" was added to the role temporarily.`,
+        'primary',
+        'A',
+        1
+      );
+    }
+
+    this.cdr.detectChanges();
   }
 
   onSelectMenu(menu: any): void {
@@ -187,7 +350,7 @@ export class ApplicationsComponent implements OnInit {
       this.isSubmenuTableVisible = true;
     }
   }
-  
+
   clearSelectedMenu(): void {
     this.selectedSubmenus = [];
     this.selectedMenuOption = null;
@@ -202,7 +365,7 @@ export class ApplicationsComponent implements OnInit {
     const file: File = event.target.files[0];
     if (file) {
       this.fileName = file.name;
-      
+
       if (file.type.startsWith('image/')) {
         const reader = new FileReader();
         reader.onload = () => {
@@ -222,9 +385,9 @@ export class ApplicationsComponent implements OnInit {
     // Establece el modo de edición según el parámetro
     this.applicationsService.setEditMode(edit);
     this.applicationsService.setIdApplication(id || '');
-  
+
     this.selectedApplicationId = edit && id ? id : null;
-  
+
     // Mostrar el modal manualmente usando Bootstrap
     const modalElement = document.getElementById('crearAplicacion');
     if (modalElement) {
@@ -232,7 +395,6 @@ export class ApplicationsComponent implements OnInit {
       modal.show();
     }
   }
-  
 
   getModalTitle(): string {
     if (this.applicationsService.getEditMode() && this.selectedApplicationId) {
@@ -248,10 +410,14 @@ export class ApplicationsComponent implements OnInit {
 
   onApplicationCreated() {
     this.showSaveButton = true;
-    this.showToast(`The app has been added <b>temporarily</b>. You must assign at least one role and its menu options before saving it to the backend.`, 'warning', 'B', 1);
+    this.showToast(
+      `The app has been added <b>temporarily</b>. You must assign at least one role and its menu options before saving it to the backend.`,
+      'warning',
+      'B',
+      1
+    );
     this.closeModal();
-    
-    
+
     // Validar DTO
     const dto = this.applicationsService.getApplicationDTO();
     this.isDTOValid = isApplicationDTOValid(dto as any);
@@ -262,10 +428,10 @@ export class ApplicationsComponent implements OnInit {
     this.applicationsService.updateApplicationDTO(application);
   }
 
-  onRolCreado(nuevoRol: Rol): void {    
+  onRolCreado(nuevoRol: Rol): void {
     if (this.selectedApplication) {
       const newRoles = this.applicationsService.getTemporaryRoles();
-    
+
       newRoles.forEach((role) => {
         const exists = this.selectedApplication!.strRoles.some(
           (r) => r.id === role.id
@@ -279,7 +445,9 @@ export class ApplicationsComponent implements OnInit {
     this.showSaveButton = true;
     this.showToast(
       `The roles were added temporarily. You must assign at least one menu option before saving to the database.`,
-      'warning', 'B', 1
+      'warning',
+      'B',
+      1
     );
 
     this.closeModalRol();
@@ -292,19 +460,18 @@ export class ApplicationsComponent implements OnInit {
       this.openModal(false);
     }
   }
-  
-  
+
   confirmDelete(): void {
     if (this.isDeleteConfirmed) {
-      console.log("Application deleted!");
-      
-    }    
+      console.log('Application deleted!');
+    }
     this.deleteConfirmationText = '';
     this.isDeleteConfirmed = false;
   }
 
   validateDeleteInput(): void {
-    this.isDeleteConfirmed = this.deleteConfirmationText.trim().toLowerCase() === 'delete';
+    this.isDeleteConfirmed =
+      this.deleteConfirmationText.trim().toLowerCase() === 'delete';
   }
 
   // Método para eliminar una aplicación
@@ -317,7 +484,8 @@ export class ApplicationsComponent implements OnInit {
       error: (error) => {
         this.addNotification(
           'There was an error deleting the application',
-          'danger', "A",
+          'danger',
+          'A',
           0
         );
       },
@@ -349,17 +517,14 @@ export class ApplicationsComponent implements OnInit {
         return 'info-circle';
     }
   }
-  
+
   // funcion para abrir y cerrar ventana modal de crear rol
   openModalRol() {
     this.isModalRolOpen = true;
   }
 
   closeModalRol() {
-    console.log("Modal closed!");
+    console.log('Modal closed!');
     this.modalRef.hide();
   }
-  
 }
-
-
