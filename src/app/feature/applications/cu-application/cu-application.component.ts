@@ -342,6 +342,8 @@ export class CuApplicationComponent implements OnInit, OnChanges {
     this.showNextButton = true;
     this.imagePreview = null;
     this.selectedFile = null;
+    this.isGreenVisible  = false;
+    this.fileName     = '';
   }
 
   isPreviousDisabled(): boolean {
