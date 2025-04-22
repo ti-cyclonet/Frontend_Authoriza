@@ -5,6 +5,7 @@ import { catchError, map } from 'rxjs/operators';
 import { Application } from '../../model/application.model';
 import { isApplicationDTOValid } from '../../utils/validation.utils';
 import { Rol } from '../../model/rol';
+import { MenuOption } from '../../model/menu_option';
 
 export interface ApplicationDTO {
   id?: string;
@@ -289,6 +290,29 @@ export class ApplicationsService {
     });
   
     this.applicationsSubject.next(updatedApps);
+  }
+
+  // OPCIONES DE MENU
+  addTemporaryOptionMenu(optionMenu: MenuOption): void {
+  
+    // Agregar a todas las opciones disponibles de la aplicación
+    const currentApp = this.getApplicationDTO();
+    const alreadyExistsGlobally = currentApp.strRoles
+      .flatMap(r => r.menuOptions || [])
+      .some(m => m.id === optionMenu.id);
+  
+    if (!alreadyExistsGlobally) {
+      // Agregarlo al primer rol temporal (puede cambiarse por lógica específica)
+      const tempRole = currentApp.strRoles.find(r => r.strState === 'TEMPORARY' || (r as TempRol).isTemporary);
+      if (tempRole) {
+        tempRole.menuOptions = tempRole.menuOptions || [];
+        tempRole.menuOptions.push(optionMenu);
+      }
+    }
+  
+    this.updateTemporaryApplicationsAfterRoleChange();
+  
+    console.log('DTO actualizado con opción de menú:', this.applicationDTO);
   }
   
 }

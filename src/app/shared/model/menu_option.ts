@@ -8,4 +8,5 @@ export interface MenuOption{
     ingOrder: string;
     strState: string;
     strSubmenus: MenuOption[];
+    hasSubmenu?: boolean;
   }
