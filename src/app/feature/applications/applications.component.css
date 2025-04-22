@@ -21,6 +21,11 @@
   /* font-weight: bold; */
 }
 
+input[type="checkbox"].temporary-option {
+  accent-color: #e69138;
+}
+
+
 .disabled-icon {
   pointer-events: none;
   opacity: 0.5;
