@@ -165,9 +165,8 @@ export class CuApplicationComponent implements OnInit, OnChanges {
           imageFile: file,
         });
 
-        this.applicationForm.patchValue({
-          logo: file.name,
-        });
+        this.applicationForm.get('logo')!.setValue(file);
+        this.applicationForm.get('logo')!.updateValueAndValidity();
 
         const formData = new FormData();
         formData.append('logo', file);
