@@ -3,12 +3,12 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Application } from '../../model/application.model';
-import { isApplicationDTOValid } from '../../utils/validation.utils';
 import { Rol } from '../../model/rol';
 import { MenuOption } from '../../model/menu_option';
-
+import { validateApplicationDTO } from '../../utils/validation.utils';
+import { EnvironmentService } from '../environment.service';
 export interface ApplicationDTO {
-  id?: string;
+  id?: string | undefined;
   strName: string;
   strDescription: string;
   strUrlImage: string;
@@ -17,6 +17,12 @@ export interface ApplicationDTO {
   strState: string;
   strRoles: Rol[];
   imageFile?: File;
+}
+export interface SaveApplicationResult {
+  id: string;
+  name: string;
+  status: 'success' | 'warning' | 'danger';
+  message: string;
 }
 
 export interface TempRol extends Rol {
@@ -41,16 +47,18 @@ export class ApplicationsService {
     strRoles: [],
   };
 
+  applicationsDTOMap: Map<string, ApplicationDTO> = new Map();
+
   private apiUrl = '/api/applications';
   private validateNameUrl = '/api/applications/check-name';
-  private createApplicationUrl = '/api/application';
+  private createApplicationUrl = '/api/applications';
   private getApplicationByIdUrl = '/api/getapplicationbyid';
 
   public editMode: boolean = false;
   public idApplication: string = '';
   private temporaryRoles: TempRol[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private envService: EnvironmentService) {}
 
   setEditMode(sw: boolean) {
     this.editMode = sw;
@@ -80,11 +88,147 @@ export class ApplicationsService {
     this.applicationDTO = {
       ...this.applicationDTO,
       ...fields,
+      id:
+        this.applicationDTO.id ||
+        'temp-' + Math.random().toString(36).substr(2, 9),
     };
+  }
 
-    console.log('DTO actualizado:', this.applicationDTO);
-    const isValid = isApplicationDTOValid(this.applicationDTO as any);
-    console.log('¿Es válido el ApplicationDTO?', isValid);
+  public markApplicationAsNotNew(id: string): void {
+    const currentApps = this.applicationsSubject.getValue();
+    const index = currentApps.findIndex(app => app.id === id);
+    if (index !== -1) {
+      const updatedApp = { ...currentApps[index] };
+      delete (updatedApp as any).isNew;
+      const updatedApps = [...currentApps];
+      updatedApps[index] = updatedApp;
+      this.applicationsSubject.next(updatedApps);
+    }
+  }
+  
+  setApplicationDTOFor(appId: string, dto: ApplicationDTO): void {
+    this.applicationsDTOMap.set(appId, dto);
+  }
+
+  getApplicationDTOFor(appId: string): ApplicationDTO | undefined {
+    return this.applicationsDTOMap.get(appId);
+  }
+
+  getAllApplicationDTOs(): ApplicationDTO[] {
+    return Array.from(this.applicationsDTOMap.values());
+  }
+
+  removeApplicationDTO(appId: string): void {
+    this.applicationsDTOMap.delete(appId);
+  }
+
+  clearAllTemporaryDTOs(): void {
+    this.applicationsDTOMap.clear();
+  }
+
+  addOrUpdateApplicationDTO(app: ApplicationDTO): void {
+    if (app.strState === 'TEMPORARY') {
+      this.applicationsDTOMap.set(app.id!, app);
+    } else if (app.strState === 'ACTIVE') {
+      this.applicationsDTOMap.delete(app.id!);
+    }
+  }
+
+  saveCurrentApplicationState(appId: string, dto: ApplicationDTO): void {
+    this.applicationsDTOMap.set(appId, structuredClone(dto));
+  }
+
+  saveAllValidApplications(): SaveApplicationResult[] {
+    const appsToSend = Array.from(this.applicationsDTOMap.values());
+    const results: SaveApplicationResult[] = [];
+
+    for (const app of appsToSend) {
+      console.log('DTO DE LA APLICACION ', app.strName,' A GUARDAR:');
+      const validationErrors = validateApplicationDTO(app);
+
+      if (validationErrors.length > 0) {
+        results.push({
+          id: app.id!,
+          name: app.strName,
+          status: 'danger',
+          message: `Application "${
+            app.strName
+          }" has the following errors: <br>${validationErrors.join('<br>')}`,
+        });
+        continue;
+      }
+
+      const formData = this.buildFormDataFromApp(app);
+      const isNewApp = app.id?.startsWith('temp-');
+
+      if (isNewApp) {
+        // Crear nueva aplicación
+        this.createApplication(formData).subscribe({
+          next: () => {
+            results.push({
+              id: app.id!,
+              name: app.strName,
+              status: 'success',
+              message: `Application "${app.strName}" <b>created</b> successfully!`,
+            });
+            this.removeApplicationDTO(app.id!);
+          },
+          error: () => {
+            results.push({
+              id: app.id!,
+              name: app.strName,
+              status: 'danger',
+              message: `Error creating application "${app.strName}".`,
+            });
+          },
+        });
+      } else {
+        // Actualizar aplicación existente
+        this.updateApplication(app.id!, formData).subscribe({
+          next: () => {
+            results.push({
+              id: app.id!,
+              name: app.strName,
+              status: 'success',
+              message: `Application "${app.strName}" <b>updated</b> successfully!`,
+            });
+            this.removeApplicationDTO(app.id!);
+          },
+          error: () => {
+            results.push({
+              id: app.id!,
+              name: app.strName,
+              status: 'danger',
+              message: `Error updating application "${app.strName}".`,
+            });
+          },
+        });
+      }
+    }
+
+    return results;
+  }
+
+  buildFormDataFromApp(app: ApplicationDTO): FormData {
+    const formData = new FormData();
+
+    // ✅ Siempre agregamos el id
+    if (app.id) {
+      formData.append('id', app.id);
+    }
+
+    formData.append('strName', app.strName);
+    formData.append('strDescription', app.strDescription);
+    formData.append('strSlug', app.strSlug);
+    formData.append('strTags', JSON.stringify(app.strTags));
+    formData.append('strState', app.strState);
+    formData.append('strRoles', JSON.stringify(app.strRoles));
+
+    if (app.imageFile) {
+      formData.append('image', app.imageFile);
+    }
+
+    return formData;
   }
 
   // ===================
@@ -95,7 +239,7 @@ export class ApplicationsService {
     return this.http.get<Application>(`${this.getApplicationByIdUrl}/${id}`);
   }
 
-  getApplications(limit: number = 4, offset: number = 0): Observable<any[]> {
+  getApplications(limit: number = 4, offset: number = 0): Observable<Application[]> {
     return this.http.get<Application[]>(`${this.apiUrl}?limit=${limit}&offset=${offset}`);
   }
 
@@ -121,7 +265,7 @@ export class ApplicationsService {
 
   updateTemporaryApplication(updatedApp: Application): void {
     const apps = this.applicationsSubject.getValue();
-    const updatedApps = apps.map(app =>
+    const updatedApps = apps.map((app) =>
       app.id === updatedApp.id ? updatedApp : app
     );
     this.applicationsSubject.next(updatedApps);
@@ -141,7 +285,11 @@ export class ApplicationsService {
   checkApplicationName(strName: string): Observable<boolean> {
     const headers = { 'Content-Type': 'application/json' };
     return this.http
-      .post<{ available: boolean }>(this.validateNameUrl, { strName }, { headers })
+      .post<{ available: boolean }>(
+        this.validateNameUrl,
+        { strName },
+        { headers }
+      )
       .pipe(map((response) => response.available));
   }
 
@@ -152,11 +300,11 @@ export class ApplicationsService {
     });
 
     return this.http.post<any>(this.createApplicationUrl, applicationData).pipe(
-      map((response) => {
-        this.loadApplications();
+      map(response => {
+        this.loadApplications(); // recarga lista después de crear
         return response;
       }),
-      catchError((error) => {
+      catchError(error => {
         console.error('Error creating application:', error);
         return throwError(() => error);
       })
@@ -164,11 +312,11 @@ export class ApplicationsService {
   }
 
   deleteApplication(id: string): Observable<any> {
-    return this.http.delete(`/api/application/${id}`);
+    return this.http.delete(`${this.envService.apiBaseUrl}/applications/${id}`);
   }
 
   updateApplication(id: string, applicationData: FormData): Observable<any> {
-    const updateUrl = `/api/updateapplication/${id}`;
+    const updateUrl = `${this.envService.apiBaseUrl}/aplications/${id}`;
     return this.http.put<any>(updateUrl, applicationData).pipe(
       map((response) => {
         this.loadApplications();
@@ -191,11 +339,11 @@ export class ApplicationsService {
 
   updateApplicationRoles(appId: string, newRole: TempRol): void {
     const apps = this.applicationsSubject.getValue();
-  
-    const updatedApps = apps.map(app => {
+
+    const updatedApps = apps.map((app) => {
       if (app.id === appId) {
         const existingRoles = app.strRoles || [];
-        const roleExists = existingRoles.some(r => r.id === newRole.id);
+        const roleExists = existingRoles.some((r) => r.id === newRole.id);
         if (!roleExists) {
           return {
             ...app,
@@ -205,79 +353,77 @@ export class ApplicationsService {
       }
       return app;
     });
-  
+
     this.applicationsSubject.next(updatedApps);
   }
-  
 
   addTemporaryRole(role: Rol): void {
     const tempRole: TempRol = { ...role, isTemporary: true };
     this.temporaryRoles.push(tempRole);
     this.applicationDTO.strRoles.push(tempRole);
-  
+
     this.updateTemporaryApplicationsAfterRoleChange();
-  
+
     this.temporaryRoles = [];
-  
-    console.log('DTO actualizado:', this.applicationDTO);
-    const isValid = isApplicationDTOValid(this.applicationDTO as any);
-    console.log('¿Es válido el ApplicationDTO?', isValid);
   }
-  
 
   getTemporaryRoles(): TempRol[] {
     return this.temporaryRoles;
   }
 
   hasTemporaryChanges(application: ApplicationDTO): boolean {
-    // Verifica si algún rol tiene estado TEMPORARY
-    const hasTempRole = application.strRoles.some(role => role.strState === 'TEMPORARY' || (role as TempRol).isTemporary);
-  
-    // Verifica si alguna opción de menú tiene estado TEMPORARY
-    const hasTempMenuOption = application.strRoles.some(role =>
-      role.menuOptions?.some(menu =>
-        menu.strState === 'TEMPORARY' || 
-        menu.strSubmenus?.some(sub => sub.strState === 'TEMPORARY')
+    const hasTempRole = application.strRoles.some(
+      (role) => role.strState === 'TEMPORARY' || (role as TempRol).isTemporary
+    );
+
+    const hasTempMenuOption = application.strRoles.some((role) =>
+      role.menuOptions?.some(
+        (menu) =>
+          menu.strState === 'TEMPORARY' ||
+          menu.strSubmenus?.some((sub) => sub.strState === 'TEMPORARY')
       )
     );
-  
+
     return hasTempRole || hasTempMenuOption;
   }
-  
 
   clearTemporaryRoles(): void {
     this.temporaryRoles = [];
-    this.applicationDTO.strRoles = this.applicationDTO.strRoles.filter((r: TempRol) => !r.isTemporary);
+    this.applicationDTO.strRoles = this.applicationDTO.strRoles.filter(
+      (r: TempRol) => !r.isTemporary
+    );
   }
-  
+
   checkTemporaryStatusForAllApplications(): void {
-    const updatedApps = this.applicationsSubject.getValue().map(app => {
+    const updatedApps = this.applicationsSubject.getValue().map((app) => {
       if (app.strState === 'TEMPORARY') {
-        return app; // No tocar si ya es TEMPORARY
+        return app;
       }
-  
-      const hasTemporaryRole = app.strRoles?.some(role =>
-        role.strState === 'TEMPORARY' || (role as TempRol).isTemporary
+
+      const hasTemporaryRole = app.strRoles?.some(
+        (role) => role.strState === 'TEMPORARY' || (role as TempRol).isTemporary
       );
-  
+
       return {
         ...app,
         strState: hasTemporaryRole ? 'TEMPORARY' : 'ACTIVE',
       };
     });
-  
+
     this.applicationsSubject.next(updatedApps);
   }
-  
+
   updateTemporaryApplicationsAfterRoleChange(): void {
     const apps = this.applicationsSubject.getValue();
-    const updatedApps = apps.map(app => {
+    const updatedApps = apps.map((app) => {
       if (app.id === this.idApplication) {
         const existingRoles = app.strRoles || [];
-        const exists = existingRoles.some(r => r.id === this.temporaryRoles[0]?.id);
+        const exists = existingRoles.some(
+          (r) => r.id === this.temporaryRoles[0]?.id
+        );
         if (!exists) {
           const updatedRoles = [...existingRoles, ...this.temporaryRoles];
-  
+
           // Actualizamos el estado a 'TEMPORARY'
           return {
             ...app,
@@ -288,31 +434,41 @@ export class ApplicationsService {
       }
       return app;
     });
-  
+
     this.applicationsSubject.next(updatedApps);
   }
 
   // OPCIONES DE MENU
-  addTemporaryOptionMenu(optionMenu: MenuOption): void {
-  
-    // Agregar a todas las opciones disponibles de la aplicación
+  addTemporaryOptionMenu(
+    optionMenu: MenuOption,
+    targetRolId?: string
+  ): string | null {
     const currentApp = this.getApplicationDTO();
+
     const alreadyExistsGlobally = currentApp.strRoles
-      .flatMap(r => r.menuOptions || [])
-      .some(m => m.id === optionMenu.id);
-  
+      .flatMap((r) => r.menuOptions || [])
+      .some((m) => m.id === optionMenu.id);
+
     if (!alreadyExistsGlobally) {
-      // Agregarlo al primer rol temporal (puede cambiarse por lógica específica)
-      const tempRole = currentApp.strRoles.find(r => r.strState === 'TEMPORARY' || (r as TempRol).isTemporary);
-      if (tempRole) {
-        tempRole.menuOptions = tempRole.menuOptions || [];
-        tempRole.menuOptions.push(optionMenu);
+      let targetRole = currentApp.strRoles.find((r) => r.id === targetRolId);
+
+      // Fallback si no se pasó ID
+      if (!targetRole) {
+        targetRole = currentApp.strRoles.find(
+          (r) => r.strState === 'TEMPORARY' || (r as TempRol).isTemporary
+        );
+      }
+
+      if (targetRole) {
+        targetRole.menuOptions = targetRole.menuOptions || [];
+        targetRole.menuOptions.push(optionMenu);
+
+        this.updateTemporaryApplicationsAfterRoleChange();
+
+        console.log('DTO actualizado con opción de menú:', this.applicationDTO);
+        return targetRole.id;
       }
     }
-  
-    this.updateTemporaryApplicationsAfterRoleChange();
-  
-    console.log('DTO actualizado con opción de menú:', this.applicationDTO);
+    return null;
   }
-  
 }
