@@ -1,13 +1,17 @@
-import { Component, OnInit, Output, EventEmitter} from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ApplicationsService } from '../../../shared/services/applications/applications.service';
 import { MenuOption } from '../../../shared/model/menu_option';
 
-
 @Component({
   selector: 'app-cuoptionmenu',
-  standalone: true, 
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './cu-optionmenu.component.html',
   styleUrls: ['./cu-optionmenu.component.css'],
@@ -17,10 +21,13 @@ export class CuOptionMenuComponent implements OnInit {
   isYellowVisible = true;
   isBlueVisible = false;
   isGreenVisible = false;
-  @Output() menuOptionCreated = new EventEmitter<MenuOption>();
+  
+  @Output() onSave = new EventEmitter<MenuOption>();
 
-
-  constructor(private fb: FormBuilder, private applicationsService: ApplicationsService) {
+  constructor(
+    private fb: FormBuilder,
+    private applicationsService: ApplicationsService
+  ) {
     this.optionMenuForm = this.fb.group({
       name: ['', Validators.required],
       description: ['', Validators.required],
@@ -59,10 +66,16 @@ export class CuOptionMenuComponent implements OnInit {
 
   isNextDisabled(): boolean {
     if (this.isYellowVisible) {
-      return !(this.optionMenuForm.get('name')?.valid && this.optionMenuForm.get('description')?.valid);
+      return !(
+        this.optionMenuForm.get('name')?.valid &&
+        this.optionMenuForm.get('description')?.valid
+      );
     }
     if (this.isBlueVisible) {
-      return !(this.optionMenuForm.get('url')?.valid && this.optionMenuForm.get('icon')?.valid);
+      return !(
+        this.optionMenuForm.get('url')?.valid &&
+        this.optionMenuForm.get('icon')?.valid
+      );
     }
     return true;
   }
@@ -76,22 +89,21 @@ export class CuOptionMenuComponent implements OnInit {
         strUrl: this.optionMenuForm.get('url')?.value,
         strIcon: this.optionMenuForm.get('icon')?.value,
         strType: this.optionMenuForm.get('type')?.value,
-        ingOrder: parseInt(this.optionMenuForm.get('order')?.value, 10).toString(),
+        ingOrder: parseInt(
+          this.optionMenuForm.get('order')?.value,
+          10
+        ).toString(),
         strState: 'TEMPORARY',
         strSubmenus: [],
         hasSubmenu: this.optionMenuForm.get('submenu')?.value === 'yes',
       };
-  
-      this.applicationsService.addTemporaryOptionMenu(newOption);
-      this.menuOptionCreated.emit(newOption);
-  
+      this.onSave.emit(newOption);
+
       this.onCancel();
     } else {
       this.optionMenuForm.markAllAsTouched();
     }
   }
-  
-  
 
   onCancel() {
     this.optionMenuForm.reset();

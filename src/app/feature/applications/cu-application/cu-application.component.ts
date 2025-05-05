@@ -2,8 +2,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output,} from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators, } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ApplicationsService } from '../../../shared/services/applications/applications.service';
-import { Application } from '../../../shared/model/application.model';
+import { ApplicationDTO, ApplicationsService } from '../../../shared/services/applications/applications.service';
 import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
@@ -130,53 +129,56 @@ export class CuApplicationComponent implements OnInit, OnChanges {
     try {
       const input = event.target as HTMLInputElement;
       this.isFileSelected = !!input.files?.length;
-
+  
       if (input.files && input.files.length > 0) {
         const file = input.files[0];
-
+  
+        // Validaciones
         if (!file.type.includes('image')) {
           console.error('El archivo seleccionado no es una imagen.');
           return;
         }
-
+  
         const maxSize = 2 * 1024 * 1024;
         if (file.size > maxSize) {
           console.error('El archivo es demasiado grande. Máximo permitido: 2MB');
           return;
         }
-
+  
         this.fileTmp = {
           fileRaw: file,
           fileName: file.name,
         };
-
+  
         this.selectedFile = file;
         this.fileName = file.name ?? null;
-
+  
         if (this.imagePreview) {
           URL.revokeObjectURL(this.imagePreview);
         }
-
         this.imagePreview = URL.createObjectURL(file);
         this.isFileChosen = true;
-
-        this.applicationsService.updateApplicationDTO({
-          strUrlImage: this.imagePreview,
-          imageFile: file,
-        });
-
+  
         this.applicationForm.patchValue({
           logo: file.name,
         });
-
-        const formData = new FormData();
-        formData.append('logo', file);
+  
+        // ✅ Obtener ID de aplicación
+        const appId = this.idApplication || this.applicationsService.getIdApplication();
+  
+        // ✅ Asignar al DTO directamente en el mapa
+        const dto = this.applicationsService.getApplicationDTOFor(appId);
+        if (dto) {
+          dto.imageFile = file;
+          dto.strUrlImage = this.imagePreview;
+          this.applicationsService.setApplicationDTOFor(appId, dto);
+        }
       } else {
         this.selectedFile = null;
         this.fileName = null;
         this.imagePreview = null;
         this.isFileChosen = false;
-
+  
         this.applicationForm.patchValue({
           logo: null,
         });
@@ -185,6 +187,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
       console.error('Error al seleccionar el archivo:', error);
     }
   }
+  
 
   clearFile(fileInput: HTMLInputElement) {
     this.selectedFile = null;
@@ -269,7 +272,8 @@ export class CuApplicationComponent implements OnInit, OnChanges {
       );
       const appName = this.applicationForm.get('applicationName')?.value;
       const generatedSlug = this.generateSlug(appName);
-      const newApplication: Application = {
+  
+      const newApplicationDTO: ApplicationDTO = {
         id: 'temp-' + Math.random().toString(36).substr(2, 9),
         strName: this.applicationForm.get('applicationName')?.value,
         strDescription: this.applicationForm.get('description')?.value,
@@ -278,23 +282,36 @@ export class CuApplicationComponent implements OnInit, OnChanges {
         strTags: tagsArray,
         strState: 'TEMPORARY',
         strRoles: [],
+        imageFile: this.selectedFile || undefined
       };
-
-      this.applicationsService.updateApplicationDTO({
-        strName: this.applicationForm.get('applicationName')?.value,
-        strDescription: this.applicationForm.get('description')?.value,
-        strUrlImage: this.imagePreview || '',
-        strSlug: generatedSlug,
-        strTags: tagsArray,
+  
+      this.applicationsService.addOrUpdateApplicationDTO(newApplicationDTO);
+  
+      // Agregamos propiedad 'isNew' para animación
+      const newApplication = {
+        id: newApplicationDTO.id!,
+        strName: newApplicationDTO.strName,
+        strDescription: newApplicationDTO.strDescription,
+        strUrlImage: newApplicationDTO.strUrlImage,
+        strSlug: newApplicationDTO.strSlug,
+        strTags: newApplicationDTO.strTags,
         strState: 'TEMPORARY',
         strRoles: [],
-      });
-
+        isNew: true,
+      };
+  
       this.applicationsService.addTemporaryApplication(newApplication);
+  
+      // Eliminamos el marcador isNew después de 3 segundos
+      setTimeout(() => {
+        this.applicationsService.markApplicationAsNotNew(newApplication.id);
+      }, 3000);
+  
       this.applicationCreated.emit();
       this.onCancel();
     }
   }
+  
 
   private generateSlug(name: string): string {
     return name.trim().toLowerCase().replace(/\s+/g, '_').concat('_app');
