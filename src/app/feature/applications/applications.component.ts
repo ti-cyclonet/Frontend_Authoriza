@@ -22,7 +22,6 @@ import {
 import { ImageModalComponent } from '../../shared/components/image-modal/image-modal.component';
 import { CuRolComponent } from './cu-rol/cu-rol.component';
 import { Subject, takeUntil } from 'rxjs';
-import { isApplicationDTOValid } from '../../shared/utils/validation.utils';
 import { Rol } from '../../shared/model/rol';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Modal } from 'bootstrap';
@@ -53,28 +52,6 @@ export class ApplicationsComponent implements OnInit {
   @ViewChild(CuApplicationComponent) appCuApplication!: CuApplicationComponent;
   @ViewChild('rolesModal') rolesModalElement!: ElementRef;
   @ViewChild('optionMenuModal') optionMenuModal!: ElementRef;
-
-  handleOptionMenuSave(data: any) {
-    console.log('Guardado:', data);
-    this.closeOptionMenuModal();
-  
-    // 🔄 Actualizar la lista visual
-    this.updateAvailableMenuOptions();
-  
-    this.showToast(
-      `New menu option "${data.strName}" was added temporarily.`,
-      'primary', 'A', 1
-    );
-  }
-  
-
-  closeOptionMenuModal() {
-    const modalEl = document.getElementById('optionMenuModal');
-    if (modalEl) {
-      const bsModal = Modal.getInstance(modalEl) || new Modal(modalEl);
-      bsModal.hide();
-    }
-  }
 
   isModalOpen = false;
   isDTOValid: boolean = false;
@@ -125,6 +102,90 @@ export class ApplicationsComponent implements OnInit {
     this.notifications = [];
   }
 
+  handleOptionMenuSave(data: MenuOption): void {
+    this.closeOptionMenuModal();
+
+    const assignedRolId = this.applicationsService.addTemporaryOptionMenu(
+      data,
+      this.selectedRol?.id
+    );
+
+    if (!assignedRolId) {
+      this.showToast('Could not assign the new menu option.', 'danger', 'A', 1);
+      return;
+    }
+
+    // 1. Quitar de la lista de disponibles (por si estaba allí)
+    this.allMenuOptionsForApp = this.allMenuOptionsForApp.filter(
+      (m) => m.id !== data.id
+    );
+
+    // 2. Buscar el rol actualizado en el DTO
+    const dto = this.applicationsService.getApplicationDTO();
+    const updatedRol = dto.strRoles.find((r) => r.id === assignedRolId);
+
+    if (updatedRol) {
+      // 3. Marcar el rol y la aplicación como TEMPORARY
+      updatedRol.strState = 'TEMPORARY';
+      dto.strState = 'TEMPORARY';
+      this.applicationsService.addOrUpdateApplicationDTO(dto);
+
+      // Actualizar visualmente la aplicación seleccionada
+      if (this.selectedApplication) {
+        this.selectedApplication.strState = 'TEMPORARY';
+
+        // También actualizar la app en la lista principal
+        const index = this.applications.findIndex(
+          (app) => app.id === this.selectedApplication!.id
+        );
+        if (index !== -1) {
+          this.applications[index].strState = 'TEMPORARY';
+        }
+      }
+
+      // 4. Actualizar las variables visuales
+      this.selectedRol = { ...updatedRol };
+      this.selectedMenuOptions = [...(updatedRol.menuOptions || [])];
+      this.tempAssignedMenuOptions.push({ ...data, strState: 'TEMPORARY' });
+
+      // 5. Mostrar toast
+      this.showToast(
+        `New menu option "${data.strName}" was added temporarily.`,
+        'success',
+        'A',
+        1
+      );
+
+      // 6. Forzar render
+      this.cdr.detectChanges();
+    } else {
+      console.warn('⚠️ Rol no encontrado en DTO tras crear opción');
+    }
+  }
+
+  syncSelectedRolWithDTO(): void {
+    if (!this.selectedRol || !this.selectedApplication?.id) return;
+
+    const dto = this.applicationsService.getApplicationDTO();
+
+    const dtoRol = dto.strRoles.find((r) => r.id === this.selectedRol.id);
+
+    if (dtoRol) {
+      this.selectedRol = dtoRol;
+      this.selectedMenuOptions = [...(dtoRol.menuOptions || [])];
+    } else {
+      console.warn('No se encontró el rol en el DTO para sincronizar.');
+    }
+  }
+
+  closeOptionMenuModal() {
+    const modalEl = document.getElementById('optionMenuModal');
+    if (modalEl) {
+      const bsModal = Modal.getInstance(modalEl) || new Modal(modalEl);
+      bsModal.hide();
+    }
+  }
+
   get allApplications() {
     return [...this.applications, ...this.localApplications];
   }
@@ -139,48 +200,52 @@ export class ApplicationsComponent implements OnInit {
   }
 
   // Funciones para NOTIFICACIONES
-  addNotification(
-    title: string,
-    type: 'success' | 'warning' | 'danger' | 'primary',
-    alertType: 'A' | 'B',
-    container: 0 | 1
-  ) {
-    this.notifications.push({
-      title,
-      type,
-      alertType,
-      container,
-      visible: true,
-    });
-  }
-
-  removeNotification(index: number) {
-    this.notifications.splice(index, 1);
-  }
-
-  showToast(
-    message: string,
-    type: 'success' | 'warning' | 'danger' | 'primary',
-    alertType: 'A' | 'B',
-    container: 0 | 1
-  ) {
-    const notification = {
-      title: message,
-      type,
-      alertType,
-      container,
-      visible: true,
-    };
-    this.notifications.push(notification);
-    this.cdr.detectChanges();
-
-    if (alertType === 'A') {
-      setTimeout(() => {
-        notification.visible = false;
-        this.cdr.detectChanges();
-      }, 5000);
+    addNotification(
+      title: string,
+      type: 'success' | 'warning' | 'danger' | 'primary',
+      alertType: 'A' | 'B',
+      container: 0 | 1
+    ) {
+      this.notifications.push({
+        title,
+        type,
+        alertType,
+        container,
+        visible: true,
+      });
     }
-  }
+
+    removeNotification(index: number) {
+      this.notifications.splice(index, 1);
+    }
+
+    getIconColor() {
+      return 'var(--header-background-color)';
+    }
+
+    showToast(
+      message: string,
+      type: 'success' | 'warning' | 'danger' | 'primary',
+      alertType: 'A' | 'B',
+      container: 0 | 1
+    ) {
+      const notification = {
+        title: message,
+        type,
+        alertType,
+        container,
+        visible: true,
+      };
+      this.notifications.push(notification);
+      this.cdr.detectChanges();
+
+      if (alertType === 'A') {
+        setTimeout(() => {
+          notification.visible = false;
+          this.cdr.detectChanges();
+        }, 5000);
+      }
+    }
   // ----------------------------------------------
 
   get selectedFile() {
@@ -205,11 +270,66 @@ export class ApplicationsComponent implements OnInit {
   }
 
   showRoles(application: Application) {
+    if (this.selectedApplication) {
+      const dtoCopy = this.applicationsService.getApplicationDTO();
+      this.applicationsService.saveCurrentApplicationState(this.selectedApplication.id, dtoCopy);
+    }
+  
     this.setSelectedApplication(application);
     this.isRolesTableVisible = true;
-    // console.log('APLICACION SELECCIONADA: ', this.selectedApplication);
+  }
+  
+  loadApplicationState(appId: string): void {
+    const dto = this.applicationsService.getApplicationDTOFor(appId);
+  
+    if (dto) {
+      this.applicationsService.setApplicationDTO(dto);
+    } else {      
+      const found = this.applications.find(app => app.id === appId);
+      if (found) {
+        const newDTO = structuredClone(found);
+        this.applicationsService.setApplicationDTOFor(appId, newDTO);
+        this.applicationsService.setApplicationDTO(newDTO);
+      }
+    }
+  
+    this.syncSelectedRolWithDTO();
   }
 
+  get hasApplications(): boolean {
+    return this.applicationsService.applicationsDTOMap.size > 0;
+  }
+
+  onSaveAllApplications(): void {    
+    this.applicationsService.applicationsDTOMap.forEach((dto, appId) => {   
+      console.log('APLICACIÓN A GUARDAR: ', dto);
+      const isNewApp = dto.id?.startsWith('temp-');
+      const selectedFile = this.appCuApplication?.selectedFile;
+      console.log('selectedFile: ', selectedFile);
+  
+      if (isNewApp && selectedFile) {
+        dto.imageFile = selectedFile;
+      }
+      
+      if (isNewApp && !dto.imageFile) {
+        this.showToast(
+          `Application "${dto.strName}" must include an image.`,
+          'danger',
+          'A',
+          1
+        );
+      }
+  
+      this.applicationsService.addOrUpdateApplicationDTO(dto);
+    });
+  
+    const results = this.applicationsService.saveAllValidApplications();
+  
+    results.forEach((result) => {
+      this.showToast(result.message, result.status, 'A', 1);
+    });
+  }  
+  
   toggleRolesTable() {
     this.isRolesTableVisible = !this.isRolesTableVisible;
     if (!this.isRolesTableVisible) {
@@ -217,17 +337,18 @@ export class ApplicationsComponent implements OnInit {
     }
   }
 
-  onSelectRol(rol: any) {
-    this.isMenuTableVisible = true;
+  onSelectRol(rol: Rol) {
     this.selectedRol = rol;
-    this.selectedMenuOptions = rol.menuOptions || [];
+    this.syncSelectedRolWithDTO();
+
+    this.isMenuTableVisible = true;
+    this.selectedMenuOptions = [...(this.selectedRol.menuOptions || [])];
+
     if (this.selectedApplication) {
       this.allMenuOptionsForApp = this.getAllMenuOptionsFromApp(
         this.selectedApplication
       );
     }
-
-    this.isMenuTableVisible = true;
   }
 
   clearSelectedRole() {
@@ -245,19 +366,79 @@ export class ApplicationsComponent implements OnInit {
         }
       });
     });
-    return Array.from(allOptions.values());
+    const assignedIds = new Set(
+      this.selectedRol?.menuOptions.map((opt: MenuOption) => opt.id) || []
+    );
+    return Array.from(allOptions.values()).filter(
+      (opt) => !assignedIds.has(opt.id)
+    );
   }
 
-  cancelTemporaryChanges() {
+  cancelTemporaryChanges(): void {
     if (!this.selectedRol) return;
 
-    // Remover del rol todas las opciones marcadas como TEMPORARY
-    this.selectedRol.menuOptions = this.selectedRol.menuOptions.filter(
+    const rolId = this.selectedRol.id;
+
+    // 1. Filtrar las opciones temporales
+    const removedOptions = this.selectedRol.menuOptions.filter(
+      (opt: MenuOption) => opt.strState === 'TEMPORARY'
+    );
+
+    const remainingOptions = this.selectedRol.menuOptions.filter(
       (opt: MenuOption) => opt.strState !== 'TEMPORARY'
     );
 
+    
+    this.selectedRol.menuOptions = remainingOptions;
+    
+    const dto = this.applicationsService.getApplicationDTO();
+    const dtoRol = dto.strRoles.find((r) => r.id === rolId);
+    if (dtoRol) {
+      dtoRol.menuOptions = [...remainingOptions];
+      const isNewRol = (dtoRol as any).isTemporary;
+      if (!isNewRol) {
+        dtoRol.strState = 'ACTIVE';
+      }
+    }
+    const anyTempRoles = dto.strRoles.some(
+      (r) =>
+        r.strState === 'TEMPORARY' ||
+        r.menuOptions?.some((m) => m.strState === 'TEMPORARY')
+    );
+
+    if (!anyTempRoles) {
+      dto.strState = 'ACTIVE';
+      this.applicationsService.addOrUpdateApplicationDTO(dto);
+      if (this.selectedApplication) {
+        this.selectedApplication.strState = 'ACTIVE';
+      
+        // Actualizar también en la lista principal
+        const index = this.applications.findIndex(app => app.id === this.selectedApplication!.id);
+        if (index !== -1) {
+          this.applications[index].strState = 'ACTIVE';
+        }
+      
+        dto.strState = 'ACTIVE';
+        this.applicationsService.addOrUpdateApplicationDTO(dto);
+      }
+      
+    }
+
+    this.selectedRol.menuOptions = [...remainingOptions];
+    this.selectedMenuOptions = [...remainingOptions];
     this.tempAssignedMenuOptions = [];
-    this.selectedRol = { ...this.selectedRol };
+
+    const updatedAvailableOptions = [
+      ...this.getAllMenuOptionsFromApp(this.selectedApplication!),
+      ...removedOptions,
+    ];
+    const uniqueOptionsMap = new Map<string, MenuOption>();
+    updatedAvailableOptions.forEach((opt) => uniqueOptionsMap.set(opt.id, opt));
+
+    this.allMenuOptionsForApp = Array.from(uniqueOptionsMap.values());
+
+    this.tempAssignedMenuOptions = [];
+    this.selectedMenuOptions = [...remainingOptions];
 
     this.showToast(
       `All temporary menu options for "${this.selectedRol.strName}" were removed.`,
@@ -265,7 +446,16 @@ export class ApplicationsComponent implements OnInit {
       'A',
       1
     );
+
     this.cdr.detectChanges();
+  }
+
+  hasTemporaryMenuOptions(): boolean {
+    return (
+      this.selectedRol?.menuOptions?.some(
+        (opt: MenuOption) => opt.strState === 'TEMPORARY'
+      ) ?? false
+    );
   }
 
   isOptionAlreadyInRol(option: MenuOption): boolean {
@@ -291,10 +481,12 @@ export class ApplicationsComponent implements OnInit {
 
   updateAvailableMenuOptions() {
     if (this.selectedApplication) {
-      this.allMenuOptionsForApp = this.getAllMenuOptionsFromApp(this.selectedApplication);
+      this.allMenuOptionsForApp = this.getAllMenuOptionsFromApp(
+        this.selectedApplication
+      );
       this.cdr.detectChanges();
     }
-  }  
+  }
 
   toggleMenuOption(option: MenuOption): void {
     if (!this.selectedRol) return;
@@ -305,12 +497,12 @@ export class ApplicationsComponent implements OnInit {
     );
 
     if (isAlreadyAssigned && !isTemp) {
-      // No permitir remover opciones ya asignadas permanentemente
+      // No se puede remover permanente
       return;
     }
 
     if (isTemp) {
-      // Si es temporal y ya está asignada, eliminarla de ambas listas
+      // 🔄 REMOVER opción temporalmente asignada
       this.tempAssignedMenuOptions = this.tempAssignedMenuOptions.filter(
         (m: MenuOption) => m.id !== option.id
       );
@@ -319,6 +511,9 @@ export class ApplicationsComponent implements OnInit {
         (m: MenuOption) => m.id !== option.id
       );
 
+      // 🔄 VOLVER a mostrar en lista de disponibles
+      this.allMenuOptionsForApp.push(option);
+
       this.showToast(
         `"${option.strName}" was removed from the role temporarily.`,
         'warning',
@@ -326,20 +521,36 @@ export class ApplicationsComponent implements OnInit {
         1
       );
     } else {
-      // Si no está, agregar como temporal
+      // ✅ ASIGNAR TEMPORALMENTE
       const tempOption: MenuOption = { ...option, strState: 'TEMPORARY' };
 
       this.tempAssignedMenuOptions.push(tempOption);
       this.selectedRol.menuOptions.push(tempOption);
+      this.selectedRol.strState = 'TEMPORARY';
+      this.selectedApplication!.strState = 'TEMPORARY';
+
+      // Actualizar también en el DTO
+      const dto = this.applicationsService.getApplicationDTO();
+      const dtoRol = dto.strRoles.find((r) => r.id === this.selectedRol.id);
+      if (dtoRol) dtoRol.strState = 'TEMPORARY';
+      dto.strState = 'TEMPORARY';
+      this.applicationsService.addOrUpdateApplicationDTO(dto);
+
+      // ❌ QUITAR de disponibles
+      this.allMenuOptionsForApp = this.allMenuOptionsForApp.filter(
+        (m: MenuOption) => m.id !== option.id
+      );
 
       this.showToast(
         `"${option.strName}" was added to the role temporarily.`,
-        'primary',
+        'success',
         'A',
         1
       );
     }
 
+    // 🔁 Refrescar tabla visible
+    this.selectedMenuOptions = [...this.selectedRol.menuOptions];
     this.cdr.detectChanges();
   }
 
@@ -417,10 +628,6 @@ export class ApplicationsComponent implements OnInit {
       1
     );
     this.closeModal();
-
-    // Validar DTO
-    const dto = this.applicationsService.getApplicationDTO();
-    this.isDTOValid = isApplicationDTOValid(dto as any);
   }
 
   setSelectedApplication(application: Application) {
@@ -491,6 +698,7 @@ export class ApplicationsComponent implements OnInit {
       },
     });
   }
+  
   // Función para obtener las clases del Toast dinámicamente
   getClass() {
     return {

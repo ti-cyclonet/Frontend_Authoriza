@@ -12,7 +12,7 @@
 </div>
 
 <!-- Contenedor superior -->
-<div class="p-1">
+<div class="notification-container-1 p-1 w-100">
   <ng-container *ngFor="let notification of notifications; let i = index">
     <app-notifications
       *ngIf="notification.container === 1 && notification.visible"
@@ -47,13 +47,10 @@
 
       <div class="btn-group ms-auto custom-btn-group">
         <a
-          *ngIf="showSaveButton"
-          [class.disabled-icon]="!isDTOValid"
-          [class.enabled-icon]="isDTOValid"
-          [attr.aria-disabled]="!isDTOValid"
-          [attr.tabindex]="!isDTOValid ? -1 : 0"
-          href="#"
-          (click)="(isDTOValid)"
+          (click)="onSaveAllApplications()"
+          [class.disabled]="!hasApplications"
+          [attr.aria-disabled]="!hasApplications"
+          [style.pointer-events]="hasApplications ? 'auto' : 'none'"
           title="Save"
         >
           <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
@@ -64,6 +61,7 @@
             ></use>
           </svg>
         </a>
+
         <a
           [class.disabled-icon]="selectedApplication"
           [attr.aria-disabled]="selectedApplication ? 'true' : null"
@@ -516,7 +514,7 @@
         <div class="roles-buttons btn-group ms-auto custom-btn-group">
           <!-- Botón para cerrar -->
           <button
-            *ngIf="tempAssignedMenuOptions.length > 0"
+            *ngIf="hasTemporaryMenuOptions()"
             class="btn btn-outline-danger btn-sm"
             (click)="cancelTemporaryChanges()"
           >
@@ -540,6 +538,13 @@
             data-bs-toggle="modal"
             data-bs-target="#optionMenuModal"
             style="cursor: pointer"
+            [class.disabled-icon]="!selectedRol"
+            [attr.aria-disabled]="!selectedRol"
+            (click)="
+              selectedRol
+                ? null
+                : showToast('Select a role first', 'warning', 'A', 1)
+            "
           >
             <img
               src="assets/icons/plus-square-fill.svg"
@@ -574,7 +579,8 @@
               scope="row"
               [ngClass]="{
                 selected: menu === selectedMenuOption,
-                'bg-temp': menu.strState === 'TEMPORARY' && menu !== selectedMenuOption
+                'bg-temp':
+                  menu.strState === 'TEMPORARY' && menu !== selectedMenuOption
               }"
             >
               <span
@@ -611,8 +617,23 @@
               [ngClass]="{ selected: menu === selectedMenuOption }"
               class="d-none d-xl-table-cell"
             >
+              <svg
+                [attr.fill]="getIconColor()"
+                viewBox="0 0 16 16"
+                width="16"
+                height="16"
+                class="me-1"
+                style="vertical-align: text-bottom"
+              >
+                <use
+                  [attr.xlink:href]="
+                    './assets/icons/bootstrap-icons.svg#' + menu.strIcon
+                  "
+                ></use>
+              </svg>
               {{ menu.strIcon }}
             </td>
+
             <td
               [ngClass]="{ selected: menu === selectedMenuOption }"
               class="d-none d-xl-table-cell"
@@ -630,7 +651,8 @@
             <td
               [ngClass]="{
                 selected: menu === selectedMenuOption,
-                'bg-temp': menu.strState === 'TEMPORARY' && menu !== selectedMenuOption
+                'bg-temp':
+                  menu.strState === 'TEMPORARY' && menu !== selectedMenuOption
               }"
               class="text-center"
             >
@@ -710,6 +732,12 @@
               </div>
             </td>
           </tr>
+          <!-- ⚠️ Fila para mostrar mensaje si la tabla está vacía -->
+          <tr *ngIf="selectedMenuOptions.length === 0">
+            <td colspan="9" class="text-center fst-italic text-primary">
+              No menu options assigned to this role.
+            </td>
+          </tr>
         </tbody>
       </table>
 
@@ -722,7 +750,6 @@
               <th>Select</th>
               <th>Name</th>
               <th>Description</th>
-              <th>Assigned</th>
             </tr>
           </thead>
           <tbody>
@@ -737,23 +764,6 @@
               </td>
               <td>{{ option.strName }}</td>
               <td>{{ option.strDescription }}</td>
-              <td>
-                <span
-                  class="badge"
-                  [ngClass]="{
-                    'bg-success': isOptionAlreadyInRol(option),
-                    'bg-warning text-dark': isTemporary(option)
-                  }"
-                >
-                  {{
-                    isOptionAlreadyInRol(option)
-                      ? "Already assigned"
-                      : isTemporary(option)
-                      ? "New"
-                      : "Available"
-                  }}
-                </span>
-              </td>
             </tr>
           </tbody>
         </table>
@@ -946,7 +956,6 @@
     </div>
   </div>
 </div>
-<!------------------------------------------->
 
 <!-- Modal para confirmar si se elimina la aplicación -->
 <div
@@ -1147,8 +1156,6 @@
         <app-cuoptionmenu
           #cuOptionMenu
           (onSave)="handleOptionMenuSave($event)"
-          (onCancel)="closeOptionMenuModal()"
-          (menuOptionCreated)="handleOptionMenuSave($event)"
         ></app-cuoptionmenu>
       </div>
     </div>
