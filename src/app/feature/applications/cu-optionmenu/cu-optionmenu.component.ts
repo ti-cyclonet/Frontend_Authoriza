@@ -99,7 +99,7 @@ export class CuOptionMenuComponent implements OnInit {
       };
       this.onSave.emit(newOption);
 
-      this.onCancel();
+      // this.onCancel();
     } else {
       this.optionMenuForm.markAllAsTouched();
     }

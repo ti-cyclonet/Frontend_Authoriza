@@ -304,13 +304,8 @@ export class ApplicationsComponent implements OnInit {
     this.applicationsService.applicationsDTOMap.forEach((dto, appId) => {   
       console.log('APLICACIÓN A GUARDAR: ', dto);
       const isNewApp = dto.id?.startsWith('temp-');
-      const selectedFile = this.appCuApplication?.selectedFile;
-      console.log('selectedFile: ', selectedFile);
-  
-      if (isNewApp && selectedFile) {
-        dto.imageFile = selectedFile;
-      }
-      
+      // const selectedFile = this.appCuApplication?.selectedFile;
+
       if (isNewApp && !dto.imageFile) {
         this.showToast(
           `Application "${dto.strName}" must include an image.`,

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -17,6 +17,7 @@ export interface ApplicationDTO {
   strState: string;
   strRoles: Rol[];
   imageFile?: File;
+  isNew?: boolean;
 }
 export interface SaveApplicationResult {
   id: string;
@@ -118,9 +119,9 @@ export class ApplicationsService {
     return Array.from(this.applicationsDTOMap.values());
   }
 
-  removeApplicationDTO(appId: string): void {
-    this.applicationsDTOMap.delete(appId);
-  }
+  removeApplicationDTO(id: string): void {
+    this.applicationsDTOMap.delete(id);
+  }  
 
   clearAllTemporaryDTOs(): void {
     this.applicationsDTOMap.clear();
@@ -128,6 +129,14 @@ export class ApplicationsService {
 
   addOrUpdateApplicationDTO(app: ApplicationDTO): void {
     if (app.strState === 'TEMPORARY') {
+      // Verificamos si ya hay una app con ese ID
+      const existingApp = this.applicationsDTOMap.get(app.id!);
+  
+      // Si ya existe, preservamos su archivo de imagen si no viene uno nuevo
+      if (existingApp && !app.imageFile && existingApp.imageFile) {
+        app.imageFile = existingApp.imageFile;
+      }
+  
       this.applicationsDTOMap.set(app.id!, app);
     } else if (app.strState === 'ACTIVE') {
       this.applicationsDTOMap.delete(app.id!);
@@ -225,7 +234,7 @@ export class ApplicationsService {
     formData.append('strRoles', JSON.stringify(app.strRoles));
 
     if (app.imageFile) {
-      formData.append('image', app.imageFile);
+      formData.append('file', app.imageFile);
     }
 
     return formData;
@@ -294,14 +303,31 @@ export class ApplicationsService {
   }
 
   createApplication(applicationData: FormData): Observable<any> {
-    console.log('DTO DE LA APLICACION A CREAR:');
+    const parsedData: any = {};
+    const formData = new FormData();
+  
     applicationData.forEach((value, key) => {
-      console.log(key, value);
+      try {
+        parsedData[key] = typeof value === 'string' && (value.startsWith('{') || value.startsWith('['))
+          ? JSON.parse(value)
+          : value;
+      } catch {
+        parsedData[key] = value;
+      }
     });
+  
+    console.dir(parsedData, { depth: null });
 
-    return this.http.post<any>(this.createApplicationUrl, applicationData).pipe(
+    // Agrega el objeto como JSON string
+    formData.append('applicationData', JSON.stringify(applicationData));
+    // Agrega el archivo de imagen
+    formData.append('file', applicationData.get('file') as File);
+  
+    return this.http.post<any>(this.createApplicationUrl, parsedData, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    }).pipe(
       map(response => {
-        this.loadApplications(); // recarga lista después de crear
+        this.loadApplications();
         return response;
       }),
       catchError(error => {
@@ -310,6 +336,8 @@ export class ApplicationsService {
       })
     );
   }
+  
+  
 
   deleteApplication(id: string): Observable<any> {
     return this.http.delete(`${this.envService.apiBaseUrl}/applications/${id}`);
@@ -464,8 +492,6 @@ export class ApplicationsService {
         targetRole.menuOptions.push(optionMenu);
 
         this.updateTemporaryApplicationsAfterRoleChange();
-
-        console.log('DTO actualizado con opción de menú:', this.applicationDTO);
         return targetRole.id;
       }
     }
