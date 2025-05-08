@@ -33,9 +33,9 @@
 }
 
 .notification-card.success {
-  border-color: rgb(6, 85, 6);
-  background-color: #7db861;
-  color: rgb(6, 85, 6);
+  border-color: rgb(9, 54, 9);
+  background-color: #b7fc9c;
+  color: rgb(9, 54, 9);
 }
 
 .notification-card.warning {
@@ -45,9 +45,9 @@
 }
 
 .notification-card.danger {
-  border-color: #530505;
-  background-color: #ce8c8c;
-  color: #530505;
+  border-color: #3f0606;
+  background-color: #ffbcbc;
+  color: #3f0606;
 }
 
 .notification-card.primary {
@@ -57,7 +57,7 @@
 }
 
 .notification-icon.success {
-  fill: green;
+  fill: rgb(9, 54, 9);
 }
 
 .notification-icon.warning {
@@ -65,7 +65,7 @@
 }
 
 .notification-icon.danger {
-  fill: #530505;
+  fill: #3f0606;
 }
 .notification-icon.primary {
   fill: black;
