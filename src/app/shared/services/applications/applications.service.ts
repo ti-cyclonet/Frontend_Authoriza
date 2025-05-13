@@ -234,9 +234,6 @@ export class ApplicationsService {
     if (app.imageFile) {
       formData.append('file', app.imageFile);
     }
-
-    console.log('🟡 Enviando strRoles:', JSON.stringify(this.cleanRolesForFormData(app.strRoles)));
-
     return formData;
   }
 
@@ -310,10 +307,10 @@ export class ApplicationsService {
       formData.append(key, value);
     });
   
-    console.log('📤 Enviando FormData con los siguientes campos:');
-    formData.forEach((value, key) => {
-      console.log(`${key}:`, value);
-    });
+    // console.log('📤 Enviando FormData con los siguientes campos:');
+    // formData.forEach((value, key) => {
+    //   console.log(`${key}:`, value);
+    // });
   
     return this.http.post<any>(this.createApplicationUrl, formData).pipe(
       map(response => {
