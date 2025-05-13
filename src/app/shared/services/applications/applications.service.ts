@@ -152,7 +152,6 @@ export class ApplicationsService {
     const results: SaveApplicationResult[] = [];
 
     for (const app of appsToSend) {
-      console.log('DTO DE LA APLICACION ', app.strName,' A GUARDAR:');
       const validationErrors = validateApplicationDTO(app);
 
       if (validationErrors.length > 0) {
@@ -221,7 +220,6 @@ export class ApplicationsService {
   buildFormDataFromApp(app: ApplicationDTO): FormData {
     const formData = new FormData();
 
-    // ✅ Siempre agregamos el id
     if (app.id) {
       formData.append('id', app.id);
     }
@@ -231,11 +229,13 @@ export class ApplicationsService {
     formData.append('strSlug', app.strSlug);
     formData.append('strTags', JSON.stringify(app.strTags));
     formData.append('strState', app.strState);
-    formData.append('strRoles', JSON.stringify(app.strRoles));
+    formData.append('strRoles', JSON.stringify(this.cleanRolesForFormData(app.strRoles)));
 
     if (app.imageFile) {
       formData.append('file', app.imageFile);
     }
+
+    console.log('🟡 Enviando strRoles:', JSON.stringify(this.cleanRolesForFormData(app.strRoles)));
 
     return formData;
   }
@@ -303,29 +303,19 @@ export class ApplicationsService {
   }
 
   createApplication(applicationData: FormData): Observable<any> {
-    const parsedData: any = {};
     const formData = new FormData();
   
+    // Copia todas las entradas de applicationData al nuevo formData
     applicationData.forEach((value, key) => {
-      try {
-        parsedData[key] = typeof value === 'string' && (value.startsWith('{') || value.startsWith('['))
-          ? JSON.parse(value)
-          : value;
-      } catch {
-        parsedData[key] = value;
-      }
+      formData.append(key, value);
     });
   
-    console.dir(parsedData, { depth: null });
-
-    // Agrega el objeto como JSON string
-    formData.append('applicationData', JSON.stringify(applicationData));
-    // Agrega el archivo de imagen
-    formData.append('file', applicationData.get('file') as File);
+    console.log('📤 Enviando FormData con los siguientes campos:');
+    formData.forEach((value, key) => {
+      console.log(`${key}:`, value);
+    });
   
-    return this.http.post<any>(this.createApplicationUrl, parsedData, {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-    }).pipe(
+    return this.http.post<any>(this.createApplicationUrl, formData).pipe(
       map(response => {
         this.loadApplications();
         return response;
@@ -335,6 +325,30 @@ export class ApplicationsService {
         return throwError(() => error);
       })
     );
+  }
+
+  cleanRolesForFormData(strRoles: Rol[]): any[] {
+    return strRoles.map((role) => ({
+      strName: role.strName,
+      strDescription1: role.strDescription1,
+      strDescription2: role.strDescription2,
+      menuOptions: (role.menuOptions || []).map((menu) => ({
+        strName: menu.strName,
+        strDescription: menu.strDescription,
+        strUrl: menu.strUrl,
+        strIcon: menu.strIcon,
+        strType: menu.strType,
+        ingOrder: Number(menu.ingOrder),
+        strSubmenus: (menu.strSubmenus || []).map((sub) => ({
+          strName: sub.strName,
+          strDescription: sub.strDescription,
+          strUrl: sub.strUrl,
+          strIcon: sub.strIcon,
+          strType: sub.strType,
+          ingOrder: Number(sub.ingOrder),
+        })),
+      })),
+    }));
   }
   
   

@@ -302,9 +302,7 @@ export class ApplicationsComponent implements OnInit {
 
   onSaveAllApplications(): void {    
     this.applicationsService.applicationsDTOMap.forEach((dto, appId) => {   
-      console.log('APLICACIÓN A GUARDAR: ', dto);
       const isNewApp = dto.id?.startsWith('temp-');
-      // const selectedFile = this.appCuApplication?.selectedFile;
 
       if (isNewApp && !dto.imageFile) {
         this.showToast(
@@ -619,7 +617,7 @@ export class ApplicationsComponent implements OnInit {
     this.showToast(
       `The app has been added <b>temporarily</b>. You must assign at least one role and its menu options before saving it to the backend.`,
       'warning',
-      'B',
+      'A',
       1
     );
     this.closeModal();
@@ -648,7 +646,7 @@ export class ApplicationsComponent implements OnInit {
     this.showToast(
       `The roles were added temporarily. You must assign at least one menu option before saving to the database.`,
       'warning',
-      'B',
+      'A',
       1
     );
 
@@ -726,8 +724,7 @@ export class ApplicationsComponent implements OnInit {
     this.isModalRolOpen = true;
   }
 
-  closeModalRol() {
-    console.log('Modal closed!');
+  closeModalRol() {    
     this.modalRef.hide();
   }
 }
