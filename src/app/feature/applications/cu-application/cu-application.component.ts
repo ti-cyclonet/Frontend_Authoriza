@@ -139,9 +139,9 @@ export class CuApplicationComponent implements OnInit, OnChanges {
           return;
         }
   
-        const maxSize = 2 * 1024 * 1024;
+        const maxSize = 10 * 1024 * 1024;
         if (file.size > maxSize) {
-          console.error('El archivo es demasiado grande. Máximo permitido: 2MB');
+          console.error('El archivo es demasiado grande. Máximo permitido: 10MB');
           return;
         }
   
