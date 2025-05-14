@@ -1069,12 +1069,16 @@
             </svg>
           </div>
           <h1 class="modal-title fs-5" id="staticBackdropLabel">
-            New <b>Rol</b>
+            New Rol for <b>{{
+              (selectedApplication?.strName || "").toUpperCase()
+            }} </b>app
           </h1>
         </div>
 
         <div class="modal-body">
-          <app-cu-rol (rolCreado)="onRolCreado($event)"></app-cu-rol>
+          <app-cu-rol (rolCreado)="onRolCreado($event)"
+          [appstrName]="selectedApplication?.strName"
+        ></app-cu-rol>
         </div>
       </div>
     </div>

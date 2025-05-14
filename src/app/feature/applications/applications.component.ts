@@ -52,6 +52,7 @@ export class ApplicationsComponent implements OnInit {
   @ViewChild(CuApplicationComponent) appCuApplication!: CuApplicationComponent;
   @ViewChild('rolesModal') rolesModalElement!: ElementRef;
   @ViewChild('optionMenuModal') optionMenuModal!: ElementRef;
+  @Input() appstrName: string | undefined;
 
   isModalOpen = false;
   isDTOValid: boolean = false;
