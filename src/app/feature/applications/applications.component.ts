@@ -304,9 +304,15 @@ export class ApplicationsComponent implements OnInit {
   }
 
   async onSaveAllApplications(): Promise<void> {
-    this.applicationsService.applicationsDTOMap.forEach((dto, appId) => {
-      const isNewApp = dto.id?.startsWith('temp-');
+    let hasValidationError = false;
 
+    this.applicationsService.applicationsDTOMap.forEach((dto, appId) => {
+      console.log('Aplicación seleccionada: ', this.selectedApplication);
+      console.log('DTO:', dto);
+      const isNewApp =
+        dto.id?.startsWith('temp-') || dto.id?.startsWith('TEMP-');
+
+      // Solo requerir imagen si es una aplicación nueva
       if (isNewApp && !dto.imageFile) {
         this.showToast(
           `Application "${dto.strName}" must include an image.`,
@@ -314,10 +320,16 @@ export class ApplicationsComponent implements OnInit {
           'A',
           1
         );
+        hasValidationError = true;
+        return; // Skip this application
       }
 
+      // Guardar o actualizar el DTO
       this.applicationsService.addOrUpdateApplicationDTO(dto);
     });
+
+    // No continuar si hubo errores de validación
+    if (hasValidationError) return;
 
     const results = await this.applicationsService.saveAllValidApplications();
 

@@ -142,17 +142,28 @@ export class ApplicationsService {
   }
 
   addOrUpdateApplicationDTO(app: ApplicationDTO): void {
-    if (app.strState === 'TEMPORARY') {
-      const existingApp = this.applicationsDTOMap.get(app.id!);
+    if (!app?.id) return; // Seguridad por si viene sin ID
 
-      if (existingApp && !app.imageFile && existingApp.imageFile) {
-        // Solo preservar si no hay imagen en el DTO entrante
+    const existingApp = this.applicationsDTOMap.get(app.id);
+
+    if (app.strState === 'TEMPORARY') {
+      // Preservar la imagen si no viene en el nuevo DTO
+      if (existingApp?.imageFile && !app.imageFile) {
         app.imageFile = existingApp.imageFile;
       }
 
-      this.applicationsDTOMap.set(app.id!, app);
+      // Evitar sobreescribir un UUID con un ID temporal
+      if (
+        existingApp?.id &&
+        !existingApp.id.startsWith('temp-') &&
+        app.id.startsWith('temp-')
+      ) {
+        app.id = existingApp.id;
+      }
+
+      this.applicationsDTOMap.set(app.id, app);
     } else if (app.strState === 'ACTIVE') {
-      this.applicationsDTOMap.delete(app.id!);
+      this.applicationsDTOMap.delete(app.id);
     }
   }
 
@@ -183,7 +194,7 @@ export class ApplicationsService {
       }
 
       const formData = this.buildFormDataFromApp(app);
-      const isNewApp = app.id?.startsWith('temp-');
+      const isNewApp = app.id?.toLowerCase().startsWith('temp-');
 
       if (isNewApp) {
         // Crear nueva aplicación (envolvemos el subscribe en una promesa)
@@ -286,7 +297,7 @@ export class ApplicationsService {
 
   addTemporaryApplication(app: Application): void {
     if (!app.id) {
-      app.id = `TEMP-${Date.now()}`;
+      app.id = `temp-${Date.now()}`;
     }
     const currentApps = this.applicationsSubject.getValue();
     const updatedApps = [...currentApps, app];
