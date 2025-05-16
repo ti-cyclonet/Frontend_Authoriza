@@ -561,8 +561,8 @@
           <tr>
             <th scope="col" class="id-col text-center">Order</th>
             <th class="text-center d-none d-xl-table-cell">Name</th>
-            <th class="text-center">Description</th>
-            <th class="text-center">Url</th>
+            <th class="text-center">Description A</th>
+            <th class="text-center d-none d-xl-table-cell">Url</th>
             <th class="text-center d-none d-xl-table-cell">Icon</th>
             <th class="text-center d-none d-xl-table-cell">Type</th>
             <th class="text-center d-none d-xl-table-cell">Submenu</th>
@@ -610,7 +610,10 @@
             <td [ngClass]="{ selected: menu === selectedMenuOption }">
               {{ menu.strDescription }}
             </td>
-            <td [ngClass]="{ selected: menu === selectedMenuOption }">
+            <td
+              [ngClass]="{ selected: menu === selectedMenuOption }"
+              class="d-none d-xl-table-cell"
+            >
               {{ menu.strUrl?.trim() ? menu.strUrl : "[N/A]" }}
             </td>
             <td

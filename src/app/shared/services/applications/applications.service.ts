@@ -59,7 +59,10 @@ export class ApplicationsService {
   public idApplication: string = '';
   private temporaryRoles: TempRol[] = [];
 
-  constructor(private http: HttpClient, private envService: EnvironmentService) {}
+  constructor(
+    private http: HttpClient,
+    private envService: EnvironmentService
+  ) {}
 
   setEditMode(sw: boolean) {
     this.editMode = sw;
@@ -86,18 +89,29 @@ export class ApplicationsService {
   }
 
   updateApplicationDTO(fields: Partial<ApplicationDTO>): void {
-    this.applicationDTO = {
+    const existingApp = this.applicationsDTOMap.get(this.applicationDTO.id!);
+
+    // Preservar imagen si no se envió una nueva
+    if (existingApp && !fields.imageFile && existingApp.imageFile) {
+      fields.imageFile = existingApp.imageFile;
+    }
+
+    const updated: ApplicationDTO = {
       ...this.applicationDTO,
       ...fields,
+      imageFile: fields.imageFile ?? this.applicationDTO.imageFile,
       id:
         this.applicationDTO.id ||
         'temp-' + Math.random().toString(36).substr(2, 9),
     };
+
+    this.applicationDTO = updated;
+    this.applicationsDTOMap.set(updated.id!, updated);
   }
 
   public markApplicationAsNotNew(id: string): void {
     const currentApps = this.applicationsSubject.getValue();
-    const index = currentApps.findIndex(app => app.id === id);
+    const index = currentApps.findIndex((app) => app.id === id);
     if (index !== -1) {
       const updatedApp = { ...currentApps[index] };
       delete (updatedApp as any).isNew;
@@ -106,7 +120,7 @@ export class ApplicationsService {
       this.applicationsSubject.next(updatedApps);
     }
   }
-  
+
   setApplicationDTOFor(appId: string, dto: ApplicationDTO): void {
     this.applicationsDTOMap.set(appId, dto);
   }
@@ -121,25 +135,35 @@ export class ApplicationsService {
 
   removeApplicationDTO(id: string): void {
     this.applicationsDTOMap.delete(id);
-  }  
+  }
 
   clearAllTemporaryDTOs(): void {
     this.applicationsDTOMap.clear();
   }
 
   addOrUpdateApplicationDTO(app: ApplicationDTO): void {
+    if (!app?.id) return; // Seguridad por si viene sin ID
+
+    const existingApp = this.applicationsDTOMap.get(app.id);
+
     if (app.strState === 'TEMPORARY') {
-      // Verificamos si ya hay una app con ese ID
-      const existingApp = this.applicationsDTOMap.get(app.id!);
-  
-      // Si ya existe, preservamos su archivo de imagen si no viene uno nuevo
-      if (existingApp && !app.imageFile && existingApp.imageFile) {
+      // Preservar la imagen si no viene en el nuevo DTO
+      if (existingApp?.imageFile && !app.imageFile) {
         app.imageFile = existingApp.imageFile;
       }
-  
-      this.applicationsDTOMap.set(app.id!, app);
+
+      // Evitar sobreescribir un UUID con un ID temporal
+      if (
+        existingApp?.id &&
+        !existingApp.id.startsWith('temp-') &&
+        app.id.startsWith('temp-')
+      ) {
+        app.id = existingApp.id;
+      }
+
+      this.applicationsDTOMap.set(app.id, app);
     } else if (app.strState === 'ACTIVE') {
-      this.applicationsDTOMap.delete(app.id!);
+      this.applicationsDTOMap.delete(app.id);
     }
   }
 
@@ -147,9 +171,12 @@ export class ApplicationsService {
     this.applicationsDTOMap.set(appId, structuredClone(dto));
   }
 
-  saveAllValidApplications(): SaveApplicationResult[] {
+  saveAllValidApplications(): Promise<SaveApplicationResult[]> {
     const appsToSend = Array.from(this.applicationsDTOMap.values());
     const results: SaveApplicationResult[] = [];
+
+    // Crearemos un array de Promesas para esperar a todas las operaciones
+    const operations: Promise<void>[] = [];
 
     for (const app of appsToSend) {
       const validationErrors = validateApplicationDTO(app);
@@ -167,54 +194,65 @@ export class ApplicationsService {
       }
 
       const formData = this.buildFormDataFromApp(app);
-      const isNewApp = app.id?.startsWith('temp-');
+      const isNewApp = app.id?.toLowerCase().startsWith('temp-');
 
       if (isNewApp) {
-        // Crear nueva aplicación
-        this.createApplication(formData).subscribe({
-          next: () => {
-            results.push({
-              id: app.id!,
-              name: app.strName,
-              status: 'success',
-              message: `Application "${app.strName}" <b>created</b> successfully!`,
-            });
-            this.removeApplicationDTO(app.id!);
-          },
-          error: () => {
-            results.push({
-              id: app.id!,
-              name: app.strName,
-              status: 'danger',
-              message: `Error creating application "${app.strName}".`,
-            });
-          },
+        // Crear nueva aplicación (envolvemos el subscribe en una promesa)
+        const op = new Promise<void>((resolve) => {
+          this.createApplication(formData).subscribe({
+            next: () => {
+              results.push({
+                id: app.id!,
+                name: app.strName,
+                status: 'success',
+                message: `Application "${app.strName}" <b>created</b> successfully!`,
+              });
+              this.removeApplicationDTO(app.id!);
+              resolve();
+            },
+            error: () => {
+              results.push({
+                id: app.id!,
+                name: app.strName,
+                status: 'danger',
+                message: `Error creating application "${app.strName}".`,
+              });
+              resolve();
+            },
+          });
         });
+        operations.push(op);
       } else {
-        // Actualizar aplicación existente
-        this.updateApplication(app.id!, formData).subscribe({
-          next: () => {
-            results.push({
-              id: app.id!,
-              name: app.strName,
-              status: 'success',
-              message: `Application "${app.strName}" <b>updated</b> successfully!`,
-            });
-            this.removeApplicationDTO(app.id!);
-          },
-          error: () => {
-            results.push({
-              id: app.id!,
-              name: app.strName,
-              status: 'danger',
-              message: `Error updating application "${app.strName}".`,
-            });
-          },
+        // Actualizar aplicación existente (también envuelto en promesa)
+        const op = new Promise<void>((resolve) => {
+          this.updateApplication(app.id!, formData).subscribe({
+            next: () => {
+              results.push({
+                id: app.id!,
+                name: app.strName,
+                status: 'success',
+                message: `Application "${app.strName}" <b>updated</b> successfully!`,
+              });
+              this.removeApplicationDTO(app.id!);
+              resolve();
+            },
+            error: () => {
+              results.push({
+                id: app.id!,
+                name: app.strName,
+                status: 'danger',
+                message: `Error updating application "${app.strName}".`,
+              });
+              resolve();
+            },
+          });
         });
+        operations.push(op);
       }
     }
 
-    return results;
+    // Esperamos que todas las operaciones terminen antes de devolver resultados
+    return Promise.all(operations).then(() => results);
   }
 
   buildFormDataFromApp(app: ApplicationDTO): FormData {
@@ -229,7 +267,10 @@ export class ApplicationsService {
     formData.append('strSlug', app.strSlug);
     formData.append('strTags', JSON.stringify(app.strTags));
     formData.append('strState', app.strState);
-    formData.append('strRoles', JSON.stringify(this.cleanRolesForFormData(app.strRoles)));
+    formData.append(
+      'strRoles',
+      JSON.stringify(this.cleanRolesForFormData(app.strRoles))
+    );
 
     if (app.imageFile) {
       formData.append('file', app.imageFile);
@@ -245,13 +286,18 @@ export class ApplicationsService {
     return this.http.get<Application>(`${this.getApplicationByIdUrl}/${id}`);
   }
 
-  getApplications(limit: number = 4, offset: number = 0): Observable<Application[]> {
-    return this.http.get<Application[]>(`${this.apiUrl}?limit=${limit}&offset=${offset}`);
+  getApplications(
+    limit: number = 4,
+    offset: number = 0
+  ): Observable<Application[]> {
+    return this.http.get<Application[]>(
+      `${this.apiUrl}?limit=${limit}&offset=${offset}`
+    );
   }
 
   addTemporaryApplication(app: Application): void {
     if (!app.id) {
-      app.id = `TEMP-${Date.now()}`;
+      app.id = `temp-${Date.now()}`;
     }
     const currentApps = this.applicationsSubject.getValue();
     const updatedApps = [...currentApps, app];
@@ -301,23 +347,23 @@ export class ApplicationsService {
 
   createApplication(applicationData: FormData): Observable<any> {
     const formData = new FormData();
-  
+
     // Copia todas las entradas de applicationData al nuevo formData
     applicationData.forEach((value, key) => {
       formData.append(key, value);
     });
-  
+
     // console.log('📤 Enviando FormData con los siguientes campos:');
     // formData.forEach((value, key) => {
     //   console.log(`${key}:`, value);
     // });
-  
+
     return this.http.post<any>(this.createApplicationUrl, formData).pipe(
-      map(response => {
+      map((response) => {
         this.loadApplications();
         return response;
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error('Error creating application:', error);
         return throwError(() => error);
       })
@@ -347,8 +393,6 @@ export class ApplicationsService {
       })),
     }));
   }
-  
-  
 
   deleteApplication(id: string): Observable<any> {
     return this.http.delete(`${this.envService.apiBaseUrl}/applications/${id}`);
