@@ -200,52 +200,52 @@ export class ApplicationsComponent implements OnInit {
   }
 
   // Funciones para NOTIFICACIONES
-    addNotification(
-      title: string,
-      type: 'success' | 'warning' | 'danger' | 'primary',
-      alertType: 'A' | 'B',
-      container: 0 | 1
-    ) {
-      this.notifications.push({
-        title,
-        type,
-        alertType,
-        container,
-        visible: true,
-      });
-    }
+  addNotification(
+    title: string,
+    type: 'success' | 'warning' | 'danger' | 'primary',
+    alertType: 'A' | 'B',
+    container: 0 | 1
+  ) {
+    this.notifications.push({
+      title,
+      type,
+      alertType,
+      container,
+      visible: true,
+    });
+  }
 
-    removeNotification(index: number) {
-      this.notifications.splice(index, 1);
-    }
+  removeNotification(index: number) {
+    this.notifications.splice(index, 1);
+  }
 
-    getIconColor() {
-      return 'var(--header-background-color)';
-    }
+  getIconColor() {
+    return 'var(--header-background-color)';
+  }
 
-    showToast(
-      message: string,
-      type: 'success' | 'warning' | 'danger' | 'primary',
-      alertType: 'A' | 'B',
-      container: 0 | 1
-    ) {
-      const notification = {
-        title: message,
-        type,
-        alertType,
-        container,
-        visible: true,
-      };
-      this.notifications.push(notification);
-      this.cdr.detectChanges();
+  showToast(
+    message: string,
+    type: 'success' | 'warning' | 'danger' | 'primary',
+    alertType: 'A' | 'B',
+    container: 0 | 1
+  ) {
+    const notification = {
+      title: message,
+      type,
+      alertType,
+      container,
+      visible: true,
+    };
+    this.notifications.push(notification);
+    this.cdr.detectChanges();
 
-      if (alertType === 'A') {
-        setTimeout(() => {
-          notification.visible = false;
-          this.cdr.detectChanges();
-        }, 5000);
-      }
+    if (alertType === 'A') {
+      setTimeout(() => {
+        notification.visible = false;
+        this.cdr.detectChanges();
+      }, 5000);
     }
+  }
   // ----------------------------------------------
 
   get selectedFile() {
@@ -272,27 +272,30 @@ export class ApplicationsComponent implements OnInit {
   showRoles(application: Application) {
     if (this.selectedApplication) {
       const dtoCopy = this.applicationsService.getApplicationDTO();
-      this.applicationsService.saveCurrentApplicationState(this.selectedApplication.id, dtoCopy);
+      this.applicationsService.saveCurrentApplicationState(
+        this.selectedApplication.id,
+        dtoCopy
+      );
     }
-  
+
     this.setSelectedApplication(application);
     this.isRolesTableVisible = true;
   }
-  
+
   loadApplicationState(appId: string): void {
     const dto = this.applicationsService.getApplicationDTOFor(appId);
-  
+
     if (dto) {
       this.applicationsService.setApplicationDTO(dto);
-    } else {      
-      const found = this.applications.find(app => app.id === appId);
+    } else {
+      const found = this.applications.find((app) => app.id === appId);
       if (found) {
         const newDTO = structuredClone(found);
         this.applicationsService.setApplicationDTOFor(appId, newDTO);
         this.applicationsService.setApplicationDTO(newDTO);
       }
     }
-  
+
     this.syncSelectedRolWithDTO();
   }
 
@@ -300,8 +303,8 @@ export class ApplicationsComponent implements OnInit {
     return this.applicationsService.applicationsDTOMap.size > 0;
   }
 
-  onSaveAllApplications(): void {    
-    this.applicationsService.applicationsDTOMap.forEach((dto, appId) => {   
+  async onSaveAllApplications(): Promise<void> {
+    this.applicationsService.applicationsDTOMap.forEach((dto, appId) => {
       const isNewApp = dto.id?.startsWith('temp-');
 
       if (isNewApp && !dto.imageFile) {
@@ -312,17 +315,17 @@ export class ApplicationsComponent implements OnInit {
           1
         );
       }
-  
+
       this.applicationsService.addOrUpdateApplicationDTO(dto);
     });
-  
-    const results = this.applicationsService.saveAllValidApplications();
-  
+
+    const results = await this.applicationsService.saveAllValidApplications();
+
     results.forEach((result) => {
       this.showToast(result.message, result.status, 'A', 1);
     });
-  }  
-  
+  }
+
   toggleRolesTable() {
     this.isRolesTableVisible = !this.isRolesTableVisible;
     if (!this.isRolesTableVisible) {
@@ -381,9 +384,8 @@ export class ApplicationsComponent implements OnInit {
       (opt: MenuOption) => opt.strState !== 'TEMPORARY'
     );
 
-    
     this.selectedRol.menuOptions = remainingOptions;
-    
+
     const dto = this.applicationsService.getApplicationDTO();
     const dtoRol = dto.strRoles.find((r) => r.id === rolId);
     if (dtoRol) {
@@ -404,17 +406,18 @@ export class ApplicationsComponent implements OnInit {
       this.applicationsService.addOrUpdateApplicationDTO(dto);
       if (this.selectedApplication) {
         this.selectedApplication.strState = 'ACTIVE';
-      
+
         // Actualizar también en la lista principal
-        const index = this.applications.findIndex(app => app.id === this.selectedApplication!.id);
+        const index = this.applications.findIndex(
+          (app) => app.id === this.selectedApplication!.id
+        );
         if (index !== -1) {
           this.applications[index].strState = 'ACTIVE';
         }
-      
+
         dto.strState = 'ACTIVE';
         this.applicationsService.addOrUpdateApplicationDTO(dto);
       }
-      
     }
 
     this.selectedRol.menuOptions = [...remainingOptions];
@@ -565,17 +568,14 @@ export class ApplicationsComponent implements OnInit {
     return item.id;
   }
 
-  onFileSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (file) {
-      this.fileName = file.name;
-
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          this.imagePreview = reader.result;
-        };
-        reader.readAsDataURL(file);
+  onFileSelected(event: Event, appId: string): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const dto = this.applicationsService.getApplicationDTOFor(appId);
+      if (dto) {
+        dto.imageFile = file;
+        this.applicationsService.setApplicationDTOFor(appId, dto);
       }
     }
   }
@@ -691,7 +691,7 @@ export class ApplicationsComponent implements OnInit {
       },
     });
   }
-  
+
   // Función para obtener las clases del Toast dinámicamente
   getClass() {
     return {
@@ -724,7 +724,7 @@ export class ApplicationsComponent implements OnInit {
     this.isModalRolOpen = true;
   }
 
-  closeModalRol() {    
+  closeModalRol() {
     this.modalRef.hide();
   }
 }

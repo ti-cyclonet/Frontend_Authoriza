@@ -232,7 +232,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
                 URL.createObjectURL(this.selectedFile)
               );
             } else {
-              console.log('No file selected.');
+              // console.log('No file selected.');
             }
 
             if (this.selectedFile) {
