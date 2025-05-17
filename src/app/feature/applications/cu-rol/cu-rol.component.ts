@@ -19,6 +19,7 @@ export class CuRolComponent {
   rolesForm: FormGroup;
   @ViewChild('modalRef') modalElement!: ElementRef;
   @Input() modalRef?: BsModalRef;
+  @Input() appstrName: string | undefined;
 
   private modalInstance!: Modal;
   temporaryRoles: Rol[] = [];
