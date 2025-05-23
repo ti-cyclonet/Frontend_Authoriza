@@ -48,7 +48,7 @@ export class CuRolComponent {
       return;
     }
   
-    this.rolesService.checkApplicationName(name).subscribe((isAvailable) => {
+    this.rolesService.checkRoleName(name).subscribe((isAvailable) => {
       if (isAvailable) {
         const newRole: Rol = {
           id: this.generateTempId(),

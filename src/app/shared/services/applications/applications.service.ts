@@ -89,7 +89,9 @@ export class ApplicationsService {
   }
 
   updateApplicationDTO(fields: Partial<ApplicationDTO>): void {
-    const existingApp = this.applicationsDTOMap.get(this.applicationDTO.id!);
+    console.log('Updating application DTO with fields:', fields.id);
+    const existingApp = this.applicationsDTOMap.get(fields.id!);
+    console.log('Existing app:', existingApp);
 
     // Preservar imagen si no se envió una nueva
     if (existingApp && !fields.imageFile && existingApp.imageFile) {
@@ -100,9 +102,7 @@ export class ApplicationsService {
       ...this.applicationDTO,
       ...fields,
       imageFile: fields.imageFile ?? this.applicationDTO.imageFile,
-      id:
-        this.applicationDTO.id ||
-        'temp-' + Math.random().toString(36).substr(2, 9),
+      id: fields.id || 'temp-' + Math.random().toString(36).substr(2, 9),
     };
 
     this.applicationDTO = updated;
@@ -142,25 +142,25 @@ export class ApplicationsService {
   }
 
   addOrUpdateApplicationDTO(app: ApplicationDTO): void {
-    if (!app?.id) return; // Seguridad por si viene sin ID
+    if (!app?.id) return;
 
     const existingApp = this.applicationsDTOMap.get(app.id);
 
+    // 🔒 Preservar imagen si no viene
+    if (existingApp?.imageFile && !app.imageFile) {
+      app.imageFile = existingApp.imageFile;
+    }
+
+    // 🔒 Evitar sobreescribir un UUID con ID temporal
+    if (
+      existingApp?.id &&
+      !existingApp.id.startsWith('temp-') &&
+      app.id.startsWith('temp-')
+    ) {
+      app.id = existingApp.id;
+    }
+
     if (app.strState === 'TEMPORARY') {
-      // Preservar la imagen si no viene en el nuevo DTO
-      if (existingApp?.imageFile && !app.imageFile) {
-        app.imageFile = existingApp.imageFile;
-      }
-
-      // Evitar sobreescribir un UUID con un ID temporal
-      if (
-        existingApp?.id &&
-        !existingApp.id.startsWith('temp-') &&
-        app.id.startsWith('temp-')
-      ) {
-        app.id = existingApp.id;
-      }
-
       this.applicationsDTOMap.set(app.id, app);
     } else if (app.strState === 'ACTIVE') {
       this.applicationsDTOMap.delete(app.id);
@@ -171,11 +171,9 @@ export class ApplicationsService {
     this.applicationsDTOMap.set(appId, structuredClone(dto));
   }
 
-  saveAllValidApplications(): Promise<SaveApplicationResult[]> {
-    const appsToSend = Array.from(this.applicationsDTOMap.values());
+  async saveAllValidApplications(validApplications: ApplicationDTO[]): Promise<SaveApplicationResult[]> {
+    const appsToSend = validApplications;
     const results: SaveApplicationResult[] = [];
-
-    // Crearemos un array de Promesas para esperar a todas las operaciones
     const operations: Promise<void>[] = [];
 
     for (const app of appsToSend) {
@@ -197,7 +195,6 @@ export class ApplicationsService {
       const isNewApp = app.id?.toLowerCase().startsWith('temp-');
 
       if (isNewApp) {
-        // Crear nueva aplicación (envolvemos el subscribe en una promesa)
         const op = new Promise<void>((resolve) => {
           this.createApplication(formData).subscribe({
             next: () => {
@@ -223,7 +220,6 @@ export class ApplicationsService {
         });
         operations.push(op);
       } else {
-        // Actualizar aplicación existente (también envuelto en promesa)
         const op = new Promise<void>((resolve) => {
           this.updateApplication(app.id!, formData).subscribe({
             next: () => {
@@ -251,8 +247,8 @@ export class ApplicationsService {
       }
     }
 
-    // Esperamos que todas las operaciones terminen antes de devolver resultados
-    return Promise.all(operations).then(() => results);
+    await Promise.all(operations);
+    return results;
   }
 
   buildFormDataFromApp(app: ApplicationDTO): FormData {
@@ -272,9 +268,16 @@ export class ApplicationsService {
       JSON.stringify(this.cleanRolesForFormData(app.strRoles))
     );
 
+    // Enviamos el archivo si existe (nuevo archivo a subir)
     if (app.imageFile) {
       formData.append('file', app.imageFile);
     }
+
+    // Enviamos la URL antigua de la imagen (para que backend sepa cuál es la actual y pueda eliminarla si hay un cambio)
+    if (app.strUrlImage) {
+      formData.append('strUrlImage', app.strUrlImage);
+    }
+
     return formData;
   }
 
@@ -296,15 +299,17 @@ export class ApplicationsService {
   }
 
   addTemporaryApplication(app: Application): void {
+    // Solo genera un ID temporal si no tiene ID del todo
     if (!app.id) {
       app.id = `temp-${Date.now()}`;
     }
+
     const currentApps = this.applicationsSubject.getValue();
     const updatedApps = [...currentApps, app];
     this.applicationsSubject.next(updatedApps);
 
     this.setApplicationDTO({
-      id: app.id || '',
+      id: app.id,
       strName: app.strName || '',
       strDescription: app.strDescription || '',
       strUrlImage: app.strUrlImage || '',
@@ -346,19 +351,7 @@ export class ApplicationsService {
   }
 
   createApplication(applicationData: FormData): Observable<any> {
-    const formData = new FormData();
-
-    // Copia todas las entradas de applicationData al nuevo formData
-    applicationData.forEach((value, key) => {
-      formData.append(key, value);
-    });
-
-    // console.log('📤 Enviando FormData con los siguientes campos:');
-    // formData.forEach((value, key) => {
-    //   console.log(`${key}:`, value);
-    // });
-
-    return this.http.post<any>(this.createApplicationUrl, formData).pipe(
+    return this.http.post<any>(this.createApplicationUrl, applicationData).pipe(
       map((response) => {
         this.loadApplications();
         return response;
@@ -399,8 +392,8 @@ export class ApplicationsService {
   }
 
   updateApplication(id: string, applicationData: FormData): Observable<any> {
-    const updateUrl = `${this.envService.apiBaseUrl}/aplications/${id}`;
-    return this.http.put<any>(updateUrl, applicationData).pipe(
+    const updateUrl = `${this.envService.apiBaseUrl}/applications/${id}`;
+    return this.http.patch<any>(updateUrl, applicationData).pipe(
       map((response) => {
         this.loadApplications();
         return response;
