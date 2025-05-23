@@ -14,7 +14,7 @@ export class RolesService {
 
   constructor(private http: HttpClient) {}
 
-  checkApplicationName(strName: string): Observable<boolean> {
+  checkRoleName(strName: string): Observable<boolean> {
     const params = { strName };
     return this.http
       .get<{ available: boolean }>(`${this.apiUrl}/check-name`, { params })

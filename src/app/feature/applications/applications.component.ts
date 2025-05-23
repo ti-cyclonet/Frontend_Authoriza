@@ -6,7 +6,10 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { ApplicationsService } from '../../shared/services/applications/applications.service';
+import {
+  ApplicationDTO,
+  ApplicationsService,
+} from '../../shared/services/applications/applications.service';
 import { CuApplicationComponent } from './cu-application/cu-application.component';
 import { NotificationsComponent } from '../../shared/components/notifications/notifications.component';
 import { CommonModule } from '@angular/common';
@@ -52,7 +55,6 @@ export class ApplicationsComponent implements OnInit {
   @ViewChild(CuApplicationComponent) appCuApplication!: CuApplicationComponent;
   @ViewChild('rolesModal') rolesModalElement!: ElementRef;
   @ViewChild('optionMenuModal') optionMenuModal!: ElementRef;
-  @Input() appstrName: string | undefined;
 
   isModalOpen = false;
   isDTOValid: boolean = false;
@@ -305,15 +307,16 @@ export class ApplicationsComponent implements OnInit {
   }
 
   async onSaveAllApplications(): Promise<void> {
+    const copiedMap = new Map(this.applicationsService.applicationsDTOMap);
+    const validApplications: ApplicationDTO[] = [];
+    const validAppIds: string[] = [];
     let hasValidationError = false;
 
-    this.applicationsService.applicationsDTOMap.forEach((dto, appId) => {
-      console.log('Aplicación seleccionada: ', this.selectedApplication);
-      console.log('DTO:', dto);
+    copiedMap.forEach((dto, appId) => {
       const isNewApp =
         dto.id?.startsWith('temp-') || dto.id?.startsWith('TEMP-');
 
-      // Solo requerir imagen si es una aplicación nueva
+      // Validar que una nueva aplicación tenga imagen
       if (isNewApp && !dto.imageFile) {
         this.showToast(
           `Application "${dto.strName}" must include an image.`,
@@ -322,20 +325,29 @@ export class ApplicationsComponent implements OnInit {
           1
         );
         hasValidationError = true;
-        return; // Skip this application
+        return; // Saltar esta aplicación
       }
 
-      // Guardar o actualizar el DTO
-      this.applicationsService.addOrUpdateApplicationDTO(dto);
+      // Si pasa la validación, agregarla a la lista de válidas
+      validApplications.push(dto);
+      validAppIds.push(appId);
     });
 
-    // No continuar si hubo errores de validación
-    if (hasValidationError) return;
+    if (hasValidationError || validApplications.length === 0) return;
 
-    const results = await this.applicationsService.saveAllValidApplications();
+    // Guardar todas las aplicaciones válidas
+    const results = await this.applicationsService.saveAllValidApplications(
+      validApplications
+    );
 
-    results.forEach((result) => {
+    results.forEach((result, index) => {
       this.showToast(result.message, result.status, 'A', 1);
+      console.log(result.status);
+
+      // Si la operación fue exitosa, eliminar del Map original
+      if (result.status === 'success') {
+        this.applicationsService.applicationsDTOMap.delete(validAppIds[index]);
+      }
     });
   }
 
@@ -637,6 +649,7 @@ export class ApplicationsComponent implements OnInit {
   }
 
   setSelectedApplication(application: Application) {
+    console.log('Selected application:', application);
     this.selectedApplication = application;
     this.applicationsService.updateApplicationDTO(application);
   }

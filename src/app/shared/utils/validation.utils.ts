@@ -14,6 +14,7 @@ export function validateApplicationDTO(
   }
 
   const {
+    id,
     strName,
     strDescription,
     strUrlImage,
@@ -22,7 +23,9 @@ export function validateApplicationDTO(
     strRoles,
     strState,
     imageFile,
-  } = app;
+  } = app as any;
+
+  const isNew = !id; // Si no hay id, es una nueva aplicación
 
   if (!strName?.trim()) errors.push('Application name is required.');
   if (!strDescription?.trim())
@@ -30,16 +33,17 @@ export function validateApplicationDTO(
   if (!strUrlImage?.trim()) {
     errors.push('Application image URL is required.');
   }
-  // Validar archivo de imagen si el estado es TEMPORARY
-  if (strState === 'TEMPORARY' && !imageFile) {
+
+  // Solo validar imagen si es nueva y está en estado TEMPORARY
+  if (isNew && strState === 'TEMPORARY' && !imageFile) {
     errors.push('Application must have a valid image file.');
   }
+
   if (!strSlug?.trim()) errors.push('Application slug is required.');
   if (!Array.isArray(strTags) || strTags.length === 0)
     errors.push('Application must have at least one tag.');
   if (!Array.isArray(strRoles) || strRoles.length === 0)
     errors.push('Application must have at least one role.');
-  // console.log('strRoles: ', strRoles);
 
   if (Array.isArray(strRoles)) {
     strRoles.forEach((rol, rolIndex) => {
