@@ -81,29 +81,47 @@ export class CuOptionMenuComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.optionMenuForm.valid) {
-      const newOption: MenuOption = {
-        id: `TEMP-${Date.now()}`,
-        strName: this.optionMenuForm.get('name')?.value,
-        strDescription: this.optionMenuForm.get('description')?.value,
-        strUrl: this.optionMenuForm.get('url')?.value,
-        strIcon: this.optionMenuForm.get('icon')?.value,
-        strType: this.optionMenuForm.get('type')?.value,
-        ingOrder: parseInt(
-          this.optionMenuForm.get('order')?.value,
-          10
-        ).toString(),
-        strState: 'TEMPORARY',
-        strSubmenus: [],
-        hasSubmenu: this.optionMenuForm.get('submenu')?.value === 'yes',
-      };
-      this.onSave.emit(newOption);
+  if (this.optionMenuForm.valid) {
+    const newOption: MenuOption = {
+      id: `TEMP-${Date.now()}`,
+      strName: this.optionMenuForm.get('name')?.value,
+      strDescription: this.optionMenuForm.get('description')?.value,
+      strUrl: this.optionMenuForm.get('url')?.value,
+      strIcon: this.optionMenuForm.get('icon')?.value,
+      strType: this.optionMenuForm.get('type')?.value,
+      ingOrder: parseInt(
+        this.optionMenuForm.get('order')?.value,
+        10
+      ).toString(),
+      strState: 'TEMPORARY',
+      strSubmenus: [],
+      hasSubmenu: this.optionMenuForm.get('submenu')?.value === 'yes',
+    };
 
-      // this.onCancel();
-    } else {
-      this.optionMenuForm.markAllAsTouched();
-    }
+    this.onSave.emit(newOption);
+
+    // ✅ Resetear el formulario
+    this.optionMenuForm.reset({
+      name: '',
+      description: '',
+      url: '',
+      icon: '',
+      type: '',
+      order: null,
+      submenu: ''
+    });
+
+    // ✅ Volver al paso 1
+    this.isYellowVisible = true;
+    this.isBlueVisible = false;
+    this.isGreenVisible = false;
+
+    // ✅ Si quieres cerrar la modal también puedes emitir un evento o cerrar manualmente
+    // this.onCancel(); // ← Si esto la cierra correctamente en el padre, puedes volver a activarlo
+  } else {
+    this.optionMenuForm.markAllAsTouched();
   }
+}
 
   onCancel() {
     this.optionMenuForm.reset();
