@@ -148,3 +148,11 @@
     cursor: pointer;
   }
   
+/* Cambia el color del texto dentro de inputs, textareas y selects */
+.form-group input,
+.form-group textarea,
+.form-group select {
+  color: #212121; /* Gris oscuro */
+}
+
+  
