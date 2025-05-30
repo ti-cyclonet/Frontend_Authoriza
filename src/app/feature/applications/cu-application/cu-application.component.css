@@ -125,3 +125,8 @@
   margin: 0;
   cursor: pointer;
 }
+.form-group input,
+.form-group textarea,
+.form-group select {
+  color: #212121; /* Gris oscuro */
+}
