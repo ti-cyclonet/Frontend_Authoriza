@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, inject, OnInit } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
@@ -10,12 +10,15 @@ import { UserService } from '../../services/user/user.service';
 import { ApplicationsService } from '../../services/applications/applications.service';
 import { MenuOption } from '../../model/menu_option';
 import { Application } from '../../model/application.model';
+import { SpinnerComponent } from '../spinner/spinner.component';
+import { LoadingService } from '../../services/loading.service';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
   imports: [
     CommonModule,
+    SpinnerComponent,
     HeaderComponent,
     SidebarComponent,
     FooterComponent,
@@ -26,6 +29,7 @@ import { Application } from '../../model/application.model';
 })
 export default class LayoutComponent implements OnInit {
 
+  loadingService = inject(LoadingService);
   optionsMenu: MenuOption[] = [];
 
   isSidebarVisible = true;
