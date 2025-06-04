@@ -6,26 +6,26 @@ import {
   OnInit,
   Output,
   PLATFORM_ID,
-  AfterViewInit
 } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Router } from '@angular/router';
 import { DESCRIPTION_APP } from '../../../config/config';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { AuthService } from '../../services/auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+  styleUrls: ['./header.component.css'],
+  providers: [AuthService],
 })
-export class HeaderComponent implements OnInit, AfterViewInit {
-
+export class HeaderComponent implements OnInit {
   userName: string | null = null;
   userEmail: string | null = null;
   userRol: string | null = null;
+  userRolDescription: string | null = null;
   userImage: string | null = null;
-
   private _isSidebarVisible: boolean = false;
 
   @Input()
@@ -42,23 +42,17 @@ export class HeaderComponent implements OnInit, AfterViewInit {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
+    private authService: AuthService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      // Simulación para pruebas (puedes quitar esto en producción)
-      sessionStorage.setItem('user_name', 'Jane Smith');
-      sessionStorage.setItem('user_email', 'jane.smith@example.com');
-      sessionStorage.setItem('user_rol', 'Editor');
-      sessionStorage.setItem('user_image', 'https://i.pravatar.cc/100');
-
       this.userName = sessionStorage.getItem('user_name');
       this.userEmail = sessionStorage.getItem('user_email');
       this.userRol = sessionStorage.getItem('user_rol');
+      this.userRolDescription = sessionStorage.getItem('user_rolDescription');
       this.userImage = sessionStorage.getItem('user_image');
-
-      console.log('[HeaderComponent] Datos simulados de sesión cargados');
     }
   }
 
