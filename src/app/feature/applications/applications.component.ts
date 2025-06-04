@@ -649,7 +649,6 @@ export class ApplicationsComponent implements OnInit {
   }
 
   setSelectedApplication(application: Application) {
-    console.log('Selected application:', application);
     this.selectedApplication = application;
     this.applicationsService.updateApplicationDTO(application);
   }
@@ -689,7 +688,12 @@ export class ApplicationsComponent implements OnInit {
 
   confirmDelete(): void {
     if (this.isDeleteConfirmed) {
-      console.log('Application deleted!');
+      this.showToast(
+        `Application deleted successfully.`,
+        'success',
+        'A',
+        1
+      );
     }
     this.deleteConfirmationText = '';
     this.isDeleteConfirmed = false;
