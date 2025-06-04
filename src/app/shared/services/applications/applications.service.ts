@@ -88,10 +88,8 @@ export class ApplicationsService {
     return this.applicationDTO;
   }
 
-  updateApplicationDTO(fields: Partial<ApplicationDTO>): void {
-    console.log('Updating application DTO with fields:', fields.id);
-    const existingApp = this.applicationsDTOMap.get(fields.id!);
-    console.log('Existing app:', existingApp);
+  updateApplicationDTO(fields: Partial<ApplicationDTO>): void {    
+    const existingApp = this.applicationsDTOMap.get(fields.id!);    
 
     // Preservar imagen si no se envió una nueva
     if (existingApp && !fields.imageFile && existingApp.imageFile) {
