@@ -7,11 +7,12 @@ import { SidebarComponent } from "./shared/components/sidebar/sidebar.component"
 import LayoutComponent from "./shared/components/layout/layout.component";
 import { LoginComponent } from './shared/components/login/login.component';
 import { isPlatformBrowser } from '@angular/common';
+import { SpinnerComponent } from './shared/components/spinner/spinner.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, FooterComponent, SidebarComponent, LayoutComponent, LoginComponent],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent, SidebarComponent, LayoutComponent, LoginComponent, SpinnerComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
