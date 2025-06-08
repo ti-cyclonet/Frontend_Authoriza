@@ -58,15 +58,12 @@
             </svg>
             <span> Choose file </span>
             <input
-              class="file-sing"
-              #fileToSing
               #fileInput
               type="file"
               hidden
               id="upload"
               accept=".jpg,.jpeg,.png"
               (change)="onFileSelected($event)"
-              formControlName="logo"
             />
           </label>
         </button>
