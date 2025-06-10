@@ -89,6 +89,16 @@
 .btn.dropdown-toggle::after {
     display: none;
 }
+.dropdown-menu .dropdown-item:hover {
+  background-color: var(--header-background-color);
+  color: var(--sidebar-background-color);
+}
+
+.dropdown-menu .dropdown-item:hover svg {
+  fill: var(--sidebar-background-color);
+  color: var(--sidebar-background-color);
+}
+
 
 /* Estilo para el botón toggle */
 .toggle-button {
@@ -119,11 +129,11 @@
     transform: scale(1.1);
   }
   .user-img {
-    width: 50px;             /* o el tamaño que prefieras */
+    width: 50px;
     height: 50px;
-    border-radius: 50%;      /* <-- Esto hace que sea redonda */
-    object-fit: cover;       /* Mantiene el aspecto sin deformarla */
-    border: 2px solid #ccc;  /* (opcional) borde gris suave */
+    border-radius: 50%;
+    object-fit: cover; 
+    border: 2px solid var(--sidebar-background-color); 
 }
 
   

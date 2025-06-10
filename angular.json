@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "Frontend_Authorization_v2": {
+    "Frontend_Authoriza": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/frontend-authorization-v2",
+            "outputPath": "dist/frontend-authoriza",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": ["zone.js"],
@@ -76,10 +76,10 @@
           "configurations": {
             "production": {              
               "proxyConfig": "proxy.config.prod.json",
-              "buildTarget": "Frontend_Authorization_v2:build:production"
+              "buildTarget": "Frontend_Authoriza:build:production"
             },
             "development": {
-              "buildTarget": "Frontend_Authorization_v2:build:development"
+              "buildTarget": "Frontend_Authoriza:build:development"
             }
           },
           "defaultConfiguration": "development"
