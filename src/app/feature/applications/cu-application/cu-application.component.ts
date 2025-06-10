@@ -159,9 +159,8 @@ export class CuApplicationComponent implements OnInit, OnChanges {
         this.imagePreview = URL.createObjectURL(file);
         this.isFileChosen = true;
   
-        this.applicationForm.patchValue({
-          logo: file.name,
-        });
+        this.applicationForm.get('logo')!.setValue(file);
+        this.applicationForm.get('logo')!.updateValueAndValidity();
   
         // ✅ Obtener ID de aplicación
         const appId = this.idApplication || this.applicationsService.getIdApplication();
