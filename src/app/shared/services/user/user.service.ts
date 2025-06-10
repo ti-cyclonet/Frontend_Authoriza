@@ -3,11 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
   private apiUrl = '/api/users';
-  
+
   // Crear un BehaviorSubject para almacenar los usuarios
   private usersSubject = new BehaviorSubject<any[]>([]);
   public users$ = this.usersSubject.asObservable();
@@ -27,12 +27,23 @@ export class UserService {
       },
       error: (error) => {
         console.error('Error al cargar usuarios', error);
-      }
+      },
     });
   }
 
   // Método para acceder a los usuarios actuales
   getCurrentUsers(): any[] {
     return this.usersSubject.getValue();
+  }
+
+  changePassword(
+    userId: string,
+    oldPassword: string,
+    newPassword: string
+  ): Observable<any> {
+    return this.http.post(`/api/users/${userId}/change-password`, {
+      oldPassword,
+      newPassword,
+    });
   }
 }
