@@ -8,6 +8,7 @@ import LayoutComponent from "./shared/components/layout/layout.component";
 import { LoginComponent } from './shared/components/login/login.component';
 import { isPlatformBrowser } from '@angular/common';
 import { SpinnerComponent } from './shared/components/spinner/spinner.component';
+import { IdleTimeoutService } from './shared/services/idle-timeout.service';
 
 @Component({
   selector: 'app-root',
@@ -20,9 +21,9 @@ export class AppComponent implements OnInit{
   
   title = NAME_APP_LONG;
   
-  constructor(@Inject(PLATFORM_ID) private platformId: object) {}
+  constructor(@Inject(PLATFORM_ID) private platformId: object, private idleTimeoutService: IdleTimeoutService ) {this.idleTimeoutService.startWatching();}
 
-  ngOnInit() {
+  ngOnInit() {    
     if (isPlatformBrowser(this.platformId)) {
       this.setPrimaryColors();
     }

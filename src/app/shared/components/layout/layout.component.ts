@@ -52,7 +52,7 @@ export default class LayoutComponent implements OnInit {
   ngOnInit(): void {
     this.loadSidebarPreference();
     this.applicationsService.loadApplications();
-    this.fetchApplication('Authoriza'); 
+    this.fetchApplication('Authoriza');
   } 
 
   addLocalApplication(app: any) {
