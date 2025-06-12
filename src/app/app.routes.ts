@@ -8,6 +8,7 @@ import {
   ROOT_ROLES,
   ROOT_USUERS,
 } from './config/config';
+import { AuthGuard } from './shared/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -30,36 +31,30 @@ export const routes: Routes = [
     children: [
       {
         path: ROOT_HOME,
-        loadComponent: () =>
-          import('./feature/home/home.component').then((m) => m.HomeComponent),
+        loadComponent: () => import('./feature/home/home.component').then((m) => m.HomeComponent),
+        canActivate: [AuthGuard],
       },
       {
         path: ROOT_USUERS,
-        loadComponent: () =>
-          import('./feature/users/users.component').then(
-            (m) => m.UsersComponent
-          ),
+        loadComponent: () => import('./feature/users/users.component').then((m) => m.UsersComponent),
+        canActivate: [AuthGuard],
       },
       {
         path: ROOT_APPLICATIONS,
-        loadComponent: () =>
-          import('./feature/applications/applications.component').then(
-            (m) => m.ApplicationsComponent
-          ),
+        loadComponent: () => import('./feature/applications/applications.component').then((m) => m.ApplicationsComponent),
+        canActivate: [AuthGuard],
       },
-      {
-        path: ROOT_ROLES,
-        loadComponent: () =>
-          import('./feature/roles/roles.component').then(
-            (m) => m.RolesComponent
-          ),
-      },
+      // {
+      //   path: ROOT_ROLES,
+      //   loadComponent: () =>
+      //     import('./feature/roles/roles.component').then(
+      //       (m) => m.RolesComponent
+      //     ),
+      // },
       {
         path: ROOT_CONFIGURATION,
-        loadComponent: () =>
-          import('./feature/setup/setup.component').then(
-            (m) => m.SetupComponent
-          ),
+        loadComponent: () => import('./feature/setup/setup.component').then((m) => m.SetupComponent),
+        canActivate: [AuthGuard],
       },
       {
         path: 'change-password',
