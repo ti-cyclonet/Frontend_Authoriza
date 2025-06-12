@@ -31,8 +31,15 @@
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <div class="card shadow-lg p-4 custom-card cuadroPrincipal">
           <div class="row justify-content-center w-130">
-            <a class="navbar-brand mb-2 mb-lg-0 d-flex justify-content-center" href="#">
-              <img src="./assets/img/logo_authoriza_v2.png" alt="Logo" class="logo-img" />
+            <a
+              class="navbar-brand mb-2 mb-lg-0 d-flex justify-content-center"
+              href="#"
+            >
+              <img
+                src="./assets/img/logo_authoriza_v2.png"
+                alt="Logo"
+                class="logo-img"
+              />
             </a>
           </div>
           <br />
@@ -40,36 +47,106 @@
           <hr style="border: 2px solid rgb(255, 255, 255)" />
 
           <!-- Campo Email -->
-          <div class="form-group m-2">
-            <input
-              type="email"
-              class="form-control mt-2"
-              placeholder="Email"
-              formControlName="username"
-            />
+          <div class="mb-3 fieldsForm">
+            <div class="input-group">
+              <span class="input-group-text bg-transparent border-end-0">
+                <svg
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                  style="
+                    width: 1rem;
+                    height: 1rem;
+                    color: var(--primary_active_text_color);
+                  "
+                >
+                  <use
+                    xlink:href="./assets/icons/bootstrap-icons.svg#envelope"
+                  />
+                </svg>
+              </span>
+              <input
+                type="email"
+                class="form-control custom-search-input border-start-0"
+                placeholder="Email"
+                formControlName="username"
+                autocomplete="email"
+              />
+            </div>
             <div
-              class="mt-1" style="color: #6600CC;"
-              *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.invalid"
+              class="errorMsg mt-1 p-1"
+              *ngIf="
+                loginForm.get('username')?.touched &&
+                loginForm.get('username')?.invalid
+              "
             >
-              <small *ngIf="loginForm.get('username')?.errors?.['required']">Email is required.</small>
-              <small *ngIf="loginForm.get('username')?.errors?.['email']">Invalid email format.</small>
+              <small *ngIf="loginForm.get('username')?.errors?.['required']"
+                >Email is required.</small
+              >
+              <small *ngIf="loginForm.get('username')?.errors?.['email']"
+                >Invalid email format.</small
+              >
             </div>
           </div>
 
           <!-- Campo Contraseña -->
-          <div class="form-group m-2">
-            <input
-              type="password"
-              class="form-control mt-2"
-              placeholder="Password"
-              formControlName="password"
-            />
+          <div class="mb-3 fieldsForm">
+            <div class="input-group">
+              <span class="input-group-text bg-transparent border-end-0">
+                <svg
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                  style="
+                    width: 1rem;
+                    height: 1rem;
+                    color: var(--primary_active_text_color);
+                  "
+                >
+                  <use xlink:href="./assets/icons/bootstrap-icons.svg#lock" />
+                </svg>
+              </span>
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                class="form-control custom-search-input border-start-0 border-end-0"
+                placeholder="Password"
+                formControlName="password"
+              />
+              <button
+                type="button"
+                class="input-group-text bg-transparent border-start-0"
+                (click)="togglePasswordVisibility()"
+              >
+                <svg
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                  style="
+                    width: 1rem;
+                    height: 1rem;
+                    color: var(--primary_active_text_color);
+                  "
+                >
+                  <use
+                    [attr.xlink:href]="
+                      showPassword
+                        ? './assets/icons/bootstrap-icons.svg#eye-slash'
+                        : './assets/icons/bootstrap-icons.svg#eye'
+                    "
+                  />
+                </svg>
+              </button>
+            </div>
             <div
-              class="mt-1" style="color: #6600CC;"
-              *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid"
+              class="errorMsg mt-1 p-1"
+              *ngIf="
+                loginForm.get('password')?.touched &&
+                loginForm.get('password')?.invalid
+              "
             >
-              <small *ngIf="loginForm.get('password')?.errors?.['required']">Password is required.</small>
-              <small *ngIf="loginForm.get('password')?.errors?.['minlength']">Minimum 6 characters.</small>
+              <small *ngIf="loginForm.get('password')?.errors?.['required']">
+                Password is required.
+              </small>
+              <small *ngIf="loginForm.get('password')?.errors?.['minlength']">
+                Minimum 6 characters.
+              </small>
             </div>
           </div>
 
