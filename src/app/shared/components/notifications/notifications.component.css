@@ -33,21 +33,21 @@
 }
 
 .notification-card.success {
-  border-color: rgb(9, 54, 9);
-  background-color: #b7fc9c;
-  color: rgb(9, 54, 9);
+  border-color: #82B366;
+  background-color: #D5E8D4;
+  color: #5e8f42;
 }
 
 .notification-card.warning {
-  border-color: #362302;  
-  background-color: rgb(248, 211, 143);
-  color: #362302;
+  border-color: #D6B656;  
+  background-color: #FFF2CC;
+  color: #977c2b;
 }
 
 .notification-card.danger {
-  border-color: #3f0606;
-  background-color: #ffbcbc;
-  color: #3f0606;
+  border-color: #B85450;
+  background-color: #F8CECC;
+  color: #b34945;
 }
 
 .notification-card.primary {
@@ -57,15 +57,15 @@
 }
 
 .notification-icon.success {
-  fill: rgb(9, 54, 9);
+  fill: #5e8f42;
 }
 
 .notification-icon.warning {
-  fill: #362302; 
+  fill: #977c2b; 
 }
 
 .notification-icon.danger {
-  fill: #3f0606;
+  fill: #b34945;
 }
 .notification-icon.primary {
   fill: black;

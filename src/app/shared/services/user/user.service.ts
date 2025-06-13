@@ -46,4 +46,18 @@ export class UserService {
       newPassword,
     });
   }
+
+  getAllPaginated(limit: number, offset: number) {
+    return this.http.get(`/api/users?limit=${limit}&offset=${offset}`);
+  }
+
+  searchUsers(params: { limit: number; offset: number; search?: string }) {
+  const { limit, offset, search } = params;
+  let url = `/api/users?limit=${limit}&offset=${offset}`;
+  if (search) {
+    url += `&search=${encodeURIComponent(search)}`;
+  }
+  return this.http.get(url);
+}
+
 }
