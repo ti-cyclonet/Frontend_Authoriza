@@ -108,7 +108,11 @@
 }
 
 .errorMsg {
-  color: #cc0000;
+  color: #B85450;
+  background-color: #F8CECC;
+  border: 1px solid #B85450;
+  border-radius: 3px;
+  padding-left: 15px;
 }
 
 .fieldsForm {  

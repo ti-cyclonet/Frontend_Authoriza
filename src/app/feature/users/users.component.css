@@ -1,51 +1,53 @@
-/* Estilo para el contenedor del título */
+/* === Contenedor del título === */
 .title-container {
   display: flex;
   align-items: center;
   font-size: 1rem;
   color: #6e6e6e;
-  margin-bottom: 1rem;
-  margin-top: 1rem;
+  margin: 1rem 0;
   padding-left: 1.5rem;
 }
 
-.title-container svg {
-  width: 20px; 
-  height: 20px; 
-  margin-right: 0.3rem;
-  fill: #6e6e6e;
-}
-
-/* Estilo de los íconos para el Status */
-.status-icon {
-  margin-right: 0.3rem;
-  width: 16px;
-  height: 16px;
-}
-
-.custom-search-input {
-  color: var(--primary_active_text_color);
-  background-color: #E3F7FF;
-  opacity: 0.8;
-  border: none;
-}
-
-
-/* Estilo para el enlace en el contenedor del título */
 .title-link {
   display: flex;
-  align-items: center; 
+  align-items: center;
   color: #6e6e6e;
   text-decoration: none;
 }
 
-/* Efecto hover para el enlace (opcional) */
 .title-link:hover {
-  /* text-decoration: underline; Subraya el texto cuando se pasa el ratón sobre él */
   color: #4a4a4a;
 }
 
-/* Estilo para la tarjeta de contenido */
+.title-container svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.3rem;
+  fill: #6e6e6e;
+}
+
+/* === Tabla === */
+table th,
+table td {
+  vertical-align: middle;
+}
+
+/* === Íconos === */
+.status-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 0.3rem;
+}
+
+/* === Input de búsqueda === */
+.custom-search-input {
+  color: var(--primary_active_text_color);
+  background-color: #e3f7ff;
+  opacity: 0.8;
+  border: none;
+}
+
+/* === Tarjeta === */
 .card {
   border: 1px solid #cccccc;
   border-radius: 0.5rem;
@@ -56,17 +58,51 @@
 .card-body {
   padding: 1.5rem;
   margin-top: 0.1rem;
-  /* color: var(--primary-text-color); Color del texto en la tarjeta */
 }
 
+/* === Subtítulo === */
 .subtitle {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
 }
+
 .users-titleOne {
   margin: 0;
   font-size: 0.8rem;
-  /* font-weight: bold; */
 }
+
+.pagination .page-link {
+  cursor: pointer;
+  color: var(--primary_active_text_color);
+  background-color: transparent;
+  border: 1px solid var(--sidebar-background-color);
+  margin: 0 3px;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+/* Botón activo */
+.pagination .page-item.active .page-link {
+  background-color: var(--sidebar-background-color);
+  color: #fff;
+  font-weight: bold;
+  border-color: var(--sidebar-background-color);
+}
+
+/* Hover: usamos un color más oscuro para asegurar contraste */
+.pagination .page-item .page-link:hover {
+  background-color: var(--sidebar-background-color);
+  color: #fff;
+  border-color: var(--sidebar-background-color);
+}
+
+/* Botón deshabilitado */
+.pagination .page-item.disabled .page-link {
+  color: #aaa;
+  cursor: not-allowed;
+  background-color: #f9f9f9;
+  border-color: #ddd;
+}
+
