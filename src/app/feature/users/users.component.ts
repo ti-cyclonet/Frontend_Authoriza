@@ -1,35 +1,62 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { UserService } from '../../shared/services/user/user.service';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DatePipe, RouterModule],
   templateUrl: './users.component.html',
-  styleUrls: ['./users.component.css'],
+  styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
   users: any[] = [];
   filteredUsers: any[] = [];
-  searchTerm = '';
+  pagedUsers: any[] = [];
 
-  constructor(private http: HttpClient) {}
+  searchTerm: string = '';
+  currentPage: number = 1;
+  itemsPerPage: number = 8;
+  totalPages: number = 1;
+
+  constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-    this.http.get<any[]>('/api/users').subscribe((data) => {
+    this.loadUsers();
+  }
+
+  loadUsers() {
+    this.userService.getUsers().subscribe((data) => {
       this.users = data;
-      this.filteredUsers = data;
+      this.applyFilter(); // Aplica filtro y paginación automáticamente
     });
   }
 
-  filterUsers(): void {
-    const term = this.searchTerm.toLowerCase();
-    this.filteredUsers = this.users.filter(user =>
-      user.strUserName.toLowerCase().includes(term) ||
-      user.strEmail?.toLowerCase().includes(term) ||
-      user.application?.strName?.toLowerCase().includes(term)
+  applyFilter() {
+    const term = this.searchTerm.toLowerCase().trim();
+
+    this.filteredUsers = this.users.filter((user) =>
+      user.strUserName?.toLowerCase().includes(term) ||
+      user.rol?.strName?.toLowerCase().includes(term) ||
+      user.basicData?.strPersonType?.toLowerCase().includes(term)
     );
+
+    this.totalPages = Math.ceil(this.filteredUsers.length / this.itemsPerPage);
+    this.goToPage(1);
+  }
+
+  goToPage(page: number) {
+    this.currentPage = page;
+
+    const start = (page - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+
+    this.pagedUsers = this.filteredUsers.slice(start, end);
+  }
+
+  onSearch() {
+    this.applyFilter();
   }
 }
