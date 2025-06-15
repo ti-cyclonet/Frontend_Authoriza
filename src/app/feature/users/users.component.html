@@ -1,3 +1,29 @@
+<!-- Contenedor flotante (derecha) -->
+<div class="notification-container">
+  <ng-container *ngFor="let notification of notifications; let i = index">
+    <app-notifications
+      *ngIf="notification.container === 0 && notification.visible"
+      [title]="notification.title"
+      [type]="notification.type"
+      [alertType]="notification.alertType"
+      (close)="removeNotification(i)"
+    ></app-notifications>
+  </ng-container>
+</div>
+
+<!-- Contenedor superior -->
+<div class="notification-container-1 p-1 w-100">
+  <ng-container *ngFor="let notification of notifications; let i = index">
+    <app-notifications
+      *ngIf="notification.container === 1 && notification.visible"
+      [title]="notification.title"
+      [type]="notification.type"
+      [alertType]="notification.alertType"
+      (close)="removeNotification(i)"
+    ></app-notifications>
+  </ng-container>
+</div>
+
 <div class="title-container">
   <a href="/users" class="title-link">
     <svg viewBox="0 0 16 16">
@@ -36,10 +62,24 @@
         [(ngModel)]="searchTerm"
         (input)="onSearch()"
       />
-      <span
-        class="input-group-text"
-        style="background-color: transparent; border: none"
+      <!-- Icono de limpiar -->
+      <button
+        *ngIf="searchTerm"
+        class="input-group-text bg-transparent border-0 fw-bold text-danger"
+        style="cursor: pointer"
+        (click)="clearSearch()"
       >
+        <svg
+          fill="currentColor"
+          viewBox="0 0 16 16"
+          style="width: 1rem; height: 1rem"
+        >
+          <use xlink:href="./assets/icons/bootstrap-icons.svg#x-circle" />
+        </svg>
+      </button>
+
+      <!-- Icono de búsqueda -->
+      <span class="input-group-text bg-transparent border-0">
         <svg
           fill="currentColor"
           viewBox="0 0 16 16"
@@ -74,11 +114,14 @@
     </div>
 
     <!-- Tabla de usuarios -->
-    <table class="table table-bordered border-secondary table-small small">
-    <!-- <table class="table table-bordered table-small small" style="border: 1px solid var(--sidebar-background-color);"> -->
-    <!-- <table class="table table-striped table-small small"> -->
+    <table
+      class="table table-bordered border-secondary table-sm"
+      style="font-size: 14px"
+    >
+      <!-- <table class="table table-bordered table-small small" style="border: 1px solid var(--sidebar-background-color);"> -->
+      <!-- <table class="table table-striped table-small small"> -->
       <thead>
-        <tr>
+        <tr class="table-light">
           <th class="text-center">Id</th>
           <th class="text-center">User Name</th>
           <th class="text-center">Email</th>
@@ -90,7 +133,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let user of pagedUsers">
+        <tr
+          *ngFor="let user of pagedUsers"
+          [ngClass]="{ 'table-active': selectedUser?.id === user.id }"
+        >
           <th class="text-center">
             <span
               class="badge"
@@ -112,13 +158,19 @@
           </td>
           <td class="text-center">{{ user.rol?.strName || "-" }}</td>
           <td class="text-center">
-            <b
+            <a
+              class="status-toggle text-decoration-none fw-semibold"
               [ngClass]="{
-                'text-danger': user.strStatus?.toUpperCase() === 'INACTIVE',
-                'text-success': user.strStatus?.toUpperCase() === 'ACTIVE'
+                'text-success': user.strStatus === 'ACTIVE',
+                'text-danger': user.strStatus === 'INACTIVE'
               }"
+              (click)="onToggleStatus(user)"
             >
-              <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+              <svg
+                fill="currentColor"
+                viewBox="0 0 16 16"
+                class="status-icon me-1"
+              >
                 <use
                   [attr.xlink:href]="
                     './assets/icons/bootstrap-icons.svg#' +
@@ -129,8 +181,9 @@
                 ></use>
               </svg>
               {{ user.strStatus }}
-            </b>
+            </a>
           </td>
+
           <td class="text-center">
             {{ user.dtmLatestUpdateDate | date : "dd/MM/yyyy" }}
           </td>
@@ -140,22 +193,16 @@
               role="group"
               aria-label="Small button group"
             >
-              <a style="color: var(--sidebar-background-color)">
+              <a
+                style="color: var(--sidebar-background-color); cursor: pointer"
+                (click)="showUserDetails(user)"
+              >
                 <svg
                   fill="currentColor"
                   viewBox="0 0 16 16"
                   class="status-icon"
                 >
                   <use xlink:href="./assets/icons/bootstrap-icons.svg#eye" />
-                </svg>
-              </a>
-              <a style="color: var(--sidebar-background-color)">
-                <svg
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                  class="status-icon"
-                >
-                  <use xlink:href="./assets/icons/bootstrap-icons.svg#pencil" />
                 </svg>
               </a>
             </div>
@@ -167,7 +214,7 @@
     <!-- Paginación personalizada con íconos -->
     <nav
       *ngIf="totalPages > 1"
-      class="custom-pagination mt-3 d-flex justify-content-center"
+      class="custom-pagination d-flex justify-content-center"
     >
       <ul class="pagination">
         <li class="page-item" [class.disabled]="currentPage === 1">
@@ -217,5 +264,140 @@
         </li>
       </ul>
     </nav>
+
+    <!-- Tarjeta de detalles del usuario seleccionado -->
+    <div
+      *ngIf="selectedUser"
+      class="card shadow-sm user-details-card mx-auto"
+      style="max-width: 960px; margin-top: 20px"
+    >
+      <div
+        class="card-header fw-bold d-flex justify-content-between align-items-center"
+        style="background-color: #6900d1; color: white"
+      >
+        User Details: {{ selectedUser.strUserName }}
+        <div class="d-flex align-items-center gap-2">
+          <button
+            class="btn btn-sm"
+            (click)="editingUser = !editingUser"
+            [title]="editingUser ? 'Cancel edit' : 'Edit user'"
+            style="color: white"
+            disabled
+          >
+            <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#pencil" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-close"
+            aria-label="Close"
+            (click)="selectedUser = null; editingUser = false"
+            style="color: white"
+          ></button>
+        </div>
+      </div>
+
+      <div class="card-body p-4 user-details-content">
+        <div class="row">
+          <!-- Imagen -->
+          <div
+            class="col-md-3 user-image-container d-flex flex-column align-items-center justify-content-center mb-3 mb-md-0"
+          >
+            <ng-container *ngIf="selectedUser.image; else defaultIcon">
+              <img
+                [src]="selectedUser.image"
+                alt="User Image"
+                class="img-fluid rounded-circle border"
+                style="width: 100px; height: 100px; object-fit: cover"
+              />
+            </ng-container>
+            <ng-template #defaultIcon>
+              <svg
+                class="bi"
+                width="100"
+                height="100"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+              >
+                <use
+                  xlink:href="./assets/icons/bootstrap-icons.svg#person-circle"
+                />
+              </svg>
+            </ng-template>
+          </div>
+
+          <!-- Información en 2 columnas -->
+          <div class="col-md-9">
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <div>
+                  <strong>Username:</strong>
+                  <span *ngIf="!editingUser"> {{
+                    selectedUser.strUserName
+                  }}</span>
+                  <input
+                    *ngIf="editingUser"
+                    class="form-control form-control-sm"
+                    [(ngModel)]="selectedUser.strUserName"
+                  />
+                </div>
+                <div>
+                  <strong>Person Type:</strong>
+                  <span *ngIf="!editingUser"> {{
+                    selectedUser.basicData?.strPersonType === "J"
+                      ? "Legal"
+                      : selectedUser.basicData?.strPersonType === "N"
+                      ? "Natural"
+                      : "-"
+                  }}</span>
+                  <select
+                    *ngIf="editingUser"
+                    class="form-select form-select-sm"
+                    [(ngModel)]="selectedUser.basicData.strPersonType"
+                    aria-label="Person Type"
+                  >
+                    <option value="N">Natural</option>
+                    <option value="J">Legal</option>
+                  </select>
+                </div>
+                <div>
+                  <strong>Status: </strong>
+                  {{ selectedUser.strStatus }}
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <div>
+                  <strong>Role: </strong>
+                  <span *ngIf="!editingUser">{{
+                    selectedUser.rol?.strName || "-"
+                  }}</span>
+                  <input
+                    *ngIf="editingUser"
+                    class="form-control form-control-sm"
+                    [(ngModel)]="selectedUser.rol.strName"
+                  />
+                </div>
+                <div>
+                  <strong>Last Updated: </strong>
+                  {{ selectedUser.dtmLatestUpdateDate | date : "dd/MM/yyyy" }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Botón guardar -->
+            <div *ngIf="editingUser" class="text-end mt-3">
+              <button
+                class="btn btn-sm btn-primary"
+                (click)="saveUserDetails()"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
