@@ -85,7 +85,7 @@ export class LoginComponent {
     this.authService.login(loginDTO).subscribe(
       (response) => {
         if (response.access_token) {
-          sessionStorage.setItem('token', response.access_token);
+          sessionStorage.setItem('authToken', response.access_token);
           this.showToast('Inicio de sesión exitoso', 'success', 'A', 0);
 
           setTimeout(() => {

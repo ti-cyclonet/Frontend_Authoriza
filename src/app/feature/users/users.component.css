@@ -165,6 +165,26 @@ table td {
   padding-top: 12px;
 }
 
+.custom-btn-group {
+  padding: 5px;
+  border: 1px solid var(--sidebar-background-color);
+  border-radius: 5px;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+
+  /* Centrado y separación */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem; /* equivalente a gap-2 de Bootstrap */
+}
+/* Estilo de los íconos del título */
+.title-icon {
+  /* margin-right: 0.3rem; */
+  width: 25px; 
+  height: 25px; 
+  color: #000;
+}
+
 /* Estilos para las notificaciones */
 /* ------------------------------- */
 .notification-container {
