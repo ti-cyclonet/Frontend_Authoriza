@@ -35,70 +35,146 @@
 
 <div class="card shadow m-3">
   <div class="card-body">
-    <h5
-      class="card-title text-nowrap bg-body-secondary border"
-      style="width: 3rem"
-    >
-      User <b>Management</b>.
-    </h5>
-
-    <div class="subtitle">
-      <h6 class="users-titleOne">Search by name, email, or application</h6>
+    <div class="d-flex justify-content-between align-items-center w-100 mb-3">
+      <h5 class="card-title m-0 text-nowrap">User <b>Management</b>.</h5>
+      <div class="btn-group custom-btn-group" role="group" aria-label="Action buttons">
+        <!-- <a title="Save" class="btn btn-sm btn-light">
+          <svg
+            fill="currentColor"
+            viewBox="0 0 16 16"
+            style="width: 1rem; height: 1rem"
+            class="title-icon"
+          >
+            <use
+              xlink:href="./assets/icons/bootstrap-icons.svg#floppy2-fill"
+            ></use>
+          </svg>
+        </a> -->
+        <a title="Add new user" class="btn btn-sm btn-light">
+          <svg
+            fill="currentColor"
+            viewBox="0 0 16 16"
+            style="width: 1rem; height: 1rem"
+            class="title-icon"
+          >
+            <use
+              xlink:href="./assets/icons/bootstrap-icons.svg#plus-square-fill"              
+            ></use>
+          </svg>
+        </a>
+      </div>
     </div>
 
-    <!-- Buscador -->
-    <div
-      class="input-group mb-3"
-      style="
-        border: 1px solid var(--sidebar-background-color);
-        border-radius: 0.375rem;
-        overflow: hidden;
-      "
-    >
-      <input
-        type="text"
-        class="form-control custom-search-input"
-        placeholder="Write some words to filter"
-        [(ngModel)]="searchTerm"
-        (input)="onSearch()"
-      />
-      <!-- Icono de limpiar -->
-      <button
-        *ngIf="searchTerm"
-        class="input-group-text bg-transparent border-0 fw-bold text-danger"
-        style="cursor: pointer"
-        (click)="clearSearch()"
-      >
-        <svg
-          fill="currentColor"
-          viewBox="0 0 16 16"
-          style="width: 1rem; height: 1rem"
-        >
-          <use xlink:href="./assets/icons/bootstrap-icons.svg#x-circle" />
-        </svg>
-      </button>
-
-      <!-- Icono de búsqueda -->
-      <span class="input-group-text bg-transparent border-0">
-        <svg
-          fill="currentColor"
-          viewBox="0 0 16 16"
+    <div class="row mb-3">
+      <!-- Buscador por nombre/email -->
+      <div class="col-sm-12 col-md-6 mb-2 mb-md-0">
+        <div class="subtitle">
+          <h6 class="users-titleOne">Search by name, email, or application</h6>
+        </div>
+        <div
+          class="input-group"
           style="
-            width: 1rem;
-            height: 1rem;
-            color: var(--primary_active_text_color);
+            border: 1px solid var(--sidebar-background-color);
+            border-radius: 0.375rem;
+            overflow: hidden;
           "
         >
-          <use xlink:href="./assets/icons/bootstrap-icons.svg#search" />
-        </svg>
-      </span>
+          <input
+            type="text"
+            class="form-control custom-search-input"
+            placeholder="Write some words to filter"
+            [(ngModel)]="searchTerm"
+            (input)="onSearch()"
+          />
+          <button
+            *ngIf="searchTerm"
+            class="input-group-text bg-transparent border-0 fw-bold text-danger"
+            style="cursor: pointer"
+            (click)="clearSearch()"
+          >
+            <svg
+              fill="currentColor"
+              viewBox="0 0 16 16"
+              style="width: 1rem; height: 1rem"
+            >
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#x-circle" />
+            </svg>
+          </button>
+          <span class="input-group-text bg-transparent border-0">
+            <svg
+              fill="currentColor"
+              viewBox="0 0 16 16"
+              style="
+                width: 1rem;
+                height: 1rem;
+                color: var(--primary_active_text_color);
+              "
+            >
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#search" />
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <!-- Buscador por dependencia -->
+      <div class="col-sm-12 col-md-6">
+        <div class="subtitle">
+          <h6 class="users-titleOne">Filter by dependency</h6>
+        </div>
+        <div
+          class="input-group"
+          style="
+            border: 1px solid var(--sidebar-background-color);
+            border-radius: 0.375rem;
+            overflow: hidden;
+          "
+        >
+          <input
+            type="text"
+            class="form-control custom-search-input"
+            placeholder="Filter by leader ID"
+            [(ngModel)]="dependentId"
+          />
+          <button
+            *ngIf="dependentId"
+            class="input-group-text bg-transparent border-0 fw-bold text-danger"
+            style="cursor: pointer"
+            (click)="clearDependenceFilter()"
+          >
+            <svg
+              fill="currentColor"
+              viewBox="0 0 16 16"
+              style="width: 1rem; height: 1rem"
+            >
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#x-circle" />
+            </svg>
+          </button>
+          <button
+            class="input-group-text bg-transparent border-0 fw-bold text-primary"
+            style="cursor: pointer"
+            (click)="filterByDependent()"
+          >
+            <svg
+              fill="currentColor"
+              viewBox="0 0 16 16"
+              style="width: 1rem; height: 1rem"
+            >
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#search" />
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Contador con número de página -->
     <div
       *ngIf="filteredUsers.length > 0"
-      class="d-flex justify-content-between align-items-center mb-2 small text-muted"
-      style="font-size: 0.875rem; color: var(--sidebar_background_color)"
+      class="d-flex justify-content-between align-items-center mb-2 small text-muted pt-2"
+      style="
+        font-size: 0.875rem;
+        color: var(--sidebar_background_color);
+        border-top: 1px solid var(--sidebar-background-color);
+      "
     >
       <div>
         Mostrando {{ pagedUsers.length }} de {{ filteredUsers.length }} usuarios
@@ -108,27 +184,24 @@
     <!-- Mensaje cuando no hay resultados -->
     <div
       *ngIf="filteredUsers.length === 0"
-      class="text-center text-danger fw-semibold mt-3"
+      class="text-center text-danger fw-semibold m-3"
     >
-      No se encontraron resultados para tu búsqueda.
+      No results were found.
     </div>
 
     <!-- Tabla de usuarios -->
-    <table
-      class="table table-bordered border-secondary table-sm"
-      style="font-size: 14px"
-    >
+    <table class="table table-hover table-sm" style="font-size: 14px">
       <!-- <table class="table table-bordered table-small small" style="border: 1px solid var(--sidebar-background-color);"> -->
       <!-- <table class="table table-striped table-small small"> -->
       <thead>
         <tr class="table-light">
           <th class="text-center">Id</th>
-          <th class="text-center">User Name</th>
+          <th class="text-center d-none d-lg-block">User Name</th>
           <th class="text-center">Email</th>
-          <th class="text-center">Person Type</th>
+          <th class="text-center d-none d-lg-block">Person Type</th>
           <th class="text-center">Rol</th>
           <th class="text-center">State</th>
-          <th class="text-center">Update date</th>
+          <th class="text-center d-none d-lg-block">Update date</th>
           <th class="text-center">Actions</th>
         </tr>
       </thead>
@@ -137,17 +210,16 @@
           *ngFor="let user of pagedUsers"
           [ngClass]="{ 'table-active': selectedUser?.id === user.id }"
         >
-          <th class="text-center">
+          <td class="text-center">
             <span
               class="badge"
               style="background-color: var(--header-icon-color)"
+              >{{ user.id }}</span
             >
-              {{ user.id }}
-            </span>
-          </th>
-          <td>{{ user.strUserName }}</td>
-          <td>{{ user.strUserName || "-" }}</td>
-          <td class="text-center">
+          </td>
+          <td class="d-none d-lg-block">{{ user.strUserName }}</td>
+          <td class="text-center">{{ user.strUserName || "-" }}</td>
+          <td class="text-center d-none d-lg-block">
             {{
               user.basicData?.strPersonType === "N"
                 ? "Natural"
@@ -180,11 +252,10 @@
                   "
                 ></use>
               </svg>
-              {{ user.strStatus }}
+              <span class="d-none d-lg-inline">{{ user.strStatus }}</span>
             </a>
           </td>
-
-          <td class="text-center">
+          <td class="text-center d-none d-lg-block">
             {{ user.dtmLatestUpdateDate | date : "dd/MM/yyyy" }}
           </td>
           <td class="text-center">
@@ -333,9 +404,9 @@
               <div class="col-sm-6">
                 <div>
                   <strong>Username:</strong>
-                  <span *ngIf="!editingUser"> {{
-                    selectedUser.strUserName
-                  }}</span>
+                  <span *ngIf="!editingUser">
+                    {{ selectedUser.strUserName }}</span
+                  >
                   <input
                     *ngIf="editingUser"
                     class="form-control form-control-sm"
@@ -344,13 +415,15 @@
                 </div>
                 <div>
                   <strong>Person Type:</strong>
-                  <span *ngIf="!editingUser"> {{
-                    selectedUser.basicData?.strPersonType === "J"
-                      ? "Legal"
-                      : selectedUser.basicData?.strPersonType === "N"
-                      ? "Natural"
-                      : "-"
-                  }}</span>
+                  <span *ngIf="!editingUser">
+                    {{
+                      selectedUser.basicData?.strPersonType === "J"
+                        ? "Legal"
+                        : selectedUser.basicData?.strPersonType === "N"
+                        ? "Natural"
+                        : "-"
+                    }}</span
+                  >
                   <select
                     *ngIf="editingUser"
                     class="form-select form-select-sm"
@@ -371,7 +444,7 @@
                 <div>
                   <strong>Role: </strong>
                   <span *ngIf="!editingUser">{{
-                    selectedUser.rol?.strName || "-"
+                    selectedUser.rol?.strDescription1 || "-"
                   }}</span>
                   <input
                     *ngIf="editingUser"

@@ -21,8 +21,7 @@ export class AuthService {
       this.apiUrl,
       credentials      
     ).pipe(
-      tap(response => {
-        console.log('Login response:', response);
+      tap(response => { 
         if (isPlatformBrowser(this.platformId)) {
           this.setUserSession(response);
         }
@@ -43,7 +42,9 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem('authToken');
+    sessionStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    localStorage.removeItem('imagePreview');
     sessionStorage.clear();
   }
 
