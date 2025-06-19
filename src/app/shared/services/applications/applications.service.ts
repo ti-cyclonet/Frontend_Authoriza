@@ -88,8 +88,8 @@ export class ApplicationsService {
     return this.applicationDTO;
   }
 
-  updateApplicationDTO(fields: Partial<ApplicationDTO>): void {    
-    const existingApp = this.applicationsDTOMap.get(fields.id!);    
+  updateApplicationDTO(fields: Partial<ApplicationDTO>): void {
+    const existingApp = this.applicationsDTOMap.get(fields.id!);
 
     // Preservar imagen si no se envió una nueva
     if (existingApp && !fields.imageFile && existingApp.imageFile) {
@@ -169,7 +169,9 @@ export class ApplicationsService {
     this.applicationsDTOMap.set(appId, structuredClone(dto));
   }
 
-  async saveAllValidApplications(validApplications: ApplicationDTO[]): Promise<SaveApplicationResult[]> {
+  async saveAllValidApplications(
+    validApplications: ApplicationDTO[]
+  ): Promise<SaveApplicationResult[]> {
     const appsToSend = validApplications;
     const results: SaveApplicationResult[] = [];
     const operations: Promise<void>[] = [];
@@ -327,7 +329,7 @@ export class ApplicationsService {
   }
 
   loadApplications(): void {
-    this.getApplications(4, 0).subscribe({
+    this.getApplications(10, 0).subscribe({
       next: (applications) => {
         this.applicationsSubject.next(applications);
       },
@@ -405,6 +407,12 @@ export class ApplicationsService {
 
   getApplicationByName(strName: string): Observable<Application> {
     return this.http.get<Application>(`${this.apiUrl}/${strName}`);
+  }
+
+  // Obtener una aplicación y sus opciones de menú por nombre de aplicación y nombre de rol
+  getApplicationByNameAndRol(applicationName: string, rolName: string): Observable<Application> {
+    const url = `${this.apiUrl}/${applicationName}/rol/${rolName}`;    
+    return this.http.get<Application>(url);
   }
 
   // ===================
