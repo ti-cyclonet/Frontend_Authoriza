@@ -32,7 +32,11 @@ export class UserService {
   }
 
   // Cambiar contraseña del usuario
-  changePassword(userId: string, oldPassword: string, newPassword: string): Observable<any> {
+  changePassword(
+    userId: string,
+    oldPassword: string,
+    newPassword: string
+  ): Observable<any> {
     return this.http.post(`/api/users/${userId}/change-password`, {
       oldPassword,
       newPassword,
@@ -63,4 +67,15 @@ export class UserService {
   updateUser(user: User): Observable<User> {
     return this.http.put<User>(`${this.apiUrl}/${user.id}`, user);
   }
+
+  getUsersByDependentOnId(dependentOnId: string): Observable<User[]> {
+    return this.http.get<User[]>(
+      `${this.apiUrl}?dependentOnId=${dependentOnId}`
+    );
+  }
+
+  getAllUsers(): Observable<User[]> {
+  return this.http.get<User[]>('/api/users');
+}
+
 }

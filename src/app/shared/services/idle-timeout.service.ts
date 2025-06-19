@@ -64,7 +64,9 @@ export class IdleTimeoutService {
 
   private handleLogout(): void {
     this.stopWatching();
-    localStorage.removeItem('token');
+    sessionStorage.clear();
+    localStorage.removeItem('user');
+    localStorage.removeItem('imagePreview');
     this.ngZone.run(() => this.router.navigate(['/login']));
   }
 }

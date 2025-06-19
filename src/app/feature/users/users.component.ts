@@ -25,6 +25,7 @@ export class UsersComponent implements OnInit {
   pagedUsers: User[] = [];
   selectedUser: any = null;
   editingUser: boolean = false;
+  dependentId: string = '';
 
   searchTerm: string = '';
   currentPage: number = 1;
@@ -57,7 +58,7 @@ export class UsersComponent implements OnInit {
   loadUsers() {
     this.userService.getUsers().subscribe((data) => {
       this.users = data;
-      this.applyFilter(); // Aplica filtro y paginación automáticamente
+      this.applyFilter();
     });
   }
 
@@ -131,9 +132,48 @@ export class UsersComponent implements OnInit {
       },
     });
   }
+
   clearSearch(): void {
     this.searchTerm = '';
     this.onSearch();
+  }
+
+  filterByDependent() {
+    if (this.dependentId.trim()) {
+      this.userService
+        .getUsersByDependentOnId(this.dependentId.trim())
+        .subscribe((users) => {
+          this.users = users;
+          this.filteredUsers = users;
+          this.currentPage = 1;
+          this.updatePagination();
+        });
+    }
+  }
+
+  updatePagination() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.pagedUsers = this.filteredUsers.slice(startIndex, endIndex);
+  }
+
+  clearDependenceFilter() {
+    this.dependentId = '';
+    this.getAllUsers();
+  }
+
+  getAllUsers(): void {
+    this.userService.getAllUsers().subscribe(
+      (users) => {
+        this.users = users;
+        this.filteredUsers = users;
+        this.currentPage = 1;
+        this.updatePagination();
+      },
+      (error) => {
+        console.error('Error fetching users:', error);
+      }
+    );
   }
 
   // Funciones para NOTIFICACIONES

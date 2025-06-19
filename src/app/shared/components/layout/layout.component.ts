@@ -60,7 +60,14 @@ export default class LayoutComponent implements OnInit {
   }
 
   fetchApplication(name: string): void {
-    this.applicationsService.getApplicationByName(name).subscribe(
+    const userRol = sessionStorage.getItem('user_rol');  
+    if (!userRol) {
+      console.error('No se encontró el rol del usuario en la sesión');
+      return;
+    }
+
+    this.applicationsService.getApplicationByNameAndRol(name, userRol).subscribe(
+
       (app) => {
         if (!app) {
           console.error('Aplicación no encontrada');
