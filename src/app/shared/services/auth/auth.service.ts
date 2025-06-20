@@ -8,7 +8,7 @@ import { isPlatformBrowser } from '@angular/common';
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/api/auth/login';
+  private apiUrl = 'https://backend-authoriza.onrender.com/api/auth/login';
 
   constructor(
     private http: HttpClient,
