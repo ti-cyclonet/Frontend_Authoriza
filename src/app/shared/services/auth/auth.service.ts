@@ -3,12 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'https://backend-authoriza.onrender.com/api/auth/login';
+  private apiUrl = environment.apiBaseUrl + '/api/auth/login';
+  // private apiUrl = 'https://backend-authoriza.onrender.com/api/auth/login';
 
   constructor(
     private http: HttpClient,

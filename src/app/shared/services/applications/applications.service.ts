@@ -7,6 +7,7 @@ import { Rol } from '../../model/rol';
 import { MenuOption } from '../../model/menu_option';
 import { validateApplicationDTO } from '../../utils/validation.utils';
 import { EnvironmentService } from '../environment.service';
+import { environment } from '../../../../environments/environment';
 export interface ApplicationDTO {
   id?: string | undefined;
   strName: string;
@@ -50,10 +51,11 @@ export class ApplicationsService {
 
   applicationsDTOMap: Map<string, ApplicationDTO> = new Map();
 
-  private apiUrl = '/api/applications';
-  private validateNameUrl = '/api/applications/check-name';
-  private createApplicationUrl = '/api/applications';
-  private getApplicationByIdUrl = '/api/getapplicationbyid';
+  private baseApiUrl = environment.apiBaseUrl;
+
+  private applicationUrl = this.baseApiUrl + '/api/applications';
+  private validateNameUrl = this.baseApiUrl + '/api/applications/check-name';  
+  private getApplicationByIdUrl = this.baseApiUrl + '/api/getapplicationbyid';
 
   public editMode: boolean = false;
   public idApplication: string = '';
@@ -294,7 +296,7 @@ export class ApplicationsService {
     offset: number = 0
   ): Observable<Application[]> {
     return this.http.get<Application[]>(
-      `${this.apiUrl}?limit=${limit}&offset=${offset}`
+      `${this.applicationUrl}?limit=${limit}&offset=${offset}`
     );
   }
 
@@ -351,7 +353,7 @@ export class ApplicationsService {
   }
 
   createApplication(applicationData: FormData): Observable<any> {
-    return this.http.post<any>(this.createApplicationUrl, applicationData).pipe(
+    return this.http.post<any>(this.applicationUrl, applicationData).pipe(
       map((response) => {
         this.loadApplications();
         return response;
@@ -406,12 +408,12 @@ export class ApplicationsService {
   }
 
   getApplicationByName(strName: string): Observable<Application> {
-    return this.http.get<Application>(`${this.apiUrl}/${strName}`);
+    return this.http.get<Application>(`${this.applicationUrl}/${strName}`);
   }
 
   // Obtener una aplicación y sus opciones de menú por nombre de aplicación y nombre de rol
   getApplicationByNameAndRol(applicationName: string, rolName: string): Observable<Application> {
-    const url = `${this.apiUrl}/${applicationName}/rol/${rolName}`;    
+    const url = `${this.applicationUrl}/${applicationName}/rol/${rolName}`;    
     return this.http.get<Application>(url);
   }
 
