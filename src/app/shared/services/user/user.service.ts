@@ -2,12 +2,15 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { User } from '../../model/user';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private apiUrl = '/api/users';
+  private baseApiUrl = environment.apiBaseUrl;
+
+  private userUrl = this.baseApiUrl + '/api/users';
   private usersSubject = new BehaviorSubject<any[]>([]);
   public users$ = this.usersSubject.asObservable();
 
@@ -15,7 +18,7 @@ export class UserService {
 
   // Obtener todos los usuarios
   getUsers(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+    return this.http.get<any[]>(this.userUrl);
   }
 
   // Cargar usuarios y actualizar el BehaviorSubject
@@ -45,13 +48,13 @@ export class UserService {
 
   // Obtener usuarios con paginación
   getAllPaginated(limit: number, offset: number) {
-    return this.http.get(`${this.apiUrl}?limit=${limit}&offset=${offset}`);
+    return this.http.get(`${this.userUrl}?limit=${limit}&offset=${offset}`);
   }
 
   // Buscar usuarios con parámetros
   searchUsers(params: { limit: number; offset: number; search?: string }) {
     const { limit, offset, search } = params;
-    let url = `${this.apiUrl}?limit=${limit}&offset=${offset}`;
+    let url = `${this.userUrl}?limit=${limit}&offset=${offset}`;
     if (search) {
       url += `&search=${encodeURIComponent(search)}`;
     }
@@ -60,22 +63,21 @@ export class UserService {
 
   // Alternar estado de usuario (activo/inactivo)
   toggleUserStatus(id: string): Observable<User> {
-    return this.http.patch<User>(`${this.apiUrl}/${id}/toggle-status`, {});
+    return this.http.patch<User>(`${this.userUrl}/${id}/toggle-status`, {});
   }
 
   // Actualizar usuario
   updateUser(user: User): Observable<User> {
-    return this.http.put<User>(`${this.apiUrl}/${user.id}`, user);
+    return this.http.put<User>(`${this.userUrl}/${user.id}`, user);
   }
 
   getUsersByDependentOnId(dependentOnId: string): Observable<User[]> {
     return this.http.get<User[]>(
-      `${this.apiUrl}?dependentOnId=${dependentOnId}`
+      `${this.userUrl}?dependentOnId=${dependentOnId}`
     );
   }
 
   getAllUsers(): Observable<User[]> {
-  return this.http.get<User[]>('/api/users');
-}
-
+    return this.http.get<User[]>('/api/users');
+  }
 }
