@@ -9,6 +9,7 @@ import { RolesComponent } from './roles/roles.component';
 import { ApplicationsComponent } from './applications/applications.component';
 import { CuApplicationComponent } from './applications/cu-application/cu-application.component';
 import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
+import { ReactiveFormsModule } from '@angular/forms';
 @NgModule({
   declarations: [],
   imports: [

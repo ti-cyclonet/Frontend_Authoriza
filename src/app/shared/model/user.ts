@@ -9,6 +9,7 @@ export interface User {
 
   rol?: {
     strName: string;
+    strDescription1: string;
   };
 
   basicData?: {

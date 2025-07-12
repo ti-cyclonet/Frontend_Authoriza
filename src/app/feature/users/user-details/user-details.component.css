@@ -1,0 +1,188 @@
+/* Barra de título */
+.card-header {
+  background-color: #6a0dad; 
+  color: white;
+  font-weight: bold;
+}
+
+/* Iconos en la barra: dorados con efecto hover */
+.card-header .btn svg,
+.card-header .btn-close {
+  fill: #FFD966;
+  color: #FFD966;
+  transition: color 0.3s, fill 0.3s;
+}
+.card-header .btn:hover svg,
+.card-header .btn-close:hover {
+  fill: #ccad33;
+  color: #ccad33;
+}
+
+/* Tabs */
+.nav-tabs .nav-link {
+  color: #6a0dad;
+}
+.nav-tabs .nav-link.active {
+  color: #ffffff;
+  background-color: #6a0dad;
+  border-color: #6a0dad #6a0dad transparent;
+}
+.nav-tabs .nav-link.active:hover {
+  color: #ccad33;
+}
+
+/* Inputs siempre con borde morado */
+.form-control, .form-select {
+  border-radius: 0.5rem;
+  border: 1px solid #6a0dad;
+  transition: background-color 0.3s;
+}
+
+/* Cuando no se edita, fondo morado muy suave */
+.not-editing .form-control, 
+.not-editing .form-select {
+  background-color: #f9f5ff;
+}
+
+/* Cuando sí se edita, fondo blanco */
+.editing .form-control, 
+.editing .form-select {
+  background-color: white;
+}
+
+/* Span simulando input solo lectura */
+.form-control-plaintext {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  color: #333;
+  background-color: #f9f5ff;
+  border: 1px solid #6a0dad;
+  border-radius: 0.5rem;
+}
+
+/* Botón guardar */
+button.btn-success {
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.5rem;
+}
+
+/* Botón cancelar edición (slash) y cerrar */
+.btn-cancel-edit, 
+.btn-close {
+  background-color: #f9f0ff;
+  color: #6a0dad;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s, color 0.3s;
+}
+.btn-cancel-edit:hover,
+.btn-close:hover {
+  background-color: #e0d6f5;
+  color: #4a0c8a;
+}
+.btn-cancel-edit svg,
+.btn-close svg {
+  fill: currentColor;
+}
+
+/* Icono rotatorio para toggle */
+.rotate-icon {
+  transition: transform 0.3s ease;
+  transform: rotate(180deg);
+}
+
+/* Textos en morado */
+.text-purple {
+  color: #6a0dad;
+}
+
+/* Etiquetas y campos en modo visual uniforme */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.form-group label {
+  height: 24px; 
+  margin-bottom: 0.25rem;
+  color: #6c757d; /* secondary */
+}
+
+/* Checkbox custom redondo */
+.form-check-input.rounded-checkbox {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 2px solid #6a0dad;
+  border-radius: 50%;
+  background-color: white;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+  position: relative;
+}
+
+.form-check-input.rounded-checkbox:checked {
+  background-color: #6a0dad;
+  border-color: #6a0dad;
+}
+
+.form-check-input.rounded-checkbox:checked::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.form-check-input.rounded-checkbox:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.status-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-right: 5px;  
+}
+.btn-fixed-width {
+  width: 150px;
+}
+.custom-btn-group {
+  padding: 5px;
+
+  /* Centrado y separación */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+input[readonly] {
+  background-color: #f8f0fa;
+  opacity: 1;
+}
+
+.form-check-label{
+  font-size: 0.9rem;
+  color: black;
+}
+
+.user-details-card {
+  animation: fadeInCard 0.4s ease-in-out;
+  border: 1px solid var(--sidebar-background-color);
+}
+.card-header {
+  background-color: var(--sidebar-background-color);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
