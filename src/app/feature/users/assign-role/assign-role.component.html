@@ -1,0 +1,93 @@
+<div class="assign-role-container">
+  <div class="row mb-3">
+    <div class="col-md-6 mb-2">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search by application"
+        [formControl]="appNameControl"
+      />
+    </div>
+    <div class="col-md-6 mb-2">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search by role name"
+        [formControl]="roleNameControl"
+      />
+    </div>
+  </div>
+  <hr style="border: 1px solid #6a0dad" />
+
+  <div class="assign-role-list">
+    <div class="assign-role-item" *ngFor="let item of pagedRoles">
+      <div class="role-info">
+        <div class="app-name">{{ item.applicationName }}</div>
+        <div class="role-name">{{ item.role.strName }}</div>
+      </div>
+      <button class="btn-assign" (click)="assignRole(item.role)">
+        <svg
+          fill="currentColor"
+          width="16"
+          height="16"
+          class="status-icon"
+          style="margin-right: 0.25rem"
+        >
+          <use xlink:href="./assets/icons/bootstrap-icons.svg#check2-circle" />
+        </svg>
+        Assign
+      </button>
+    </div>
+  </div>
+
+  <hr style="border: 1px solid #6a0dad" />
+
+  <div
+    class="btn-group custom-btn-group"
+    role="group"
+    aria-label="Action buttons"
+  >
+    <button
+      class="btn btn-outline-dark btn-sm me-4 btn-fixed-width mt-3"
+      [disabled]="page === 1"
+      (click)="page = page - 1"
+    >
+      <svg
+        fill="currentColor"
+        viewBox="0 0 16 16"
+        class="status-icon"
+        style="margin-right: 5px"
+      >
+        <use xlink:href="./assets/icons/bootstrap-icons.svg#arrow-left"></use>
+      </svg>
+      <span class="d-none d-md-inline">Previous</span>
+    </button>
+
+    <button
+      *ngIf="editing"
+      class="btn btn-outline-dark btn-sm me-4 btn-fixed-width mt-3"
+      (click)="onCancel()"
+    >
+      <svg fill="currentColor" width="16" height="16" class="status-icon">
+        <use xlink:href="./assets/icons/bootstrap-icons.svg#slash-circle"></use>
+      </svg>
+      Cancel
+    </button>
+
+    <button
+      class="btn btn-outline-dark btn-sm me-4 btn-fixed-width mt-3"
+      [disabled]="page * pageSize >= flattenedRoles.length"
+      (click)="page = page + 1"
+    >
+      <span class="d-none d-md-inline">Next</span>
+      <svg
+        fill="currentColor"
+        viewBox="0 0 16 16"
+        class="status-icon"
+        style="margin-left: 5px"
+      >
+        <use xlink:href="./assets/icons/bootstrap-icons.svg#arrow-right"></use>
+      </svg>
+    </button>
+  </div>
+</div>

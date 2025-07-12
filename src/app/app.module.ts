@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [],
@@ -12,6 +13,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
     BrowserModule,
     NoopAnimationsModule,
     RouterModule,
+    ReactiveFormsModule,
     SharedModule
   ],
   providers: [],  

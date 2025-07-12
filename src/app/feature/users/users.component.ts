@@ -3,9 +3,11 @@ import { UserService } from '../../shared/services/user/user.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { NotificationsComponent } from '../../shared/components/notifications/notifications.component';
 import { User } from '../../shared/model/user';
-
+import { AddUserModalComponent } from './add-user/add-user-modal.component';
+import { NotificationsComponent } from '../../shared/components/notifications/notifications.component';
+import { UserDetailsComponent } from './user-details/user-details.component';
+import { AssignRoleComponent } from './assign-role/assign-role.component';
 @Component({
   selector: 'app-users',
   standalone: true,
@@ -14,7 +16,10 @@ import { User } from '../../shared/model/user';
     FormsModule,
     DatePipe,
     RouterModule,
+    AddUserModalComponent,
     NotificationsComponent,
+    UserDetailsComponent,
+    AssignRoleComponent,
   ],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css'],
@@ -25,12 +30,18 @@ export class UsersComponent implements OnInit {
   pagedUsers: User[] = [];
   selectedUser: any = null;
   editingUser: boolean = false;
+  originalUser: any = null;
   dependentId: string = '';
+  createdUserId: string = '';
 
   searchTerm: string = '';
   currentPage: number = 1;
   itemsPerPage: number = 8;
   totalPages: number = 1;
+
+  showAddUserModal = false;
+  showAssignRoleModal = false;
+  showUserDetailsModal = false;
 
   // configuración notificaciones tipo toast
   toastTitle: string = '';
@@ -48,17 +59,23 @@ export class UsersComponent implements OnInit {
   constructor(
     private userService: UserService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.notifications = [];
+  }
 
   ngOnInit(): void {
-    this.loadUsers();
-    this.notifications = [];
+    this.loadUsersExcludingDependency();
   }
 
   loadUsers() {
     this.userService.getUsers().subscribe((data) => {
       this.users = data;
-      this.applyFilter();
+      this.filteredUsers = data;
+      this.totalPages = Math.ceil(
+        this.filteredUsers.length / this.itemsPerPage
+      );
+      this.goToPage(1);
+      this.cdr.detectChanges();
     });
   }
 
@@ -111,9 +128,15 @@ export class UsersComponent implements OnInit {
   }
 
   onToggleStatus(user: User) {
+    if (!user.id) {
+      this.showToast('User does not have a valid ID.', 'danger', 'B', 0);
+      return;
+    }
+
     this.userService.toggleUserStatus(user.id).subscribe({
       next: (updatedUser: User) => {
         user.strStatus = updatedUser.strStatus;
+        this.cdr.markForCheck();
         this.showToast(
           `The status of the user <b>${updatedUser.strUserName}</b> changed to <b>${updatedUser.strStatus}</b>`,
           updatedUser.strStatus === 'ACTIVE' ? 'success' : 'danger',
@@ -163,7 +186,7 @@ export class UsersComponent implements OnInit {
   }
 
   getAllUsers(): void {
-    this.userService.getAllUsers().subscribe(
+    this.userService.getUsersExcludingDependency().subscribe(
       (users) => {
         this.users = users;
         this.filteredUsers = users;
@@ -176,6 +199,56 @@ export class UsersComponent implements OnInit {
     );
   }
 
+  startEditing() {
+    this.originalUser = JSON.parse(JSON.stringify(this.selectedUser));
+    this.editingUser = true;
+  }
+
+  cancelEditing() {
+    if (this.originalUser) {
+      this.selectedUser = JSON.parse(JSON.stringify(this.originalUser));
+    }
+    this.editingUser = false;
+  }
+
+  closeUserDetails() {
+    if (this.editingUser && this.originalUser) {
+      this.selectedUser = JSON.parse(JSON.stringify(this.originalUser));
+    }
+    this.editingUser = false;
+    this.selectedUser = null;
+  }
+
+  loadUsersExcludingDependency() {
+    this.userService.getUsersExcludingDependency().subscribe({
+      next: (users) => {
+        this.users = users.sort((a, b) => {
+          const dateA = a.dtmLatestUpdateDate
+            ? new Date(a.dtmLatestUpdateDate).getTime()
+            : 0;
+          const dateB = b.dtmLatestUpdateDate
+            ? new Date(b.dtmLatestUpdateDate).getTime()
+            : 0;
+          return dateB - dateA;
+        });
+        this.applyFilter();
+      },
+      error: (error) => {
+        this.showToast('Error loading users', 'danger', 'B', 0);
+      },
+    });
+  }
+
+  openAddUserModal() {
+    this.showAddUserModal = true;
+  }
+
+  onUserCreated(user: any) {
+    this.createdUserId = user.id;
+    this.loadUsers();
+
+  }
+  
   // Funciones para NOTIFICACIONES
   addNotification(
     title: string,
