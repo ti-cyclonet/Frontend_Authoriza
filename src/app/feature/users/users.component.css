@@ -113,16 +113,7 @@ table td {
 .status-toggle:hover {
   text-decoration: underline;
 }
-.user-details-card {
-  animation: fadeInCard 0.4s ease-in-out;
-  border: 1px solid var(--sidebar-background-color);
-}
-.card-header {
-  background-color: var(--sidebar-background-color);
-  color: #fff;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem 0.5rem 0 0;
-}
+
 
 @keyframes fadeInCard {
   from {
@@ -187,33 +178,102 @@ table td {
 
 /* Estilos para las notificaciones */
 /* ------------------------------- */
-.notification-container {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  width: auto;
-  background-color: transparent;
-  border-radius: 5px;
-  z-index: 1000;
-  padding: 5px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  .notification-container {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: auto; 
+    background-color: transparent;
+    border-radius: 5px;
+    z-index: 1000;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; 
+  }
+
+  .notification-container-1 {
+    position: fixed;
+    top: 62px;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    background-color: transparent;
+    border-radius: 5px;
+    z-index: 1050;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px; 
+  }
+/* ------------------------------- */
+
+.card-header {
+  background-color: #6a0dad;
+  color: white;
+  font-weight: bold;
 }
 
-.notification-container-1 {
-  position: fixed;
-  top: 62px;
-  left: 0;
-  right: 0;
-  width: 100vw;
-  background-color: transparent;
-  border-radius: 5px;
-  z-index: 1050;
-  padding: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+/* Iconos en la barra: dorado claro con hover */
+.card-header .btn svg,
+.card-header .btn-close-custom svg {
+  fill: #FFE680;
+  color: #FFE680;
+  transition: color 0.3s, fill 0.3s;
 }
-/* ------------------------------- */
+
+.card-header .btn:hover svg,
+.card-header .btn-close-custom:hover svg {
+  fill: #ccad33;
+  color: #ccad33;
+}
+
+/* Botón cancelar edición y cerrar con fondo morado claro */
+.btn-cancel-edit,
+.btn-close-custom {
+  color: #6a0dad;
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.btn-cancel-edit:hover,
+.btn-close-custom:hover {  
+  color: #e0d6f5;
+}
+
+/* Asegura que el svg tome el color dinámico */
+.btn-cancel-edit svg,
+.btn-close-custom svg {
+  fill: currentColor;
+}
+/* Icono cerrar un poco más grande */
+.btn-close-custom svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Botón cancelar edición (slash) y cerrar */
+.btn-cancel-edit, 
+.btn-close {
+  background-color: #f9f0ff;
+  color: #6a0dad;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s, color 0.3s;
+}
+.btn-cancel-edit:hover,
+.btn-close:hover {
+  background-color: #e0d6f5;
+  color: #4a0c8a;
+}
+.btn-cancel-edit svg,
+.btn-close svg {
+  fill: currentColor;
+}
+
+/* Icono rotatorio para toggle */
+.rotate-icon {
+  transition: transform 0.3s ease;
+  transform: rotate(180deg);
+}
