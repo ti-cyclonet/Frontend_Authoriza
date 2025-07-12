@@ -10,7 +10,6 @@ import { environment } from '../../../../environments/environment';
 })
 export class AuthService {
   private apiUrl = environment.apiBaseUrl + '/api/auth/login';
-  // private apiUrl = 'https://backend-authoriza.onrender.com/api/auth/login';
 
   constructor(
     private http: HttpClient,
@@ -19,16 +18,21 @@ export class AuthService {
   ) {}
 
   login(credentials: { email: string; password: string }): Observable<any> {
-    return this.http.post<{ access_token: string; email: string; name: string; rol: string; image: string }>(
-      this.apiUrl,
-      credentials      
-    ).pipe(
-      tap(response => { 
-        if (isPlatformBrowser(this.platformId)) {
-          this.setUserSession(response);
-        }
-      })
-    );
+    return this.http
+      .post<{
+        access_token: string;
+        email: string;
+        name: string;
+        rol: string;
+        image: string;
+      }>(this.apiUrl, credentials)
+      .pipe(
+        tap((response) => {
+          if (isPlatformBrowser(this.platformId)) {            
+            this.setUserSession(response);
+          }
+        })
+      );
   }
 
   setUserSession(userData: any): void {
@@ -38,8 +42,18 @@ export class AuthService {
       sessionStorage.setItem('user_email', userData.user.email);
       sessionStorage.setItem('user_name', userData.user.name);
       sessionStorage.setItem('user_rol', userData.user.rol);
-      sessionStorage.setItem('user_rolDescription', userData.user.rolDescription);
+      sessionStorage.setItem(
+        'user_rolDescription',
+        userData.user.rolDescription
+      );
       sessionStorage.setItem('user_image', userData.user.image);
+
+      if (userData.user.firstName)
+        sessionStorage.setItem('user_firstName', userData.user.firstName);
+      if (userData.user.secondName)
+        sessionStorage.setItem('user_secondName', userData.user.secondName);
+      if (userData.user.businessName)
+        sessionStorage.setItem('user_businessName', userData.user.businessName);
     }
   }
 

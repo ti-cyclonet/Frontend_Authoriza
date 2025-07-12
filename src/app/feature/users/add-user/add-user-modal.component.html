@@ -1,0 +1,181 @@
+<div class="modal-backdrop show"></div>
+<div class="modal d-block fade show" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="card shadow-sm user-details-card">
+        <div
+          class="card-header d-flex justify-content-between align-items-center"
+          style="background-color: #6900d1; color: white"
+        >
+          Creatting a new user
+          <button
+            type="button"
+            class="btn-close"
+            (click)="close.emit()"
+          ></button>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <form
+          *ngIf="currentStep === 1"
+          [formGroup]="userForm"
+          (ngSubmit)="createUser()"
+        >
+          <h6>User Data</h6>
+          <input
+            formControlName="strUserName"
+            placeholder="Email"
+            class="form-control mb-1"
+          />
+          <div
+            class="text-danger mb-2"
+            *ngIf="userForm.get('strUserName')?.touched && userForm.get('strUserName')?.errors?.['taken']"
+          >
+            This email is unavailable. Please try another.
+          </div>
+          <div
+            *ngIf="userForm.get('strUserName')?.touched && userForm.get('strUserName')?.errors?.['required']"
+            class="text-danger small mb-2"
+          >
+            This field is required
+          </div>
+          <div
+            *ngIf="userForm.get('strUserName')?.touched && userForm.get('strUserName')?.errors?.['email']"
+            class="text-danger small mb-2"
+          >
+            The email format is not valid.
+          </div>
+
+          <input
+            formControlName="strPassword"
+            placeholder="Password"
+            type="password"
+            class="form-control mb-2"
+          />
+          <button
+            class="btn btn-primary"
+            type="submit"
+            [disabled]="userForm.invalid"
+          >
+            Next
+          </button>
+        </form>
+
+        <form
+          *ngIf="currentStep === 2"
+          [formGroup]="basicDataForm"
+          (ngSubmit)="createBasicData()"
+        >
+          <h6>Basic data</h6>
+          <select formControlName="strPersonType" class="form-select mb-2">
+            <option value="N">Natural Person</option>
+            <option value="J">Legal Entity</option>
+          </select>
+          <button
+            class="btn btn-secondary me-2"
+            (click)="prevStep()"
+            type="button"
+          >
+            Previous
+          </button>
+          <button class="btn btn-primary" type="submit">Next</button>
+        </form>
+
+        <form
+          *ngIf="currentStep === 3 && basicDataForm.value.strPersonType === 'N'"
+          [formGroup]="naturalForm"
+          (ngSubmit)="finish()"
+        >
+          <h6>Natural Person Data</h6>
+          <input
+            formControlName="firstName"
+            placeholder="First name"
+            class="form-control mb-2"
+          />
+          <input
+            formControlName="secondName"
+            placeholder="Second name"
+            class="form-control mb-2"
+          />
+          <input
+            formControlName="firstSurname"
+            placeholder="First surname"
+            class="form-control mb-2"
+          />
+          <input
+            formControlName="secondSurname"
+            placeholder="Second surname"
+            class="form-control mb-2"
+          />
+          <input
+            type="date"
+            formControlName="birthDate"
+            class="form-control mb-2"
+          />
+          <input
+            formControlName="maritalStatus"
+            placeholder="Marital Status"
+            class="form-control mb-2"
+          />
+          <input
+            formControlName="sex"
+            placeholder="Sex"
+            class="form-control mb-2"
+          />
+          <button
+            class="btn btn-secondary me-2"
+            (click)="prevStep()"
+            type="button"
+          >
+            Previous
+          </button>
+          <button class="btn btn-success" type="submit">Finalizar</button>
+        </form>
+
+        <form
+          *ngIf="currentStep === 3 && basicDataForm.value.strPersonType === 'J'"
+          [formGroup]="legalForm"
+          (ngSubmit)="finish()"
+        >
+          <h6>Legal Entity Data</h6>
+          <input
+            formControlName="businessName"
+            placeholder="Bussiness name"
+            class="form-control mb-2"
+          />
+          <input
+            formControlName="webSite"
+            placeholder="Web site"
+            class="form-control mb-2"
+          />
+          <input
+            formControlName="contactEmail"
+            placeholder="Contact email"
+            class="form-control mb-2"
+          />
+          <input
+            formControlName="contactPhone"
+            placeholder="Contact phone"
+            class="form-control mb-2"
+          />
+          <button
+            class="btn btn-secondary me-2"
+            (click)="prevStep()"
+            type="button"
+          >
+            Previous
+          </button>
+          <button class="btn btn-success" type="submit">Send</button>
+        </form>
+
+        <div *ngIf="currentStep === 4 && createdUserId">
+          <app-assign-role-modal
+            [userId]="createdUserId"
+            (roleAssigned)="onRoleAssigned()"
+          ></app-assign-role-modal>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
