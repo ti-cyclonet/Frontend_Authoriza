@@ -54,8 +54,7 @@ export class ApplicationsService {
   private baseApiUrl = environment.apiBaseUrl;
 
   private applicationUrl = this.baseApiUrl + '/api/applications';
-  private validateNameUrl = this.baseApiUrl + '/api/applications/check-name';  
-  private getApplicationByIdUrl = this.baseApiUrl + '/api/getapplicationbyid';
+  private validateNameUrl = this.baseApiUrl + '/api/applications/check-name';
 
   public editMode: boolean = false;
   public idApplication: string = '';
@@ -288,7 +287,7 @@ export class ApplicationsService {
   // ===================
 
   getApplicationById(id: string): Observable<Application> {
-    return this.http.get<Application>(`${this.getApplicationByIdUrl}/${id}`);
+    return this.http.get<Application>(`${this.applicationUrl}/${id}`);
   }
 
   getApplications(
@@ -390,11 +389,11 @@ export class ApplicationsService {
   }
 
   deleteApplication(id: string): Observable<any> {
-    return this.http.delete(`${this.envService.apiBaseUrl}/applications/${id}`);
+    return this.http.delete(`${this.applicationUrl}/${id}`);
   }
 
   updateApplication(id: string, applicationData: FormData): Observable<any> {
-    const updateUrl = `${this.envService.apiBaseUrl}/applications/${id}`;
+    const updateUrl = `${this.applicationUrl}/${id}`;
     return this.http.patch<any>(updateUrl, applicationData).pipe(
       map((response) => {
         this.loadApplications();
