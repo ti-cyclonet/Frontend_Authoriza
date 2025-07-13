@@ -203,52 +203,53 @@ export class ApplicationsComponent implements OnInit {
   }
 
   // Funciones para NOTIFICACIONES
-  addNotification(
-    title: string,
-    type: 'success' | 'warning' | 'danger' | 'primary',
-    alertType: 'A' | 'B',
-    container: 0 | 1
-  ) {
-    this.notifications.push({
-      title,
-      type,
-      alertType,
-      container,
-      visible: true,
-    });
-  }
-
-  removeNotification(index: number) {
-    this.notifications.splice(index, 1);
-  }
-
-  getIconColor() {
-    return 'var(--header-background-color)';
-  }
-
-  showToast(
-    message: string,
-    type: 'success' | 'warning' | 'danger' | 'primary',
-    alertType: 'A' | 'B',
-    container: 0 | 1
-  ) {
-    const notification = {
-      title: message,
-      type,
-      alertType,
-      container,
-      visible: true,
-    };
-    this.notifications.push(notification);
-    this.cdr.detectChanges();
-
-    if (alertType === 'A') {
-      setTimeout(() => {
-        notification.visible = false;
-        this.cdr.detectChanges();
-      }, 5000);
+  // -------------------------------------------
+    addNotification(
+      title: string,
+      type: 'success' | 'warning' | 'danger' | 'primary',
+      alertType: 'A' | 'B',
+      container: 0 | 1
+    ) {
+      this.notifications.push({
+        title,
+        type,
+        alertType,
+        container,
+        visible: true,
+      });
     }
-  }
+
+    removeNotification(index: number) {
+      this.notifications.splice(index, 1);
+    }
+
+    getIconColor() {
+      return 'var(--header-background-color)';
+    }
+
+    showToast(
+      message: string,
+      type: 'success' | 'warning' | 'danger' | 'primary',
+      alertType: 'A' | 'B',
+      container: 0 | 1
+    ) {
+      const notification = {
+        title: message,
+        type,
+        alertType,
+        container,
+        visible: true,
+      };
+      this.notifications.push(notification);
+      this.cdr.detectChanges();
+
+      if (alertType === 'A') {
+        setTimeout(() => {
+          notification.visible = false;
+          this.cdr.detectChanges();
+        }, 5000);
+      }
+    }
   // ----------------------------------------------
 
   get selectedFile() {

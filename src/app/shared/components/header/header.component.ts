@@ -83,7 +83,10 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      this.userName = sessionStorage.getItem('user_name');
+      const firstName = sessionStorage.getItem('user_firstName');
+      const secondName = sessionStorage.getItem('user_secondName');
+      const businessName = sessionStorage.getItem('user_businessName');
+      this.userName = businessName ? businessName : `${firstName ?? ''} ${secondName ?? ''}`.trim();
       this.userEmail = sessionStorage.getItem('user_email');
       this.userRol = sessionStorage.getItem('user_rol');
       this.userRolDescription = sessionStorage.getItem('user_rolDescription');
@@ -138,7 +141,6 @@ export class HeaderComponent implements OnInit {
 
             // Resetear formulario
             this.form.reset();
-            
           },
           error: (err: any) => {
             this.showToast('Error: ' + err.error.message, 'danger', 'A', 1);

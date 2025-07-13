@@ -1,0 +1,455 @@
+<div class="modal-backdrop show"></div>
+<div class="modal d-block fade show" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="card shadow-sm user-details-card">
+        <div
+          class="card-header d-flex justify-content-between align-items-center"
+          style="background-color: #6900d1; color: white"
+        >
+          User Details: <span class="fw-bold">{{ user.strUserName }}</span>
+        </div>
+        <!-- Contenedor flotante (derecha) -->
+        <div class="notification-container">
+          <ng-container
+            *ngFor="let notification of notifications; let i = index"
+          >
+            <app-notifications
+              *ngIf="notification.container === 0 && notification.visible"
+              [title]="notification.title"
+              [type]="notification.type"
+              [alertType]="notification.alertType"
+              (close)="removeNotification(i)"
+            ></app-notifications>
+          </ng-container>
+        </div>
+
+        <!-- Contenedor superior -->
+        <div class="notification-container-1 p-1 w-100">
+          <ng-container
+            *ngFor="let notification of notifications; let i = index"
+          >
+            <app-notifications
+              *ngIf="notification.container === 1 && notification.visible"
+              [title]="notification.title"
+              [type]="notification.type"
+              [alertType]="notification.alertType"
+              (close)="removeNotification(i)"
+            ></app-notifications>
+          </ng-container>
+        </div>
+        <div class="w-100">
+          <app-assign-role-modal
+            *ngIf="showAssignRole"
+            [userId]="user.id"
+            [editing]="true"
+            (roleAssigned)="onRoleAssigned($event)"
+            (close)="showAssignRole = false"
+          ></app-assign-role-modal>
+
+          <div *ngIf="!showAssignRole">
+            <div class="card-body">
+              <ul class="nav nav-tabs" style="border-bottom: 1px solid #6a0dad">
+                <li class="nav-item">
+                  <a
+                    class="nav-link"
+                    [class.active]="activeTab === 'BasicData'"
+                    (click)="activeTab = 'BasicData'"
+                  >
+                    Basic User Data
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a
+                    class="nav-link"
+                    [class.active]="activeTab === 'GeneralData'"
+                    (click)="activeTab = 'GeneralData'"
+                  >
+                    General User Data
+                  </a>
+                </li>
+                <li class="nav-item ms-auto">
+                  <div
+                    class="col-12 mb-3"
+                    style="
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: space-between;
+                    "
+                  >
+                    <div class="d-flex gap-4">
+                      <!-- <label class="mb-2 text-dark" style="font-size: 11px; font-weight: bold;">Person Type</label> -->
+                      <div class="d-flex ms-auto pl-2 pr-2 gap-4">
+                        <div class="form-check">
+                          <input
+                            class="form-check-input rounded-checkbox"
+                            type="radio"
+                            name="personType"
+                            id="personTypeN"
+                            [checked]="user.basicData.strPersonType === 'N'"
+                            (change)="
+                              user.basicData.strPersonType = 'N';
+                              detectChanges()
+                            "
+                            disabled
+                          />
+                          <label class="form-check-label" for="personTypeN"
+                            >Natural</label
+                          >
+                        </div>
+                        <div class="form-check">
+                          <input
+                            class="form-check-input rounded-checkbox"
+                            type="radio"
+                            name="personType"
+                            id="personTypeJ"
+                            [checked]="user.basicData.strPersonType === 'J'"
+                            (change)="
+                              user.basicData.strPersonType = 'J';
+                              detectChanges()
+                            "
+                            disabled
+                          />
+                          <label class="form-check-label" for="personTypeJ"
+                            >Juridical</label
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+
+              <!-- BASIC DATA -->
+              <div class="mt-3" *ngIf="activeTab === 'BasicData'">
+                <div class="row">
+                  <div class="col-md-6 mb-2 form-group">
+                    <label>Username</label>
+                    <span class="form-control-plaintext">{{
+                      user.strUserName
+                    }}</span>
+                  </div>
+
+                  <div class="col-md-6 mb-2 form-group">
+                    <label>Last Update</label>
+                    <span class="form-control-plaintext">
+                      {{
+                        user.dtmLatestUpdateDate | date : "yyyy-MM-dd HH:mm:ss"
+                      }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <!-- Role Name with Update button -->
+                  <div class="col-md-6 mb-3 form-group">
+                    <label>Role Assigned</label>
+                    <div class="input-group">
+                      <input
+                        type="text"
+                        class="form-control"
+                        [value]="user.rol?.strName || 'No Role Assigned'"
+                        disabled
+                      />
+                      <button
+                        class="btn btn-outline-secondary"
+                        type="button"
+                        (click)="openAssignRoleModal()"
+                        title="Change Role"
+                      >
+                        <svg
+                          fill="currentColor"
+                          width="16"
+                          height="16"
+                          class="status-icon"
+                          style="color: var(--sidebar-background-color)"
+                        >
+                          <use
+                            xlink:href="./assets/icons/bootstrap-icons.svg#arrow-clockwise"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- User Dependency with Update button -->
+                  <div class="col-md-6 mb-3 form-group">
+                    <label>User Dependency</label>
+                    <div class="input-group">
+                      <input
+                        type="text"
+                        class="form-control"
+                        [value]="
+                          user.dependentOn?.strUserName || 'No Dependency'
+                        "
+                        disabled
+                      />
+                      <button
+                        class="btn btn-outline-secondary"
+                        type="button"
+                        title="Change Dependency"
+                      >
+                        <svg
+                          fill="currentColor"
+                          width="16"
+                          height="16"
+                          class="status-icon"
+                          style="color: var(--sidebar-background-color)"
+                        >
+                          <use
+                            xlink:href="./assets/icons/bootstrap-icons.svg#arrow-clockwise"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- GENERAL DATA -->
+              <div class="mt-3" *ngIf="activeTab === 'GeneralData'">
+                <!-- Natural -->
+                <div *ngIf="user.basicData.strPersonType === 'N'">
+                  <div class="row">
+                    <div class="col-md-6 mb-2 form-group">
+                      <label>First Name</label>
+                      <ng-container *ngIf="!editingUser; else editFirstName">
+                        <span
+                          class="form-control-plaintext"
+                          style="height: 38px !important"
+                        >
+                          {{ user.basicData.naturalPersonData.firstName }}
+                        </span>
+                      </ng-container>
+                      <ng-template #editFirstName>
+                        <input
+                          class="form-control"
+                          [(ngModel)]="
+                            user.basicData.naturalPersonData.firstName
+                          "
+                          (ngModelChange)="detectChanges()"
+                        />
+                      </ng-template>
+                    </div>
+                    <div class="col-md-6 mb-2 form-group">
+                      <label>Second Name</label>
+                      <ng-container *ngIf="!editingUser; else editSecondName">
+                        <span
+                          class="form-control-plaintext"
+                          style="height: 38px !important"
+                        >
+                          {{ user.basicData.naturalPersonData.secondName }}
+                        </span>
+                      </ng-container>
+                      <ng-template #editSecondName>
+                        <input
+                          class="form-control"
+                          [(ngModel)]="
+                            user.basicData.naturalPersonData.secondName
+                          "
+                          (ngModelChange)="detectChanges()"
+                        />
+                      </ng-template>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-2 form-group">
+                      <label>First Surname</label>
+                      <ng-container *ngIf="!editingUser; else editFirstSurname">
+                        <span
+                          class="form-control-plaintext"
+                          style="height: 38px !important"
+                        >
+                          {{ user.basicData.naturalPersonData.firstSurname }}
+                        </span>
+                      </ng-container>
+                      <ng-template #editFirstSurname>
+                        <input
+                          class="form-control"
+                          [(ngModel)]="
+                            user.basicData.naturalPersonData.firstSurname
+                          "
+                          (ngModelChange)="detectChanges()"
+                        />
+                      </ng-template>
+                    </div>
+                    <div class="col-md-6 mb-2 form-group">
+                      <label>Second Surname</label>
+                      <ng-container
+                        *ngIf="!editingUser; else editSecondSurname"
+                      >
+                        <span
+                          class="form-control-plaintext"
+                          style="height: 38px !important"
+                        >
+                          {{ user.basicData.naturalPersonData.secondSurname }}
+                        </span>
+                      </ng-container>
+                      <ng-template #editSecondSurname>
+                        <input
+                          class="form-control"
+                          [(ngModel)]="
+                            user.basicData.naturalPersonData.secondSurname
+                          "
+                          (ngModelChange)="detectChanges()"
+                        />
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Juridical -->
+                <div *ngIf="user.basicData.strPersonType === 'J'">
+                  <div class="row">
+                    <div class="col-md-6 mb-2 form-group">
+                      <label>Business Name</label>
+                      <ng-container *ngIf="!editingUser; else editBusinessName">
+                        <span
+                          class="form-control-plaintext"
+                          style="height: 38px !important"
+                        >
+                          {{ user.basicData.legalEntityData.businessName }}
+                        </span>
+                      </ng-container>
+                      <ng-template #editBusinessName>
+                        <input
+                          class="form-control"
+                          [(ngModel)]="
+                            user.basicData.legalEntityData.businessName
+                          "
+                          (ngModelChange)="detectChanges()"
+                        />
+                      </ng-template>
+                    </div>
+                    <div class="col-md-6 mb-2 form-group">
+                      <label>Website</label>
+                      <ng-container *ngIf="!editingUser; else editWebsite">
+                        <span
+                          class="form-control-plaintext"
+                          style="height: 38px !important"
+                        >
+                          {{ user.basicData.legalEntityData.webSite }}
+                        </span>
+                      </ng-container>
+                      <ng-template #editWebsite>
+                        <input
+                          class="form-control"
+                          [(ngModel)]="user.basicData.legalEntityData.webSite"
+                          (ngModelChange)="detectChanges()"
+                        />
+                      </ng-template>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-2 form-group">
+                      <label>Contact Email</label>
+                      <ng-container *ngIf="!editingUser; else editContactEmail">
+                        <span
+                          class="form-control-plaintext"
+                          style="height: 38px !important"
+                        >
+                          {{ user.basicData.legalEntityData.contactEmail }}
+                        </span>
+                      </ng-container>
+                      <ng-template #editContactEmail>
+                        <input
+                          class="form-control"
+                          [(ngModel)]="
+                            user.basicData.legalEntityData.contactEmail
+                          "
+                          (ngModelChange)="detectChanges()"
+                        />
+                      </ng-template>
+                    </div>
+                    <div class="col-md-6 mb-2 form-group">
+                      <label>Contact Phone</label>
+                      <ng-container *ngIf="!editingUser; else editContactPhone">
+                        <span
+                          class="form-control-plaintext"
+                          style="height: 38px !important"
+                        >
+                          {{ user.basicData.legalEntityData.contactPhone }}
+                        </span>
+                      </ng-container>
+                      <ng-template #editContactPhone>
+                        <input
+                          class="form-control"
+                          [(ngModel)]="
+                            user.basicData.legalEntityData.contactPhone
+                          "
+                          (ngModelChange)="detectChanges()"
+                        />
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <hr style="border: 1px solid #6a0dad" />
+              <div
+                class="btn-group custom-btn-group"
+                role="group"
+                aria-label="Action buttons"
+              >
+                <button
+                  class="btn btn-outline-dark btn-sm me-4 btn-fixed-width mt-3"
+                  [disabled]="user.strStatus !== 'TEMPORARY'"
+                  (click)="saveChanges()"
+                >
+                  <svg
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                    class="status-icon"
+                  >
+                    <use
+                      xlink:href="./assets/icons/bootstrap-icons.svg#floppy2-fill"
+                    ></use>
+                  </svg>
+                  <span class="d-none d-md-inline">Save changes</span>
+                </button>
+                <button
+                  class="btn btn-outline-dark btn-sm me-4 btn-fixed-width mt-3"
+                  (click)="toggleEditing()"
+                  [title]="editingUser ? 'Cancel edit' : 'Edit user'"
+                  [ngClass]="editingUser ? 'btn-cancel-edit' : ''"
+                >
+                  <svg
+                    *ngIf="!editingUser"
+                    fill="currentColor"
+                    width="16"
+                    height="16"
+                    class="status-icon"
+                  >
+                    <use
+                      xlink:href="./assets/icons/bootstrap-icons.svg#pencil"
+                    />
+                  </svg>
+                  <svg
+                    *ngIf="editingUser"
+                    fill="currentColor"
+                    width="16"
+                    height="16"
+                    class="status-icon"
+                  >
+                    <use
+                      xlink:href="./assets/icons/bootstrap-icons.svg#slash-circle"
+                    />
+                  </svg>
+                  <span class="d-none d-md-inline">
+                    {{ editingUser ? "Cancel edit" : "Edit user" }}
+                  </span>
+                </button>
+
+                <button
+                  class="btn btn-outline-dark btn-sm me-4 btn-fixed-width mt-3"
+                  (click)="cancelChanges()"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

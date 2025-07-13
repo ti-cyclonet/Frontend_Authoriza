@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { User } from '../../model/user';
 import { environment } from '../../../../environments/environment';
+import { CreateFullUser } from '../../model/createfulluser';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +16,47 @@ export class UserService {
   public users$ = this.usersSubject.asObservable();
 
   constructor(private http: HttpClient) {}
+
+  // Crear nuevo usuario
+  createUser(user: any): Observable<any> {
+    return this.http.post<any>(`${this.userUrl}`, user);
+  }
+
+  createFullUser(data: CreateFullUser): Observable<any> {
+    return this.http.post(`${this.userUrl}/full`, data);
+  }
+
+  checkUserNameAvailability(
+    userName: string
+  ): Observable<{ available: boolean }> {
+    return this.http.get<{ available: boolean }>(
+      `${this.userUrl}/check-username/${encodeURIComponent(userName)}`
+    );
+  }
+
+  // Crear datos básicos asociados a un usuario
+  createBasicData(userId: string, basicData: any): Observable<any> {
+    return this.http.post<any>(
+      `${this.baseApiUrl}/api/basic-data/${userId}`,
+      basicData
+    );
+  }
+
+  // Crear datos de persona natural
+  createNaturalPersonData(data: any): Observable<any> {
+    return this.http.post<any>(
+      `${this.baseApiUrl}/api/natural-person-data`,
+      data
+    );
+  }
+
+  // Crear datos de persona jurídica
+  createLegalEntityData(data: any): Observable<any> {
+    return this.http.post<any>(
+      `${this.baseApiUrl}/api/legal-entity-data`,
+      data
+    );
+  }
 
   // Obtener todos los usuarios
   getUsers(): Observable<any[]> {
@@ -40,7 +82,7 @@ export class UserService {
     oldPassword: string,
     newPassword: string
   ): Observable<any> {
-    return this.http.post(`/api/users/${userId}/change-password`, {
+    return this.http.post(`${this.userUrl}/${userId}/change-password`, {
       oldPassword,
       newPassword,
     });
@@ -79,5 +121,20 @@ export class UserService {
 
   getAllUsers(): Observable<User[]> {
     return this.http.get<User[]>('/api/users');
+  }
+
+  getUsersExcludingDependency(): Observable<User[]> {
+    const userId = sessionStorage.getItem('user_id');
+    return this.http.get<User[]>(
+      `${this.userUrl}/without-dependency/${userId}`
+    );
+  }
+
+  assignRoleToUser(userId: string, roleId: string): Observable<any> {
+    return this.http.post(`${this.userUrl}/${userId}/assign-role`, { roleId });
+  }
+
+  removeAllRoles(userId: string): Observable<any> {
+    return this.http.delete(`${this.userUrl}/${userId}/roles`);
   }
 }
