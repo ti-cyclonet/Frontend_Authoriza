@@ -32,14 +32,14 @@ export class RolesService {
     if (appName && roleName) {
       return this.http
         .get<any>(
-          `${this.baseApiUrl}/api/applications/${appName}/rol/${roleName}`
+          `${this.searchRolesUrlApp}/${appName}/rol/${roleName}`
         )
         .pipe(map((res) => res.strRoles as Rol[]));
     }
 
     if (appName) {
       return this.http
-        .get<any>(`${this.baseApiUrl}/api/applications/${appName}`)
+        .get<any>(`${this.searchRolesUrlApp}/${appName}`)
         .pipe(
           map((res) => {
             // construimos un Rol[] falso con solo el nombre para llenar la tabla
@@ -68,6 +68,6 @@ export class RolesService {
   }
 
   getAllApplicationsWithRoles() {
-    return this.http.get<ApplicationWithRoles[]>('/api/applications');
+    return this.http.get<ApplicationWithRoles[]>(`${this.searchRolesUrlApp}`);
   }
 }
