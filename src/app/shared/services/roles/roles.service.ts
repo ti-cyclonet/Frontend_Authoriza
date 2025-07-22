@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { Rol } from '../../model/rol';
 import { ApplicationWithRoles } from '../../model/application-with-roles';
+import { Application } from '../../model/application.model';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +13,8 @@ import { ApplicationWithRoles } from '../../model/application-with-roles';
 export class RolesService {
   private rolesSubject = new BehaviorSubject<any[]>([]);
   public roles$ = this.rolesSubject.asObservable();
+
+  applications: Application[] = [];
 
   private baseApiUrl = environment.apiBaseUrl;
   private validateNameUrl = this.baseApiUrl + '/api/roles/check-name';

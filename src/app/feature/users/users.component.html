@@ -41,18 +41,6 @@
         role="group"
         aria-label="Action buttons"
       >
-        <!-- <a title="Save" class="btn btn-sm btn-light">
-          <svg
-            fill="currentColor"
-            viewBox="0 0 16 16"
-            style="width: 1rem; height: 1rem"
-            class="title-icon"
-          >
-            <use
-              xlink:href="./assets/icons/bootstrap-icons.svg#floppy2-fill"
-            ></use>
-          </svg>
-        </a> -->
         <button
           title="Add new user"
           class="btn btn-sm btn-light"
@@ -202,9 +190,9 @@
         <tr class="table-light">
           <th class="text-center">Id</th>
           <th class="text-center d-none d-lg-block">User Name</th>
-          <th class="text-center">Email</th>
-          <th class="text-center d-none d-lg-block">Person Type</th>
-          <th class="text-center">Rol</th>
+          <th class="text-center">Name</th>
+          <th class="text-center">Application</th>
+          <th class="text-center">Role</th>
           <th class="text-center">State</th>
           <th class="text-center d-none d-lg-block">Update date</th>
           <th class="text-center">Actions</th>
@@ -222,16 +210,20 @@
               >{{ user.id }}</span
             >
           </td>
-          <td class="d-none d-lg-block">{{ user.strUserName }}</td>
-          <td>{{ user.strUserName || "-" }}</td>
-          <td class="text-center d-none d-lg-block">
-            {{
-              user.basicData?.strPersonType === "N"
-                ? "Natural"
-                : user.basicData?.strPersonType === "J"
-                ? "Legal"
-                : "-"
-            }}
+          <td class="d-none d-lg-block">
+            {{ user.strUserName }}
+            <span
+              *ngIf="(user.dependentCount ?? 0) > 0"
+              class="badge rounded-pill bg-primary ms-2"
+              title="Dependent users"
+            >
+              {{ user.dependentCount }}
+            </span>
+          </td>
+
+          <td>{{ getFullName(user) }}</td>
+          <td class="text-center">
+            {{ getApplicationName(user).toUpperCase() }}
           </td>
           <td class="text-center">{{ user.rol?.strDescription1 || "-" }}</td>
           <td class="text-center">
@@ -345,6 +337,7 @@
     <app-user-details
       *ngIf="selectedUser"
       [user]="selectedUser"
+      [usersList]="users"
       (cancel)="closeUserDetails()"
     ></app-user-details>
 
@@ -355,6 +348,5 @@
       (userCreated)="onUserCreated($event)"
     >
     </app-add-user-modal>
-    
   </div>
 </div>

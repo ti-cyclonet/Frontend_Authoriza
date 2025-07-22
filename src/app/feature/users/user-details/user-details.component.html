@@ -39,6 +39,7 @@
           </ng-container>
         </div>
         <div class="w-100">
+          <!-- mostrar assign-role si está activado -->
           <app-assign-role-modal
             *ngIf="showAssignRole"
             [userId]="user.id"
@@ -47,7 +48,18 @@
             (close)="showAssignRole = false"
           ></app-assign-role-modal>
 
-          <div *ngIf="!showAssignRole">
+          <!-- Mostrar assign-dependency si está activado -->
+
+            <app-assign-dependency
+              *ngIf="showAssignDependency"
+              [currentUser]="user"
+              (dependencyAssigned)="onDependencySelected($event)"
+              (modalClosed)="cancelAssignDependency()"
+            ></app-assign-dependency>
+
+
+          <!-- Mostrar tabs y datos solo si NO está activando dependencia -->
+          <div *ngIf="!showAssignRole && !showAssignDependency">
             <div class="card-body">
               <ul class="nav nav-tabs" style="border-bottom: 1px solid #6a0dad">
                 <li class="nav-item">
@@ -188,6 +200,7 @@
                         class="btn btn-outline-secondary"
                         type="button"
                         title="Change Dependency"
+                        (click)="showAssignDependency = true"
                       >
                         <svg
                           fill="currentColor"
