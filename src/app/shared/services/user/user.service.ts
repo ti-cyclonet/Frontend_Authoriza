@@ -59,8 +59,8 @@ export class UserService {
   }
 
   // Obtener todos los usuarios
-  getUsers(): Observable<any[]> {
-    return this.http.get<any[]>(this.userUrl);
+  getUsers(): Observable<User[]> {
+    return this.http.get<User[]>(this.userUrl);
   }
 
   // Cargar usuarios y actualizar el BehaviorSubject
@@ -120,7 +120,7 @@ export class UserService {
   }
 
   getAllUsers(): Observable<User[]> {
-    return this.http.get<User[]>('/api/users');
+    return this.http.get<User[]>(`${this.userUrl}`);
   }
 
   getUsersExcludingDependency(): Observable<User[]> {
@@ -132,6 +132,12 @@ export class UserService {
 
   assignRoleToUser(userId: string, roleId: string): Observable<any> {
     return this.http.post(`${this.userUrl}/${userId}/assign-role`, { roleId });
+  }
+
+  assignDependency(userId: string, dependentOnId: string): Observable<any> {
+    return this.http.put(`${this.userUrl}/${userId}`, {
+      dependentOnId,
+    });
   }
 
   removeAllRoles(userId: string): Observable<any> {

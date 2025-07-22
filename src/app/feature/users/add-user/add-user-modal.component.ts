@@ -180,7 +180,14 @@ export class AddUserModalComponent {
     this.userService.createFullUser(dto).subscribe({
       next: (createdUser) => {
         this.createdUserId = createdUser?.id;
-        this.nextStep();
+        Swal.fire({
+          icon: 'success',
+          title: 'Usuario creado',
+          text: 'El usuario ha sido creado exitosamente.',
+          confirmButtonText: 'Continuar'
+        }).then(() => {
+          this.nextStep();
+        });
       },
       error: (err) => {
         this.userCreated.emit({

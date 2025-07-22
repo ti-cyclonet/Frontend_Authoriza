@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { Application } from '../../model/application.model';
 import { Rol } from '../../model/rol';
 import { MenuOption } from '../../model/menu_option';
@@ -329,15 +329,13 @@ export class ApplicationsService {
     this.applicationsSubject.next(updatedApps);
   }
 
-  loadApplications(): void {
-    this.getApplications(10, 0).subscribe({
-      next: (applications) => {
-        this.applicationsSubject.next(applications);
-      },
-      error: (error) => {
+  loadApplications(): Observable<Application[]> {
+    return this.getApplications(10, 0).pipe(
+      catchError((error) => {
         console.error('Error loading applications.', error);
-      },
-    });
+        return throwError(() => error);
+      })
+    );
   }
 
   checkApplicationName(strName: string): Observable<boolean> {
@@ -411,8 +409,11 @@ export class ApplicationsService {
   }
 
   // Obtener una aplicación y sus opciones de menú por nombre de aplicación y nombre de rol
-  getApplicationByNameAndRol(applicationName: string, rolName: string): Observable<Application> {
-    const url = `${this.applicationUrl}/${applicationName}/rol/${rolName}`;    
+  getApplicationByNameAndRol(
+    applicationName: string,
+    rolName: string
+  ): Observable<Application> {
+    const url = `${this.applicationUrl}/${applicationName}/rol/${rolName}`;
     return this.http.get<Application>(url);
   }
 

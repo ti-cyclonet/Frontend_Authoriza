@@ -1,18 +1,23 @@
 export interface User {
   id: string;
   strUserName: string;
-  strPassword: string;
   strStatus: string;
-  dtmLatestUpdateDate?: string;
-  ingIdBasicData?: number;
-  ingIdDependence?: number;
-
+  dtmLatestUpdateDate: string;
+  dependentOn?: User;
+  dependentCount?: number;
   rol?: {
-    strName: string;
-    strDescription1: string;
+    strDescription1?: string;
+    strName?: string;
   };
-
   basicData?: {
-    strPersonType: 'J' | 'N';
+    strPersonType: 'N' | 'J';
+    naturalPersonData?: {
+      firstName?: string;
+      secondName?: string;
+      firstSurname?: string;
+    };
+    legalEntityData?: {
+      businessName?: string;
+    };
   };
 }
