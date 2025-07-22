@@ -14,6 +14,9 @@ import { environment } from '../../../../environments/environment';
 import { Rol } from '../../../shared/model/rol';
 import { AssignRoleComponent } from '../assign-role/assign-role.component';
 import { NotificationsComponent } from '../../../shared/components/notifications/notifications.component';
+import { AssignDependencyComponent } from '../assign-dependency/assign-dependency.component';
+import { UserService } from '../../../shared/services/user/user.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-user-details',
@@ -23,6 +26,7 @@ import { NotificationsComponent } from '../../../shared/components/notifications
     FormsModule,
     AssignRoleComponent,
     NotificationsComponent,
+    AssignDependencyComponent,
   ],
   templateUrl: './user-details.component.html',
   styleUrls: ['./user-details.component.scss'],
@@ -32,7 +36,7 @@ export class UserDetailsComponent implements OnChanges {
   private roleUrl = this.baseApiUrl + '/api/roles';
 
   @Input() user: any;
-  // @Input() editing: boolean = false;
+  @Input() usersList: any[] = [];
   @Output() cancel = new EventEmitter<void>();
 
   originalUser: any;
@@ -56,8 +60,15 @@ export class UserDetailsComponent implements OnChanges {
   // ----------------------------------------------
 
   showAssignRole = false;
+  showAssignDependency = false;
+  showAssignDependencyModal = false;
+  allUsers: any[] = [];
 
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {
+  constructor(
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef,
+    private userService: UserService
+  ) {
     this.notifications = [];
   }
 
@@ -67,6 +78,35 @@ export class UserDetailsComponent implements OnChanges {
       this.roleId = this.user?.rol?.id ?? '';
       this.loadRoleName();
     }
+  }
+
+  openAssignDependency() {
+    this.showAssignDependency = true;
+  }
+
+  cancelAssignDependency() {
+    this.showAssignDependency = false;
+  }
+
+  onDependencySelected(selectedUser: any) {
+    this.userService.assignDependency(this.user.id, selectedUser.id).subscribe({
+      next: () => {
+        this.user.dependentOn = selectedUser;
+        this.showAssignDependency = false;
+        Swal.fire('Success', 'Dependency assigned successfully!', 'success');
+      },
+      error: () => {
+        Swal.fire(
+          'Error',
+          'There was an error assigning the dependency.',
+          'error'
+        );
+      },
+    });
+  }
+
+  closeModal() {
+    this.cancel.emit();
   }
 
   detectChanges() {
@@ -108,7 +148,6 @@ export class UserDetailsComponent implements OnChanges {
     };
     this.user.strStatus = 'ACTIVE';
     this.originalUser = JSON.parse(JSON.stringify(this.user));
-    console.log('Guardando cambios...', this.user);
     this.toggleEditing();
   }
 
@@ -156,16 +195,16 @@ export class UserDetailsComponent implements OnChanges {
 
   onRoleAssigned(event: {
     role: Rol;
-    message: string;
-    type: 'success' | 'warning' | 'danger' | 'primary';
-    alertType: 'A' | 'B';
-    container: 0 | 1;
   }) {
     this.user.rol = event.role;
-    this.showAssignRole = false;
+    this.showAssignRole = false;    
+    Swal.fire('Success', 'Role assigned successfully!', 'success');
+  }
 
-    // muestra la notificación usando el showToast centralizado
-    this.showToast(event.message, event.type, event.alertType, event.container);
+  onDependencyAssigned(selectedUser: any) {
+    this.user.dependentOn = selectedUser;
+    this.showAssignDependencyModal = false;
+    this.detectChanges();
   }
 
   // Funciones para NOTIFICACIONES

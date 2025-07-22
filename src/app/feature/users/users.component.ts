@@ -8,6 +8,10 @@ import { AddUserModalComponent } from './add-user/add-user-modal.component';
 import { NotificationsComponent } from '../../shared/components/notifications/notifications.component';
 import { UserDetailsComponent } from './user-details/user-details.component';
 import { AssignRoleComponent } from './assign-role/assign-role.component';
+import { RolesService } from '../../shared/services/roles/roles.service';
+import { ApplicationsService } from '../../shared/services/applications/applications.service';
+import { forkJoin, map, switchMap } from 'rxjs';
+import { Application } from '../../shared/model/application.model';
 @Component({
   selector: 'app-users',
   standalone: true,
@@ -19,15 +23,16 @@ import { AssignRoleComponent } from './assign-role/assign-role.component';
     AddUserModalComponent,
     NotificationsComponent,
     UserDetailsComponent,
-    AssignRoleComponent,
   ],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css'],
 })
 export class UsersComponent implements OnInit {
   users: User[] = [];
+  applications: Application[] = [];
   filteredUsers: User[] = [];
   pagedUsers: User[] = [];
+  roleAppMap: { [roleName: string]: string } = {};
   selectedUser: any = null;
   editingUser: boolean = false;
   originalUser: any = null;
@@ -58,6 +63,8 @@ export class UsersComponent implements OnInit {
 
   constructor(
     private userService: UserService,
+    private roleService: RolesService,
+    private applicationsService: ApplicationsService,
     private cdr: ChangeDetectorRef
   ) {
     this.notifications = [];
@@ -65,6 +72,7 @@ export class UsersComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUsersExcludingDependency();
+    this.loadApplicationsAndRoles();
   }
 
   loadUsers() {
@@ -77,6 +85,58 @@ export class UsersComponent implements OnInit {
       this.goToPage(1);
       this.cdr.detectChanges();
     });
+  }
+
+  loadApplicationsAndRoles(): void {
+    this.applicationsService
+      .loadApplications()
+      .pipe(
+        switchMap((apps: Application[]) => {
+          const requests = apps.map((app) =>
+            this.roleService
+              .getRolesByApplicationName(app.strName)
+              .pipe(map((roles: string[]) => ({ appName: app.strName, roles })))
+          );
+          return forkJoin(requests);
+        })
+      )
+      .subscribe((results) => {
+        this.roleAppMap = {};
+        results.forEach(({ appName, roles }) => {
+          roles.forEach((role) => {
+            this.roleAppMap[role] = appName;
+          });
+        });
+      });
+  }
+
+  getApplicationName(user: User): string {
+    const roleName = user?.rol?.strName;
+    return roleName && this.roleAppMap[roleName]
+      ? this.roleAppMap[roleName]
+      : '-';
+  }
+
+  mapRolesToApplications(): void {
+    this.applicationsService
+      .loadApplications()
+      .pipe(
+        switchMap((apps: any[]) => {
+          const requests = apps.map((app) =>
+            this.roleService
+              .getRolesByApplicationName(app.name)
+              .pipe(map((roles: string[]) => ({ appName: app.name, roles })))
+          );
+          return forkJoin(requests);
+        })
+      )
+      .subscribe((results) => {
+        results.forEach(({ appName, roles }) => {
+          roles.forEach((role) => {
+            this.roleAppMap[role] = appName;
+          });
+        });
+      });
   }
 
   showUserDetails(user: any) {
@@ -125,6 +185,19 @@ export class UsersComponent implements OnInit {
         );
       },
     });
+  }
+
+  getFullName(user: any): string {
+    if (user.basicData?.strPersonType === 'N') {
+      const names = [
+        user.basicData?.naturalPersonData?.firstName,
+        user.basicData?.naturalPersonData?.secondName,
+        user.basicData?.naturalPersonData?.firstSurname,
+      ].filter((value) => !!value);
+      return names.join(' ');
+    } else {
+      return user.basicData?.legalEntityData?.businessName || '-';
+    }
   }
 
   onToggleStatus(user: User) {
@@ -182,7 +255,7 @@ export class UsersComponent implements OnInit {
 
   clearDependenceFilter() {
     this.dependentId = '';
-    this.getAllUsers();
+    this.loadUsersExcludingDependency();
   }
 
   getAllUsers(): void {
@@ -217,11 +290,26 @@ export class UsersComponent implements OnInit {
     }
     this.editingUser = false;
     this.selectedUser = null;
+    this.loadUsersExcludingDependency();
   }
 
   loadUsersExcludingDependency() {
     this.userService.getUsersExcludingDependency().subscribe({
       next: (users) => {
+        // Contar dependientes por id
+        const dependentMap: { [userId: string]: number } = {};
+
+        users.forEach((user) => {
+          const dependsOnId = user.dependentOn?.id;
+          if (dependsOnId) {
+            dependentMap[dependsOnId] = (dependentMap[dependsOnId] || 0) + 1;
+          }
+        });
+
+        users.forEach((user) => {
+          user.dependentCount = dependentMap[user.id] || 0;
+        });
+
         this.users = users.sort((a, b) => {
           const dateA = a.dtmLatestUpdateDate
             ? new Date(a.dtmLatestUpdateDate).getTime()
@@ -231,6 +319,7 @@ export class UsersComponent implements OnInit {
             : 0;
           return dateB - dateA;
         });
+
         this.applyFilter();
       },
       error: (error) => {
@@ -245,10 +334,10 @@ export class UsersComponent implements OnInit {
 
   onUserCreated(user: any) {
     this.createdUserId = user.id;
-    this.loadUsers();
-
+    // this.loadUsers();
+    this.loadUsersExcludingDependency();
   }
-  
+
   // Funciones para NOTIFICACIONES
   addNotification(
     title: string,

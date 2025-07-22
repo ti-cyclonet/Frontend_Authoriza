@@ -1,0 +1,108 @@
+<div class="assign-dependency-container">
+  <h5 class="card-title">Assign Dependency</h5>
+  <div class="card-body">
+    <input
+      type="text"
+      class="form-control mb-3"
+      placeholder="Search by name or business"
+      [(ngModel)]="searchTerm"
+      (input)="applyFilter()"
+    />
+    <hr style="border: 1px solid #6a0dad" />
+
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Name</th>
+          <th>Role</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let user of pagedUsers"
+          [class.table-active]="user.id === currentUser?.id"
+        >
+          <td>{{ user.strUserName }}</td>
+          <td>
+            {{
+              user.basicData?.strPersonType === "N"
+                ? (user.basicData?.naturalPersonData?.firstName || "") +
+                  " " +
+                  (user.basicData?.naturalPersonData?.secondName || "") +
+                  " " +
+                  (user.basicData?.naturalPersonData?.firstSurname || "")
+                : user.basicData?.legalEntityData?.businessName || ""
+            }}
+          </td>
+
+          <td>{{ user.rol?.strName }}</td>
+          <td>
+            <button
+              class="btn btn-sm btn-primary"
+              (click)="selectDependency(user)"
+              [disabled]="user.id === currentUser?.id"
+            >
+              Select
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <hr style="border: 1px solid #6a0dad" />
+
+    <div
+      class="btn-group custom-btn-group"
+      role="group"
+      aria-label="Pagination buttons"
+    >
+      <button
+        class="btn btn-outline-dark btn-sm me-4 btn-fixed-width mt-3"
+        [disabled]="page === 1"
+        (click)="previousPage()"
+      >
+        <svg
+          fill="currentColor"
+          viewBox="0 0 16 16"
+          class="status-icon"
+          style="margin-right: 5px"
+        >
+          <use xlink:href="./assets/icons/bootstrap-icons.svg#arrow-left"></use>
+        </svg>
+        Previous
+      </button>
+
+      <button
+        class="btn btn-outline-dark btn-sm me-4 btn-fixed-width mt-3"
+        (click)="closeModal()"
+      >
+        <svg fill="currentColor" width="16" height="16" class="status-icon">
+          <use
+            xlink:href="./assets/icons/bootstrap-icons.svg#slash-circle"
+          ></use>
+        </svg>
+        Cancel
+      </button>
+
+      <button
+        class="btn btn-outline-dark btn-sm me-4 btn-fixed-width mt-3"
+        [disabled]="page >= totalPages"
+        (click)="nextPage()"
+      >
+        Next
+        <svg
+          fill="currentColor"
+          viewBox="0 0 16 16"
+          class="status-icon"
+          style="margin-left: 5px"
+        >
+          <use
+            xlink:href="./assets/icons/bootstrap-icons.svg#arrow-right"
+          ></use>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
