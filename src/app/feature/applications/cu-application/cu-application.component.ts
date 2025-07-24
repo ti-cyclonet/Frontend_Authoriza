@@ -83,7 +83,6 @@ export class CuApplicationComponent implements OnInit, OnChanges {
     this.strTags.removeAt(index);
   }
 
-  // ✅ MÉTODO ACTUALIZADO
   loadApplicationData() {
     if (this.applicationsService.getIdApplication() === '') return;
 

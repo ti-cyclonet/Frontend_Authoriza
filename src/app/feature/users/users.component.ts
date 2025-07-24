@@ -155,6 +155,7 @@ export class UsersComponent implements OnInit {
 
     this.totalPages = Math.ceil(this.filteredUsers.length / this.itemsPerPage);
     this.goToPage(1);
+    this.cdr.markForCheck();
   }
 
   goToPage(page: number) {
@@ -296,7 +297,6 @@ export class UsersComponent implements OnInit {
   loadUsersExcludingDependency() {
     this.userService.getUsersExcludingDependency().subscribe({
       next: (users) => {
-        // Contar dependientes por id
         const dependentMap: { [userId: string]: number } = {};
 
         users.forEach((user) => {
@@ -334,8 +334,21 @@ export class UsersComponent implements OnInit {
 
   onUserCreated(user: any) {
     this.createdUserId = user.id;
-    // this.loadUsers();
     this.loadUsersExcludingDependency();
+  }
+
+  refreshSelectedUser(): void {
+    const userId = this.selectedUser?.id;
+    if (!userId) return;
+
+    this.userService.getUserById(userId).subscribe({
+      next: (updatedUser) => {
+        this.selectedUser = updatedUser;
+      },
+      error: (err) => {
+        console.error('Error fetching user:', err);
+      },
+    });
   }
 
   // Funciones para NOTIFICACIONES

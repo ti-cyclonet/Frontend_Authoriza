@@ -97,9 +97,9 @@ export class AssignDependencyComponent implements OnInit {
     const result = await Swal.fire({
       title: 'Assign Dependency',
       html: `
-        <p>Are you sure you want to assign <b>${user.strUserName}</b> as the dependency?</p>
-        <p>Please type <b>Assign</b> to confirm.</p>
-      `,
+      <p>Are you sure you want to assign <b>${user.strUserName}</b> as the dependency?</p>
+      <p>Please type <b>Assign</b> to confirm.</p>
+    `,
       input: 'text',
       inputPlaceholder: 'Type Assign here...',
       inputAttributes: {
@@ -119,8 +119,26 @@ export class AssignDependencyComponent implements OnInit {
     });
 
     if (result.isConfirmed) {
-      this.dependencyAssigned.emit(user);
-      this.closeModal();
+      this.userService.assignDependency(this.currentUser, user.id).subscribe({
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Dependency successfully assigned!',
+            showConfirmButton: false,
+            timer: 2000,
+          });
+
+          this.dependencyAssigned.emit(user);
+          this.closeModal();
+        },
+        error: () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error assigning dependency',
+            text: 'Please try again later.',
+          });
+        },
+      });
     }
   }
 

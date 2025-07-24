@@ -38,6 +38,7 @@ export class UserDetailsComponent implements OnChanges {
   @Input() user: any;
   @Input() usersList: any[] = [];
   @Output() cancel = new EventEmitter<void>();
+  @Output() userUpdated = new EventEmitter<void>();
 
   originalUser: any;
   activeTab = 'BasicData';
@@ -93,7 +94,7 @@ export class UserDetailsComponent implements OnChanges {
       next: () => {
         this.user.dependentOn = selectedUser;
         this.showAssignDependency = false;
-        Swal.fire('Success', 'Dependency assigned successfully!', 'success');
+        Swal.fire({icon: 'success', title: 'Dependency assigned successfully!', showConfirmButton: false, timer: 2000});
       },
       error: () => {
         Swal.fire(
@@ -146,7 +147,7 @@ export class UserDetailsComponent implements OnChanges {
       strName: this.roleName,
       strDescription1: this.user.rol.strDescription1,
     };
-    this.user.strStatus = 'ACTIVE';
+    // this.user.strStatus = 'ACTIVE';
     this.originalUser = JSON.parse(JSON.stringify(this.user));
     this.toggleEditing();
   }
@@ -157,7 +158,7 @@ export class UserDetailsComponent implements OnChanges {
       this.roleId = this.user?.rol?.id ?? '';
       this.roleName = this.user?.rol?.strName ?? '';
       this.user.rol.strDescription1 = this.user?.rol?.strDescription1 ?? '';
-      this.user.strStatus = 'ACTIVE';
+      this.user.strStatus = this.user?.strStatus ?? 'ACTIVE';
       this.editingUser = false;
       this.editing = false;
       this.cancel.emit();
@@ -193,18 +194,56 @@ export class UserDetailsComponent implements OnChanges {
     this.showAssignRole = true;
   }
 
-  onRoleAssigned(event: {
-    role: Rol;
-  }) {
+  onRoleAssigned(event: { role: Rol }) {
     this.user.rol = event.role;
     this.showAssignRole = false;    
-    Swal.fire('Success', 'Role assigned successfully!', 'success');
+    Swal.fire({icon: 'success', title: 'Role assigned successfully!', showConfirmButton: false, timer: 2000});
   }
 
   onDependencyAssigned(selectedUser: any) {
     this.user.dependentOn = selectedUser;
     this.showAssignDependencyModal = false;
     this.detectChanges();
+  }
+
+  removeDependency(): void {
+    Swal.fire({
+      title: '¿Are you sure?',
+      text: 'Type "Confirm" to remove the dependency',
+      input: 'text',
+      inputPlaceholder: 'Type "Confirm" here',
+      inputAttributes: {
+        autocomplete: 'off',
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Remove',
+      cancelButtonText: 'Cancel',
+      inputValidator: (value) => {
+        if (value !== 'Confirm') {
+          return 'You must type exactly "Confirm" to continue';
+        }
+        return null;
+      },
+    }).then((result) => {
+      if (result.isConfirmed && result.value === 'Confirm') {
+        this.userService.removeDependency(this.user.id).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Dependency successfully removed',
+              showConfirmButton: false,
+              timer: 2000,
+            }).then(() => {
+              this.userUpdated.emit();
+            });
+          },
+          error: (err) => {
+            this.showToast('Error removing dependency', 'danger', 'A', 0);
+            console.error(err);
+          },
+        });
+      }
+    });
   }
 
   // Funciones para NOTIFICACIONES

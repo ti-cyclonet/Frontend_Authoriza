@@ -114,6 +114,10 @@ table td {
   text-decoration: underline;
 }
 
+.badge-default {
+  background-color: var(--header-background-color);
+  color: #000;
+}
 
 @keyframes fadeInCard {
   from {
