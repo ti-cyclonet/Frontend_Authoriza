@@ -105,6 +105,23 @@ export class ApplicationsComponent implements OnInit {
     this.notifications = [];
   }
 
+  ngOnInit(): void {
+    this.reloadApplications();
+  }
+
+  reloadApplications(): void {
+    this.applicationsService.loadApplications().subscribe();
+
+    this.applicationsService.applications$.subscribe((apps) => {
+      this.applications = apps;
+      this.localApplications = [...apps];
+    });
+  }
+
+  get allApplications() {
+    return [...this.applications, ...this.localApplications];
+  }
+
   handleOptionMenuSave(data: MenuOption): void {
     this.closeOptionMenuModal();
 
@@ -189,10 +206,6 @@ export class ApplicationsComponent implements OnInit {
     }
   }
 
-  get allApplications() {
-    return [...this.applications, ...this.localApplications];
-  }
-
   openImageModal(imageUrl: string) {
     this.selectedImageUrl = imageUrl;
     this.showModal = true;
@@ -202,70 +215,8 @@ export class ApplicationsComponent implements OnInit {
     this.showModal = false;
   }
 
-  // Funciones para NOTIFICACIONES
-  // -------------------------------------------
-    addNotification(
-      title: string,
-      type: 'success' | 'warning' | 'danger' | 'primary',
-      alertType: 'A' | 'B',
-      container: 0 | 1
-    ) {
-      this.notifications.push({
-        title,
-        type,
-        alertType,
-        container,
-        visible: true,
-      });
-    }
-
-    removeNotification(index: number) {
-      this.notifications.splice(index, 1);
-    }
-
-    getIconColor() {
-      return 'var(--header-background-color)';
-    }
-
-    showToast(
-      message: string,
-      type: 'success' | 'warning' | 'danger' | 'primary',
-      alertType: 'A' | 'B',
-      container: 0 | 1
-    ) {
-      const notification = {
-        title: message,
-        type,
-        alertType,
-        container,
-        visible: true,
-      };
-      this.notifications.push(notification);
-      this.cdr.detectChanges();
-
-      if (alertType === 'A') {
-        setTimeout(() => {
-          notification.visible = false;
-          this.cdr.detectChanges();
-        }, 5000);
-      }
-    }
-  // ----------------------------------------------
-
   get selectedFile() {
     return this.appCuApplication?.selectedFile;
-  }
-
-  ngOnInit(): void {
-    this.applicationsService.applications$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((apps) => (this.applications = apps));
-
-    this.applicationsService.applications$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((apps) => {
-        this.localApplications = apps;
-      });
   }
 
   ngOnDestroy(): void {
@@ -308,16 +259,24 @@ export class ApplicationsComponent implements OnInit {
   }
 
   async onSaveAllApplications(): Promise<void> {
-    const copiedMap = new Map(this.applicationsService.applicationsDTOMap);
+    const map = this.applicationsService.applicationsDTOMap;
+
+    // Verificar si hay registros que procesar
+    if (!map || map.size === 0) {
+      this.showToast('There are no applications to save.', 'warning', 'A', 1);
+      return;
+    }
+
     const validApplications: ApplicationDTO[] = [];
     const validAppIds: string[] = [];
     let hasValidationError = false;
 
-    copiedMap.forEach((dto, appId) => {
+    // Recorrer cada aplicación
+    map.forEach((dto, appId) => {
       const isNewApp =
         dto.id?.startsWith('temp-') || dto.id?.startsWith('TEMP-');
 
-      // Validar que una nueva aplicación tenga imagen
+      // Validar que las nuevas tengan imagen
       if (isNewApp && !dto.imageFile) {
         this.showToast(
           `Application "${dto.strName}" must include an image.`,
@@ -326,30 +285,43 @@ export class ApplicationsComponent implements OnInit {
           1
         );
         hasValidationError = true;
-        return; // Saltar esta aplicación
+        return;
       }
 
-      // Si pasa la validación, agregarla a la lista de válidas
+      // Es válida para guardar
       validApplications.push(dto);
       validAppIds.push(appId);
     });
 
-    if (hasValidationError || validApplications.length === 0) return;
+    // Si hubo errores o no hay cambios válidos, salir
+    if (hasValidationError || validApplications.length === 0) {
+      if (!hasValidationError) {
+        this.showToast('No changes to save.', 'warning', 'A', 1);
+      }
+      return;
+    }
 
-    // Guardar todas las aplicaciones válidas
+    // Guardar todas las válidas
     const results = await this.applicationsService.saveAllValidApplications(
       validApplications
     );
 
+    let hasSuccess = false;
+
     results.forEach((result, index) => {
       this.showToast(result.message, result.status, 'A', 1);
-      console.log(result.status);
 
-      // Si la operación fue exitosa, eliminar del Map original
+      // Si fue exitoso, eliminar del Map
       if (result.status === 'success') {
         this.applicationsService.applicationsDTOMap.delete(validAppIds[index]);
+        hasSuccess = true;
       }
     });
+
+    // Recargar la tabla solo si hubo al menos un guardado exitoso
+    if (hasSuccess) {
+      this.reloadApplications();
+    }
   }
 
   toggleRolesTable() {
@@ -689,12 +661,7 @@ export class ApplicationsComponent implements OnInit {
 
   confirmDelete(): void {
     if (this.isDeleteConfirmed) {
-      this.showToast(
-        `Application deleted successfully.`,
-        'success',
-        'A',
-        1
-      );
+      this.showToast(`Application deleted successfully.`, 'success', 'A', 1);
     }
     this.deleteConfirmationText = '';
     this.isDeleteConfirmed = false;
@@ -723,18 +690,36 @@ export class ApplicationsComponent implements OnInit {
     });
   }
 
-  // Función para obtener las clases del Toast dinámicamente
-  getClass() {
-    return {
-      show: this.isVisible,
-      'bg-success': this.toastType === 'success',
-      'bg-danger': this.toastType === 'danger',
-      'bg-warning': this.toastType === 'warning',
-      'bg-primary': this.toastType === 'primary',
-    };
+  // funcion para abrir y cerrar ventana modal de crear rol
+  openModalRol() {
+    this.isModalRolOpen = true;
   }
 
-  // Función para obtener el ícono del Toast dinámicamente
+  closeModalRol() {
+    this.modalRef.hide();
+  }
+
+  // Funciones para NOTIFICACIONES
+  // -------------------------------------------
+  addNotification(
+    title: string,
+    type: 'success' | 'warning' | 'danger' | 'primary',
+    alertType: 'A' | 'B',
+    container: 0 | 1
+  ) {
+    this.notifications.push({
+      title,
+      type,
+      alertType,
+      container,
+      visible: true,
+    });
+  }
+
+  removeNotification(index: number) {
+    this.notifications.splice(index, 1);
+  }
+
   getIcon() {
     switch (this.toastType) {
       case 'success':
@@ -750,12 +735,42 @@ export class ApplicationsComponent implements OnInit {
     }
   }
 
-  // funcion para abrir y cerrar ventana modal de crear rol
-  openModalRol() {
-    this.isModalRolOpen = true;
+  getIconColor() {
+    return 'var(--header-background-color)';
   }
 
-  closeModalRol() {
-    this.modalRef.hide();
+  getClass() {
+    return {
+      show: this.isVisible,
+      'bg-success': this.toastType === 'success',
+      'bg-danger': this.toastType === 'danger',
+      'bg-warning': this.toastType === 'warning',
+      'bg-primary': this.toastType === 'primary',
+    };
   }
+
+  showToast(
+    message: string,
+    type: 'success' | 'warning' | 'danger' | 'primary',
+    alertType: 'A' | 'B',
+    container: 0 | 1
+  ) {
+    const notification = {
+      title: message,
+      type,
+      alertType,
+      container,
+      visible: true,
+    };
+    this.notifications.push(notification);
+    this.cdr.detectChanges();
+
+    if (alertType === 'A') {
+      setTimeout(() => {
+        notification.visible = false;
+        this.cdr.detectChanges();
+      }, 5000);
+    }
+  }
+  // ----------------------------------------------
 }

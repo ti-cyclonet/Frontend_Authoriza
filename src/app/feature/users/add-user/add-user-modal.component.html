@@ -150,6 +150,12 @@
             class="form-control mb-2"
           />
           <input
+            formControlName="contactName"
+            placeholder="Contact name"
+            class="form-control mb-2"
+          />
+
+          <input
             formControlName="contactEmail"
             placeholder="Contact email"
             class="form-control mb-2"
@@ -174,6 +180,13 @@
             [userId]="createdUserId"
             (roleAssigned)="onRoleAssigned()"
           ></app-assign-role-modal>
+        </div>
+        <!-- Step 5: Asignar dependencia -->
+        <div *ngIf="currentStep === 5 && createdUserId">
+          <app-assign-dependency
+            [currentUser]="createdUserId"
+            (dependencyAssigned)="onDependencyAssigned()"
+          ></app-assign-dependency>
         </div>
       </div>
     </div>

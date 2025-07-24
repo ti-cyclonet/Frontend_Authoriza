@@ -108,6 +108,10 @@ export class UserService {
     return this.http.patch<User>(`${this.userUrl}/${id}/toggle-status`, {});
   }
 
+  getUserById(userId: string): Observable<User> {
+    return this.http.get<User>(`${this.userUrl}/${userId}`);
+  }
+
   // Actualizar usuario
   updateUser(user: User): Observable<User> {
     return this.http.put<User>(`${this.userUrl}/${user.id}`, user);
@@ -142,5 +146,9 @@ export class UserService {
 
   removeAllRoles(userId: string): Observable<any> {
     return this.http.delete(`${this.userUrl}/${userId}/roles`);
+  }
+
+  removeDependency(userId: string): Observable<any> {
+    return this.http.patch(`${this.userUrl}/${userId}/remove-dependency`, {});
   }
 }
