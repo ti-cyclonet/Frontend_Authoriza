@@ -21,11 +21,17 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { ApplicationWithRoles } from '../../../shared/model/application-with-roles';
 import Swal from 'sweetalert2';
 import { AssignRoleComponent } from '../assign-role/assign-role.component';
+import { AssignDependencyComponent } from '../assign-dependency/assign-dependency.component';
 
 @Component({
   selector: 'app-add-user-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AssignRoleComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    AssignRoleComponent,
+    AssignDependencyComponent,
+  ],
   templateUrl: './add-user-modal.component.html',
   styleUrls: ['./add-user-modal.component.css'],
 })
@@ -86,6 +92,7 @@ export class AddUserModalComponent {
     this.legalForm = this.fb.group({
       businessName: ['', Validators.required],
       webSite: [''],
+      contactName: ['', Validators.required],
       contactEmail: ['', Validators.required],
       contactPhone: ['', Validators.required],
     });
@@ -147,7 +154,7 @@ export class AddUserModalComponent {
     this.nextStep();
   }
 
-  finish() {
+  async finish() {
     if (
       this.basicDataForm.value.strPersonType === 'N' &&
       this.naturalForm.invalid
@@ -164,9 +171,28 @@ export class AddUserModalComponent {
       return;
     }
 
+    const isPrincipalResult = await Swal.fire({
+      title: '¿Is this a primary user?',
+      text: 'The primary user does not require role assignment or dependency.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, it is a primary user',
+      cancelButtonText: 'No, it requires role assignment',
+    });
+
+    const isPrincipal = isPrincipalResult.isConfirmed;
+
     const dto: CreateFullUser = {
-      user: this.userForm.value,
-      basicData: this.basicDataForm.value,
+      user: {
+        ...this.userForm.value,
+        strStatus: isPrincipal ? 'UNCONFIRMED' : this.userForm.value.strStatus,
+      },
+      basicData: {
+        ...this.basicDataForm.value,
+        strStatus: isPrincipal
+          ? 'ACTIVE'
+          : this.basicDataForm.value.strStatus,
+      },
       naturalPersonData:
         this.basicDataForm.value.strPersonType === 'N'
           ? this.naturalForm.value
@@ -180,13 +206,18 @@ export class AddUserModalComponent {
     this.userService.createFullUser(dto).subscribe({
       next: (createdUser) => {
         this.createdUserId = createdUser?.id;
+
         Swal.fire({
           icon: 'success',
-          title: 'Usuario creado',
-          text: 'El usuario ha sido creado exitosamente.',
-          confirmButtonText: 'Continuar'
+          title: 'User created',
+          text: 'User created successfully!',
+          confirmButtonText: 'Continue',
         }).then(() => {
-          this.nextStep();
+          if (isPrincipal) {
+            this.close.emit();
+          } else {
+            this.nextStep();
+          }
         });
       },
       error: (err) => {
@@ -201,14 +232,18 @@ export class AddUserModalComponent {
     });
   }
 
-  onUserCreated() {    
+  onUserCreated() {
     this.showAssignRole = true;
   }
 
   onRoleAssigned() {
     this.showAssignRole = false;
+    this.currentStep++;
+  }
+
+  onDependencyAssigned() {
     this.userCreated.emit({
-      message: 'User created and role assigned successfully!',
+      message: 'User created, role and dependency assigned successfully!',
       type: 'success',
       alertType: 'A',
       container: 0,
