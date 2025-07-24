@@ -50,13 +50,11 @@
 
           <!-- Mostrar assign-dependency si está activado -->
 
-            <app-assign-dependency
-              *ngIf="showAssignDependency"
-              [currentUser]="user"
-              (dependencyAssigned)="onDependencySelected($event)"
-              (modalClosed)="cancelAssignDependency()"
-            ></app-assign-dependency>
-
+          <app-assign-dependency
+            [currentUser]="user.id"
+            (dependencyAssigned)="onDependencyAssigned($event)"
+            (modalClosed)="showAssignDependencyModal = false"
+          ></app-assign-dependency>
 
           <!-- Mostrar tabs y datos solo si NO está activando dependencia -->
           <div *ngIf="!showAssignRole && !showAssignDependency">
@@ -184,7 +182,7 @@
                     </div>
                   </div>
 
-                  <!-- User Dependency with Update button -->
+                  <!-- User Dependency with Update and Remove button -->
                   <div class="col-md-6 mb-3 form-group">
                     <label>User Dependency</label>
                     <div class="input-group">
@@ -211,6 +209,25 @@
                         >
                           <use
                             xlink:href="./assets/icons/bootstrap-icons.svg#arrow-clockwise"
+                          />
+                        </svg>
+                      </button>
+                      <button
+                        class="btn btn-outline-secondary"
+                        type="button"
+                        title="Remove Dependency"
+                        (click)="removeDependency()"
+                        [disabled]="user?.dependentOn == null"
+                      >
+                        <svg
+                          fill="currentColor"
+                          width="16"
+                          height="16"
+                          class="status-icon"
+                          style="color: var(--sidebar-background-color)"
+                        >
+                          <use
+                            xlink:href="./assets/icons/bootstrap-icons.svg#x-circle"
                           />
                         </svg>
                       </button>
@@ -352,6 +369,26 @@
                         />
                       </ng-template>
                     </div>
+                    <div class="col-md-12 mb-2 form-group">
+                      <label>Contact Name</label>
+                      <ng-container *ngIf="!editingUser; else editContactName">
+                        <span
+                          class="form-control-plaintext"
+                          style="height: 38px !important"
+                        >
+                          {{ user.basicData.legalEntityData.contactName }}
+                        </span>
+                      </ng-container>
+                      <ng-template #editContactName>
+                        <input
+                          class="form-control"
+                          [(ngModel)]="
+                            user.basicData.legalEntityData.contactName
+                          "
+                          (ngModelChange)="detectChanges()"
+                        />
+                      </ng-template>
+                    </div>
                   </div>
                   <div class="row">
                     <div class="col-md-6 mb-2 form-group">
@@ -397,7 +434,9 @@
                   </div>
                 </div>
               </div>
+
               <hr style="border: 1px solid #6a0dad" />
+
               <div
                 class="btn-group custom-btn-group"
                 role="group"
