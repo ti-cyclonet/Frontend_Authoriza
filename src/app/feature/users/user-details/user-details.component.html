@@ -51,13 +51,14 @@
           <!-- Mostrar assign-dependency si está activado -->
 
           <app-assign-dependency
+            *ngIf="showAssignDependencyModal"
             [currentUser]="user.id"
-            (dependencyAssigned)="onDependencyAssigned($event)"
+            (cancel)="onDependencyAssigned($event)"
             (modalClosed)="showAssignDependencyModal = false"
           ></app-assign-dependency>
 
           <!-- Mostrar tabs y datos solo si NO está activando dependencia -->
-          <div *ngIf="!showAssignRole && !showAssignDependency">
+          <div *ngIf="!showAssignRole && !showAssignDependencyModal">
             <div class="card-body">
               <ul class="nav nav-tabs" style="border-bottom: 1px solid #6a0dad">
                 <li class="nav-item">
@@ -198,7 +199,7 @@
                         class="btn btn-outline-secondary"
                         type="button"
                         title="Change Dependency"
-                        (click)="showAssignDependency = true"
+                        (click)="showAssignDependencyModal = true"
                       >
                         <svg
                           fill="currentColor"

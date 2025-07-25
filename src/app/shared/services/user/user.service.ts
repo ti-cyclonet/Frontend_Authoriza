@@ -104,12 +104,20 @@ export class UserService {
   }
 
   // Alternar estado de usuario (activo/inactivo)
-  toggleUserStatus(id: string): Observable<User> {
-    return this.http.patch<User>(`${this.userUrl}/${id}/toggle-status`, {});
+  toggleUserStatus(id: string, status: string): Observable<User> {
+    return this.http.patch<User>(`${this.userUrl}/${id}/toggle-status/status`, {
+      status,
+    });
   }
 
   getUserById(userId: string): Observable<User> {
     return this.http.get<User>(`${this.userUrl}/${userId}`);
+  }
+
+  updateUserStatus(userId: string, status: string): Observable<User> {
+    return this.http.patch<User>(`${this.userUrl}/${userId}/status-with-dependents`, {
+      status,
+    });
   }
 
   // Actualizar usuario

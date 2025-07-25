@@ -94,7 +94,12 @@ export class UserDetailsComponent implements OnChanges {
       next: () => {
         this.user.dependentOn = selectedUser;
         this.showAssignDependency = false;
-        Swal.fire({icon: 'success', title: 'Dependency assigned successfully!', showConfirmButton: false, timer: 2000});
+        Swal.fire({
+          icon: 'success',
+          title: 'Dependency assigned successfully!',
+          showConfirmButton: false,
+          timer: 2000,
+        });
       },
       error: () => {
         Swal.fire(
@@ -157,7 +162,12 @@ export class UserDetailsComponent implements OnChanges {
       this.user = JSON.parse(JSON.stringify(this.originalUser));
       this.roleId = this.user?.rol?.id ?? '';
       this.roleName = this.user?.rol?.strName ?? '';
-      this.user.rol.strDescription1 = this.user?.rol?.strDescription1 ?? '';
+      // Validar si hay rol antes de asignar propiedades
+      if (this.originalUser.rol) {
+        this.user.rol = { ...this.originalUser.rol };
+      } else {
+        this.user.rol = null; // o undefined, según el modelo
+      }
       this.user.strStatus = this.user?.strStatus ?? 'ACTIVE';
       this.editingUser = false;
       this.editing = false;
@@ -196,8 +206,13 @@ export class UserDetailsComponent implements OnChanges {
 
   onRoleAssigned(event: { role: Rol }) {
     this.user.rol = event.role;
-    this.showAssignRole = false;    
-    Swal.fire({icon: 'success', title: 'Role assigned successfully!', showConfirmButton: false, timer: 2000});
+    this.showAssignRole = false;
+    Swal.fire({
+      icon: 'success',
+      title: 'Role assigned successfully!',
+      showConfirmButton: false,
+      timer: 2000,
+    });
   }
 
   onDependencyAssigned(selectedUser: any) {

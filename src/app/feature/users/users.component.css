@@ -281,3 +281,13 @@ table td {
   transition: transform 0.3s ease;
   transform: rotate(180deg);
 }
+
+.status-dropdown {
+  .dropdown-item {
+    padding: 0.5rem;
+    cursor: pointer;
+    &:hover {
+      background-color: #f8f9fa;
+    }
+  }
+}
