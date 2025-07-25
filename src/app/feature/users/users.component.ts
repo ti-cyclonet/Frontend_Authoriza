@@ -1,4 +1,11 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  HostListener,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { UserService } from '../../shared/services/user/user.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -47,6 +54,20 @@ export class UsersComponent implements OnInit {
   showAddUserModal = false;
   showAssignRoleModal = false;
   showUserDetailsModal = false;
+
+  allowedStatuses: string[] = [
+    'ACTIVE',
+    'INACTIVE',
+    'UNCONFIRMED',
+    'EXPIRING',
+    'SUSPENDED',
+    'DELINQUENT',
+  ];
+  statusMenuMap: { [userId: string]: boolean } = {};
+  showingMenuUser: User | null = null;
+
+  @ViewChild('statusMenuContainer', { static: false })
+  statusMenuRef!: ElementRef;
 
   // configuración notificaciones tipo toast
   toastTitle: string = '';
@@ -140,7 +161,18 @@ export class UsersComponent implements OnInit {
   }
 
   showUserDetails(user: any) {
-    this.selectedUser = user;
+    if (!user.id) return;
+
+    this.userService.getUserById(user.id).subscribe({
+      next: (fullUser) => {
+        this.selectedUser = fullUser;
+        this.showUserDetailsModal = true;
+      },
+      error: (err) => {
+        console.error('Error fetching full user data:', err);
+        this.showToast('Error loading user details.', 'danger', 'B', 0);
+      },
+    });
   }
 
   applyFilter() {
@@ -201,22 +233,30 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  onToggleStatus(user: User) {
+  toggleStatusMenu(user: User): void {
+    this.showingMenuUser = this.showingMenuUser === user ? null : user;
+  }
+
+  onChangeStatus(user: User, newStatus: string): void {
     if (!user.id) {
       this.showToast('User does not have a valid ID.', 'danger', 'B', 0);
       return;
     }
+    user.strStatus = newStatus;
+    this.showingMenuUser = null;
 
-    this.userService.toggleUserStatus(user.id).subscribe({
+    this.userService.updateUserStatus(user.id, newStatus).subscribe({
       next: (updatedUser: User) => {
         user.strStatus = updatedUser.strStatus;
+        (user as any).showStatusMenu = false;
         this.cdr.markForCheck();
         this.showToast(
-          `The status of the user <b>${updatedUser.strUserName}</b> changed to <b>${updatedUser.strStatus}</b>`,
-          updatedUser.strStatus === 'ACTIVE' ? 'success' : 'danger',
+          `Status changed to <b>${updatedUser.strStatus}</b> for <b>${updatedUser.strUserName} and depentents</b>.`,
+          updatedUser.strStatus === 'ACTIVE' ? 'success' : 'warning',
           'A',
           0
         );
+        this.loadUsersExcludingDependency();
       },
       error: (err) => {
         this.showToast(
@@ -228,6 +268,18 @@ export class UsersComponent implements OnInit {
         );
       },
     });
+  }
+
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    if (
+      this.statusMenuRef &&
+      !this.statusMenuRef.nativeElement.contains(target)
+    ) {
+      this.showingMenuUser = null;
+    }
   }
 
   clearSearch(): void {
@@ -292,6 +344,8 @@ export class UsersComponent implements OnInit {
     this.editingUser = false;
     this.selectedUser = null;
     this.loadUsersExcludingDependency();
+
+    this.showAddUserModal = false;
   }
 
   loadUsersExcludingDependency() {
