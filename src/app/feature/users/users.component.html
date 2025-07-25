@@ -231,14 +231,14 @@
             {{ getApplicationName(user).toUpperCase() }}
           </td>
           <td class="text-center">{{ user.rol?.strDescription1 || "-" }}</td>
-          <td class="text-center">
+          <td class="text-center position-relative">
             <a
               class="status-toggle text-decoration-none fw-semibold"
               [ngClass]="{
                 'text-success': user.strStatus === 'ACTIVE',
                 'text-danger': user.strStatus === 'INACTIVE'
               }"
-              (click)="onToggleStatus(user)"
+              (click)="toggleStatusMenu(user)"
             >
               <svg
                 fill="currentColor"
@@ -256,7 +256,26 @@
               </svg>
               <span class="d-none d-lg-inline">{{ user.strStatus }}</span>
             </a>
+
+            <div
+              *ngIf="showingMenuUser === user"
+              class="status-dropdown position-absolute bg-white border rounded shadow p-2 mt-1"
+              style="z-index: 1000; min-width: 150px; right: 0"
+            >
+              <div
+                *ngFor="let status of allowedStatuses"
+                (click)="onChangeStatus(user, status)"
+                class="dropdown-item cursor-pointer"
+                [ngClass]="{
+                  'text-success': status === 'ACTIVE',
+                  'text-danger': status === 'INACTIVE'
+                }"
+              >
+                {{ status }}
+              </div>
+            </div>
           </td>
+
           <td class="text-center d-none d-lg-block">
             {{ user.dtmLatestUpdateDate | date : "dd/MM/yyyy" }}
           </td>
