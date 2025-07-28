@@ -1,25 +1,68 @@
 <div class="container-fluid p-0">
-  <div class="row m-0"> 
+  <div class="row m-0">
     <!-- Sidebar -->
-    <div id="sidebar" class="p-0" 
-         [ngClass]="{'hidden': !isSidebarVisible}"  
-         style="width: 100px; background-color: var(--sidebar-background-color); height: 100vh; border-right: 2px solid black; overflow: hidden;">     
+    <div
+      id="sidebar"
+      class="p-0"
+      [ngClass]="{ hidden: !isSidebarVisible }"
+      style="
+        width: 100px;
+        background-color: var(--sidebar-background-color);
+        height: 100vh;
+        border-right: 2px solid black;
+        overflow: hidden;
+      "
+    >
       <app-sidebar [optionsMenu]="optionsMenu"></app-sidebar>
     </div>
 
     <!-- Main Content -->
-    <div [ngClass]="{'full-width': !isSidebarVisible, 'reduced-width': isSidebarVisible}" 
-         class="main-content d-flex flex-column p-0" style="height: 100vh; overflow: hidden;">
-      
+    <div
+      [ngClass]="{
+        'full-width': !isSidebarVisible,
+        'reduced-width': isSidebarVisible
+      }"
+      class="main-content d-flex flex-column p-0"
+      style="height: 100vh; overflow: hidden"
+    >
       <!-- Header with Toggle Button -->
       <app-header (sidebarToggle)="toggleSidebar()"></app-header>
-      
+
       <!-- Content -->
       <div class="router-outlet-container flex-grow-1">
+        <!-- Contenedor flotante (derecha) -->
+        <div class="notification-container">
+          <ng-container
+            *ngFor="let notification of notifications; let i = index"
+          >
+            <app-notifications
+              *ngIf="notification.container === 0 && notification.visible"
+              [title]="notification.title"
+              [type]="notification.type"
+              [alertType]="notification.alertType"
+              (close)="removeNotification(i)"
+            ></app-notifications>
+          </ng-container>
+        </div>
+
+        <!-- Contenedor superior -->
+        <div class="notification-container-1 p-1 w-100">
+          <ng-container
+            *ngFor="let notification of notifications; let i = index"
+          >
+            <app-notifications
+              *ngIf="notification.container === 1 && notification.visible"
+              [title]="notification.title"
+              [type]="notification.type"
+              [alertType]="notification.alertType"
+              (close)="removeNotification(i)"
+            ></app-notifications>
+          </ng-container>
+        </div>
         <app-spinner></app-spinner>
-        <router-outlet></router-outlet>        
+        <router-outlet></router-outlet>
       </div>
-      
+
       <!-- Footer -->
       <div class="col-12 p-0">
         <app-footer></app-footer>
