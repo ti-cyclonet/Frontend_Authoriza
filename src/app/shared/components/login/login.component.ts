@@ -90,7 +90,7 @@ export class LoginComponent {
 
           setTimeout(() => {
             this.router.navigate(['/home']);
-          }, 3000);
+          }, 5000);
         } else {
           this.showToast('Credenciales incorrectas', 'danger', 'A', 0);
           console.error('❌ Error: No se recibió un token válido.');

@@ -1,4 +1,10 @@
-import { Component, HostListener, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  HostListener,
+  inject,
+  OnInit,
+} from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
@@ -12,6 +18,7 @@ import { MenuOption } from '../../model/menu_option';
 import { Application } from '../../model/application.model';
 import { SpinnerComponent } from '../spinner/spinner.component';
 import { LoadingService } from '../../services/loading.service';
+import { NotificationsComponent } from '../notifications/notifications.component';
 
 @Component({
   selector: 'app-layout',
@@ -23,6 +30,7 @@ import { LoadingService } from '../../services/loading.service';
     SidebarComponent,
     FooterComponent,
     RouterOutlet,
+    NotificationsComponent,
   ],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css'],
@@ -38,17 +46,37 @@ export default class LayoutComponent implements OnInit {
   applications: Application[] = [];
   localApplications: Application[] = [];
 
+  isLoading = this.loadingService.loading$;
+
+  // configuración notificaciones tipo toast
+  toastTitle: string = '';
+  toastType: 'success' | 'warning' | 'danger' | 'primary' = 'success';
+  notifications: Array<{
+    title: string;
+    type: 'success' | 'warning' | 'danger' | 'primary';
+    alertType: 'A' | 'B';
+    container: 0 | 1;
+    visible: boolean;
+  }> = [];
+  SWNTF: number = 0;
+  isVisible = false;
+  // ----------------------------------------------
+
   constructor(
     private rolesService: RolesService,
     private userService: UserService,
-    private applicationsService: ApplicationsService
+    private applicationsService: ApplicationsService,
+    private cdr: ChangeDetectorRef
   ) {
+    this.notifications = [];
     if (typeof window !== 'undefined') {
       this.isLargeScreen = window.innerWidth >= 992;
     }
   }
 
   ngOnInit(): void {
+    // this.loadingService.show();
+    // setTimeout(() => this.loadingService.hide(), 3000);
     this.loadSidebarPreference();
     this.applicationsService.applications$.subscribe((apps) => {
       this.applications = apps;
@@ -56,6 +84,15 @@ export default class LayoutComponent implements OnInit {
 
     this.applicationsService.loadApplications();
     this.fetchApplication('Authoriza');
+    // this.showToast('Your password is about to expire. You should change it soon.','warning', 'B', 1);
+    if (sessionStorage.getItem('mustChangePassword') === 'true') {
+      this.showToast(
+        'Your password is about to expire. You should change it soon.',
+        'warning',
+        'B',
+        1
+      );
+    }
   }
 
   addLocalApplication(app: any) {
@@ -129,4 +166,79 @@ export default class LayoutComponent implements OnInit {
       this.isLargeScreen = window.innerWidth >= 992;
     }
   }
+
+  // Funciones para NOTIFICACIONES
+  // -------------------------------------------
+  addNotification(
+    title: string,
+    type: 'success' | 'warning' | 'danger' | 'primary',
+    alertType: 'A' | 'B',
+    container: 0 | 1
+  ) {
+    this.notifications.push({
+      title,
+      type,
+      alertType,
+      container,
+      visible: true,
+    });
+  }
+
+  removeNotification(index: number) {
+    this.notifications.splice(index, 1);
+  }
+
+  getIcon() {
+    switch (this.toastType) {
+      case 'success':
+        return 'check-circle';
+      case 'danger':
+        return 'x-circle';
+      case 'warning':
+        return 'exclamation-triangle';
+      case 'primary':
+        return 'exclamation-triangle';
+      default:
+        return 'info-circle';
+    }
+  }
+
+  getIconColor() {
+    return 'var(--header-background-color)';
+  }
+
+  getClass() {
+    return {
+      show: this.isVisible,
+      'bg-success': this.toastType === 'success',
+      'bg-danger': this.toastType === 'danger',
+      'bg-warning': this.toastType === 'warning',
+      'bg-primary': this.toastType === 'primary',
+    };
+  }
+
+  showToast(
+    message: string,
+    type: 'success' | 'warning' | 'danger' | 'primary',
+    alertType: 'A' | 'B',
+    container: 0 | 1
+  ) {
+    const notification = {
+      title: message,
+      type,
+      alertType,
+      container,
+      visible: true,
+    };
+    this.notifications.push(notification);
+    this.cdr.detectChanges();
+
+    if (alertType === 'A') {
+      setTimeout(() => {
+        notification.visible = false;
+        this.cdr.detectChanges();
+      }, 5000);
+    }
+  }
+  // ----------------------------------------------
 }

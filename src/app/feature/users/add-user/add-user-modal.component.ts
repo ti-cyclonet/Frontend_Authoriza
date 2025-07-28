@@ -70,7 +70,6 @@ export class AddUserModalComponent {
   ) {
     this.userForm = this.fb.group({
       strUserName: ['', [Validators.required, Validators.email]],
-      strPassword: ['', Validators.required],
       strStatus: ['ACTIVE'],
     });
 
@@ -206,19 +205,11 @@ export class AddUserModalComponent {
     this.userService.createFullUser(dto).subscribe({
       next: (createdUser) => {
         this.createdUserId = createdUser?.id;
-
-        Swal.fire({
-          icon: 'success',
-          title: 'User created',
-          text: 'User created successfully!',
-          confirmButtonText: 'Continue',
-        }).then(() => {
-          if (isPrincipal) {
+        if (isPrincipal) {
             this.close.emit();
           } else {
             this.nextStep();
           }
-        });
       },
       error: (err) => {
         this.userCreated.emit({
