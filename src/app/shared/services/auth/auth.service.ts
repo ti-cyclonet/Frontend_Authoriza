@@ -1,10 +1,9 @@
 import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, map } from 'rxjs';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../../environments/environment';
-
 @Injectable({
   providedIn: 'root',
 })
@@ -18,21 +17,13 @@ export class AuthService {
   ) {}
 
   login(credentials: { email: string; password: string }): Observable<any> {
-    return this.http
-      .post<{
-        access_token: string;
-        email: string;
-        name: string;
-        rol: string;
-        image: string;
-      }>(this.apiUrl, credentials)
-      .pipe(
-        tap((response) => {
-          if (isPlatformBrowser(this.platformId)) {            
-            this.setUserSession(response);
-          }
-        })
-      );
+    return this.http.post<any>(this.apiUrl, credentials).pipe(
+      tap((response) => {
+        if (isPlatformBrowser(this.platformId)) {
+          this.setUserSession(response);
+        }
+      })
+    );
   }
 
   setUserSession(userData: any): void {
@@ -42,26 +33,33 @@ export class AuthService {
       sessionStorage.setItem('user_email', userData.user.email);
       sessionStorage.setItem('user_name', userData.user.name);
       sessionStorage.setItem('user_rol', userData.user.rol);
-      sessionStorage.setItem(
-        'user_rolDescription',
-        userData.user.rolDescription
-      );
+      sessionStorage.setItem('user_rolDescription',userData.user.rolDescription);
       sessionStorage.setItem('user_image', userData.user.image);
 
-      if (userData.user.firstName)
-        sessionStorage.setItem('user_firstName', userData.user.firstName);
-      if (userData.user.secondName)
-        sessionStorage.setItem('user_secondName', userData.user.secondName);
-      if (userData.user.businessName)
-        sessionStorage.setItem('user_businessName', userData.user.businessName);
+      // Nuevos campos
+      sessionStorage.setItem('mustChangePassword', String(userData.user.mustChangePassword));
+      sessionStorage.setItem('passwordLastChanged',userData.user.passwordLastChanged);
+
+      if (userData.user.firstName) sessionStorage.setItem('user_firstName', userData.user.firstName);
+      if (userData.user.secondName) sessionStorage.setItem('user_secondName', userData.user.secondName);
+      if (userData.user.businessName) sessionStorage.setItem('user_businessName', userData.user.businessName);
     }
   }
 
-  logout() {
-    sessionStorage.removeItem('authToken');
+  isPasswordExpired(passwordLastChanged: string): boolean {
+    if (!passwordLastChanged) return true;
+    const lastChanged = new Date(passwordLastChanged);
+    const now = new Date();
+    const diffInMs = now.getTime() - lastChanged.getTime();
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+    return diffInDays > 90;
+  }
+
+  logout(): void {
+    sessionStorage.clear();
     localStorage.removeItem('user');
     localStorage.removeItem('imagePreview');
-    sessionStorage.clear();
+    this.router.navigate(['/login']);
   }
 
   isAuthenticated(): boolean {
