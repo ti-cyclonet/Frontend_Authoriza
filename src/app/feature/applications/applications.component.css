@@ -4,7 +4,11 @@
 }
 
 .selected {
-  background-color:rgb(200, 204, 219) !important; /* O el color que prefieras */
+  background-color: rgb(
+    200,
+    204,
+    219
+  ) !important; /* O el color que prefieras */
 }
 
 .roles-header {
@@ -25,12 +29,10 @@ input[type="checkbox"].temporary-option {
   accent-color: #e69138;
 }
 
-
 .disabled-icon {
   pointer-events: none;
   opacity: 0.5;
 }
-
 
 /* Contenedor de botones */
 .roles-buttons {
@@ -55,7 +57,7 @@ input[type="checkbox"].temporary-option {
 
 .clearfix {
   display: block;
-  content: '';
+  content: "";
   clear: both;
 }
 
@@ -123,78 +125,77 @@ input[type="checkbox"].temporary-option {
 /* Estilo para el contenedor del título */
 .title-container {
   display: flex;
-  align-items: center; /* Centra verticalmente el contenido */
-  font-size: 1rem; /* Tamaño del texto del título */
-  color: #6e6e6e; /* Color del texto del título */
-  margin-bottom: 1rem; /* Espacio debajo del título */
+  align-items: center;
+  font-size: 1rem;
+  color: #6e6e6e;
+  margin-bottom: 1rem;
   margin-top: 1rem;
   padding-left: 1.5rem;
 }
 
 .title-container svg {
-  width: 20px; /* Tamaño del ícono SVG */
-  height: 20px; /* Tamaño del ícono SVG */
-  margin-right: 0.3rem; /* Espacio entre el ícono y el texto */
-  fill: #6e6e6e; /* Color del ícono SVG */
+  width: 20px;
+  height: 20px;
+  margin-right: 0.3rem;
+  fill: #6e6e6e;
 }
 
 /* Estilo de los íconos para el Status */
 .status-icon {
   margin-right: 0.3rem;
-  width: 16px; /* Ajusta el ancho a 16px o al tamaño que prefieras */
-  height: 16px; /* Ajusta la altura a 16px o al tamaño que prefieras */
+  width: 16px;
+  height: 16px;
 }
 
 /* Clase para los íconos de pasos */
 .step-icons {
   display: flex;
-  align-items: center; /* Alinea verticalmente los íconos */
-  position: relative; /* Para posicionar la línea */
+  align-items: center;
+  position: relative;
 }
 
 .step-icon {
   width: 1.5em;
   height: 1.5em;
-  z-index: 1; /* Para que los íconos estén por encima de la línea */
+  z-index: 1;
 }
 
 /* Agregar una línea horizontal que conecte los íconos */
 .step-icons::before {
-  content: '';
+  content: "";
   position: absolute;
-  top: 50%; /* Alinea la línea horizontalmente con los íconos */
+  top: 50%;
   left: 0;
   right: 0;
-  height: 2px; /* Grosor de la línea */
+  height: 2px;
   background-color: var(--header-background-color);
-  opacity: 0.3; /* Opacidad de la línea */
-  z-index: 0; /* La línea queda detrás de los íconos */
+  opacity: 0.3;
+  z-index: 0;
 }
 
 .step-icon:first-child::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 0;
   right: 100%;
   height: 2px;
-  background-color: transparent; /* Ocultar la línea a la izquierda del primer ícono */
+  background-color: transparent;
 }
 
 .step-icon:last-child::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 100%;
   right: 0;
   height: 2px;
-  background-color: transparent; /* Ocultar la línea a la derecha del último ícono */
+  background-color: transparent;
 }
 /* Estilo de los íconos del título */
 .title-icon {
-  /* margin-right: 0.3rem; */
-  width: 25px; 
-  height: 25px; 
+  width: 25px;
+  height: 25px;
   color: #000;
 }
 
@@ -208,7 +209,7 @@ input[type="checkbox"].temporary-option {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem; /* equivalente a gap-2 de Bootstrap */
+  gap: 0.5rem;
 }
 
 a.disabled-icon {
@@ -226,35 +227,35 @@ a.enabled-icon {
 
 /* Estilos para las notificaciones */
 /* ------------------------------- */
-  .notification-container {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    width: auto; 
-    background-color: transparent;
-    border-radius: 5px;
-    z-index: 1000;
-    padding: 5px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px; 
-  }
+.notification-container {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  width: auto;
+  background-color: transparent;
+  border-radius: 5px;
+  z-index: 1000;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-  .notification-container-1 {
-    position: fixed;
-    top: 62px;
-    left: 0;
-    right: 0;
-    width: 100vw;
-    background-color: transparent;
-    border-radius: 5px;
-    z-index: 1050;
-    padding: 5px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px; 
-  }
+.notification-container-1 {
+  position: fixed;
+  top: 62px;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  background-color: transparent;
+  border-radius: 5px;
+  z-index: 1050;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
 /* ------------------------------- */
 
 a.disabled {
@@ -267,7 +268,7 @@ a.disabled {
 }
 
 .btn:disabled {
-  background-color: #d6d6d6 !important; 
+  background-color: #d6d6d6 !important;
   color: #808080 !important;
   border-color: #c0c0c0 !important;
   cursor: not-allowed;
@@ -275,11 +276,11 @@ a.disabled {
 }
 
 .btn-spacing {
-  margin-right: 8px; 
+  margin-right: 8px;
 }
 
 .actions-col {
-  width: 1%; 
+  width: 1%;
   white-space: nowrap;
 }
 
@@ -290,7 +291,7 @@ a.disabled {
 
 .actions-col button:hover {
   background-color: var(--sidebar-background-color);
-  border-color: var(--sidebar-background-color); 
+  border-color: var(--sidebar-background-color);
 }
 
 .badge-default {
@@ -298,7 +299,7 @@ a.disabled {
 }
 
 .badge-selected {
-  background-color: #000000; 
+  background-color: #000000;
   color: white;
 }
 
@@ -342,7 +343,7 @@ a.disabled {
 }
 
 .border-danger {
-  border: 2px solid #b33a3a; /* Rojo oscuro */
+  border: 2px solid #b33a3a;
 }
 
 .modal-header-custom {
@@ -364,7 +365,6 @@ a.disabled {
 
 /* Efecto hover para el enlace (opcional) */
 .title-link:hover {
-  /* text-decoration: underline; Subraya el texto cuando se pasa el ratón sobre él */
   color: #4a4a4a;
 }
 
@@ -379,7 +379,7 @@ a.disabled {
 .card-body {
   padding: 1.5rem;
   margin-top: 0.1rem;
-  /* color: var(--primary-text-color); Color del texto en la tarjeta */
+  /* color: var(--primary-text-color); */
 }
 
 /* Mantener el ancho de 100px en pantallas medianas o más grandes */
@@ -401,9 +401,8 @@ a.disabled {
   border-bottom: 2px solid rgb(148, 77, 77);
 }
 /* Modal personalizada para crear rol */
-/* Encabezado con fondo morado y texto blanco */
 .custom-role-modal .modal-header-custom {
-  background-color: #7011ce !important; /* Morado */
+  background-color: #7011ce !important;
   color: white !important;
   font-weight: bold;
   border-top-left-radius: 12px;

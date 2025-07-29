@@ -136,4 +136,12 @@
     border: 2px solid var(--sidebar-background-color); 
 }
 
-  
+.modal-header-custom {
+  background-color: var(--sidebar-background-color);
+  color: #cccccc;
+}
+
+.modal-title {
+  text-align: right;
+  width: 100%;
+}  
