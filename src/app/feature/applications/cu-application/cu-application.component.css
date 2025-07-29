@@ -100,7 +100,6 @@
   height: 1.5rem;
 }
 
-
 /* Para pantallas pequeñas */
 @media (max-width: 576px) {
   .form-buttons button {
