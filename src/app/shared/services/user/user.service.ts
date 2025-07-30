@@ -12,6 +12,7 @@ export class UserService {
   private baseApiUrl = environment.apiBaseUrl;
 
   private userUrl = this.baseApiUrl + '/api/users';
+  private userUrlWithDeleted = this.userUrl + '/without-dependency';
   private usersSubject = new BehaviorSubject<any[]>([]);
   public users$ = this.usersSubject.asObservable();
 
@@ -138,7 +139,7 @@ export class UserService {
   getUsersExcludingDependency(): Observable<User[]> {
     const userId = sessionStorage.getItem('user_id');
     return this.http.get<User[]>(
-      `${this.userUrl}/without-dependency/${userId}`
+      `${this.userUrlWithDeleted}/${userId}?includeDeleted=true`
     );
   }
 
