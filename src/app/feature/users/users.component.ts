@@ -19,6 +19,7 @@ import { RolesService } from '../../shared/services/roles/roles.service';
 import { ApplicationsService } from '../../shared/services/applications/applications.service';
 import { forkJoin, map, switchMap } from 'rxjs';
 import { Application } from '../../shared/model/application.model';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-users',
   standalone: true,
@@ -169,8 +170,9 @@ export class UsersComponent implements OnInit {
         this.showUserDetailsModal = true;
       },
       error: (err) => {
+        const errorMsg = err?.error?.message || 'Error loading user details.';
         console.error('Error fetching full user data:', err);
-        this.showToast('Error loading user details.', 'danger', 'B', 0);
+        this.showToast(errorMsg, 'danger', 'B', 0);
       },
     });
   }
@@ -406,6 +408,106 @@ export class UsersComponent implements OnInit {
       error: (err) => {
         console.error('Error fetching user:', err);
       },
+    });
+  }
+
+  removeUser(user: any) {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'To confirm, type "Delete" below.',
+      input: 'text',
+      inputPlaceholder: 'Type "Delete" here',
+      inputAttributes: {
+        autocomplete: 'off',
+      },
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+      preConfirm: (value) => {
+        if (value !== 'Delete') {
+          Swal.showValidationMessage('You must type "Delete" to proceed.');
+          return false;
+        }
+        return true;
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.userService.deleteUser(user.id).subscribe({
+          next: () => {
+            Swal.fire({
+              title: 'Deleted!',
+              text: 'The user was deleted successfully.',
+              icon: 'success',
+              confirmButtonText: 'OK',
+            });
+            this.loadUsersExcludingDependency();
+          },
+          error: (err) => {
+            const errorMsg = err?.error?.message || 'Failed to delete user.';
+
+            // Detectar si es el error por dependientes
+            if (
+              errorMsg.includes('there are dependent users') ||
+              errorMsg.includes('force=true')
+            ) {
+              Swal.fire({
+                title: 'This user has dependents',
+                text: "Deleting this user will also delete all their dependent users. To confirm, type 'Delete All' below.",
+                input: 'text',
+                inputPlaceholder: "Type 'Delete All' here",
+                inputAttributes: {
+                  autocomplete: 'off',
+                },
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Delete All',
+                cancelButtonText: 'Cancel',
+                preConfirm: (value) => {
+                  if (value !== 'Delete All') {
+                    Swal.showValidationMessage(
+                      "You must type 'Delete All' to proceed."
+                    );
+                    return false;
+                  }
+                  return true;
+                },
+              }).then((forceResult) => {
+                if (forceResult.isConfirmed) {
+                  this.userService.deleteUser(user.id, true).subscribe({
+                    next: () => {
+                      Swal.fire({
+                        title: 'Deleted!',
+                        text: 'User and all dependents deleted successfully.',
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                      });
+                      this.loadUsersExcludingDependency();
+                    },
+                    error: (err2) => {
+                      const fallbackMsg =
+                        err2?.error?.message || 'Forced deletion failed.';
+                      Swal.fire({
+                        title: 'Error!',
+                        text: fallbackMsg,
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                      });
+                    },
+                  });
+                }
+              });
+            } else {
+              Swal.fire({
+                title: 'Error!',
+                text: errorMsg,
+                icon: 'error',
+                confirmButtonText: 'OK',
+              });
+            }
+          },
+        });
+      }
     });
   }
 
