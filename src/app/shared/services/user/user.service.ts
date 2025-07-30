@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { User } from '../../model/user';
 import { environment } from '../../../../environments/environment';
@@ -116,9 +116,12 @@ export class UserService {
   }
 
   updateUserStatus(userId: string, status: string): Observable<User> {
-    return this.http.patch<User>(`${this.userUrl}/${userId}/status-with-dependents`, {
-      status,
-    });
+    return this.http.patch<User>(
+      `${this.userUrl}/${userId}/status-with-dependents`,
+      {
+        status,
+      }
+    );
   }
 
   // Actualizar usuario
@@ -159,5 +162,16 @@ export class UserService {
 
   removeDependency(userId: string): Observable<any> {
     return this.http.patch(`${this.userUrl}/${userId}/remove-dependency`, {});
+  }
+
+  deleteUser(id: string, force: boolean = false): Observable<any> {
+    const url = `${this.userUrl}/${id}`;
+    let params = new HttpParams();
+
+    if (force) {
+      params = params.set('force', 'true');
+    }
+
+    return this.http.delete(url, { params });
   }
 }
