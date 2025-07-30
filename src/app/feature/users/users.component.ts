@@ -354,6 +354,10 @@ export class UsersComponent implements OnInit {
         const dependentMap: { [userId: string]: number } = {};
 
         users.forEach((user) => {
+          // Marcar si está eliminado
+          user.isDeleted = !!user.deletedAt;
+
+          // Calcular cuántos dependen de este usuario
           const dependsOnId = user.dependentOn?.id;
           if (dependsOnId) {
             dependentMap[dependsOnId] = (dependentMap[dependsOnId] || 0) + 1;
