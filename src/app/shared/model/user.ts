@@ -5,6 +5,8 @@ export interface User {
   dtmLatestUpdateDate: string;
   dependentOn?: User;
   dependentCount?: number;
+  isDeleted?: boolean;
+  deletedAt?: boolean;
   rol?: {
     strDescription1?: string;
     strName?: string;
