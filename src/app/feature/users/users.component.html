@@ -207,6 +207,7 @@
         <tr
           *ngFor="let user of pagedUsers"
           [ngClass]="{ 'table-active': selectedUser?.id === user.id }"
+          [class.deleted]="user.isDeleted"
         >
           <td class="text-center">
             <span
