@@ -89,7 +89,6 @@ export class AssignRoleComponent {
 
   openAssignRoleModal(role: Rol) {
     this.selectedRole = role;
-    // abrir tu modal
   }
 
   loadRoles() {
