@@ -172,6 +172,20 @@ table td {
   align-items: center;
   gap: 0.5rem; /* equivalente a gap-2 de Bootstrap */
 }
+.btn-group a {
+  color: var(--sidebar-background-color);
+}
+
+.btn-group a:hover {
+  color: black;
+}
+
+.btn-group a:hover svg {
+  fill: black;
+  transform: scale(1.2);
+}
+
+
 /* Estilo de los íconos del título */
 .title-icon {
   /* margin-right: 0.3rem; */
@@ -296,4 +310,34 @@ table td {
   color: #721c24;
   font-style: italic;
   opacity: 0.7;
+}
+
+/* Estilo de los botones */
+.custom-role-modal .btn {
+  border: 2px solid black;
+  background-color: white;
+  color: black;
+  padding: 8px 15px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.custom-role-modal .btn:hover {
+  background-color: #f8f8f8;
+}
+
+/* Espaciado entre botones */
+.btn-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+/* option menu */
+/* Solo la modal optionMenuModal */
+#optionMenuModal .modal-dialog {
+  max-width: 80vw;
+  width: 35%;
+  max-width: 1000px;
 }

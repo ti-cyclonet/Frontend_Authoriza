@@ -100,21 +100,20 @@
   height: 1.5rem;
 }
 
-/* Para pantallas pequeñas */
 @media (max-width: 576px) {
   .form-buttons button {
-    min-width: 40px; /* Ajusta el ancho mínimo de los botones */
-    padding: 5px; /* Reduce el padding */
-    font-size: 0.8rem; /* Ajusta el tamaño de la fuente */
+    min-width: 40px;
+    padding: 5px;
+    font-size: 0.8rem;
   }
 
   .form-buttons button span {
-    display: none; /* Oculta el texto en pantallas pequeñas */
+    display: none;
   }
 
   .form-buttons button .status-icon {
-    width: 16px; /* Ancho del icono */
-    height: 16px; /* Alto del icono */
+    width: 16px;
+    height: 16px; 
   }
 }
 .btn-no-style {
@@ -127,5 +126,5 @@
 .form-group input,
 .form-group textarea,
 .form-group select {
-  color: #212121; /* Gris oscuro */
+  color: #212121;
 }

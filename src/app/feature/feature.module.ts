@@ -10,6 +10,8 @@ import { ApplicationsComponent } from './applications/applications.component';
 import { CuApplicationComponent } from './applications/cu-application/cu-application.component';
 import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
 import { ReactiveFormsModule } from '@angular/forms';
+import { PackagesComponent } from './packages/packages.component';
+import { AddPackageComponent } from './packages/add-package/add-package.component';
 @NgModule({
   declarations: [],
   imports: [
@@ -22,6 +24,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     UsersComponent,
     ApplicationsComponent,
     CuApplicationComponent,
+    PackagesComponent,
+    AddPackageComponent,
     NgbCarouselModule
   ]
 })

@@ -16,6 +16,7 @@ export const ROOT_USUERS = 'users';
 export const ROOT_ROLES = 'roles';
 export const ROOT_HOME = 'home';
 export const ROOT_APPLICATIONS = 'applications';
+export const ROOT_PACKAGES = 'packages';
 
 //Rutas de administración de la aplicación
 

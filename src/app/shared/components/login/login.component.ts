@@ -86,14 +86,14 @@ export class LoginComponent {
       (response) => {
         if (response.access_token) {
           sessionStorage.setItem('authToken', response.access_token);
-          this.showToast('Inicio de sesión exitoso', 'success', 'A', 0);
+          this.showToast('Successful login.', 'success', 'A', 0);
 
           setTimeout(() => {
             this.router.navigate(['/home']);
           }, 5000);
         } else {
-          this.showToast('Credenciales incorrectas', 'danger', 'A', 0);
-          console.error('❌ Error: No se recibió un token válido.');
+          this.showToast('Incorrect credentials', 'danger', 'A', 0);
+          console.error('❌ Error: No valid token received.');
         }
       },
       (error) => {
