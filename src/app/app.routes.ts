@@ -4,6 +4,7 @@ import {
   ROOT_CONFIGURATION,
   ROOT_HOME,
   ROOT_LOGIN,
+  ROOT_PACKAGES,
   ROOT_REGISTER,
   ROOT_ROLES,
   ROOT_USUERS,
@@ -37,6 +38,11 @@ export const routes: Routes = [
       {
         path: ROOT_USUERS,
         loadComponent: () => import('./feature/users/users.component').then((m) => m.UsersComponent),
+        canActivate: [AuthGuard],
+      },
+      {
+        path: ROOT_PACKAGES,
+        loadComponent: () => import('./feature/packages/packages.component').then((m) => m.PackagesComponent),
         canActivate: [AuthGuard],
       },
       {
