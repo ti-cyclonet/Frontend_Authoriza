@@ -5,6 +5,7 @@ import { Package } from '../../shared/model/package.model';
 import { PackageService } from '../../shared/services/packages/package.service';
 import { AddPackageComponent } from './add-package/add-package.component';
 import 'bootstrap';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-packages',
@@ -15,10 +16,7 @@ import 'bootstrap';
 })
 export class PackagesComponent implements OnInit {
   packages: Package[] = [];
-  iconStep1Visible: boolean = false;
-  iconStep2Visible: boolean = false;
-  iconStep3Visible: boolean = false;
-  isModalClosed: boolean = false;
+  showAddPackageModal: boolean = false;
 
   viewMode: 'list' | 'cards' = 'list';
 
@@ -26,7 +24,8 @@ export class PackagesComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPackages();
-    this.viewMode = localStorage.getItem('viewMode') as 'list' | 'cards' || 'list';
+    this.viewMode =
+      (localStorage.getItem('viewMode') as 'list' | 'cards') || 'list';
   }
 
   setView(mode: 'list' | 'cards') {
@@ -43,6 +42,10 @@ export class PackagesComponent implements OnInit {
     });
   }
 
+  openAddPackageModal() {
+    this.showAddPackageModal = true;
+  }
+
   getTotalPrice(pkg: Package): number {
     return (
       pkg.configurations?.reduce((sum, conf) => {
@@ -56,26 +59,21 @@ export class PackagesComponent implements OnInit {
     return pkg.configurations?.length ?? 0;
   }
 
-  handleIconChange(show: boolean) {
-    this.iconStep1Visible = show;
-  }
-
-  handleIconChange2(show: boolean) {
-    this.iconStep2Visible = show;
-  }
-
-  handleIconChange3(show: boolean) {
-    this.iconStep3Visible = show;
-  }
-
-  closeModal(closeMd: boolean) {
+  closeModal() {
+    this.showAddPackageModal = false;
     this.loadPackages();
-    if (closeMd) {
-      // const modalEl = document.getElementById('addPackage');
-      // if (modalEl) {
-      //   const modalInstance = window.bootstrap.Modal.getInstance(modalEl);
-      //   modalInstance?.hide();
-      // }
-    }
+  }
+
+  closeModal2() {
+    this.showAddPackageModal = false;
+    this.loadPackages();
+    Swal.fire({
+      icon: 'success',
+      title: 'Package created',
+      text: 'The package was created successfully',
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+    });
   }
 }
