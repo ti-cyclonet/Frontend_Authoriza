@@ -204,7 +204,7 @@
         style="height: 210px; overflow-y: auto"
       >
         <div>
-          <h5 class="card-title">{{ pkg.name }}</h5>
+          <h5 class="card-title text-center w-100">{{ pkg.name }}</h5>
           <p class="card-text">{{ pkg.description }}</p>
 
           <!-- Información de roles -->
@@ -214,7 +214,7 @@
 
           <!-- Precio total -->
           <p class="fw-bold mb-2">
-            Precio total: ${{ getTotalPrice(pkg) | number : "1.0-0" }} COP
+            Total price: ${{ getTotalPrice(pkg) | number : "1.0-0" }} COP
           </p>
         </div>
       </div>
