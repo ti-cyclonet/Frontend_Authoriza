@@ -399,7 +399,8 @@
     <!-- modal con el formulario para agregar un nuevo usuario -->
     <app-add-user-modal
       *ngIf="showAddUserModal"
-      (close)="showAddUserModal = false"
+      (close)="onClose()"
+      (close2)="onClose2()"
       (userCreated)="onUserCreated($event)"
     >
     </app-add-user-modal>

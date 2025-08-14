@@ -38,51 +38,7 @@
   height: 18px;
   fill: white; /* Fuerza el color blanco del ícono */
 }
-/* Clase para los íconos de pasos */
-.step-icons {
-  display: flex;
-  align-items: center;
-  position: relative;
-}
 
-.step-icon {
-  width: 1.5em;
-  height: 1.5em;
-  z-index: 1;
-}
-
-/* Agregar una línea horizontal que conecte los íconos */
-.step-icons::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-color: var(--header-background-color);
-  opacity: 0.3;
-  z-index: 0;
-}
-
-.step-icon:first-child::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 100%;
-  height: 2px;
-  background-color: transparent;
-}
-
-.step-icon:last-child::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 100%;
-  right: 0;
-  height: 2px;
-  background-color: transparent;
-}
 /* Estilo de los íconos del título */
 .title-icon {
   width: 25px;
@@ -259,11 +215,6 @@ a.disabled {
 .modal-header-custom {
   background-color: var(--sidebar-background-color);
   color: #cccccc;
-}
-
-.modal-title {
-  text-align: right;
-  width: 100%;
 }
 
 /* Estilo para el enlace en el contenedor del título */

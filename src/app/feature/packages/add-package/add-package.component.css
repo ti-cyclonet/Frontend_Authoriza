@@ -184,3 +184,191 @@ a.disabled {
     color: white;
   }
 }
+/* Clase para los íconos de pasos */
+.step-icons {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.step-icon {
+  width: 1.5em;
+  height: 1.5em;
+  z-index: 1;
+}
+
+/* Agregar una línea horizontal que conecte los íconos */
+.step-icons::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--header-background-color);
+  opacity: 0.3;
+  z-index: 0;
+}
+
+.step-icon:first-child::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 100%;
+  height: 2px;
+  background-color: transparent;
+}
+
+.step-icon:last-child::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  right: 0;
+  height: 2px;
+  background-color: transparent;
+}
+
+.modal-title {
+  text-align: right;
+  width: 100%;
+}
+
+.modal-header-custom {
+  background-color: var(--sidebar-background-color);
+  color: #cccccc;
+}
+
+/* Estilo para el enlace en el contenedor del título */
+.title-link {
+  display: flex;
+  align-items: center;
+  color: #585757;
+}
+
+/* Efecto hover para el enlace (opcional) */
+.title-link:hover {
+  color: #4a4a4a;
+}
+
+/* Estilo para la tarjeta de contenido */
+.card {
+  border: 1px solid #cccccc;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.card-body {
+  padding: 1.5rem;
+  margin-top: 0.1rem;
+  /* color: var(--primary-text-color); */
+}
+
+/* Mantener el ancho de 100px en pantallas medianas o más grandes */
+.btn-fixed-width {
+  width: 100px;
+}
+.btn-fixed-width-cnf {
+  width: 100px;
+}
+
+/* Quitar el ancho fijo en pantallas pequeñas */
+@media (max-width: 768px) {
+  .btn-fixed-width {
+    width: auto;
+  }
+}
+
+.custom-modal-header {
+  border-bottom: 2px solid rgb(148, 77, 77);
+}
+/* Modal personalizada para crear rol */
+.custom-role-modal .modal-header-custom {
+  background-color: #7011ce !important;
+  color: white !important;
+  font-weight: bold;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: none !important;
+}
+
+/* Estilo de los iconos de pasos */
+.step-icons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.step-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Formulario con etiquetas azules */
+.custom-role-modal label {
+  font-weight: bold;
+  color: #0056b3;
+  font-size: 0.9rem;
+}
+
+/* Campos de entrada */
+.custom-role-modal input,
+.custom-role-modal textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 1rem;
+}
+
+/* Estilo de los botones */
+.custom-role-modal .btn {
+  border: 2px solid black;
+  background-color: white;
+  color: black;
+  padding: 8px 15px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.custom-role-modal .btn:hover {
+  background-color: #f8f8f8;
+}
+
+/* Espaciado entre botones */
+.btn-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+/* option menu */
+/* Solo la modal optionMenuModal */
+#optionMenuModal .modal-dialog {
+  max-width: 80vw;
+  width: 35%;
+  max-width: 1000px;
+}
+
+.modal-backdrop {
+  z-index: 1040;
+}
+.modal {
+  z-index: 1050;
+}

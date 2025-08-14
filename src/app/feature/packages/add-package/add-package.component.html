@@ -1,552 +1,629 @@
-<div class="container-fluid">
-  <!-- Datos básicos del paquete -->
-  <div class="basic-package-form" *ngIf="step1">
-    <div
-      class="d-flex align-items-center pb-3 mb-2"
-      style="border-bottom: 1px solid var(--sidebar-background-color)"
-    >
-      <div class="title-form">BASIC PACKAGE DATA FORM</div>
-    </div>
-    <form [formGroup]="basicPackageForm">
-      <!-- <hr style="border: 1px solid var(--sidebar-background-color)" /> -->
-      <div class="card basic-package-form">
-        <div class="form-group">
-          <label for="applicationName">Package Name</label>
-          <input
-            id="name"
-            formControlName="name"
-            type="text"
-            autocomplete="off"
-          />
-          <div
-            *ngIf="
-              basicPackageForm.get('name')?.invalid &&
-              basicPackageForm.get('name')?.touched
-            "
-            class="error"
-          >
-            The package name is required.
-          </div>
-          <div class="error" *ngIf="nameExists">
-            This package name is not available. Please use another one.
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="description">Description</label>
-          <textarea
-            id="description"
-            formControlName="description"
-            autocomplete="off"
-          ></textarea>
-          <div
-            *ngIf="
-              basicPackageForm.get('description')?.invalid &&
-              basicPackageForm.get('description')?.touched
-            "
-            class="error"
-          >
-            The package description is required.
-          </div>
-        </div>
-      </div>
-    </form>
-  </div>
 
-  <!-- Configuración del paquete -->
-  <div class="configuration-package-section" *ngIf="step2">
-    <div
-      class="d-flex align-items-center pb-3 mb-2"
-      style="border-bottom: 1px solid var(--sidebar-background-color)"
-    >
-      <div class="title-form">PACKAGE CONFIGURATION SECTION</div>
-      <div class="btn-group ms-auto custom-btn-group">
-        <a
-          title="Add new package configuration record"
-          style="cursor: pointer"
-          *ngIf="!showConfigurationRecord"
-          (click)="showConfigurationRecord = true"
-        >
-          <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
+<div class="modal-backdrop show"></div>
+<div class="modal d-block fade show" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <!-- Título del Modal con Íconos de Paso -->
+      <div class="modal-header justify-content-between modal-header-custom">
+        <!-- Íconos de Pasos con línea de unión -->
+        <div class="step-icons d-flex position-relative">
+          <!-- Ícono para el paso 1 -->
+          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon">
             <use
               [attr.xlink:href]="
-                './assets/icons/bootstrap-icons.svg#plus-square-fill'
+                './assets/icons/bootstrap-icons.svg#' +
+                (showStp1 ? '1-circle-fill' : '1-circle')
               "
-            ></use>
+            />
           </svg>
-        </a>
-
-        <a
-          title="Hide section"
-          style="cursor: pointer"
-          *ngIf="showConfigurationRecord"
-          (click)="showConfigurationRecord = false"
-        >
-          <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
+          <!-- Ícono para el paso 2 -->
+          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
             <use
               [attr.xlink:href]="
-                './assets/icons/bootstrap-icons.svg#check-circle-fill'
+                './assets/icons/bootstrap-icons.svg#' +
+                (showStp2 ? '2-circle-fill' : '2-circle')
               "
-            ></use>
+            />
           </svg>
-        </a>
-      </div>
-    </div>
-    <div
-      class="row d-flex justify-content-between align-items-center small-info"
-    >
-      <div class="d-flex justify-content-between align-items-center">
-        <div>Package name:</div>
-        <div>
-          <strong class="highlight">{{
-            basicPackageForm.get("name")?.value | uppercase
-          }}</strong>
+          <!-- Ícono para el paso 3 -->
+          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
+            <use
+              [attr.xlink:href]="
+                './assets/icons/bootstrap-icons.svg#' +
+                (showStp3 ? '3-circle-fill' : '3-circle')
+              "
+            />
+          </svg>
         </div>
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">
+          Add a New <span style="color: white">Package</span>
+        </h1>
       </div>
-      <div class="d-flex justify-content-between align-items-center">
-        Total roles: <strong class="highlight">{{ roleConfigs.length }}</strong>
-      </div>
-      <div class="d-flex justify-content-between align-items-center">
-        Total price:
-        <strong class="highlight"
-          >$ {{ getTotalPrice() | number : "1.0-0" }} COP/month</strong
-        >
-      </div>
-    </div>
-
-    <div
-      class="add-configuration-record mb-3"
-      style="border-bottom: 1px solid var(--sidebar-background-color)"
-      *ngIf="showConfigurationRecord"
-      [class.visible]="showConfigurationRecord"
-      [class.hidden]="!showConfigurationRecord"
-    >
-      <div class="card text-center" style="border-radius: 0">
-        <div class="card-header" style="background-color: #eeeaff !important">
-          <div class="row mb-3">
-            <!-- Buscador por aplicación o nombre del rol -->
-            <div class="col-sm-12 mb-2 mb-md-0">
-              <div class="subtitle">
-                <h6 class="users-titleOne">
-                  Search by application or role name
-                </h6>
+      <div class="modal-body">
+        <div class="container-fluid">
+          
+          <!-- Datos básicos del paquete -->
+          <div class="basic-package-form" *ngIf="step1">
+            <div
+              class="d-flex align-items-center pb-3 mb-2"
+              style="border-bottom: 1px solid var(--sidebar-background-color)"
+            >
+              <div class="title-form">BASIC PACKAGE DATA FORM</div>
+            </div>
+            <form [formGroup]="basicPackageForm">
+              <!-- <hr style="border: 1px solid var(--sidebar-background-color)" /> -->
+              <div class="basic-package-form">
+                <div class="form-group">
+                  <label for="applicationName">Package Name</label>
+                  <input
+                    id="name"
+                    formControlName="name"
+                    type="text"
+                    autocomplete="off"
+                  />
+                  <div
+                    *ngIf="
+                      basicPackageForm.get('name')?.invalid &&
+                      basicPackageForm.get('name')?.touched
+                    "
+                    class="error"
+                  >
+                    The package name is required.
+                  </div>
+                  <div class="error" *ngIf="nameExists">
+                    This package name is not available. Please use another one.
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="description">Description</label>
+                  <textarea
+                    id="description"
+                    formControlName="description"
+                    autocomplete="off"
+                  ></textarea>
+                  <div
+                    *ngIf="
+                      basicPackageForm.get('description')?.invalid &&
+                      basicPackageForm.get('description')?.touched
+                    "
+                    class="error"
+                  >
+                    The package description is required.
+                  </div>
+                </div>
               </div>
-              <div
-                class="input-group"
-                style="
-                  border: 1px solid var(--sidebar-background-color);
-                  border-radius: 0.375rem;
-                  overflow: hidden;
-                "
-              >
-                <input
-                  type="text"
-                  class="form-control custom-search-input"
-                  placeholder="Write some words to filter"
-                  [(ngModel)]="searchText"
-                  (input)="onFilterChange($event)"
-                />
+            </form>
+          </div>
 
-                <button
-                  *ngIf="searchText"
-                  class="input-group-text bg-transparent border-0 fw-bold text-danger"
+          <!-- Configuración del paquete -->
+          <div class="configuration-package-section" *ngIf="step2">
+            <div
+              class="d-flex align-items-center pb-3 mb-2"
+              style="border-bottom: 1px solid var(--sidebar-background-color)"
+            >
+              <div class="title-form">PACKAGE CONFIGURATION SECTION</div>
+              <div class="btn-group ms-auto custom-btn-group">
+                <a
+                  title="Add new package configuration record"
                   style="cursor: pointer"
-                  (click)="clearSearch()"
+                  *ngIf="!showConfigurationRecord"
+                  (click)="showConfigurationRecord = true"
                 >
                   <svg
                     fill="currentColor"
                     viewBox="0 0 16 16"
-                    style="width: 1rem; height: 1rem"
+                    class="title-icon"
                   >
                     <use
-                      xlink:href="./assets/icons/bootstrap-icons.svg#x-circle"
-                    />
+                      [attr.xlink:href]="
+                        './assets/icons/bootstrap-icons.svg#plus-square-fill'
+                      "
+                    ></use>
                   </svg>
-                </button>
-                <span class="input-group-text bg-transparent border-0">
+                </a>
+
+                <a
+                  title="Hide section"
+                  style="cursor: pointer"
+                  *ngIf="showConfigurationRecord"
+                  (click)="showConfigurationRecord = false"
+                >
                   <svg
                     fill="currentColor"
                     viewBox="0 0 16 16"
-                    style="
-                      width: 1rem;
-                      height: 1rem;
-                      color: var(--primary_active_text_color);
-                    "
+                    class="title-icon"
                   >
                     <use
-                      xlink:href="./assets/icons/bootstrap-icons.svg#search"
-                    />
+                      [attr.xlink:href]="
+                        './assets/icons/bootstrap-icons.svg#check-circle-fill'
+                      "
+                    ></use>
                   </svg>
-                </span>
+                </a>
+              </div>
+            </div>
+            <div
+              class="row d-flex justify-content-between align-items-center small-info"
+            >
+              <div class="d-flex justify-content-between align-items-center">
+                <div>Package name:</div>
+                <div>
+                  <strong class="highlight">{{
+                    basicPackageForm.get("name")?.value | uppercase
+                  }}</strong>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                Total roles:
+                <strong class="highlight">{{ roleConfigs.length }}</strong>
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                Total price:
+                <strong class="highlight"
+                  >$ {{ getTotalPrice() | number : "1.0-0" }} COP/month</strong
+                >
+              </div>
+            </div>
+
+            <div
+              class="add-configuration-record mb-3"
+              style="border-bottom: 1px solid var(--sidebar-background-color)"
+              *ngIf="showConfigurationRecord"
+              [class.visible]="showConfigurationRecord"
+              [class.hidden]="!showConfigurationRecord"
+            >
+              <div class="card text-center" style="border-radius: 0">
+                <div
+                  class="card-header"
+                  style="background-color: #eeeaff !important"
+                >
+                  <div class="row mb-3">
+                    <!-- Buscador por aplicación o nombre del rol -->
+                    <div class="col-sm-12 mb-2 mb-md-0">
+                      <div class="subtitle">
+                        <h6 class="users-titleOne">
+                          Search by application or role name
+                        </h6>
+                      </div>
+                      <div
+                        class="input-group"
+                        style="
+                          border: 1px solid var(--sidebar-background-color);
+                          border-radius: 0.375rem;
+                          overflow: hidden;
+                        "
+                      >
+                        <input
+                          type="text"
+                          class="form-control custom-search-input"
+                          placeholder="Write some words to filter"
+                          [(ngModel)]="searchText"
+                          (input)="onFilterChange($event)"
+                        />
+
+                        <button
+                          *ngIf="searchText"
+                          class="input-group-text bg-transparent border-0 fw-bold text-danger"
+                          style="cursor: pointer"
+                          (click)="clearSearch()"
+                        >
+                          <svg
+                            fill="currentColor"
+                            viewBox="0 0 16 16"
+                            style="width: 1rem; height: 1rem"
+                          >
+                            <use
+                              xlink:href="./assets/icons/bootstrap-icons.svg#x-circle"
+                            />
+                          </svg>
+                        </button>
+                        <span class="input-group-text bg-transparent border-0">
+                          <svg
+                            fill="currentColor"
+                            viewBox="0 0 16 16"
+                            style="
+                              width: 1rem;
+                              height: 1rem;
+                              color: var(--primary_active_text_color);
+                            "
+                          >
+                            <use
+                              xlink:href="./assets/icons/bootstrap-icons.svg#search"
+                            />
+                          </svg>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <table
+                    class="table table-hover table-sm"
+                    style="font-size: 14px"
+                  >
+                    <thead class="table-dark">
+                      <tr class="table-light">
+                        <th>Application</th>
+                        <th>Role Name</th>
+                        <th class="text-center">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of pagedRoles">
+                        <td>{{ item.application }}</td>
+                        <td>{{ item.role.strName }}</td>
+                        <td class="text-center">
+                          <div class="btn-group btn-group-sm" role="group">
+                            <a
+                              [title]="
+                                isRoleAdded(item.role.id)
+                                  ? 'Role added'
+                                  : 'Add role to package'
+                              "
+                              style="
+                                color: var(--sidebar-background-color);
+                                cursor: pointer;
+                              "
+                              [ngClass]="{
+                                disabled: isRoleAdded(item.role.id)
+                              }"
+                              (click)="
+                                !isRoleAdded(item.role.id) &&
+                                  onAddRole(item.role)
+                              "
+                            >
+                              <svg
+                                fill="currentColor"
+                                viewBox="0 0 16 16"
+                                class="status-icon"
+                              >
+                                <use
+                                  [attr.xlink:href]="
+                                    isRoleAdded(item.role.id)
+                                      ? './assets/icons/bootstrap-icons.svg#check-circle-fill'
+                                      : './assets/icons/bootstrap-icons.svg#plus-circle-fill'
+                                  "
+                                />
+                              </svg>
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div
+                  class="card-footer text-body-secondary d-flex justify-content-between align-items-center"
+                  style="background-color: #eeeaff !important"
+                >
+                  <button
+                    class="btn btn-outline-purple btn-sm"
+                    (click)="previousPage()"
+                    [disabled]="currentPage === 0"
+                  >
+                    Previous
+                  </button>
+                  {{ totalRoles }} result{{ totalRoles !== 1 ? "s" : "" }} —
+                  Page {{ currentPage + 1 }} of
+                  {{ Math.ceil(totalRoles / PAGE_SIZE) }}
+                  <button
+                    class="btn btn-outline-purple btn-sm"
+                    (click)="nextPage()"
+                    [disabled]="(currentPage + 1) * PAGE_SIZE >= totalRoles"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div
+              class="card configuration-package-section"
+              [class.disabled-section]="showConfigurationRecord"
+            >
+              <div class="card-body">
+                <table
+                  class="table table-hover table-sm"
+                  style="font-size: 14px"
+                >
+                  <thead class="table-dark">
+                    <tr class="table-light">
+                      <th>Item</th>
+                      <th class="d-none d-md-table-cell">Application</th>
+                      <th>Role Name</th>
+                      <th class="d-none d-md-table-cell">Quantity</th>
+                      <th class="d-none d-md-table-cell">Unit price</th>
+                      <th class="text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let config of roleConfigs; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td class="d-none d-md-table-cell">
+                        {{ getApplicationNameByRoleId(config.rolId) }}
+                      </td>
+                      <td>{{ config.roleName }}</td>
+                      <td class="d-none d-md-table-cell">
+                        {{ config.totalAccount }}
+                      </td>
+                      <td class="d-none d-md-table-cell">
+                        $ {{ config.price | number : "1.0-0" }} COP
+                      </td>
+                      <td class="text-center">
+                        <div
+                          class="btn-group btn-group-sm"
+                          role="group"
+                          aria-label="Small button group"
+                        >
+                          <a
+                            (click)="viewRole(config)"
+                            title="View"
+                            style="
+                              color: var(--sidebar-background-color);
+                              cursor: pointer;
+                            "
+                          >
+                            <svg
+                              fill="currentColor"
+                              viewBox="0 0 16 16"
+                              class="status-icon"
+                            >
+                              <use
+                                xlink:href="./assets/icons/bootstrap-icons.svg#eye"
+                              />
+                            </svg>
+                          </a>
+                          <a
+                            (click)="editRole(config)"
+                            title="Edit"
+                            style="
+                              color: var(--sidebar-background-color);
+                              cursor: pointer;
+                            "
+                          >
+                            <svg
+                              fill="currentColor"
+                              viewBox="0 0 16 16"
+                              class="status-icon"
+                            >
+                              <use
+                                xlink:href="./assets/icons/bootstrap-icons.svg#pencil-square"
+                              />
+                            </svg>
+                          </a>
+                          <a
+                            (click)="removeRoleConfig(config.rolId)"
+                            title="Remove"
+                            style="
+                              color: var(--sidebar-background-color);
+                              cursor: pointer;
+                            "
+                          >
+                            <svg
+                              fill="currentColor"
+                              viewBox="0 0 16 16"
+                              class="status-icon"
+                            >
+                              <use
+                                xlink:href="./assets/icons/bootstrap-icons.svg#trash"
+                              />
+                            </svg>
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
-        </div>
-        <div class="card-body">
-          <table class="table table-hover table-sm" style="font-size: 14px">
-            <thead class="table-dark">
-              <tr class="table-light">
-                <th>Application</th>
-                <th>Role Name</th>
-                <th class="text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let item of pagedRoles">
-                <td>{{ item.application }}</td>
-                <td>{{ item.role.strName }}</td>
-                <td class="text-center">
-                  <div class="btn-group btn-group-sm" role="group">
-                    <a
-                      [title]="
-                        isRoleAdded(item.role.id)
-                          ? 'Role added'
-                          : 'Add role to package'
-                      "
-                      style="
-                        color: var(--sidebar-background-color);
-                        cursor: pointer;
-                      "
-                      [ngClass]="{ disabled: isRoleAdded(item.role.id) }"
-                      (click)="
-                        !isRoleAdded(item.role.id) && onAddRole(item.role)
-                      "
+
+          <!-- tarjeta final de presentación del paquete -->
+          <div class="presentation-package-section" *ngIf="step3">
+            <div
+              class="d-flex align-items-center pb-3 mb-2"
+              style="border-bottom: 1px solid var(--sidebar-background-color)"
+            >
+              <div class="title-form">PACKAGE BUSINESS CARD CONFIGURATION</div>
+            </div>
+            <div class="row">
+              <!-- Columna izquierda -->
+              <div class="col-md-4">
+                <h6>Add images (optional, max 3):</h6>
+                <input
+                  type="file"
+                  (change)="onImageSelected($event)"
+                  accept="image/*"
+                  multiple
+                  [disabled]="previewImages.length >= 3"
+                />
+
+                <div class="mt-2">
+                  <div
+                    *ngFor="let img of previewImages; let i = index"
+                    class="position-relative d-inline-block me-2"
+                    style="width: 80px; height: 80px"
+                  >
+                    <img
+                      [src]="img"
+                      class="img-thumbnail"
+                      style="width: 100%; height: 100%; object-fit: cover"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-danger btn-sm position-absolute top-0 end-0"
+                      (click)="removeImage(i)"
+                      style="border-radius: 50%; padding: 0.25rem 0.4rem"
                     >
-                      <svg
-                        fill="currentColor"
-                        viewBox="0 0 16 16"
-                        class="status-icon"
-                      >
-                        <use
-                          [attr.xlink:href]="
-                            isRoleAdded(item.role.id)
-                              ? './assets/icons/bootstrap-icons.svg#check-circle-fill'
-                              : './assets/icons/bootstrap-icons.svg#plus-circle-fill'
-                          "
-                        />
-                      </svg>
-                    </a>
+                      ×
+                    </button>
                   </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div
-          class="card-footer text-body-secondary d-flex justify-content-between align-items-center"
-          style="background-color: #eeeaff !important"
-        >
-          <button
-            class="btn btn-outline-purple btn-sm"
-            (click)="previousPage()"
-            [disabled]="currentPage === 0"
-          >
-            Previous
-          </button>
-          {{ totalRoles }} result{{ totalRoles !== 1 ? "s" : "" }} — Page
-          {{ currentPage + 1 }} of {{ Math.ceil(totalRoles / PAGE_SIZE) }}
-          <button
-            class="btn btn-outline-purple btn-sm"
-            (click)="nextPage()"
-            [disabled]="(currentPage + 1) * PAGE_SIZE >= totalRoles"
-          >
-            Next
-          </button>
-        </div>
-      </div>
-    </div>
-    <div
-      class="card configuration-package-section"
-      [class.disabled-section]="showConfigurationRecord"
-    >
-      <div class="card-body">
-        <table class="table table-hover table-sm" style="font-size: 14px">
-          <thead class="table-dark">
-            <tr class="table-light">
-              <th>Item</th>
-              <th class="d-none d-md-table-cell">Application</th>
-              <th>Role Name</th>
-              <th class="d-none d-md-table-cell">Quantity</th>
-              <th class="d-none d-md-table-cell">Unit price</th>
-              <th class="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let config of roleConfigs; let i = index">
-              <td>{{ i + 1 }}</td>
-              <td class="d-none d-md-table-cell">
-                {{ getApplicationNameByRoleId(config.rolId) }}
-              </td>
-              <td>{{ config.roleName }}</td>
-              <td class="d-none d-md-table-cell">{{ config.totalAccount }}</td>
-              <td class="d-none d-md-table-cell">
-                $ {{ config.price | number : "1.0-0" }} COP
-              </td>
-              <td class="text-center">
-                <div
-                  class="btn-group btn-group-sm"
-                  role="group"
-                  aria-label="Small button group"
-                >
-                  <a
-                    (click)="viewRole(config)"
-                    title="View"
-                    style="
-                      color: var(--sidebar-background-color);
-                      cursor: pointer;
-                    "
-                  >
-                    <svg
-                      fill="currentColor"
-                      viewBox="0 0 16 16"
-                      class="status-icon"
-                    >
-                      <use
-                        xlink:href="./assets/icons/bootstrap-icons.svg#eye"
-                      />
-                    </svg>
-                  </a>
-                  <a
-                    (click)="editRole(config)"
-                    title="Edit"
-                    style="
-                      color: var(--sidebar-background-color);
-                      cursor: pointer;
-                    "
-                  >
-                    <svg
-                      fill="currentColor"
-                      viewBox="0 0 16 16"
-                      class="status-icon"
-                    >
-                      <use
-                        xlink:href="./assets/icons/bootstrap-icons.svg#pencil-square"
-                      />
-                    </svg>
-                  </a>
-                  <a
-                    (click)="removeRoleConfig(config.rolId)"
-                    title="Remove"
-                    style="
-                      color: var(--sidebar-background-color);
-                      cursor: pointer;
-                    "
-                  >
-                    <svg
-                      fill="currentColor"
-                      viewBox="0 0 16 16"
-                      class="status-icon"
-                    >
-                      <use
-                        xlink:href="./assets/icons/bootstrap-icons.svg#trash"
-                      />
-                    </svg>
-                  </a>
                 </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+              </div>
 
-  <!-- tarjeta final de presentación del paquete -->
-  <div class="presentation-package-section" *ngIf="step3">
-    <div
-      class="d-flex align-items-center pb-3 mb-2"
-      style="border-bottom: 1px solid var(--sidebar-background-color)"
-    >
-      <div class="title-form">PACKAGE BUSINESS CARD CONFIGURATION</div>
-    </div>
-    <div class="row">
-      <!-- Columna izquierda -->
-      <div class="col-md-4">
-        <h6>Add images (optional, max 3):</h6>
-        <input
-          type="file"
-          (change)="onImageSelected($event)"
-          accept="image/*"
-          multiple
-          [disabled]="previewImages.length >= 3"
-        />
+              <!-- Columna derecha: Vista previa -->
+              <div class="col-md-8">
+                <h6>Preview:</h6>
+                <div
+                  class="card shadow-sm"
+                  style="
+                    background-color: #eeeaff !important;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                  "
+                >
+                  <div class="card-body p-3">
+                    <!-- Carrusel -->
+                    <div
+                      id="imageCarousel"
+                      class="carousel slide mb-3"
+                      data-bs-ride="carousel"
+                    >
+                      <div class="carousel-inner">
+                        <div
+                          *ngFor="
+                            let img of previewImages.length
+                              ? previewImages
+                              : [defaultImage];
+                            let i = index
+                          "
+                          class="carousel-item"
+                          [class.active]="i === 0"
+                        >
+                          <img
+                            [src]="img"
+                            class="d-block w-100"
+                            style="max-height: 200px; object-fit: cover"
+                          />
+                        </div>
+                      </div>
 
-        <div class="mt-2">
-          <div
-            *ngFor="let img of previewImages; let i = index"
-            class="position-relative d-inline-block me-2"
-            style="width: 80px; height: 80px"
-          >
-            <img
-              [src]="img"
-              class="img-thumbnail"
-              style="width: 100%; height: 100%; object-fit: cover"
-            />
+                      <button
+                        class="carousel-control-prev"
+                        type="button"
+                        data-bs-target="#imageCarousel"
+                        data-bs-slide="prev"
+                        *ngIf="previewImages.length > 1"
+                      >
+                        <span class="carousel-control-prev-icon"></span>
+                      </button>
+                      <button
+                        class="carousel-control-next"
+                        type="button"
+                        data-bs-target="#imageCarousel"
+                        data-bs-slide="next"
+                        *ngIf="previewImages.length > 1"
+                      >
+                        <span class="carousel-control-next-icon"></span>
+                      </button>
+                    </div>
+
+                    <h5 style="color: var(--sidebar-background-color)">
+                      {{ basicPackageForm.get("name")?.value | uppercase }}
+                    </h5>
+                    <p class="text-muted">
+                      {{ basicPackageForm.get("description")?.value }}
+                    </p>
+
+                    <ul class="list-group mb-2">
+                      <li
+                        *ngFor="let config of roleConfigs"
+                        class="list-group-item d-flex justify-content-between align-items-center"
+                      >
+                        {{ config.roleName }}
+                        <span class="badge bg-primary rounded-pill">{{
+                          config.totalAccount
+                        }}</span>
+                      </li>
+                    </ul>
+
+                    <p class="fw-bold">
+                      Total price: ${{
+                        getTotalPrice() | number : "1.0-0"
+                      }}
+                      COP/month
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer con los botones -->
+          <div class="form-buttons">
+            <button
+              id="prevBtn"
+              type="button"
+              class="btn btn-outline-dark btn-sm me-4 btn-fixed-width"
+              [disabled]="!(step3 || (step2 && !step1))"
+              (click)="onPrevious()"
+            >
+              <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+                <use
+                  xlink:href="./assets/icons/bootstrap-icons.svg#arrow-left"
+                ></use>
+              </svg>
+              <span class="d-none d-md-inline">Previous</span>
+            </button>
+
             <button
               type="button"
-              class="btn btn-danger btn-sm position-absolute top-0 end-0"
-              (click)="removeImage(i)"
-              style="border-radius: 50%; padding: 0.25rem 0.4rem"
+              class="btn btn-outline-dark btn-sm mx-4 btn-fixed-width"              
+              title="Cancel"
+              (click)="onCancel()"
             >
-              ×
+              Cancel
+            </button>
+
+            <button
+              *ngIf="step1"
+              id="nextBtn"
+              type="button"
+              class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width"
+              data-bs-toggle="tooltip"
+              title="Next"
+              [disabled]="!basicPackageForm.valid"
+              (click)="step1 && formOneValid()"
+            >
+              <span class="d-none d-md-inline">Next</span>
+              <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+                <use
+                  xlink:href="./assets/icons/bootstrap-icons.svg#arrow-right"
+                ></use>
+              </svg>
+            </button>
+            <button
+              *ngIf="step2"
+              id="nextBtn"
+              type="button"
+              class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width"
+              data-bs-toggle="tooltip"
+              title="Next"
+              [disabled]="!hasRoleConfigs"
+              (click)="step2 && formTwoValid()"
+            >
+              <span class="d-none d-md-inline">Next</span>
+              <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+                <use
+                  xlink:href="./assets/icons/bootstrap-icons.svg#arrow-right"
+                ></use>
+              </svg>
+            </button>
+            <button
+              *ngIf="step3"
+              id="sendBtn"
+              type="button"
+              class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width"
+              data-bs-toggle="tooltip"
+              title="Send"
+              (click)="step3 && submitPackage()"
+            >
+              <span class="d-none d-md-inline">Send</span>
+              <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+                <use xlink:href="./assets/icons/bootstrap-icons.svg#send"></use>
+              </svg>
             </button>
           </div>
         </div>
       </div>
-
-      <!-- Columna derecha: Vista previa -->
-      <div class="col-md-8">
-        <h6>Preview:</h6>
-        <div
-          class="card shadow-sm"
-          style="
-            background-color: #eeeaff !important;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-          "
-        >
-          <div class="card-body p-3">
-            <!-- Carrusel -->
-            <div
-              id="imageCarousel"
-              class="carousel slide mb-3"
-              data-bs-ride="carousel"
-            >
-              <div class="carousel-inner">
-                <div
-                  *ngFor="
-                    let img of previewImages.length
-                      ? previewImages
-                      : [defaultImage];
-                    let i = index
-                  "
-                  class="carousel-item"
-                  [class.active]="i === 0"
-                >
-                  <img
-                    [src]="img"
-                    class="d-block w-100"
-                    style="max-height: 200px; object-fit: cover"
-                  />
-                </div>
-              </div>
-
-              <button
-                class="carousel-control-prev"
-                type="button"
-                data-bs-target="#imageCarousel"
-                data-bs-slide="prev"
-                *ngIf="previewImages.length > 1"
-              >
-                <span class="carousel-control-prev-icon"></span>
-              </button>
-              <button
-                class="carousel-control-next"
-                type="button"
-                data-bs-target="#imageCarousel"
-                data-bs-slide="next"
-                *ngIf="previewImages.length > 1"
-              >
-                <span class="carousel-control-next-icon"></span>
-              </button>
-            </div>
-
-            <h5 style="color: var(--sidebar-background-color)">
-              {{ basicPackageForm.get("name")?.value | uppercase }}
-            </h5>
-            <p class="text-muted">
-              {{ basicPackageForm.get("description")?.value }}
-            </p>
-
-            <ul class="list-group mb-2">
-              <li
-                *ngFor="let config of roleConfigs"
-                class="list-group-item d-flex justify-content-between align-items-center"
-              >
-                {{ config.roleName }}
-                <span class="badge bg-primary rounded-pill">{{
-                  config.totalAccount
-                }}</span>
-              </li>
-            </ul>
-
-            <p class="fw-bold">
-              Total price: ${{ getTotalPrice() | number : "1.0-0" }} COP/month
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
-
-  <!-- Footer con los botones -->
-  <div class="form-buttons">
-    <button
-      id="prevBtn"
-      type="button"
-      class="btn btn-outline-dark btn-sm me-4 btn-fixed-width"
-      [disabled]="!(step3 || (step2 && !step1))"
-      (click)="onPrevious()"
-    >
-      <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
-        <use xlink:href="./assets/icons/bootstrap-icons.svg#arrow-left"></use>
-      </svg>
-      <span class="d-none d-md-inline">Previous</span>
-    </button>
-
-    <button
-      type="button"
-      class="btn btn-outline-dark btn-sm mx-4 btn-fixed-width"
-      data-bs-toggle="tooltip"
-      title="Cancel"
-      style="width: 100px"
-      data-bs-dismiss="modal"
-      (click)="onCancel()"
-    >
-      Cancel
-    </button>
-
-    <button
-      *ngIf="step1"
-      id="nextBtn"
-      type="button"
-      class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width"
-      data-bs-toggle="tooltip"
-      title="Next"
-      [disabled]="!basicPackageForm.valid"
-      (click)="step1 && formOneValid()"
-    >
-      <span class="d-none d-md-inline">Next</span>
-      <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
-        <use xlink:href="./assets/icons/bootstrap-icons.svg#arrow-right"></use>
-      </svg>
-    </button>
-    <button
-      *ngIf="step2"
-      id="nextBtn"
-      type="button"
-      class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width"
-      data-bs-toggle="tooltip"
-      title="Next"
-      [disabled]="!hasRoleConfigs"
-      (click)="step2 && formTwoValid()"
-    >
-      <span class="d-none d-md-inline">Next</span>
-      <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
-        <use xlink:href="./assets/icons/bootstrap-icons.svg#arrow-right"></use>
-      </svg>
-    </button>
-    <button
-      *ngIf="step3"
-      id="sendBtn"
-      type="button"
-      class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width"
-      data-bs-toggle="tooltip"
-      title="Send"
-      (click)="step3 && submitPackage()"
-    >
-      <span class="d-none d-md-inline">Send</span>
-      <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
-        <use xlink:href="./assets/icons/bootstrap-icons.svg#send"></use>
-      </svg>
-    </button>
   </div>
 </div>
