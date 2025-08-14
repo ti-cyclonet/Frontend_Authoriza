@@ -37,6 +37,7 @@ import { AssignDependencyComponent } from '../assign-dependency/assign-dependenc
 })
 export class AddUserModalComponent {
   @Output() close = new EventEmitter<void>();
+  @Output() close2 = new EventEmitter<void>();
   @Output() userCreated = new EventEmitter<{
     message?: string;
     type?: 'success' | 'warning' | 'danger' | 'primary';
@@ -233,13 +234,6 @@ export class AddUserModalComponent {
   }
 
   onDependencyAssigned() {
-    this.userCreated.emit({
-      message: 'User created, role and dependency assigned successfully!',
-      type: 'success',
-      alertType: 'A',
-      container: 0,
-      id: this.createdUserId,
-    });
     this.close.emit();
   }
 }

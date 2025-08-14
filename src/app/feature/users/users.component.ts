@@ -397,6 +397,25 @@ export class UsersComponent implements OnInit {
     this.loadUsersExcludingDependency();
   }
 
+  onClose() {
+    this.showAddUserModal = false;
+    this.loadUsersExcludingDependency();
+
+    Swal.fire({
+      icon: 'success',
+      title: 'User created',
+      text: 'The user was created successfully',
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+    });
+  }
+
+  onClose2() {
+    this.showAddUserModal = false;
+    this.loadUsersExcludingDependency();
+  }
+
   refreshSelectedUser(): void {
     const userId = this.selectedUser?.id;
     if (!userId) return;
