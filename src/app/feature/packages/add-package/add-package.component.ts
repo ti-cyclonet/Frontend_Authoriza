@@ -32,10 +32,8 @@ import * as bootstrap from 'bootstrap';
   styleUrl: './add-package.component.css',
 })
 export class AddPackageComponent {
-  @Output() validStep1 = new EventEmitter<boolean>();
-  @Output() validStep2 = new EventEmitter<boolean>();
-  @Output() validStep3 = new EventEmitter<boolean>();
-  @Output() closeMd = new EventEmitter<boolean>();
+  @Output() close = new EventEmitter<void>();
+  @Output() close2 = new EventEmitter<void>();
   basicPackageForm: FormGroup;
   checkingName = false;
   nameExists = false;
@@ -45,6 +43,10 @@ export class AddPackageComponent {
   step1: boolean = true;
   step2: boolean = false;
   step3: boolean = false;
+
+  showStp1: boolean = false;
+  showStp2: boolean = false;
+  showStp3: boolean = false;
 
   roles: Rol[] = [];
   totalRoles: number = 0;
@@ -82,6 +84,12 @@ export class AddPackageComponent {
     this.loadApplicationsAndRoles();
   }
 
+  showStepIcons(stp1: boolean, stp2: boolean, stp3: boolean): void {
+    this.showStp1 = stp1;
+    this.showStp2 = stp2;
+    this.showStp3 = stp3;
+  }
+
   formOneValid(): void {
     const name = this.basicPackageForm.value.name?.trim();
 
@@ -94,7 +102,7 @@ export class AddPackageComponent {
         this.checkingName = false;
 
         if (!res.exists && this.basicPackageForm.valid) {
-          this.validStep1.emit(true);
+          this.showStepIcons(true, false, false);
           this.step1 = false;
           this.step2 = true;
           this.step3 = false;
@@ -108,7 +116,7 @@ export class AddPackageComponent {
   }
 
   formTwoValid(): void {
-    this.validStep2.emit(true);
+    this.showStepIcons(true, true, false);
     this.step1 = false;
     this.step2 = false;
     this.step3 = true;
@@ -258,28 +266,35 @@ export class AddPackageComponent {
       this.step1 = true;
       this.step2 = false;
       this.step3 = false;
-      this.validStep1.emit(false);
-      this.validStep2.emit(false);
+      this.showStepIcons(false, false, false);
       this.showConfigurationRecord = false;
     }
     if (this.step3) {
       this.step2 = true;
       this.step3 = false;
-      this.validStep2.emit(false);
+      this.showStepIcons(true, false, false);
       this.showConfigurationRecord = false;
     }
   }
 
   onCancel(): void {
+    this.cleanForm();
+    this.close.emit();
+  }
+
+  onSuccess(): void {
+    this.cleanForm();
+    this.close2.emit();
+  }
+
+  cleanForm(): void {
     this.roleConfigs = [];
     this.nameExists = false;
     this.basicPackageForm.reset();
+    this.showStepIcons(false, false, false);
     this.step1 = true;
     this.step2 = false;
     this.step3 = false;
-    this.validStep1.emit(false);
-    this.validStep2.emit(false);
-    this.validStep3.emit(false);
     this.showConfigurationRecord = false;
     this.searchText = '';
     this.updateHasRoleConfigs();
@@ -291,20 +306,13 @@ export class AddPackageComponent {
       name: this.basicPackageForm.value.name,
       description: this.basicPackageForm.value.description,
       configurations: this.roleConfigs,
-      images: this.images, // aquí guardas los File
+      images: this.images,
     };
 
     this.packageService.createPackage(dto, this.imageFiles).subscribe({
       next: () => {
-        this.validStep3.emit(true);
-        Swal.fire({
-          icon: 'success',
-          title: 'Package created successfully!',
-          confirmButtonText: 'Accept',
-        }).then(() => {
-          this.onCancel();
-          this.closeMd.emit(true);
-        });
+        this.showStepIcons(true, true, true);
+        this.onSuccess();
       },
       error: (error) => {
         Swal.fire({
