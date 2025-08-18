@@ -19,6 +19,9 @@ export class PackagesComponent implements OnInit {
   showAddPackageModal: boolean = false;
 
   viewMode: 'list' | 'cards' = 'list';
+  currentPage: number = 1;
+  itemsPerPageList: number = 10;
+  itemsPerPageCards: number = 6;
 
   constructor(private packageService: PackageService) {}
 
@@ -30,6 +33,7 @@ export class PackagesComponent implements OnInit {
 
   setView(mode: 'list' | 'cards') {
     this.viewMode = mode;
+    this.currentPage = 1;
     localStorage.setItem('viewMode', mode);
   }
 
@@ -40,6 +44,38 @@ export class PackagesComponent implements OnInit {
       },
       error: (err) => console.error('Error fetching packages:', err),
     });
+  }
+
+  get paginatedPackages(): Package[] {
+    const startIndex =
+      (this.currentPage - 1) *
+      (this.viewMode === 'list'
+        ? this.itemsPerPageList
+        : this.itemsPerPageCards);
+    const endIndex =
+      startIndex +
+      (this.viewMode === 'list'
+        ? this.itemsPerPageList
+        : this.itemsPerPageCards);
+    return this.packages.slice(startIndex, endIndex);
+  }
+
+  get totalPages(): number {
+    const itemsPerPage =
+      this.viewMode === 'list' ? this.itemsPerPageList : this.itemsPerPageCards;
+    return Math.ceil(this.packages.length / itemsPerPage);
+  }
+
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
   }
 
   openAddPackageModal() {
@@ -57,6 +93,10 @@ export class PackagesComponent implements OnInit {
 
   getNumberOfRoles(pkg: Package): number {
     return pkg.configurations?.length ?? 0;
+  }
+
+  get pages(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 
   closeModal() {
