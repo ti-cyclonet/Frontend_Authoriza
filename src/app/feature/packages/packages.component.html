@@ -7,7 +7,7 @@
   </a>
 </div>
 <div class="card shadow m-3">
-  <div class="card-body">
+  <div class="card-body" style="border-bottom: 1px solid var(--sidebar-background-color);">
     <div class="d-flex align-items-center w-100">
       <div>
         <h5
@@ -69,20 +69,20 @@
         <tr class="table-light">
           <th>ID</th>
           <th>Name</th>
-          <th>Description</th>
+          <th class="d-none d-lg-table-block">Description</th>
           <th># Roles</th>
           <th class="text-center">Price (Total)</th>
           <th class="text-center">Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let pkg of packages">
+        <tr *ngFor="let pkg of paginatedPackages">
           <td>{{ pkg.id }}</td>
           <td>{{ pkg.name }}</td>
-          <td>{{ pkg.description }}</td>
+          <td class="d-none d-lg-table-block">{{ pkg.description }}</td>
           <td>{{ getNumberOfRoles(pkg) }}</td>
           <td class="text-end">
-            $ {{ getTotalPrice(pkg) | number : "1.2-2" }} COP
+            $ {{ getTotalPrice(pkg) | number : "1.2-2" }} COP/month
           </td>
           <td class="text-center">
             <div
@@ -141,7 +141,7 @@
         border: 2px solid var(--sidebar-background-color);
         border-radius: 0;
       "
-      *ngFor="let pkg of packages"
+      *ngFor="let pkg of paginatedPackages"
     >
       <!-- Carrusel de imágenes -->
       <div
@@ -196,7 +196,6 @@
         >
           <span class="carousel-control-next-icon"></span>
         </button>
-        
       </div>
 
       <div
@@ -261,31 +260,74 @@
     </div>
   </div>
 
-  <div class="d-flex align-items-center w-100">
-    <h6 style="font-size: 0.8rem; padding-left: 20px; padding-bottom: 5px;">
-      <span
-        class="badge"
-        *ngIf="viewMode === 'list'"
-        style="border: 1px solid black; border-radius: 0; color: black;"
-        >List view</span
-      >
-      <span
-        class="badge"
-        *ngIf="viewMode === 'cards'"
-        style="
-          border: 1px solid var(--sidebar-background-color);
-          color: var(--sidebar-background-color);
-          border-radius: 0;
-        "
-        >Cards view</span
-      >
-    </h6>
-  </div>
-</div>
+  <!-- Controles de paginación -->
+  <div
+    class="d-flex justify-content-between align-items-center mt-3 pagination-wrapper"
+  >
+    <!-- Badge de vista -->
+    <div>
+      <h6 class="view-badge">
+        <span class="badge badge-list" *ngIf="viewMode === 'list'"
+          >List view</span
+        >
+        <span class="badge badge-cards" *ngIf="viewMode === 'cards'"
+          >Cards view</span
+        >
+      </h6>
+    </div>
 
-<!-- Modal para agregar un nuevo paquete -->
-<app-add-package
-  *ngIf="showAddPackageModal"
-  (close)="closeModal()"
-  (close2)="closeModal2()"
-></app-add-package>
+    <!-- Contador -->
+    <div class="user-counter">
+      Showing {{ paginatedPackages.length }} of {{ packages.length }} packages
+    </div>
+
+    <!-- Paginación -->
+    <div>
+      <nav aria-label="Paginación de tarjetas" class="m-2">
+        <ul class="pagination pagination-sm mb-0 custom-pagination">
+          <!-- Botón Anterior -->
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <a
+              class="page-link"
+              href="#"
+              aria-label="Anterior"
+              (click)="goToPage(currentPage - 1)"
+            >
+              <i class="bi bi-chevron-left"></i>
+            </a>
+          </li>
+
+          <!-- Números de página -->
+          <li
+            class="page-item"
+            *ngFor="let page of pages"
+            [class.active]="currentPage === page"
+          >
+            <a class="page-link" href="#" (click)="goToPage(page)">{{
+              page
+            }}</a>
+          </li>
+
+          <!-- Botón Siguiente -->
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <a
+              class="page-link"
+              href="#"
+              aria-label="Siguiente"
+              (click)="goToPage(currentPage + 1)"
+            >
+              <i class="bi bi-chevron-right"></i>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Modal para agregar un nuevo paquete -->
+  <app-add-package
+    *ngIf="showAddPackageModal"
+    (close)="closeModal()"
+    (close2)="closeModal2()"
+  ></app-add-package>
+</div>
