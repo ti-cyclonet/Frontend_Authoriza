@@ -60,75 +60,69 @@
           <!-- Mostrar tabs y datos solo si NO está activando dependencia -->
           <div *ngIf="!showAssignRole && !showAssignDependencyModal">
             <div class="card-body">
-              <ul class="nav nav-tabs" style="border-bottom: 1px solid #6a0dad">
+              <ul
+                class="nav nav-tabs d-flex justify-content-between align-items-center"
+                style="border-bottom: 1px solid #6a0dad"
+              >
+                <!-- Radios a la izquierda -->
                 <li class="nav-item">
-                  <a
-                    class="nav-link"
-                    [class.active]="activeTab === 'BasicData'"
-                    (click)="activeTab = 'BasicData'"
-                  >
-                    Basic User Data
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a
-                    class="nav-link"
-                    [class.active]="activeTab === 'GeneralData'"
-                    (click)="activeTab = 'GeneralData'"
-                  >
-                    General User Data
-                  </a>
-                </li>
-                <li class="nav-item ms-auto">
-                  <div
-                    class="col-12 mb-3"
-                    style="
-                      display: flex;
-                      flex-direction: column;
-                      justify-content: space-between;
-                    "
-                  >
-                    <div class="d-flex gap-4">
-                      <!-- <label class="mb-2 text-dark" style="font-size: 11px; font-weight: bold;">Person Type</label> -->
-                      <div class="d-flex ms-auto pl-2 pr-2 gap-4">
-                        <div class="form-check">
-                          <input
-                            class="form-check-input rounded-checkbox"
-                            type="radio"
-                            name="personType"
-                            id="personTypeN"
-                            [checked]="user.basicData.strPersonType === 'N'"
-                            (change)="
-                              user.basicData.strPersonType = 'N';
-                              detectChanges()
-                            "
-                            disabled
-                          />
-                          <label class="form-check-label" for="personTypeN"
-                            >Natural</label
-                          >
-                        </div>
-                        <div class="form-check">
-                          <input
-                            class="form-check-input rounded-checkbox"
-                            type="radio"
-                            name="personType"
-                            id="personTypeJ"
-                            [checked]="user.basicData.strPersonType === 'J'"
-                            (change)="
-                              user.basicData.strPersonType = 'J';
-                              detectChanges()
-                            "
-                            disabled
-                          />
-                          <label class="form-check-label" for="personTypeJ"
-                            >Juridical</label
-                          >
-                        </div>
-                      </div>
+                  <div class="d-flex gap-4 pl-2 pr-2">
+                    <div class="form-check">
+                      <input
+                        class="form-check-input rounded-checkbox"
+                        type="radio"
+                        name="personType"
+                        id="personTypeN"
+                        [checked]="user.basicData.strPersonType === 'N'"
+                        (change)="
+                          user.basicData.strPersonType = 'N'; detectChanges()
+                        "
+                        disabled
+                      />
+                      <label class="form-check-label" for="personTypeN"
+                        >Natural</label
+                      >
+                    </div>
+                    <div class="form-check">
+                      <input
+                        class="form-check-input rounded-checkbox"
+                        type="radio"
+                        name="personType"
+                        id="personTypeJ"
+                        [checked]="user.basicData.strPersonType === 'J'"
+                        (change)="
+                          user.basicData.strPersonType = 'J'; detectChanges()
+                        "
+                        disabled
+                      />
+                      <label class="form-check-label" for="personTypeJ"
+                        >Juridical</label
+                      >
                     </div>
                   </div>
                 </li>
+
+                <!-- Tabs a la derecha -->
+                <div class="d-flex">
+                  <li class="nav-item">
+                    <a
+                      class="nav-link"
+                      [class.active]="activeTab === 'BasicData'"
+                      (click)="activeTab = 'BasicData'"
+                    >
+                      Basic User Data
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      class="nav-link"
+                      [class.active]="activeTab === 'GeneralData'"
+                      (click)="activeTab = 'GeneralData'"
+                    >
+                      General User Data
+                    </a>
+                  </li>
+                </div>
               </ul>
 
               <!-- BASIC DATA -->

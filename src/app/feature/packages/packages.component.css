@@ -53,7 +53,7 @@
 .view-icon {
   width: 15px;
   height: 15px;
-  color:var(--sidebar-background-color);
+  color: var(--sidebar-background-color);
   margin-left: 5px;
 }
 
@@ -174,11 +174,6 @@ a.disabled {
   color: white;
 }
 
-/* .bg-temp{
-  background-color: #f8f0dc;
-  font-weight: bold;
-  color: #0056b3;
-} */
 .badge-app {
   background-color: #b30000;
 }
@@ -361,4 +356,59 @@ a.disabled {
 
 .card-text {
   margin-top: 0.25rem;
+}
+
+.pagination-wrapper {
+  border-top: 1px solid var(--sidebar-background-color);
+  padding-top: 0.5rem;
+}
+
+.view-badge {
+  font-size: 0.8rem;
+  padding-left: 10px;
+}
+
+.badge-list {
+  border: 1px solid black;
+  border-radius: 0;
+  color: black;
+  background: transparent;
+}
+
+.badge-cards {
+  border: 1px solid var(--sidebar-background-color);
+  color: var(--sidebar-background-color);
+  border-radius: 0;
+  background: transparent;
+}
+
+.user-counter {
+  font-size: 0.85rem;
+  color: var(--header-background-color);
+  white-space: nowrap;
+}
+
+/* Estilo de la paginación */
+.custom-pagination .page-link {
+  background-color: var(--header-background-color);
+  border: none;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease;
+}
+
+.custom-pagination .page-item.active .page-link {
+  background-color: var(--sidebar-background-color);
+  color: white;
+}
+
+.custom-pagination .page-link:hover {
+  background-color: var(--sidebar-background-color);
+}
+
+.custom-pagination .page-item.disabled .page-link {
+  opacity: 0.5;
+  pointer-events: none;
 }
