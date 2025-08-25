@@ -7,7 +7,10 @@
   </a>
 </div>
 <div class="card shadow m-3">
-  <div class="card-body" style="border-bottom: 1px solid var(--sidebar-background-color);">
+  <div
+    class="card-body"
+    style="border-bottom: 1px solid var(--sidebar-background-color)"
+  >
     <div class="d-flex align-items-center w-100">
       <div>
         <h5
@@ -62,201 +65,220 @@
     </div>
   </div>
 
-  <!-- Vista de paquetes en formato tabla -->
-  <div class="table-responsive px-3" *ngIf="viewMode === 'list'">
-    <table class="table table-hover table-sm" style="font-size: 14px">
-      <thead class="table-dark">
-        <tr class="table-light">
-          <th>ID</th>
-          <th>Name</th>
-          <th class="d-none d-lg-table-block">Description</th>
-          <th># Roles</th>
-          <th class="text-center">Price (Total)</th>
-          <th class="text-center">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let pkg of paginatedPackages">
-          <td>{{ pkg.id }}</td>
-          <td>{{ pkg.name }}</td>
-          <td class="d-none d-lg-table-block">{{ pkg.description }}</td>
-          <td>{{ getNumberOfRoles(pkg) }}</td>
-          <td class="text-end">
-            $ {{ getTotalPrice(pkg) | number : "1.2-2" }} COP/month
-          </td>
-          <td class="text-center">
-            <div
-              class="btn-group btn-group-sm"
-              role="group"
-              aria-label="Small button group"
-            >
-              <a
-                style="color: var(--sidebar-background-color); cursor: pointer"
-              >
-                <svg
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                  class="status-icon"
+  <div class="card" style="border-radius: 0; border: none">
+    <div class="card-body">
+      
+      <!-- Vista de paquetes en formato tabla -->
+      <div class="table-responsive px-3" *ngIf="viewMode === 'list'">
+        <table class="table table-hover table-sm" style="font-size: 14px">
+          <thead class="table-dark">
+            <tr class="table-light">
+              <th>ID</th>
+              <th>Name</th>
+              <th class="d-none d-lg-table-block">Description</th>
+              <th># Roles</th>
+              <th class="text-center">Price (Total)</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let pkg of paginatedPackages">
+              <td>{{ pkg.id }}</td>
+              <td>{{ pkg.name }}</td>
+              <td class="d-none d-lg-table-block">{{ pkg.description }}</td>
+              <td>{{ getNumberOfRoles(pkg) }}</td>
+              <td class="text-end">
+                $ {{ getTotalPrice(pkg) | number : "1.2-2" }} COP/month
+              </td>
+              <td class="text-center">
+                <div
+                  class="btn-group btn-group-sm"
+                  role="group"
+                  aria-label="Small button group"
                 >
-                  <use xlink:href="./assets/icons/bootstrap-icons.svg#eye" />
-                </svg>
-              </a>
-              <a
-                style="color: var(--sidebar-background-color); cursor: pointer"
-              >
-                <svg
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                  class="status-icon"
-                >
-                  <use
-                    xlink:href="./assets/icons/bootstrap-icons.svg#pencil-square"
-                  />
-                </svg>
-              </a>
-              <a
-                style="color: var(--sidebar-background-color); cursor: pointer"
-              >
-                <svg
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                  class="status-icon"
-                >
-                  <use xlink:href="./assets/icons/bootstrap-icons.svg#trash" />
-                </svg>
-              </a>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Vista de paquetes en formato tarjetas -->
-  <div class="card-deck p-3 d-flex flex-wrap" *ngIf="viewMode === 'cards'">
-    <div
-      class="card m-2 d-flex flex-column"
-      style="
-        width: 20rem;
-        border: 2px solid var(--sidebar-background-color);
-        border-radius: 0;
-      "
-      *ngFor="let pkg of paginatedPackages"
-    >
-      <!-- Carrusel de imágenes -->
-      <div
-        class="text-center"
-        style="
-          color: #fff6a6;
-          background-color: var(--sidebar-background-color);
-          height: 20px;
-          font: 0.8em sans-serif;
-          padding: 3px;
-        "
-      >
-        <b style="color: white">Id:</b> {{ pkg.id }}
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
+                  >
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      class="status-icon"
+                    >
+                      <use
+                        xlink:href="./assets/icons/bootstrap-icons.svg#eye"
+                      />
+                    </svg>
+                  </a>
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
+                  >
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      class="status-icon"
+                    >
+                      <use
+                        xlink:href="./assets/icons/bootstrap-icons.svg#pencil-square"
+                      />
+                    </svg>
+                  </a>
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
+                  >
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      class="status-icon"
+                    >
+                      <use
+                        xlink:href="./assets/icons/bootstrap-icons.svg#trash"
+                      />
+                    </svg>
+                  </a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div
-        id="carousel{{ pkg.id }}"
-        class="carousel slide"
-        data-bs-ride="carousel"
-      >
-        <div class="carousel-inner">
+
+      <!-- Vista de paquetes en formato tarjetas -->
+      <div class="card-deck p-3 d-flex flex-wrap" *ngIf="viewMode === 'cards'">
+        <div
+          class="card m-2 d-flex flex-column"
+          style="
+            width: 20rem;
+            border: 2px solid var(--sidebar-background-color);
+            border-radius: 0;
+          "
+          *ngFor="let pkg of paginatedPackages"
+        >
+          <!-- Carrusel de imágenes -->
           <div
-            *ngFor="let img of pkg.images; let i = index"
-            class="carousel-item"
-            [class.active]="i === 0"
+            class="text-center"
+            style="
+              color: #fff6a6;
+              background-color: var(--sidebar-background-color);
+              height: 20px;
+              font: 0.8em sans-serif;
+              padding: 3px;
+            "
           >
-            <img
-              [src]="img.url"
-              class="d-block w-100"
-              style="height: 180px; object-fit: cover"
-              [alt]="pkg.name + ' image ' + (i + 1)"
-            />
+            <b style="color: white">Id:</b> {{ pkg.id }}
+          </div>
+          <div
+            id="carousel{{ pkg.id }}"
+            class="carousel slide"
+            data-bs-ride="carousel"
+          >
+            <div class="carousel-inner">
+              <div
+                *ngFor="let img of pkg.images; let i = index"
+                class="carousel-item"
+                [class.active]="i === 0"
+              >
+                <img
+                  [src]="img.url"
+                  class="d-block w-100"
+                  style="height: 180px; object-fit: cover"
+                  [alt]="pkg.name + ' image ' + (i + 1)"
+                />
+              </div>
+            </div>
+
+            <!-- Controles del carrusel -->
+            <button
+              class="carousel-control-prev"
+              type="button"
+              [attr.data-bs-target]="'#carousel' + pkg.id"
+              data-bs-slide="prev"
+              *ngIf="pkg.images.length > 1"
+            >
+              <span class="carousel-control-prev-icon"></span>
+            </button>
+
+            <button
+              class="carousel-control-next"
+              type="button"
+              [attr.data-bs-target]="'#carousel' + pkg.id"
+              data-bs-slide="next"
+              *ngIf="pkg.images.length > 1"
+            >
+              <span class="carousel-control-next-icon"></span>
+            </button>
+          </div>
+
+          <div
+            class="card-body flex-grow-1"
+            style="height: 210px; overflow-y: auto"
+          >
+            <div>
+              <h5 class="card-title text-center w-100">{{ pkg.name }}</h5>
+              <p class="card-text">{{ pkg.description }}</p>
+
+              <!-- Información de roles -->
+              <p class="text-muted mb-1">
+                <strong>Roles:</strong> {{ getNumberOfRoles(pkg) }}
+              </p>
+
+              <!-- Precio total -->
+              <p class="fw-bold mb-2">
+                Total price: ${{ getTotalPrice(pkg) | number : "1.0-0" }} COP
+              </p>
+            </div>
+          </div>
+
+          <!-- Botones de acción -->
+          <div
+            class="btn-group btn-group-sm w-100"
+            role="group"
+            style="
+              background-color: var(--sidebar-background-color);
+              border-radius: 0;
+            "
+          >
+            <a class="action-icon">
+              <svg
+                fill="currentColor"
+                viewBox="0 0 16 16"
+                class="status-icon-cards"
+              >
+                <use xlink:href="./assets/icons/bootstrap-icons.svg#eye" />
+              </svg>
+            </a>
+            <a class="action-icon">
+              <svg
+                fill="currentColor"
+                viewBox="0 0 16 16"
+                class="status-icon-cards"
+              >
+                <use
+                  xlink:href="./assets/icons/bootstrap-icons.svg#pencil-square"
+                />
+              </svg>
+            </a>
+            <a class="action-icon">
+              <svg
+                fill="currentColor"
+                viewBox="0 0 16 16"
+                class="status-icon-cards"
+              >
+                <use xlink:href="./assets/icons/bootstrap-icons.svg#trash" />
+              </svg>
+            </a>
           </div>
         </div>
-
-        <!-- Controles del carrusel -->
-        <button
-          class="carousel-control-prev"
-          type="button"
-          [attr.data-bs-target]="'#carousel' + pkg.id"
-          data-bs-slide="prev"
-          *ngIf="pkg.images.length > 1"
-        >
-          <span class="carousel-control-prev-icon"></span>
-        </button>
-
-        <button
-          class="carousel-control-next"
-          type="button"
-          [attr.data-bs-target]="'#carousel' + pkg.id"
-          data-bs-slide="next"
-          *ngIf="pkg.images.length > 1"
-        >
-          <span class="carousel-control-next-icon"></span>
-        </button>
       </div>
 
-      <div
-        class="card-body flex-grow-1"
-        style="height: 210px; overflow-y: auto"
-      >
-        <div>
-          <h5 class="card-title text-center w-100">{{ pkg.name }}</h5>
-          <p class="card-text">{{ pkg.description }}</p>
-
-          <!-- Información de roles -->
-          <p class="text-muted mb-1">
-            <strong>Roles:</strong> {{ getNumberOfRoles(pkg) }}
-          </p>
-
-          <!-- Precio total -->
-          <p class="fw-bold mb-2">
-            Total price: ${{ getTotalPrice(pkg) | number : "1.0-0" }} COP
-          </p>
-        </div>
-      </div>
-
-      <!-- Botones de acción -->
-      <div
-        class="btn-group btn-group-sm w-100"
-        role="group"
-        style="
-          background-color: var(--sidebar-background-color);
-          border-radius: 0;
-        "
-      >
-        <a class="action-icon">
-          <svg
-            fill="currentColor"
-            viewBox="0 0 16 16"
-            class="status-icon-cards"
-          >
-            <use xlink:href="./assets/icons/bootstrap-icons.svg#eye" />
-          </svg>
-        </a>
-        <a class="action-icon">
-          <svg
-            fill="currentColor"
-            viewBox="0 0 16 16"
-            class="status-icon-cards"
-          >
-            <use
-              xlink:href="./assets/icons/bootstrap-icons.svg#pencil-square"
-            />
-          </svg>
-        </a>
-        <a class="action-icon">
-          <svg
-            fill="currentColor"
-            viewBox="0 0 16 16"
-            class="status-icon-cards"
-          >
-            <use xlink:href="./assets/icons/bootstrap-icons.svg#trash" />
-          </svg>
-        </a>
-      </div>
     </div>
   </div>
 
