@@ -13,10 +13,10 @@ export const ROOT_REGISTER = 'register';
 //Rutas de la aplicación
 
 export const ROOT_USUERS = 'users';
-export const ROOT_ROLES = 'roles';
 export const ROOT_HOME = 'home';
 export const ROOT_APPLICATIONS = 'applications';
 export const ROOT_PACKAGES = 'packages';
+export const ROOT_CONTRACTS = 'contracts';
 
 //Rutas de administración de la aplicación
 

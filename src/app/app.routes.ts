@@ -6,10 +6,10 @@ import {
   ROOT_LOGIN,
   ROOT_PACKAGES,
   ROOT_REGISTER,
-  ROOT_ROLES,
   ROOT_USUERS,
 } from './config/config';
 import { AuthGuard } from './shared/guards/auth.guard';
+import { ROOT_CONTRACTS } from './config/config';
 
 export const routes: Routes = [
   {
@@ -50,13 +50,11 @@ export const routes: Routes = [
         loadComponent: () => import('./feature/applications/applications.component').then((m) => m.ApplicationsComponent),
         canActivate: [AuthGuard],
       },
-      // {
-      //   path: ROOT_ROLES,
-      //   loadComponent: () =>
-      //     import('./feature/roles/roles.component').then(
-      //       (m) => m.RolesComponent
-      //     ),
-      // },
+      {
+        path: ROOT_CONTRACTS,
+        loadComponent: () => import('./feature/contracts/contracts.component').then((m) => m.ContractsComponent),
+        canActivate: [AuthGuard],
+      },
       {
         path: ROOT_CONFIGURATION,
         loadComponent: () => import('./feature/setup/setup.component').then((m) => m.SetupComponent),
