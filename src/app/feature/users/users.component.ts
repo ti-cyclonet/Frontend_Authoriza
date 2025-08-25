@@ -355,22 +355,19 @@ export class UsersComponent implements OnInit {
       next: (users) => {
         const dependentMap: { [userId: string]: number } = {};
 
-        users.forEach((user) => {
-          // Marcar si está eliminado
+        users.forEach((user: User) => {
           user.isDeleted = !!user.deletedAt;
-
-          // Calcular cuántos dependen de este usuario
           const dependsOnId = user.dependentOn?.id;
           if (dependsOnId) {
             dependentMap[dependsOnId] = (dependentMap[dependsOnId] || 0) + 1;
           }
         });
 
-        users.forEach((user) => {
+        users.forEach((user: User) => {
           user.dependentCount = dependentMap[user.id] || 0;
         });
 
-        this.users = users.sort((a, b) => {
+        this.users = users.sort((a: User, b: User) => {
           const dateA = a.dtmLatestUpdateDate
             ? new Date(a.dtmLatestUpdateDate).getTime()
             : 0;

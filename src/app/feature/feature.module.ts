@@ -5,13 +5,14 @@ import { HomeComponent } from './home/home.component';
 import { SetupComponent } from './setup/setup.component';
 import { UsersComponent } from './users/users.component';
 import { RouterModule } from '@angular/router';
-import { RolesComponent } from './roles/roles.component';
 import { ApplicationsComponent } from './applications/applications.component';
 import { CuApplicationComponent } from './applications/cu-application/cu-application.component';
 import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
 import { ReactiveFormsModule } from '@angular/forms';
 import { PackagesComponent } from './packages/packages.component';
 import { AddPackageComponent } from './packages/add-package/add-package.component';
+import { ContractsComponent } from './contracts/contracts.component';
+import { AddContractComponent } from './contracts/add-contract/add-contract.component';
 @NgModule({
   declarations: [],
   imports: [
@@ -19,13 +20,14 @@ import { AddPackageComponent } from './packages/add-package/add-package.componen
     RouterModule,
     SharedModule,
     HomeComponent,
-    RolesComponent,
     SetupComponent,
     UsersComponent,
     ApplicationsComponent,
     CuApplicationComponent,
     PackagesComponent,
+    ContractsComponent,
     AddPackageComponent,
+    AddContractComponent,
     NgbCarouselModule
   ]
 })
