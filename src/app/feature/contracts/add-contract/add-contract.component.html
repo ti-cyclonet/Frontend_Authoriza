@@ -1,0 +1,155 @@
+<!-- contrato.component.html -->
+<div class="modal-backdrop show"></div>
+<div class="modal d-block fade show" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <!-- Título del Modal con Íconos de Paso -->
+      <div class="modal-header justify-content-between modal-header-custom">
+        <!-- Íconos de Pasos con línea de unión -->
+        <div class="step-icons d-flex position-relative">
+          <!-- Ícono para el paso 1 -->
+          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon">
+            <use
+              [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + 
+                                (showStp1 ? '1-circle-fill' : '1-circle')"
+            ></use>
+          </svg>
+          <!-- Ícono para el paso 2 -->
+          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
+            <use
+              [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + 
+                                (showStp2 ? '2-circle-fill' : '2-circle')"
+            ></use>
+          </svg>
+          <!-- Ícono para el paso 3 -->
+          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
+            <use
+              [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + 
+                                (showStp3 ? '3-circle-fill' : '3-circle')"
+            ></use>
+          </svg>
+        </div>
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">
+          Add a New <span style="color: white">Contract</span>
+        </h1>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+          
+          <!-- Paso 1 -->
+          <div class="basic-package-form" *ngIf="step1">
+            <div
+              class="d-flex align-items-center pb-3 mb-2"
+              style="border-bottom: 1px solid var(--sidebar-background-color)"
+            >
+              <div class="title-form">BASIC CONTRACT DATA FORM</div>
+            </div>
+            
+            <!-- Lista de usuarios sin dependencia -->
+            <div class="user-list mt-4">
+              <h5>Select User:</h5>
+              <div *ngFor="let user of usersWithoutDependency" class="mb-2 p-2 border rounded">
+                <input type="radio" name="selectedUser" [(ngModel)]="selectedUser" [value]="user.id">
+                {{ user.strUserName }} - {{ user.basicData?.strFirstName || '' }} {{ user.basicData?.strLastName || '' }}
+              </div>
+            </div>
+          </div>
+          
+          <!-- Paso 2 -->
+          <div class="configuration-package-section" *ngIf="step2">
+            <div
+              class="d-flex align-items-center pb-3 mb-2"
+              style="border-bottom: 1px solid var(--sidebar-background-color)"
+            >
+              <div class="title-form">CONTRACT CONFIGURATION SECTION</div>
+            </div>
+            <!-- Contenido del paso 2 aquí -->
+          </div>
+          
+          <!-- Paso 3 -->
+          <div class="presentation-package-section" *ngIf="step3">
+            <div
+              class="d-flex align-items-center pb-3 mb-2"
+              style="border-bottom: 1px solid var(--sidebar-background-color)"
+            >
+              <div class="title-form">PACKAGE BUSINESS CARD CONFIGURATION</div>
+            </div>
+            <!-- Contenido del paso 3 aquí -->
+          </div>
+          
+          <!-- Footer con los botones -->
+          <div class="form-buttons">
+            <button
+              id="prevBtn"
+              type="button"
+              class="btn btn-outline-dark btn-sm me-4 btn-fixed-width"
+              [disabled]="!(step3 || (step2 && !step1))"
+              (click)="goToStep(-1)"
+            >
+              <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+                <use
+                  xlink:href="./assets/icons/bootstrap-icons.svg#arrow-left"
+                ></use>
+              </svg>
+              <span class="d-none d-md-inline">Previous</span>
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-dark btn-sm mx-4 btn-fixed-width"              
+              title="Cancel"
+              (click)="onCancel()"
+            >
+              Cancel
+            </button>
+            <button
+              *ngIf="step1"
+              id="nextBtn"
+              type="button"
+              class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width"
+              data-bs-toggle="tooltip"
+              title="Next"
+              (click)="goToStep(1)"
+            >
+              <span class="d-none d-md-inline">Next</span>
+              <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+                <use
+                  xlink:href="./assets/icons/bootstrap-icons.svg#arrow-right"
+                ></use>
+              </svg>
+            </button>
+            <button
+              *ngIf="step2"
+              id="nextBtn"
+              type="button"
+              class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width"
+              data-bs-toggle="tooltip"
+              title="Next"
+              (click)="goToStep(3)"
+            >
+              <span class="d-none d-md-inline">Next</span>
+              <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+                <use
+                  xlink:href="./assets/icons/bootstrap-icons.svg#arrow-right"
+                ></use>
+              </svg>
+            </button>
+            <button
+              *ngIf="step3"
+              id="sendBtn"
+              type="button"
+              class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width"
+              data-bs-toggle="tooltip"
+              title="Send"
+              (click)="goToStep(3)"
+            >
+              <span class="d-none d-md-inline">Send</span>
+              <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+                <use xlink:href="./assets/icons/bootstrap-icons.svg#send"></use>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
