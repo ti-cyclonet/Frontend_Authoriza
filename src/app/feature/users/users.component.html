@@ -173,7 +173,7 @@
       "
     >
       <div>
-        Mostrando {{ pagedUsers.length }} de {{ filteredUsers.length }} usuarios
+        Showing {{ pagedUsers.length }} of {{ filteredUsers.length }} users
       </div>
       <div>Página {{ currentPage }} de {{ totalPages }}</div>
     </div>
@@ -189,13 +189,13 @@
     <table class="table table-hover table-sm" style="font-size: 14px">
       <thead>
         <tr class="table-light">
-          <th class="text-center">Id</th>
-          <th class="text-center d-none d-lg-block">User Name</th>
+          <th class="text-center d-none d-md-table.block">Id</th>
+          <th class="text-center">User Name</th>
           <th class="text-center">Name</th>
           <th class="text-center">Application</th>
           <th class="text-center">Role</th>
           <th class="text-center">State</th>
-          <th class="text-center d-none d-lg-block">Update date</th>
+          <th class="text-center d-none d-lg-table-block">Update date</th>
           <th class="text-center">Actions</th>
         </tr>
       </thead>
@@ -205,14 +205,14 @@
           [ngClass]="{ 'table-active': selectedUser?.id === user.id }"
           [class.deleted]="user.isDeleted"
         >
-          <td class="text-center">
+          <td class="text-center d-none d-md-table.block">
             <span
               class="badge"
               style="background-color: var(--header-icon-color)"
               >{{ user.id }}</span
             >
           </td>
-          <td class="d-none d-lg-block">
+          <td >
             {{ user.strUserName }}
             <span
               *ngIf="(user.dependentCount ?? 0) > 0"
@@ -269,7 +269,7 @@
                     "
                   ></use>
                 </svg>
-                <span class="d-none d-lg-inline">{{ user.strStatus }}</span>
+                <span>{{ user.strStatus }}</span>
               </a>
 
               <div
@@ -292,7 +292,7 @@
             </ng-template>
           </td>
 
-          <td class="text-center d-none d-lg-block">
+          <td class="text-center d-none d-lg-table-block">
             {{ user.dtmLatestUpdateDate | date : "dd/MM/yyyy" }}
           </td>
           <td class="text-center">
@@ -399,7 +399,8 @@
     <!-- modal con el formulario para agregar un nuevo usuario -->
     <app-add-user-modal
       *ngIf="showAddUserModal"
-      (close)="showAddUserModal = false"
+      (close)="onClose()"
+      (close2)="onClose2()"
       (userCreated)="onUserCreated($event)"
     >
     </app-add-user-modal>

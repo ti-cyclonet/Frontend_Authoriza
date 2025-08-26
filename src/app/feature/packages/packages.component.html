@@ -7,7 +7,10 @@
   </a>
 </div>
 <div class="card shadow m-3">
-  <div class="card-body">
+  <div
+    class="card-body"
+    style="border-bottom: 1px solid var(--sidebar-background-color)"
+  >
     <div class="d-flex align-items-center w-100">
       <div>
         <h5
@@ -46,10 +49,9 @@
       </div>
       <div class="btn-group ms-auto custom-btn-group">
         <a
-          data-bs-toggle="modal"
-          data-bs-target="#addPackage"
           title="Add new package"
           style="cursor: pointer"
+          (click)="openAddPackageModal()"
         >
           <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
             <use
@@ -63,280 +65,291 @@
     </div>
   </div>
 
-  <!-- Vista de paquetes en formato tabla -->
-  <div class="table-responsive px-3" *ngIf="viewMode === 'list'">
-    <table class="table table-hover table-sm" style="font-size: 14px">
-      <thead class="table-dark">
-        <tr class="table-light">
-          <th>ID</th>
-          <th>Name</th>
-          <th>Description</th>
-          <th># Roles</th>
-          <th class="text-center">Price (Total)</th>
-          <th class="text-center">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let pkg of packages">
-          <td>{{ pkg.id }}</td>
-          <td>{{ pkg.name }}</td>
-          <td>{{ pkg.description }}</td>
-          <td>{{ getNumberOfRoles(pkg) }}</td>
-          <td class="text-end">
-            $ {{ getTotalPrice(pkg) | number : "1.2-2" }} COP
-          </td>
-          <td class="text-center">
-            <div
-              class="btn-group btn-group-sm"
-              role="group"
-              aria-label="Small button group"
-            >
-              <a
-                style="color: var(--sidebar-background-color); cursor: pointer"
-              >
-                <svg
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                  class="status-icon"
+  <div class="card" style="border-radius: 0; border: none">
+    <div class="card-body">
+      
+      <!-- Vista de paquetes en formato tabla -->
+      <div class="table-responsive px-3" *ngIf="viewMode === 'list'">
+        <table class="table table-hover table-sm" style="font-size: 14px">
+          <thead class="table-dark">
+            <tr class="table-light">
+              <th>ID</th>
+              <th>Name</th>
+              <th class="d-none d-lg-table-block">Description</th>
+              <th># Roles</th>
+              <th class="text-center">Price (Total)</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let pkg of paginatedPackages">
+              <td>{{ pkg.id }}</td>
+              <td>{{ pkg.name }}</td>
+              <td class="d-none d-lg-table-block">{{ pkg.description }}</td>
+              <td>{{ getNumberOfRoles(pkg) }}</td>
+              <td class="text-end">
+                $ {{ getTotalPrice(pkg) | number : "1.2-2" }} COP/month
+              </td>
+              <td class="text-center">
+                <div
+                  class="btn-group btn-group-sm"
+                  role="group"
+                  aria-label="Small button group"
                 >
-                  <use xlink:href="./assets/icons/bootstrap-icons.svg#eye" />
-                </svg>
-              </a>
-              <a
-                style="color: var(--sidebar-background-color); cursor: pointer"
-              >
-                <svg
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                  class="status-icon"
-                >
-                  <use
-                    xlink:href="./assets/icons/bootstrap-icons.svg#pencil-square"
-                  />
-                </svg>
-              </a>
-              <a
-                style="color: var(--sidebar-background-color); cursor: pointer"
-              >
-                <svg
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                  class="status-icon"
-                >
-                  <use xlink:href="./assets/icons/bootstrap-icons.svg#trash" />
-                </svg>
-              </a>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Vista de paquetes en formato tarjetas -->
-  <div class="card-deck p-3 d-flex flex-wrap" *ngIf="viewMode === 'cards'">
-    <div
-      class="card m-2 d-flex flex-column"
-      style="
-        width: 20rem;
-        border: 2px solid var(--sidebar-background-color);
-        border-radius: 0;
-      "
-      *ngFor="let pkg of packages"
-    >
-      <!-- Carrusel de imágenes -->
-      <div
-        class="text-center"
-        style="
-          color: #fff6a6;
-          background-color: var(--sidebar-background-color);
-          height: 20px;
-          font: 0.8em sans-serif;
-          padding: 3px;
-        "
-      >
-        <b style="color: white">Id:</b> {{ pkg.id }}
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
+                  >
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      class="status-icon"
+                    >
+                      <use
+                        xlink:href="./assets/icons/bootstrap-icons.svg#eye"
+                      />
+                    </svg>
+                  </a>
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
+                  >
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      class="status-icon"
+                    >
+                      <use
+                        xlink:href="./assets/icons/bootstrap-icons.svg#pencil-square"
+                      />
+                    </svg>
+                  </a>
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
+                  >
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      class="status-icon"
+                    >
+                      <use
+                        xlink:href="./assets/icons/bootstrap-icons.svg#trash"
+                      />
+                    </svg>
+                  </a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div
-        id="carousel{{ pkg.id }}"
-        class="carousel slide"
-        data-bs-ride="carousel"
-      >
-        <div class="carousel-inner">
+
+      <!-- Vista de paquetes en formato tarjetas -->
+      <div class="card-deck p-3 d-flex flex-wrap" *ngIf="viewMode === 'cards'">
+        <div
+          class="card m-2 d-flex flex-column"
+          style="
+            width: 20rem;
+            border: 2px solid var(--sidebar-background-color);
+            border-radius: 0;
+          "
+          *ngFor="let pkg of paginatedPackages"
+        >
+          <!-- Carrusel de imágenes -->
           <div
-            *ngFor="let img of pkg.images; let i = index"
-            class="carousel-item"
-            [class.active]="i === 0"
+            class="text-center"
+            style="
+              color: #fff6a6;
+              background-color: var(--sidebar-background-color);
+              height: 20px;
+              font: 0.8em sans-serif;
+              padding: 3px;
+            "
           >
-            <img
-              [src]="img.url"
-              class="d-block w-100"
-              style="height: 180px; object-fit: cover"
-              [alt]="pkg.name + ' image ' + (i + 1)"
-            />
+            <b style="color: white">Id:</b> {{ pkg.id }}
+          </div>
+          <div
+            id="carousel{{ pkg.id }}"
+            class="carousel slide"
+            data-bs-ride="carousel"
+          >
+            <div class="carousel-inner">
+              <div
+                *ngFor="let img of pkg.images; let i = index"
+                class="carousel-item"
+                [class.active]="i === 0"
+              >
+                <img
+                  [src]="img.url"
+                  class="d-block w-100"
+                  style="height: 180px; object-fit: cover"
+                  [alt]="pkg.name + ' image ' + (i + 1)"
+                />
+              </div>
+            </div>
+
+            <!-- Controles del carrusel -->
+            <button
+              class="carousel-control-prev"
+              type="button"
+              [attr.data-bs-target]="'#carousel' + pkg.id"
+              data-bs-slide="prev"
+              *ngIf="pkg.images.length > 1"
+            >
+              <span class="carousel-control-prev-icon"></span>
+            </button>
+
+            <button
+              class="carousel-control-next"
+              type="button"
+              [attr.data-bs-target]="'#carousel' + pkg.id"
+              data-bs-slide="next"
+              *ngIf="pkg.images.length > 1"
+            >
+              <span class="carousel-control-next-icon"></span>
+            </button>
+          </div>
+
+          <div
+            class="card-body flex-grow-1"
+            style="height: 210px; overflow-y: auto"
+          >
+            <div>
+              <h5 class="card-title text-center w-100">{{ pkg.name }}</h5>
+              <p class="card-text">{{ pkg.description }}</p>
+
+              <!-- Información de roles -->
+              <p class="text-muted mb-1">
+                <strong>Roles:</strong> {{ getNumberOfRoles(pkg) }}
+              </p>
+
+              <!-- Precio total -->
+              <p class="fw-bold mb-2">
+                Total price: ${{ getTotalPrice(pkg) | number : "1.0-0" }} COP
+              </p>
+            </div>
+          </div>
+
+          <!-- Botones de acción -->
+          <div
+            class="btn-group btn-group-sm w-100"
+            role="group"
+            style="
+              background-color: var(--sidebar-background-color);
+              border-radius: 0;
+            "
+          >
+            <a class="action-icon">
+              <svg
+                fill="currentColor"
+                viewBox="0 0 16 16"
+                class="status-icon-cards"
+              >
+                <use xlink:href="./assets/icons/bootstrap-icons.svg#eye" />
+              </svg>
+            </a>
+            <a class="action-icon">
+              <svg
+                fill="currentColor"
+                viewBox="0 0 16 16"
+                class="status-icon-cards"
+              >
+                <use
+                  xlink:href="./assets/icons/bootstrap-icons.svg#pencil-square"
+                />
+              </svg>
+            </a>
+            <a class="action-icon">
+              <svg
+                fill="currentColor"
+                viewBox="0 0 16 16"
+                class="status-icon-cards"
+              >
+                <use xlink:href="./assets/icons/bootstrap-icons.svg#trash" />
+              </svg>
+            </a>
           </div>
         </div>
-
-        <!-- Controles del carrusel -->
-        <button
-          class="carousel-control-prev"
-          type="button"
-          [attr.data-bs-target]="'#carousel' + pkg.id"
-          data-bs-slide="prev"
-          *ngIf="pkg.images.length > 1"
-        >
-          <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button
-          class="carousel-control-next"
-          type="button"
-          [attr.data-bs-target]="'#carousel' + pkg.id"
-          data-bs-slide="next"
-          *ngIf="pkg.images.length > 1"
-        >
-          <span class="carousel-control-next-icon"></span>
-        </button>
       </div>
 
-      <!-- Contenido con altura fija y scroll -->
-      <div
-        class="card-body flex-grow-1"
-        style="height: 210px; overflow-y: auto"
-      >
-        <h5 class="card-title">{{ pkg.name }}</h5>
-        <p class="card-text">{{ pkg.description }}</p>
-
-        <!-- Información de roles -->
-        <p class="text-muted mb-1">
-          <strong>Roles:</strong> {{ getNumberOfRoles(pkg) }}
-        </p>
-
-        <!-- Precio total -->
-        <p class="fw-bold mb-2">
-          Precio total: ${{ getTotalPrice(pkg) | number : "1.0-0" }} COP
-        </p>
-      </div>
-
-      <!-- Botones de acción -->
-      <div
-        class="btn-group btn-group-sm w-100"
-        role="group"
-        style="
-          background-color: var(--sidebar-background-color);
-          border-radius: 0;
-        "
-      >
-        <a class="action-icon">
-          <svg
-            fill="currentColor"
-            viewBox="0 0 16 16"
-            class="status-icon-cards"
-          >
-            <use xlink:href="./assets/icons/bootstrap-icons.svg#eye" />
-          </svg>
-        </a>
-        <a class="action-icon">
-          <svg
-            fill="currentColor"
-            viewBox="0 0 16 16"
-            class="status-icon-cards"
-          >
-            <use
-              xlink:href="./assets/icons/bootstrap-icons.svg#pencil-square"
-            />
-          </svg>
-        </a>
-        <a class="action-icon">
-          <svg
-            fill="currentColor"
-            viewBox="0 0 16 16"
-            class="status-icon-cards"
-          >
-            <use xlink:href="./assets/icons/bootstrap-icons.svg#trash" />
-          </svg>
-        </a>
-      </div>
     </div>
   </div>
 
-  <div class="d-flex align-items-center w-100">
-    <h6 style="font-size: 0.8rem; padding-left: 20px; padding-bottom: 5px">
-      <span
-        class="badge"
-        *ngIf="viewMode === 'list'"
-        style="background-color: black; border-radius: 0"
-        >List view</span
-      >
-      <span
-        class="badge"
-        *ngIf="viewMode === 'cards'"
-        style="
-          background-color: var(--sidebar-background-color);
-          border-radius: 0;
-        "
-        >Cards view</span
-      >
-    </h6>
-  </div>
-</div>
+  <!-- Controles de paginación -->
+  <div
+    class="d-flex justify-content-between align-items-center mt-3 pagination-wrapper"
+  >
+    <!-- Badge de vista -->
+    <div>
+      <h6 class="view-badge">
+        <span class="badge badge-list" *ngIf="viewMode === 'list'"
+          >List view</span
+        >
+        <span class="badge badge-cards" *ngIf="viewMode === 'cards'"
+          >Cards view</span
+        >
+      </h6>
+    </div>
 
-<!-- Modal para agregar un nuevo paquete -->
-<div
-  class="modal fade"
-  id="addPackage"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  tabindex="-1"
-  aria-labelledby="addPackageLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <!-- Título del Modal con Íconos de Paso -->
-      <div class="modal-header justify-content-between modal-header-custom">
-        <!-- Íconos de Pasos con línea de unión -->
-        <div class="step-icons d-flex position-relative">
-          <!-- Ícono para el paso 1 -->
-          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon">
-            <use
-              [attr.xlink:href]="
-                './assets/icons/bootstrap-icons.svg#' +
-                (iconStep1Visible ? '1-circle-fill' : '1-circle')
-              "
-            />
-          </svg>
-          <!-- Ícono para el paso 2 -->
-          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
-            <use
-              [attr.xlink:href]="
-                './assets/icons/bootstrap-icons.svg#' +
-                (iconStep2Visible ? '2-circle-fill' : '2-circle')
-              "
-            />
-          </svg>
-          <!-- Ícono para el paso 3 -->
-          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
-            <use
-              [attr.xlink:href]="
-                './assets/icons/bootstrap-icons.svg#' +
-                (iconStep3Visible ? '3-circle-fill' : '3-circle')
-              "
-            />
-          </svg>
-        </div>
-        <h1 class="modal-title fs-5" id="staticBackdropLabel">
-          Add a New <span style="color: white">Package</span>
-        </h1>
-      </div>
+    <!-- Contador -->
+    <div class="user-counter">
+      Showing {{ paginatedPackages.length }} of {{ packages.length }} packages
+    </div>
 
-      <div class="modal-body">
-        <app-add-package
-          (validStep1)="handleIconChange($event)"
-          (validStep2)="handleIconChange2($event)"
-          (validStep3)="handleIconChange3($event)"
-          (closeMd)="closeModal($event)"
-        ></app-add-package>
-      </div>
+    <!-- Paginación -->
+    <div>
+      <nav aria-label="Paginación de tarjetas" class="m-2">
+        <ul class="pagination pagination-sm mb-0 custom-pagination">
+          <!-- Botón Anterior -->
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <a
+              class="page-link"
+              href="#"
+              aria-label="Anterior"
+              (click)="goToPage(currentPage - 1)"
+            >
+              <i class="bi bi-chevron-left"></i>
+            </a>
+          </li>
+
+          <!-- Números de página -->
+          <li
+            class="page-item"
+            *ngFor="let page of pages"
+            [class.active]="currentPage === page"
+          >
+            <a class="page-link" href="#" (click)="goToPage(page)">{{
+              page
+            }}</a>
+          </li>
+
+          <!-- Botón Siguiente -->
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <a
+              class="page-link"
+              href="#"
+              aria-label="Siguiente"
+              (click)="goToPage(currentPage + 1)"
+            >
+              <i class="bi bi-chevron-right"></i>
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
   </div>
+
+  <!-- Modal para agregar un nuevo paquete -->
+  <app-add-package
+    *ngIf="showAddPackageModal"
+    (close)="closeModal()"
+    (close2)="closeModal2()"
+  ></app-add-package>
 </div>

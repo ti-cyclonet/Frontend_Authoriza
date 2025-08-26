@@ -7,3 +7,55 @@
 .text-danger {
   font-size: 0.875rem;
 }
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  color: #212121;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 15px;
+  border-top: 3px solid var(--sidebar-background-color);
+}
+
+@media (max-width: 576px) {
+
+  .form-buttons button {
+    min-width: 40px;
+    font-size: 0.8rem;
+  }
+
+  .form-buttons button span {
+    display: none;
+  }
+}
+
+.status-icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  margin-left: 0.25rem;
+}
+.btn-fixed-width {
+  min-width: 100px;
+}

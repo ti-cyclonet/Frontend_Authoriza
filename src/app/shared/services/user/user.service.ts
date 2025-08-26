@@ -13,6 +13,7 @@ export class UserService {
 
   private userUrl = this.baseApiUrl + '/api/users';
   private userUrlWithDeleted = this.userUrl + '/without-dependency';
+  private userIndependentUrl = this.userUrl + '/independent';
   private usersSubject = new BehaviorSubject<any[]>([]);
   public users$ = this.usersSubject.asObservable();
 
@@ -143,6 +144,15 @@ export class UserService {
     const userId = sessionStorage.getItem('user_id');
     return this.http.get<User[]>(
       `${this.userUrlWithDeleted}/${userId}?includeDeleted=true`
+    );
+  }
+
+  getIndependentUsers(
+    page: number = 1,
+    withDeleted: boolean = false
+  ): Observable<User[]> {
+    return this.http.get<User[]>(
+      `${this.userIndependentUrl}?page=${page}&withDeleted=${withDeleted}`
     );
   }
 
