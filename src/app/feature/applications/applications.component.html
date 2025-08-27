@@ -36,7 +36,10 @@
 
 <!-- Contenido -->
 <div class="card shadow m-3">
-  <div class="card-body">
+  <div
+    class="card-body"
+    style="border-bottom: 1px solid var(--sidebar-background-color)"
+  >
     <div class="d-flex align-items-center w-100">
       <h5
         class="card-title text-nowrap bg-body-secondary border"
@@ -79,808 +82,856 @@
         </a>
       </div>
     </div>
+  </div>
 
-    <!-- Contenedor Aplicaciones -->
-    <div class="table-responsive mt-3" [class.disabled]="isRolesTableVisible">
-      <div class="roles-header">
-        <!-- Título alineado a la izquierda -->
-        <h6 class="roles-title">Applications list</h6>
-      </div>
-      <table class="table table-hover table-sm" style="font-size: 14px">
-        <thead>
-          <tr class="table-light">
-            <th scope="col" class="id-col text-center">Item</th>
-            <th scope="col" class="text-center">Name</th>
-            <th scope="col" class="text-center d-none d-xl-table-cell">
-              Description
-            </th>
-            <th scope="col" class="text-center d-none d-xl-table-cell">Logo</th>
-            <th scope="col" class="text-center d-none d-xl-table-cell">Slug</th>
-            <th scope="col" class="text-center d-none d-xl-table-cell">Tags</th>
-            <th scope="col" class="text-center">State</th>
-            <th class="actions-col text-center" scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let application of applications; let index = index">
-            <th
-              scope="row"
-              [ngClass]="{
-                selected: application === selectedApplication,
-                'bg-temp':
-                  application.strState === 'TEMPORARY' &&
-                  application !== selectedApplication
-              }"
-            >
-              <span
-                class="badge rounded-badge position-relative d-inline-block"
-                [ngClass]="{
-                  bgd: application.strState === 'TEMPORARY',
-                  'badge-selected': application === selectedApplication,
-                  'badge-default': application !== selectedApplication
-                }"
-              >
-                {{ index + 1 }}
-
-                <!-- Badge circular sin texto -->
-                <span
-                  *ngIf="application.strState === 'TEMPORARY'"
-                  class="badge-app-circle"
-                  title="Aplicación con novedades"
-                ></span>
-              </span>
-            </th>
-
-            <td
-              class="text-start align-middle"
-              [ngClass]="{
-                selected: application === selectedApplication,
-                'bg-temp':
-                  application.strState === 'TEMPORARY' &&
-                  application !== selectedApplication
-              }"
-            >
-              <span class="position-relative d-inline-block">
-                {{ application?.strName?.toUpperCase() || "[N/A]" }}
-              </span>
-            </td>
-
-            <td
-              class="text-start d-none d-xl-table-cell"
-              [ngClass]="{
-                selected: application === selectedApplication,
-                'bg-temp':
-                  application.strState === 'TEMPORARY' &&
-                  application !== selectedApplication
-              }"
-            >
-              {{ application?.strDescription || "[N/A]" }}
-            </td>
-
-            <td
-              class="d-none d-xl-table-cell text-center"
-              (click)="openImageModal(application.strUrlImage)"
-              [ngClass]="{
-                selected: application === selectedApplication,
-                'bg-temp':
-                  application.strState === 'TEMPORARY' &&
-                  application !== selectedApplication
-              }"
-              style="width: 200px"
-            >
-              <img
-                [src]="application.strUrlImage"
-                style="width: 30px; height: 20px; cursor: pointer"
-                alt="Logo"
-                title="Ampliar"
-              />
-            </td>
-
-            <td
-              class="text-start d-none d-xl-table-cell text-center"
-              [ngClass]="{
-                selected: application === selectedApplication,
-                'bg-temp':
-                  application.strState === 'TEMPORARY' &&
-                  application !== selectedApplication
-              }"
-            >
-              {{ application?.strSlug || "[N/A]" }}
-            </td>
-
-            <td
-              class="text-start d-none d-xl-table-cell text-center"
-              [ngClass]="{
-                selected: application === selectedApplication,
-                'bg-temp':
-                  application.strState === 'TEMPORARY' &&
-                  application !== selectedApplication
-              }"
-            >
-              {{ application?.strTags || "[N/A]" }}
-            </td>
-
-            <td
-              class="text-center"
-              [ngClass]="{
-                selected: application === selectedApplication,
-                'bg-temp':
-                  application.strState === 'TEMPORARY' &&
-                  application !== selectedApplication
-              }"
-            >
-              <span
-                class="badge mt-1"
-                [ngClass]="{
-                  'bg-warning text-dark': application.strState === 'TEMPORARY',
-                  'bg-success': application.strState !== 'TEMPORARY'
-                }"
-              >
-                {{
-                  application.strState === "TEMPORARY" ? "NOT SAVED" : "ACTIVE"
-                }}
-              </span>
-            </td>
-
-            <td
-              class="text-center actions-col"
-              [ngClass]="{
-                selected: application === selectedApplication,
-                'bg-temp text-dark':
-                  application.strState === 'TEMPORARY' &&
-                  application !== selectedApplication
-              }"
-            >
-              <div>
-                <button
-                  type="button"
-                  class="btn btn-outline-dark btn-sm me-2"
-                  data-bs-toggle="tooltip"
-                  title="Details"
-                  (click)="showRoles(application)"
-                >
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    class="status-icon"
-                  >
-                    <use
-                      xlink:href="./assets/icons/bootstrap-icons.svg#list-nested"
-                    ></use>
-                  </svg>
-                </button>
-
-                <button
-                  type="button"
-                  class="btn btn-outline-dark btn-sm me-2"
-                  data-bs-toggle="tooltip"
-                  data-bs-target="#crearAplicacion"
-                  (click)="openModal(true, application.id)"
-                  title="Edit"
-                >
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    class="status-icon"
-                  >
-                    <use
-                      xlink:href="./assets/icons/bootstrap-icons.svg#pencil"
-                    ></use>
-                  </svg>
-                </button>
-
-                <button
-                  type="button"
-                  class="btn btn-outline-dark btn-sm me-2"
-                  data-bs-toggle="tooltip"
-                  title="Delete"
-                  (click)="setSelectedApplication(application)"
-                  data-bs-target="#confirmDelete"
-                >
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    class="status-icon"
-                  >
-                    <use
-                      xlink:href="./assets/icons/bootstrap-icons.svg#trash3"
-                    ></use>
-                  </svg>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Contenedor de información de Roles -->
-    <div
-      *ngIf="isRolesTableVisible"
-      class="table-responsive mt-3"
-      [class.disabled]="isMenuTableVisible"
-    >
-      <div class="roles-header">
-        <!-- Título alineado a la izquierda -->
-        <h6 class="roles-title">
-          Roles for
-          <span class="text-primary">{{
-            (selectedApplication?.strName || "").toUpperCase()
-          }}</span>
-          app
-        </h6>
-
-        <!-- Contenedor de botones alineado a la derecha -->
-        <div class="roles-buttons btn-group ms-auto custom-btn-group">
-          <!-- Botón para cerrar -->
-          <a (click)="toggleRolesTable()" title="Go up a level">
-            <img
-              src="assets/icons/arrow-up-square-fill.svg"
-              alt="Cerrar"
-              width="23"
-            />
-          </a>
-
-          <!-- Botón para agregar un nuevo rol -->
-          <a
-            data-bs-toggle="modal"
-            data-bs-target="#rolModal"
-            title="Add new role"
-          >
-            <img
-              src="assets/icons/plus-square-fill.svg"
-              alt="Agregar"
-              width="23"
-            />
-          </a>
+  <div class="card" style="border-radius: 0; border: none; margin-top: 0;">
+    <div class="card-body" style="padding-top: 0px !important;">
+      
+      <!-- Contenedor Aplicaciones -->
+      <div class="table-responsive mt-3" [class.disabled]="isRolesTableVisible">
+        <div class="roles-header">
+          <!-- Título alineado a la izquierda -->
+          <h6 class="roles-title">Applications list</h6>
         </div>
-      </div>
-
-      <!-- Tabla de roles -->
-      <table class="table table-hover table-sm" style="font-size: 14px">
-        <thead>
-          <tr class="table-light">
-            <th scope="col" class="id-col text-center">Item</th>
-            <th scope="col" class="text-center d-none d-xl-table-cell">Name</th>
-            <th scope="col" class="text-center">Description A</th>
-            <th scope="col" class="text-center d-none d-xl-table-cell">
-              Description B
-            </th>
-            <th scope="col" class="text-center">State</th>
-            <th class="actions-col text-center" scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            *ngFor="let rol of selectedApplication?.strRoles; let i = index"
-            [ngClass]="{ 'bg-temp': rol.strState === 'TEMPORARY' }"
-          >
-            <th
-              scope="row"
-              [ngClass]="{
-                selected: rol === selectedRol,
-                'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
-              }"
-            >
-              <span
-                class="badge rounded-badge position-relative d-inline-block"
-                [ngClass]="{
-                  bgd: rol.strState === 'TEMPORARY',
-                  'badge-selected': rol === selectedRol,
-                  'badge-default': rol !== selectedRol
-                }"
-              >
-                {{ i + 1 }}
-
-                <!-- Badge circular sin texto -->
-                <span
-                  *ngIf="rol.strState === 'TEMPORARY'"
-                  class="badge-app-circle"
-                  title="Nuevo rol"
-                ></span>
-              </span>
-            </th>
-            <td
-              [ngClass]="{
-                selected: rol === selectedRol,
-                'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
-              }"
-              class="d-none d-xl-table-cell"
-            >
-              {{ rol.strName }}
-            </td>
-            <td
-              [ngClass]="{
-                selected: rol === selectedRol,
-                'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
-              }"
-            >
-              {{ rol.strDescription1.toUpperCase() }}
-            </td>
-            <td
-              [ngClass]="{
-                selected: rol === selectedRol,
-                'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
-              }"
-              class="d-none d-xl-table-cell"
-            >
-              {{ rol.strDescription2 }}
-            </td>
-            <td
-              [ngClass]="{
-                selected: rol === selectedRol,
-                'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
-              }"
-              class="text-center"
-            >
-              <span
-                class="badge mt-1"
-                [ngClass]="{
-                  'bg-warning text-dark': rol.strState === 'TEMPORARY',
-                  'bg-success': rol.strState !== 'TEMPORARY'
-                }"
-              >
-                {{ rol.strState === "TEMPORARY" ? "NOT SAVED" : "ACTIVE" }}
-              </span>
-            </td>
-
-            <td
-              [ngClass]="{
-                selected: rol === selectedRol,
-                'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
-              }"
-              class="text-center actions-col"
-            >
-              <div>
-                <button
-                  type="button"
-                  class="btn btn-outline-dark btn-sm me-2"
-                  data-bs-toggle="tooltip"
-                  title="Details"
-                  (click)="onSelectRol(rol)"
-                >
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    class="status-icon"
-                  >
-                    <use
-                      [attr.xlink:href]="
-                        './assets/icons/bootstrap-icons.svg#list-nested'
-                      "
-                    ></use>
-                  </svg>
-                </button>
-
-                <button
-                  type="button"
-                  class="btn btn-outline-dark btn-sm me-2"
-                  title="Edit"
-                >
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    class="status-icon"
-                  >
-                    <use
-                      [attr.xlink:href]="
-                        './assets/icons/bootstrap-icons.svg#pencil'
-                      "
-                    ></use>
-                  </svg>
-                </button>
-
-                <button
-                  type="button"
-                  class="btn btn-outline-dark btn-sm me-2"
-                  title="Delete"
-                >
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    class="status-icon"
-                  >
-                    <use
-                      [attr.xlink:href]="
-                        './assets/icons/bootstrap-icons.svg#trash3'
-                      "
-                    ></use>
-                  </svg>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Contenedor de información de Opciones de menu -->
-    <div
-      *ngIf="isMenuTableVisible"
-      class="table-responsive mt-3"
-      [class.disabled]="isSubmenuTableVisible"
-    >
-      <div class="roles-header">
-        <!-- Título alineado a la izquierda -->
-        <h6 class="roles-title">
-          Menu options for
-          <span class="text-primary">{{
-            (selectedRol?.strDescription1 || "").toUpperCase()
-          }}</span>
-          rol
-        </h6>
-
-        <!-- Contenedor de botones alineado a la derecha -->
-        <div class="roles-buttons btn-group ms-auto custom-btn-group">
-          <!-- Botón para cerrar -->
-          <button
-            *ngIf="hasTemporaryMenuOptions()"
-            class="btn btn-outline-danger btn-sm"
-            (click)="cancelTemporaryChanges()"
-          >
-            Cancel Changes
-          </button>
-          <a
-            (click)="clearSelectedRole()"
-            style="cursor: pointer"
-            title="Go up a level"
-          >
-            <img
-              src="assets/icons/arrow-up-square-fill.svg"
-              alt="Cerrar"
-              width="23"
-            />
-          </a>
-
-          <!-- Botón para agregar una nueva opción de menú -->
-          <a
-            title="Add new menu option"
-            data-bs-toggle="modal"
-            data-bs-target="#optionMenuModal"
-            style="cursor: pointer"
-            [class.disabled-icon]="!selectedRol"
-            [attr.aria-disabled]="!selectedRol"
-            (click)="
-              selectedRol
-                ? null
-                : showToast('Select a role first', 'warning', 'A', 1)
-            "
-          >
-            <img
-              src="assets/icons/plus-square-fill.svg"
-              alt="Agregar"
-              width="23"
-            />
-          </a>
-        </div>
-      </div>
-
-      <!-- Tabla de opciones de menu -->
-      <table class="table table-hover table-sm" style="font-size: 14px">
-        <thead>
-          <tr class="table-light">
-            <th scope="col" class="id-col text-center">Order</th>
-            <th class="text-center d-none d-xl-table-cell">Name</th>
-            <th class="text-center">Description A</th>
-            <th class="text-center d-none d-xl-table-cell">Url</th>
-            <th class="text-center d-none d-xl-table-cell">Icon</th>
-            <th class="text-center d-none d-xl-table-cell">Type</th>
-            <th class="text-center d-none d-xl-table-cell">Submenu</th>
-            <th class="text-center">State</th>
-            <th class="actions-col text-center" scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            *ngFor="let menu of selectedMenuOptions; let i = index"
-            [ngClass]="{ 'bg-temp': menu.strState === 'TEMPORARY' }"
-          >
-            <th
-              scope="row"
-              [ngClass]="{
-                selected: menu === selectedMenuOption,
-                'bg-temp':
-                  menu.strState === 'TEMPORARY' && menu !== selectedMenuOption
-              }"
-            >
-              <span
-                class="badge rounded-badge position-relative d-inline-block"
-                [ngClass]="{
-                  bgd: menu.strState === 'TEMPORARY',
-                  'badge-selected': menu === selectedMenuOption,
-                  'badge-default': menu !== selectedMenuOption
-                }"
-              >
-                {{ i + 1 }}
-
-                <!-- Badge circular sin texto -->
-                <span
-                  *ngIf="menu.strState === 'TEMPORARY'"
-                  class="badge-app-circle"
-                  title="Nedw option menu"
-                ></span>
-              </span>
-            </th>
-            <td
-              [ngClass]="{ selected: menu === selectedMenuOption }"
-              class="d-none d-xl-table-cell"
-            >
-              {{ menu.strName }}
-            </td>
-            <td [ngClass]="{ selected: menu === selectedMenuOption }">
-              {{ menu.strDescription }}
-            </td>
-            <td
-              [ngClass]="{ selected: menu === selectedMenuOption }"
-              class="d-none d-xl-table-cell"
-            >
-              {{ menu.strUrl?.trim() ? menu.strUrl : "[N/A]" }}
-            </td>
-            <td
-              [ngClass]="{ selected: menu === selectedMenuOption }"
-              class="d-none d-xl-table-cell"
-            >
-              <svg
-                [attr.fill]="getIconColor()"
-                viewBox="0 0 16 16"
-                width="16"
-                height="16"
-                class="me-1"
-                style="vertical-align: text-bottom"
-              >
-                <use
-                  [attr.xlink:href]="
-                    './assets/icons/bootstrap-icons.svg#' + menu.strIcon
-                  "
-                ></use>
-              </svg>
-              {{ menu.strIcon }}
-            </td>
-
-            <td
-              [ngClass]="{ selected: menu === selectedMenuOption }"
-              class="d-none d-xl-table-cell"
-            >
-              {{ menu.strType }}
-            </td>
-            <td
-              [ngClass]="{ selected: menu === selectedMenuOption }"
-              class="text-center d-none d-xl-table-cell"
-            >
-              {{
-                menu.strSubmenus && menu.strSubmenus.length > 0 ? "SI" : "NO"
-              }}
-            </td>
-            <td
-              [ngClass]="{
-                selected: menu === selectedMenuOption,
-                'bg-temp':
-                  menu.strState === 'TEMPORARY' && menu !== selectedMenuOption
-              }"
-              class="text-center"
-            >
-              <span
-                class="badge mt-1"
-                [ngClass]="{
-                  'bg-warning text-dark': menu.strState === 'TEMPORARY',
-                  'bg-success': menu.strState !== 'TEMPORARY'
-                }"
-              >
-                {{ menu.strState === "TEMPORARY" ? "NOT SAVED" : "ACTIVE" }}
-              </span>
-            </td>
-            <td
-              [ngClass]="{ selected: menu === selectedMenuOption }"
-              class="text-center actions-col"
-            >
-              <div>
-                <button
-                  type="button"
-                  class="btn btn-outline-dark btn-sm me-2"
-                  data-bs-toggle="tooltip"
-                  title="Details"
-                  [disabled]="
-                    !(menu.strSubmenus && menu.strSubmenus.length > 0)
-                  "
-                  (click)="onSelectMenu(menu)"
-                >
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    class="status-icon"
-                  >
-                    <use
-                      [attr.xlink:href]="
-                        './assets/icons/bootstrap-icons.svg#list-nested'
-                      "
-                    ></use>
-                  </svg>
-                </button>
-
-                <button
-                  type="button"
-                  class="btn btn-outline-dark btn-sm me-2"
-                  title="Edit"
-                >
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    class="status-icon"
-                  >
-                    <use
-                      [attr.xlink:href]="
-                        './assets/icons/bootstrap-icons.svg#pencil'
-                      "
-                    ></use>
-                  </svg>
-                </button>
-
-                <button
-                  type="button"
-                  class="btn btn-outline-dark btn-sm me-2"
-                  title="Delete"
-                >
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    class="status-icon"
-                  >
-                    <use
-                      [attr.xlink:href]="
-                        './assets/icons/bootstrap-icons.svg#trash3'
-                      "
-                    ></use>
-                  </svg>
-                </button>
-              </div>
-            </td>
-          </tr>
-          <!-- ⚠️ Fila para mostrar mensaje si la tabla está vacía -->
-          <tr *ngIf="selectedMenuOptions.length === 0">
-            <td colspan="9" class="text-center fst-italic text-primary">
-              No menu options assigned to this role.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- Opciones de menú disponibles en la aplicación -->
-      <div class="mt-4">
-        <h6 class="roles-title">Available Menu Options</h6>
-        <table class="table table-bordered table-light mt-3">
+        <table class="table table-hover table-sm" style="font-size: 14px">
           <thead>
-            <tr>
-              <th>Select</th>
-              <th>Name</th>
-              <th>Description</th>
+            <tr class="table-light">
+              <th scope="col" class="id-col text-center">Item</th>
+              <th scope="col" class="text-center">Name</th>
+              <th scope="col" class="text-center d-none d-xl-table-cell">
+                Description
+              </th>
+              <th scope="col" class="text-center d-none d-xl-table-cell">Logo</th>
+              <th scope="col" class="text-center d-none d-xl-table-cell">Slug</th>
+              <th scope="col" class="text-center d-none d-xl-table-cell">Tags</th>
+              <th scope="col" class="text-center">State</th>
+              <th class="actions-col text-center" scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let option of allMenuOptionsForApp">
-              <td>
-                <input
-                  type="checkbox"
-                  [checked]="isOptionSelected(option)"
-                  (change)="toggleMenuOption(option)"
-                  [ngClass]="{ 'temporary-option': isTemporary(option) }"
+            <tr *ngFor="let application of applications; let index = index">
+              <th
+                scope="row"
+                [ngClass]="{
+                  selected: application === selectedApplication,
+                  'bg-temp':
+                    application.strState === 'TEMPORARY' &&
+                    application !== selectedApplication
+                }"
+              >
+                <span
+                  class="badge rounded-badge position-relative d-inline-block"
+                  [ngClass]="{
+                    bgd: application.strState === 'TEMPORARY',
+                    'badge-selected': application === selectedApplication,
+                    'badge-default': application !== selectedApplication
+                  }"
+                >
+                  {{ index + 1 }}
+    
+                  <!-- Badge circular sin texto -->
+                  <span
+                    *ngIf="application.strState === 'TEMPORARY'"
+                    class="badge-app-circle"
+                    title="Aplicación con novedades"
+                  ></span>
+                </span>
+              </th>
+    
+              <td
+                class="text-start align-middle"
+                [ngClass]="{
+                  selected: application === selectedApplication,
+                  'bg-temp':
+                    application.strState === 'TEMPORARY' &&
+                    application !== selectedApplication
+                }"
+              >
+                <span class="position-relative d-inline-block">
+                  {{ application?.strName?.toUpperCase() || "[N/A]" }}
+                </span>
+              </td>
+    
+              <td
+                class="text-start d-none d-xl-table-cell"
+                [ngClass]="{
+                  selected: application === selectedApplication,
+                  'bg-temp':
+                    application.strState === 'TEMPORARY' &&
+                    application !== selectedApplication
+                }"
+              >
+                {{ application?.strDescription || "[N/A]" }}
+              </td>
+    
+              <td
+                class="d-none d-xl-table-cell text-center"
+                (click)="openImageModal(application.strUrlImage)"
+                [ngClass]="{
+                  selected: application === selectedApplication,
+                  'bg-temp':
+                    application.strState === 'TEMPORARY' &&
+                    application !== selectedApplication
+                }"
+                style="width: 200px"
+              >
+                <img
+                  [src]="application.strUrlImage"
+                  style="width: 30px; height: 20px; cursor: pointer"
+                  alt="Logo"
+                  title="Ampliar"
                 />
               </td>
-              <td>{{ option.strName }}</td>
-              <td>{{ option.strDescription }}</td>
+    
+              <td
+                class="text-start d-none d-xl-table-cell text-center"
+                [ngClass]="{
+                  selected: application === selectedApplication,
+                  'bg-temp':
+                    application.strState === 'TEMPORARY' &&
+                    application !== selectedApplication
+                }"
+              >
+                {{ application?.strSlug || "[N/A]" }}
+              </td>
+    
+              <td
+                class="text-start d-none d-xl-table-cell text-center"
+                [ngClass]="{
+                  selected: application === selectedApplication,
+                  'bg-temp':
+                    application.strState === 'TEMPORARY' &&
+                    application !== selectedApplication
+                }"
+              >
+                {{ application?.strTags || "[N/A]" }}
+              </td>
+    
+              <td
+                class="text-center"
+                [ngClass]="{
+                  selected: application === selectedApplication,
+                  'bg-temp':
+                    application.strState === 'TEMPORARY' &&
+                    application !== selectedApplication
+                }"
+              >
+                <span
+                  class="badge mt-1"
+                  [ngClass]="{
+                    'bg-warning text-dark': application.strState === 'TEMPORARY',
+                    'bg-success': application.strState !== 'TEMPORARY'
+                  }"
+                >
+                  {{
+                    application.strState === "TEMPORARY" ? "NOT SAVED" : "ACTIVE"
+                  }}
+                </span>
+              </td>
+    
+              <td
+                class="text-center actions-col"
+                [ngClass]="{
+                  selected: application === selectedApplication,
+                  'bg-temp text-dark':
+                    application.strState === 'TEMPORARY' &&
+                    application !== selectedApplication
+                }"
+              >
+                <div>
+                  <button
+                    type="button"
+                    class="btn btn-outline-dark btn-sm me-2"
+                    data-bs-toggle="tooltip"
+                    title="Details"
+                    (click)="showRoles(application)"
+                  >
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      class="status-icon"
+                    >
+                      <use
+                        xlink:href="./assets/icons/bootstrap-icons.svg#list-nested"
+                      ></use>
+                    </svg>
+                  </button>
+    
+                  <button
+                    type="button"
+                    class="btn btn-outline-dark btn-sm me-2"
+                    data-bs-toggle="tooltip"
+                    data-bs-target="#crearAplicacion"
+                    (click)="openModal(true, application.id)"
+                    title="Edit"
+                  >
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      class="status-icon"
+                    >
+                      <use
+                        xlink:href="./assets/icons/bootstrap-icons.svg#pencil"
+                      ></use>
+                    </svg>
+                  </button>
+    
+                  <button
+                    type="button"
+                    class="btn btn-outline-dark btn-sm me-2"
+                    data-bs-toggle="tooltip"
+                    title="Delete"
+                    (click)="setSelectedApplication(application)"
+                    data-bs-target="#confirmDelete"
+                  >
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      class="status-icon"
+                    >
+                      <use
+                        xlink:href="./assets/icons/bootstrap-icons.svg#trash3"
+                      ></use>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    
+      <!-- Contenedor de información de Roles -->
+      <div
+        *ngIf="isRolesTableVisible"
+        class="table-responsive mt-3"
+        [class.disabled]="isMenuTableVisible"
+      >
+        <div class="roles-header">
+          <!-- Título alineado a la izquierda -->
+          <h6 class="roles-title">
+            Roles for
+            <span class="text-primary">{{
+              (selectedApplication?.strName || "").toUpperCase()
+            }}</span>
+            app
+          </h6>
+    
+          <!-- Contenedor de botones alineado a la derecha -->
+          <div class="roles-buttons btn-group ms-auto custom-btn-group">
+            <!-- Botón para cerrar -->
+            <a (click)="toggleRolesTable()" title="Go up a level">
+              <img
+                src="assets/icons/arrow-up-square-fill.svg"
+                alt="Cerrar"
+                width="23"
+              />
+            </a>
+    
+            <!-- Botón para agregar un nuevo rol -->
+            <a
+              data-bs-toggle="modal"
+              data-bs-target="#rolModal"
+              title="Add new role"
+            >
+              <img
+                src="assets/icons/plus-square-fill.svg"
+                alt="Agregar"
+                width="23"
+              />
+            </a>
+          </div>
+        </div>
+    
+        <!-- Tabla de roles -->
+        <table class="table table-hover table-sm" style="font-size: 14px">
+          <thead>
+            <tr class="table-light">
+              <th scope="col" class="id-col text-center">Item</th>
+              <th scope="col" class="text-center d-none d-xl-table-cell">Name</th>
+              <th scope="col" class="text-center">Description A</th>
+              <th scope="col" class="text-center d-none d-xl-table-cell">
+                Description B
+              </th>
+              <th scope="col" class="text-center">State</th>
+              <th class="actions-col text-center" scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let rol of selectedApplication?.strRoles; let i = index"
+              [ngClass]="{ 'bg-temp': rol.strState === 'TEMPORARY' }"
+            >
+              <th
+                scope="row"
+                [ngClass]="{
+                  selected: rol === selectedRol,
+                  'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
+                }"
+              >
+                <span
+                  class="badge rounded-badge position-relative d-inline-block"
+                  [ngClass]="{
+                    bgd: rol.strState === 'TEMPORARY',
+                    'badge-selected': rol === selectedRol,
+                    'badge-default': rol !== selectedRol
+                  }"
+                >
+                  {{ i + 1 }}
+    
+                  <!-- Badge circular sin texto -->
+                  <span
+                    *ngIf="rol.strState === 'TEMPORARY'"
+                    class="badge-app-circle"
+                    title="Nuevo rol"
+                  ></span>
+                </span>
+              </th>
+              <td
+                [ngClass]="{
+                  selected: rol === selectedRol,
+                  'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
+                }"
+                class="d-none d-xl-table-cell"
+              >
+                {{ rol.strName }}
+              </td>
+              <td
+                [ngClass]="{
+                  selected: rol === selectedRol,
+                  'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
+                }"
+              >
+                {{ rol.strDescription1.toUpperCase() }}
+              </td>
+              <td
+                [ngClass]="{
+                  selected: rol === selectedRol,
+                  'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
+                }"
+                class="d-none d-xl-table-cell"
+              >
+                {{ rol.strDescription2 }}
+              </td>
+              <td
+                [ngClass]="{
+                  selected: rol === selectedRol,
+                  'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
+                }"
+                class="text-center"
+              >
+                <span
+                  class="badge mt-1"
+                  [ngClass]="{
+                    'bg-warning text-dark': rol.strState === 'TEMPORARY',
+                    'bg-success': rol.strState !== 'TEMPORARY'
+                  }"
+                >
+                  {{ rol.strState === "TEMPORARY" ? "NOT SAVED" : "ACTIVE" }}
+                </span>
+              </td>
+    
+              <td
+                [ngClass]="{
+                  selected: rol === selectedRol,
+                  'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
+                }"
+                class="text-center actions-col"
+              >
+                <div>
+                  <button
+                    type="button"
+                    class="btn btn-outline-dark btn-sm me-2"
+                    data-bs-toggle="tooltip"
+                    title="Details"
+                    (click)="onSelectRol(rol)"
+                  >
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      class="status-icon"
+                    >
+                      <use
+                        [attr.xlink:href]="
+                          './assets/icons/bootstrap-icons.svg#list-nested'
+                        "
+                      ></use>
+                    </svg>
+                  </button>
+    
+                  <button
+                    type="button"
+                    class="btn btn-outline-dark btn-sm me-2"
+                    title="Edit"
+                  >
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      class="status-icon"
+                    >
+                      <use
+                        [attr.xlink:href]="
+                          './assets/icons/bootstrap-icons.svg#pencil'
+                        "
+                      ></use>
+                    </svg>
+                  </button>
+    
+                  <button
+                    type="button"
+                    class="btn btn-outline-dark btn-sm me-2"
+                    title="Delete"
+                  >
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      class="status-icon"
+                    >
+                      <use
+                        [attr.xlink:href]="
+                          './assets/icons/bootstrap-icons.svg#trash3'
+                        "
+                      ></use>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    
+      <!-- Contenedor de información de Opciones de menu -->
+      <div
+        *ngIf="isMenuTableVisible"
+        class="table-responsive mt-3"
+        [class.disabled]="isSubmenuTableVisible"
+      >
+        <div class="roles-header">
+          <!-- Título alineado a la izquierda -->
+          <h6 class="roles-title">
+            Menu options for
+            <span class="text-primary">{{
+              (selectedRol?.strDescription1 || "").toUpperCase()
+            }}</span>
+            rol
+          </h6>
+    
+          <!-- Contenedor de botones alineado a la derecha -->
+          <div class="roles-buttons btn-group ms-auto custom-btn-group">
+            <!-- Botón para cerrar -->
+            <button
+              *ngIf="hasTemporaryMenuOptions()"
+              class="btn btn-outline-danger btn-sm"
+              (click)="cancelTemporaryChanges()"
+            >
+              Cancel Changes
+            </button>
+            <a
+              (click)="clearSelectedRole()"
+              style="cursor: pointer"
+              title="Go up a level"
+            >
+              <img
+                src="assets/icons/arrow-up-square-fill.svg"
+                alt="Cerrar"
+                width="23"
+              />
+            </a>
+    
+            <!-- Botón para agregar una nueva opción de menú -->
+            <a
+              title="Add new menu option"
+              data-bs-toggle="modal"
+              data-bs-target="#optionMenuModal"
+              style="cursor: pointer"
+              [class.disabled-icon]="!selectedRol"
+              [attr.aria-disabled]="!selectedRol"
+              (click)="
+                selectedRol
+                  ? null
+                  : showToast('Select a role first', 'warning', 'A', 1)
+              "
+            >
+              <img
+                src="assets/icons/plus-square-fill.svg"
+                alt="Agregar"
+                width="23"
+              />
+            </a>
+          </div>
+        </div>
+    
+        <!-- Tabla de opciones de menu -->
+        <table class="table table-hover table-sm" style="font-size: 14px">
+          <thead>
+            <tr class="table-light">
+              <th scope="col" class="id-col text-center">Order</th>
+              <th class="text-center d-none d-xl-table-cell">Name</th>
+              <th class="text-center">Description A</th>
+              <th class="text-center d-none d-xl-table-cell">Url</th>
+              <th class="text-center d-none d-xl-table-cell">Icon</th>
+              <th class="text-center d-none d-xl-table-cell">Type</th>
+              <th class="text-center d-none d-xl-table-cell">Submenu</th>
+              <th class="text-center">State</th>
+              <th class="actions-col text-center" scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let menu of selectedMenuOptions; let i = index"
+              [ngClass]="{ 'bg-temp': menu.strState === 'TEMPORARY' }"
+            >
+              <th
+                scope="row"
+                [ngClass]="{
+                  selected: menu === selectedMenuOption,
+                  'bg-temp':
+                    menu.strState === 'TEMPORARY' && menu !== selectedMenuOption
+                }"
+              >
+                <span
+                  class="badge rounded-badge position-relative d-inline-block"
+                  [ngClass]="{
+                    bgd: menu.strState === 'TEMPORARY',
+                    'badge-selected': menu === selectedMenuOption,
+                    'badge-default': menu !== selectedMenuOption
+                  }"
+                >
+                  {{ i + 1 }}
+    
+                  <!-- Badge circular sin texto -->
+                  <span
+                    *ngIf="menu.strState === 'TEMPORARY'"
+                    class="badge-app-circle"
+                    title="Nedw option menu"
+                  ></span>
+                </span>
+              </th>
+              <td
+                [ngClass]="{ selected: menu === selectedMenuOption }"
+                class="d-none d-xl-table-cell"
+              >
+                {{ menu.strName }}
+              </td>
+              <td [ngClass]="{ selected: menu === selectedMenuOption }">
+                {{ menu.strDescription }}
+              </td>
+              <td
+                [ngClass]="{ selected: menu === selectedMenuOption }"
+                class="d-none d-xl-table-cell"
+              >
+                {{ menu.strUrl?.trim() ? menu.strUrl : "[N/A]" }}
+              </td>
+              <td
+                [ngClass]="{ selected: menu === selectedMenuOption }"
+                class="d-none d-xl-table-cell"
+              >
+                <svg
+                  [attr.fill]="getIconColor()"
+                  viewBox="0 0 16 16"
+                  width="16"
+                  height="16"
+                  class="me-1"
+                  style="vertical-align: text-bottom"
+                >
+                  <use
+                    [attr.xlink:href]="
+                      './assets/icons/bootstrap-icons.svg#' + menu.strIcon
+                    "
+                  ></use>
+                </svg>
+                {{ menu.strIcon }}
+              </td>
+    
+              <td
+                [ngClass]="{ selected: menu === selectedMenuOption }"
+                class="d-none d-xl-table-cell"
+              >
+                {{ menu.strType }}
+              </td>
+              <td
+                [ngClass]="{ selected: menu === selectedMenuOption }"
+                class="text-center d-none d-xl-table-cell"
+              >
+                {{ menu.strSubmenus && menu.strSubmenus.length > 0 ? "SI" : "NO" }}
+              </td>
+              <td
+                [ngClass]="{
+                  selected: menu === selectedMenuOption,
+                  'bg-temp':
+                    menu.strState === 'TEMPORARY' && menu !== selectedMenuOption
+                }"
+                class="text-center"
+              >
+                <span
+                  class="badge mt-1"
+                  [ngClass]="{
+                    'bg-warning text-dark': menu.strState === 'TEMPORARY',
+                    'bg-success': menu.strState !== 'TEMPORARY'
+                  }"
+                >
+                  {{ menu.strState === "TEMPORARY" ? "NOT SAVED" : "ACTIVE" }}
+                </span>
+              </td>
+              <td
+                [ngClass]="{ selected: menu === selectedMenuOption }"
+                class="text-center actions-col"
+              >
+                <div>
+                  <button
+                    type="button"
+                    class="btn btn-outline-dark btn-sm me-2"
+                    data-bs-toggle="tooltip"
+                    title="Details"
+                    [disabled]="!(menu.strSubmenus && menu.strSubmenus.length > 0)"
+                    (click)="onSelectMenu(menu)"
+                  >
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      class="status-icon"
+                    >
+                      <use
+                        [attr.xlink:href]="
+                          './assets/icons/bootstrap-icons.svg#list-nested'
+                        "
+                      ></use>
+                    </svg>
+                  </button>
+    
+                  <button
+                    type="button"
+                    class="btn btn-outline-dark btn-sm me-2"
+                    title="Edit"
+                  >
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      class="status-icon"
+                    >
+                      <use
+                        [attr.xlink:href]="
+                          './assets/icons/bootstrap-icons.svg#pencil'
+                        "
+                      ></use>
+                    </svg>
+                  </button>
+    
+                  <button
+                    type="button"
+                    class="btn btn-outline-dark btn-sm me-2"
+                    title="Delete"
+                  >
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      class="status-icon"
+                    >
+                      <use
+                        [attr.xlink:href]="
+                          './assets/icons/bootstrap-icons.svg#trash3'
+                        "
+                      ></use>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <!-- ⚠️ Fila para mostrar mensaje si la tabla está vacía -->
+            <tr *ngIf="selectedMenuOptions.length === 0">
+              <td colspan="9" class="text-center fst-italic text-primary">
+                No menu options assigned to this role.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+    
+        <!-- Opciones de menú disponibles en la aplicación -->
+        <div class="mt-4">
+          <h6 class="roles-title">Available Menu Options</h6>
+          <table class="table table-bordered table-light mt-3">
+            <thead>
+              <tr>
+                <th>Select</th>
+                <th>Name</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let option of allMenuOptionsForApp">
+                <td>
+                  <input
+                    type="checkbox"
+                    [checked]="isOptionSelected(option)"
+                    (change)="toggleMenuOption(option)"
+                    [ngClass]="{ 'temporary-option': isTemporary(option) }"
+                  />
+                </td>
+                <td>{{ option.strName }}</td>
+                <td>{{ option.strDescription }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    
+      <!-- Contenedor de información de Submenús -->
+      <div *ngIf="isSubmenuTableVisible" class="table-responsive mt-3">
+        <div class="roles-header">
+          <h6 class="roles-title">
+            Submenus for
+            <span class="text-primary">{{
+              selectedMenuOption?.strDescription.toUpperCase()
+            }}</span>
+          </h6>
+          <div class="roles-buttons btn-group ms-auto custom-btn-group">
+            <a
+              (click)="clearSelectedMenu()"
+              style="cursor: pointer"
+              title="Go up a level"
+            >
+              <img
+                src="assets/icons/arrow-up-square-fill.svg"
+                alt="Cerrar"
+                width="23"
+              />
+            </a>
+            <!-- Botón para agregar un nuevo submenu -->
+            <a title="Add new submenu option">
+              <img
+                src="assets/icons/plus-square-fill.svg"
+                alt="Agregar"
+                width="23"
+              />
+            </a>
+          </div>
+        </div>
+    
+        <table class="table table-hover table-sm" style="font-size: 14px">
+          <thead>
+            <tr class="table-light">
+              <th class="text-center">Order</th>
+              <th class="text-center d-none d-xl-table-cell">Name</th>
+              <th class="text-center">Description</th>
+              <th class="text-center">Url</th>
+              <th class="text-center d-none d-xl-table-cell">Icon</th>
+              <th class="text-center">State</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let submenu of selectedSubmenus; let i = index">
+              <td class="text-center">
+                <span
+                  class="badge rounded-badge"
+                  style="background-color: var(--header-icon-color)"
+                >
+                  {{ submenu.ingOrder }}
+                </span>
+              </td>
+              <td class="d-none d-xl-table-cell">{{ submenu.strName }}</td>
+              <td>{{ submenu.strDescription }}</td>
+              <td>{{ submenu.strUrl?.trim() ? submenu.strUrl : "[N/A]" }}</td>
+              <td class="d-none d-xl-table-cell">{{ submenu.strIcon }}</td>
+              <td class="text-center">
+                <span
+                  class="badge mt-1"
+                  style="background-color: #007f00; color: white"
+                >
+                  ACTIVE
+                </span>
+              </td>
+              <td class="text-center actions-col">
+                <div>
+                  <button
+                    type="button"
+                    class="btn btn-outline-dark btn-sm me-2"
+                    title="Edit"
+                  >
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      class="status-icon"
+                    >
+                      <use
+                        [attr.xlink:href]="
+                          './assets/icons/bootstrap-icons.svg#pencil'
+                        "
+                      ></use>
+                    </svg>
+                  </button>
+    
+                  <button
+                    type="button"
+                    class="btn btn-outline-dark btn-sm me-2"
+                    title="Delete"
+                  >
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                      class="status-icon"
+                    >
+                      <use
+                        [attr.xlink:href]="
+                          './assets/icons/bootstrap-icons.svg#trash3'
+                        "
+                      ></use>
+                    </svg>
+                  </button>
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
+  </div>
 
-    <!-- Contenedor de información de Submenús -->
-    <div *ngIf="isSubmenuTableVisible" class="table-responsive mt-3">
-      <div class="roles-header">
-        <h6 class="roles-title">
-          Submenus for
-          <span class="text-primary">{{
-            selectedMenuOption?.strDescription.toUpperCase()
-          }}</span>
-        </h6>
-        <div class="roles-buttons btn-group ms-auto custom-btn-group">
-          <a
-            (click)="clearSelectedMenu()"
-            style="cursor: pointer"
-            title="Go up a level"
-          >
-            <img
-              src="assets/icons/arrow-up-square-fill.svg"
-              alt="Cerrar"
-              width="23"
-            />
-          </a>
-          <!-- Botón para agregar un nuevo submenu -->
-          <a title="Add new submenu option">
-            <img
-              src="assets/icons/plus-square-fill.svg"
-              alt="Agregar"
-              width="23"
-            />
-          </a>
-        </div>
-      </div>
 
-      <table class="table table-hover table-sm" style="font-size: 14px">
-        <thead>
-          <tr class="table-light">
-            <th class="text-center">Order</th>
-            <th class="text-center d-none d-xl-table-cell">Name</th>
-            <th class="text-center">Description</th>
-            <th class="text-center">Url</th>
-            <th class="text-center d-none d-xl-table-cell">Icon</th>
-            <th class="text-center">State</th>
-            <th class="text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let submenu of selectedSubmenus; let i = index">
-            <td class="text-center">
-              <span
-                class="badge rounded-badge"
-                style="background-color: var(--header-icon-color)"
-              >
-                {{ submenu.ingOrder }}
-              </span>
-            </td>
-            <td class="d-none d-xl-table-cell">{{ submenu.strName }}</td>
-            <td>{{ submenu.strDescription }}</td>
-            <td>{{ submenu.strUrl?.trim() ? submenu.strUrl : "[N/A]" }}</td>
-            <td class="d-none d-xl-table-cell">{{ submenu.strIcon }}</td>
-            <td class="text-center">
-              <span
-                class="badge mt-1"
-                style="background-color: #007f00; color: white"
-              >
-                ACTIVE
-              </span>
-            </td>
-            <td class="text-center actions-col">
-              <div>
-                <button
-                  type="button"
-                  class="btn btn-outline-dark btn-sm me-2"
-                  title="Edit"
-                >
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    class="status-icon"
-                  >
-                    <use
-                      [attr.xlink:href]="
-                        './assets/icons/bootstrap-icons.svg#pencil'
-                      "
-                    ></use>
-                  </svg>
-                </button>
+  <!-- Controles de paginación -->
+  <div
+    class="d-flex justify-content-between align-items-center mt-3 pagination-wrapper"
+  >
+    <!-- Badge de vista -->
+    <div>
+      <h6 class="view-badge">
+        <!-- <span class="badge badge-list" *ngIf="viewMode === 'list'"
+          >List view</span
+        >
+        <span class="badge badge-cards" *ngIf="viewMode === 'cards'"
+          >Cards view</span
+        > -->
+      </h6>
+    </div>
 
-                <button
-                  type="button"
-                  class="btn btn-outline-dark btn-sm me-2"
-                  title="Delete"
-                >
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                    class="status-icon"
-                  >
-                    <use
-                      [attr.xlink:href]="
-                        './assets/icons/bootstrap-icons.svg#trash3'
-                      "
-                    ></use>
-                  </svg>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Contador -->
+    <div class="user-counter">Showing 1 of 1 applications</div>
+
+    <!-- Paginación -->
+    <div>
+      <nav aria-label="Paginación de tarjetas" class="m-2">
+        <ul class="pagination pagination-sm mb-0 custom-pagination">
+          <!-- Botón Anterior -->
+          <li class="page-item">
+            <a class="page-link" aria-label="Anterior">
+              <i class="bi bi-chevron-left"></i>
+            </a>
+          </li>
+
+          <!-- Números de página -->
+          <li class="page-item">
+            <a class="page-link"> </a>
+          </li>
+
+          <!-- Botón Siguiente -->
+          <li class="page-item">
+            <a class="page-link" aria-label="Siguiente">
+              <i class="bi bi-chevron-right"></i>
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
   </div>
 </div>
@@ -1072,16 +1123,16 @@
             </svg>
           </div>
           <h1 class="modal-title fs-5" id="staticBackdropLabel">
-            New Rol for <b>{{
-              (selectedApplication?.strName || "").toUpperCase()
-            }} </b>app
+            New Rol for
+            <b>{{ (selectedApplication?.strName || "").toUpperCase() }} </b>app
           </h1>
         </div>
 
         <div class="modal-body">
-          <app-cu-rol (rolCreado)="onRolCreado($event)"
-          [appstrName]="selectedApplication?.strName"
-        ></app-cu-rol>
+          <app-cu-rol
+            (rolCreado)="onRolCreado($event)"
+            [appstrName]="selectedApplication?.strName"
+          ></app-cu-rol>
         </div>
       </div>
     </div>
