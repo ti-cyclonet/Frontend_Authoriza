@@ -92,7 +92,7 @@ export class UserDetailsComponent implements OnChanges {
   onDependencySelected(selectedUser: any) {
     this.userService.assignDependency(this.user.id, selectedUser.id).subscribe({
       next: () => {
-        this.user.dependentOn = selectedUser;
+        this.user.dependentOn = selectedUser.strUserName;
         this.showAssignDependency = false;
         Swal.fire({
           icon: 'success',
