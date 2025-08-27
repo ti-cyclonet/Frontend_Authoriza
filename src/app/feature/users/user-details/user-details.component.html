@@ -53,6 +53,7 @@
           <app-assign-dependency
             *ngIf="showAssignDependencyModal"
             [currentUser]="user.id"
+            (dependencyAssigned)="onDependencyAssigned($event)"
             (cancel)="onDependencyAssigned($event)"
             (modalClosed)="showAssignDependencyModal = false"
           ></app-assign-dependency>
