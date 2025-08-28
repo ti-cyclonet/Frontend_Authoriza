@@ -10,22 +10,28 @@
           <!-- Ícono para el paso 1 -->
           <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon">
             <use
-              [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + 
-                                (showStp1 ? '1-circle-fill' : '1-circle')"
+              [attr.xlink:href]="
+                './assets/icons/bootstrap-icons.svg#' +
+                (showStp1 ? '1-circle-fill' : '1-circle')
+              "
             ></use>
           </svg>
           <!-- Ícono para el paso 2 -->
           <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
             <use
-              [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + 
-                                (showStp2 ? '2-circle-fill' : '2-circle')"
+              [attr.xlink:href]="
+                './assets/icons/bootstrap-icons.svg#' +
+                (showStp2 ? '2-circle-fill' : '2-circle')
+              "
             ></use>
           </svg>
           <!-- Ícono para el paso 3 -->
           <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
             <use
-              [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + 
-                                (showStp3 ? '3-circle-fill' : '3-circle')"
+              [attr.xlink:href]="
+                './assets/icons/bootstrap-icons.svg#' +
+                (showStp3 ? '3-circle-fill' : '3-circle')
+              "
             ></use>
           </svg>
         </div>
@@ -35,48 +41,395 @@
       </div>
       <div class="modal-body">
         <div class="container-fluid">
-          
           <!-- Paso 1 -->
           <div class="basic-package-form" *ngIf="step1">
+            <!-- Título -->
             <div
               class="d-flex align-items-center pb-3 mb-2"
               style="border-bottom: 1px solid var(--sidebar-background-color)"
             >
-              <div class="title-form">BASIC CONTRACT DATA FORM</div>
+              <div class="title-form">SELECT A PRIMARY USER</div>
             </div>
-            
-            <!-- Lista de usuarios sin dependencia -->
-            <div class="user-list mt-4">
-              <h5>Select User:</h5>
-              <div *ngFor="let user of usersWithoutDependency" class="mb-2 p-2 border rounded">
-                <input type="radio" name="selectedUser" [(ngModel)]="selectedUser" [value]="user.id">
-                {{ user.strUserName }} - {{ user.basicData?.strFirstName || '' }} {{ user.basicData?.strLastName || '' }}
+
+            <!-- Buscador -->
+            <div>
+              <div
+                class="card p-0 mb-1"
+                style="background-color: rgb(243, 239, 255)"
+              >
+                <div class="card-body py-2 px-3">
+                  <small class="text-muted">
+                    <label class="form-label mb-1"
+                      >Enter part of the username or first/last name</label
+                    >
+                  </small>
+
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control"
+                      [formControl]="search"
+                      placeholder="Type a word here"
+                      aria-label="Search users"
+                    />
+                    <button
+                      class="btn btn-outline-secondary"
+                      type="button"
+                      (click)="search.setValue('')"
+                    >
+                      <app-icon name="x-circle" size="16"></app-icon>
+                    </button>
+                  </div>
+                  <small class="text-muted" style="font-size: 0.7rem">
+                    If you can't find it, please create it in the users module
+                  </small>
+                </div>
               </div>
             </div>
+
+            <!-- Tabla de usuarios sin dependencia -->
+            <div class="user-list mt-4">
+              <small class="text-muted">List of primary users found</small>
+
+              <table
+                class="table table-hover table-sm table-bordered"
+                style="font-size: 13px"
+              >
+                <thead class="table-light">
+                  <tr>
+                    <!-- <th>Id</th> -->
+                    <th>User Name</th>
+                    <th>Name</th>
+                    <!-- 👈 Nueva columna -->
+                    <th class="text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="let user of paginatedUsers"
+                    [class.table-success]="selectedUser === user.id"
+                  >
+                    <!-- <td>{{ user.id }}</td> -->
+                    <td>{{ user.strUserName }}</td>
+
+                    <!-- 👇 Columna dinámica -->
+                    <td>
+                      <ng-container
+                        *ngIf="
+                          user.basicData?.naturalPersonData;
+                          else legalEntity
+                        "
+                      >
+                        {{ user.basicData?.naturalPersonData?.firstName }}
+                        {{
+                          user.basicData?.naturalPersonData?.secondName
+                            ? " " +
+                              user.basicData?.naturalPersonData?.secondName
+                            : ""
+                        }}
+                        {{
+                          " " + user.basicData?.naturalPersonData?.firstSurname
+                        }}
+                        {{
+                          user.basicData?.naturalPersonData?.secondSurname
+                            ? " " +
+                              user.basicData?.naturalPersonData?.secondSurname
+                            : ""
+                        }}
+                      </ng-container>
+
+                      <ng-template #legalEntity>
+                        {{
+                          user.basicData?.legalEntityData?.businessName || "-"
+                        }}
+                      </ng-template>
+                    </td>
+
+                    <td class="text-center">
+                      <button
+                        class="btn btn-sm"
+                        [ngClass]="{
+                          'btn-success': selectedUser === user.id,
+                          'btn-outline-primary': selectedUser !== user.id
+                        }"
+                        (click)="selectedUser = user.id"
+                        [disabled]="selectedUser === user.id"
+                      >
+                        <app-icon
+                          [name]="
+                            selectedUser === user.id
+                              ? 'check-circle-fill'
+                              : 'person-plus-fill'
+                          "
+                          size="16"
+                        ></app-icon>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <small
+                *ngIf="selectedUser != null"
+                class="text-success d-block mt-1"
+                style="font-size: 0.7rem"
+              >
+                <span
+                  ><b>{{ selectedUser }}</b></span
+                >
+                was selected
+              </small>
+
+              <!-- Mensaje si no hay usuarios -->
+              <div
+                *ngIf="filteredUsers.length === 0"
+                class="text-center text-muted mt-3"
+              >
+                No independent users available.
+              </div>
+
+              <nav *ngIf="totalPages > 1" class="mt-3">
+                <ul class="pagination justify-content-center mb-0">
+                  <li class="page-item" [class.disabled]="currentPage === 1">
+                    <a class="page-link" (click)="prevPage()">
+                      <app-icon
+                        name="caret-left-square-fill"
+                        size="16"
+                      ></app-icon>
+                    </a>
+                  </li>
+                  <li class="page-item disabled">
+                    <span class="page-link pt-2" style="font-size: 13px">
+                      Page {{ currentPage }} of {{ totalPages }}
+                    </span>
+                  </li>
+                  <li
+                    class="page-item"
+                    [class.disabled]="currentPage === totalPages"
+                  >
+                    <a class="page-link" (click)="nextPage()">
+                      <app-icon
+                        name="caret-right-square-fill"
+                        size="16"
+                      ></app-icon>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
           </div>
-          
+
           <!-- Paso 2 -->
           <div class="configuration-package-section" *ngIf="step2">
             <div
               class="d-flex align-items-center pb-3 mb-2"
               style="border-bottom: 1px solid var(--sidebar-background-color)"
             >
-              <div class="title-form">CONTRACT CONFIGURATION SECTION</div>
+              <div class="title-form">SELECT A PACKAGE</div>
             </div>
-            <!-- Contenido del paso 2 aquí -->
+
+            <!-- Buscador -->
+            <div
+              class="card p-0 mb-1"
+              style="background-color: rgb(243, 239, 255)"
+            >
+              <div class="card-body py-2 px-3">
+                <small class="text-muted">
+                  <label class="form-label mb-1"
+                    >Enter part of the package name or description</label
+                  >
+                </small>
+
+                <div class="input-group">
+                  <input
+                    type="text"
+                    class="form-control"
+                    [formControl]="searchPackage"
+                    placeholder="Type a word here"
+                    aria-label="Search packages"
+                  />
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    (click)="searchPackage.setValue('')"
+                  >
+                    <app-icon name="x-circle" size="16"></app-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lista de paquetes -->
+            <div class="package-list mt-4">
+              <small class="text-muted">List of packages found</small>
+
+              <table
+                class="table table-hover table-sm table-bordered"
+                style="font-size: 13px"
+              >
+                <thead class="table-light">
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th class="text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="let pkg of paginatedPackages"
+                    [class.table-success]="selectedPackage === pkg.id"
+                  >
+                    <td>{{ pkg.name }}</td>
+                    <td>{{ pkg.description }}</td>
+                    <td class="text-center">
+                      <button
+                        class="btn btn-sm"
+                        [ngClass]="{
+                          'btn-success': selectedPackage === pkg.id,
+                          'btn-outline-primary': selectedPackage !== pkg.id
+                        }"
+                        (click)="selectedPackage = pkg.id"
+                        [disabled]="selectedPackage === pkg.id"
+                      >
+                        <app-icon
+                          [name]="
+                            selectedPackage === pkg.id
+                              ? 'check-circle-fill'
+                              : 'check-square'
+                          "
+                          size="16"
+                        ></app-icon>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <small
+                *ngIf="selectedPackage != null"
+                class="text-success d-block mt-1"
+                style="font-size: 0.7rem"
+              >
+                Package <span class="fw-bold">{{ selectedPackage }}</span> was
+                selected
+              </small>
+
+              <!-- Mensaje si no hay paquetes -->
+              <div
+                *ngIf="filteredPackages.length === 0"
+                class="text-center text-muted mt-3"
+              >
+                No packages available.
+              </div>
+
+              <!-- Paginación -->
+              <nav *ngIf="totalPackagePages > 1" class="mt-3">
+                <ul class="pagination justify-content-center mb-0">
+                  <li
+                    class="page-item"
+                    [class.disabled]="currentPackagePage === 1"
+                  >
+                    <a class="page-link" (click)="prevPackagePage()">
+                      <app-icon
+                        name="caret-left-square-fill"
+                        size="16"
+                      ></app-icon>
+                    </a>
+                  </li>
+                  <li class="page-item disabled">
+                    <span class="page-link pt-2" style="font-size: 13px">
+                      Page {{ currentPackagePage }} of {{ totalPackagePages }}
+                    </span>
+                  </li>
+                  <li
+                    class="page-item"
+                    [class.disabled]="currentPackagePage === totalPackagePages"
+                  >
+                    <a class="page-link" (click)="nextPackagePage()">
+                      <app-icon
+                        name="caret-right-square-fill"
+                        size="16"
+                      ></app-icon>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
           </div>
-          
-          <!-- Paso 3 -->
-          <div class="presentation-package-section" *ngIf="step3">
+
+          <!-- Paso 3 - Configuración del contrato -->
+          <div class="contract-configuration-form" *ngIf="step3">
+            <!-- Título -->
             <div
               class="d-flex align-items-center pb-3 mb-2"
               style="border-bottom: 1px solid var(--sidebar-background-color)"
             >
-              <div class="title-form">PACKAGE BUSINESS CARD CONFIGURATION</div>
+              <div class="title-form">CONTRACT CONFIGURATION</div>
             </div>
-            <!-- Contenido del paso 3 aquí -->
+
+            <!-- Formulario -->
+            <form [formGroup]="contractForm" class="mt-3">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Contract Value</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    formControlName="value"
+                    placeholder="Enter contract value"
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Mode</label>
+                  <select class="form-select" formControlName="mode">
+                    <option value="MONTHLY">Monthly</option>
+                    <option value="ANNUAL">Annual</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Payday</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="31"
+                    class="form-control"
+                    formControlName="payday"
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Status</label>
+                  <select class="form-select" formControlName="status">
+                    <option value="DRAFT">Draft</option>
+                    <option value="ACTIVE">Active</option>
+                    <option value="INACTIVE">Inactive</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Start Date</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    formControlName="startDate"
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">End Date</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    formControlName="endDate"
+                  />
+                </div>
+              </div>
+            </form>
           </div>
-          
+
           <!-- Footer con los botones -->
           <div class="form-buttons">
             <button
@@ -95,7 +448,7 @@
             </button>
             <button
               type="button"
-              class="btn btn-outline-dark btn-sm mx-4 btn-fixed-width"              
+              class="btn btn-outline-dark btn-sm mx-4 btn-fixed-width"
               title="Cancel"
               (click)="onCancel()"
             >
@@ -140,7 +493,8 @@
               class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width"
               data-bs-toggle="tooltip"
               title="Send"
-              (click)="goToStep(3)"
+              [disabled]="contractForm.invalid"
+              (click)="submitContract()"              
             >
               <span class="d-none d-md-inline">Send</span>
               <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">

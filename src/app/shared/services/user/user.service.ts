@@ -5,6 +5,17 @@ import { User } from '../../model/user';
 import { environment } from '../../../../environments/environment';
 import { CreateFullUser } from '../../model/createfulluser';
 
+export interface PaginatedResponse<T> {
+  items: T[];
+  meta: {
+    totalItems: number;
+    itemCount: number;
+    itemsPerPage: number;
+    totalPages: number;
+    currentPage: number;
+  };
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -147,13 +158,19 @@ export class UserService {
     );
   }
 
-  getIndependentUsers(
-    page: number = 1,
-    withDeleted: boolean = false
-  ): Observable<User[]> {
-    return this.http.get<User[]>(
-      `${this.userIndependentUrl}?page=${page}&withDeleted=${withDeleted}`
-    );
+  getIndependentUsers(): Observable<User[]> {
+    return this.http.get<User[]>(this.userIndependentUrl);
+  }
+
+  loadIndependentUsers(): void {
+    this.getIndependentUsers().subscribe({
+      next: (users: User[]) => {
+        this.usersSubject.next(users);
+      },
+      error: (err) => {
+        console.error('Error al cargar usuarios independientes', err);
+      },
+    });
   }
 
   assignRoleToUser(userId: string, roleId: string): Observable<any> {
