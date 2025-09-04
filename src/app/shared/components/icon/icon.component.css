@@ -1,0 +1,7 @@
+.icon-wrapper {
+  border-radius: 50%; /* Para que el fondo sea circular */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
