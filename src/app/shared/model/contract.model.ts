@@ -1,6 +1,9 @@
+import { Package } from "./package.model";
+import { User } from "./user";
+
 export interface Contract {
   id: string;
-  value: string;
+  value: number;
   mode: string;
   payday: number;
   startDate: string;
@@ -9,13 +12,6 @@ export interface Contract {
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
-  user: {
-    id: string;
-    strUserName: string;
-  };
-  package: {
-    id: string;
-    name: string;
-    description: string;
-  };
+  user: User;
+  package: Package;
 }
