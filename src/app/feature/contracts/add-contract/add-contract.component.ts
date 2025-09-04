@@ -29,11 +29,18 @@ import {
 } from '../../../shared/services/contracts/contract.service';
 import { Contract } from '../../../shared/model/contract.model';
 import Swal from 'sweetalert2';
+import { CurrencyFormatPipe } from '../../../shared/pipes/custom-currency.pipe';
 
 @Component({
   selector: 'app-add-contract',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, IconComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    IconComponent,
+    CurrencyFormatPipe,
+  ],
   templateUrl: './add-contract.component.html',
   styleUrl: './add-contract.component.css',
 })
@@ -51,9 +58,10 @@ export class AddContractComponent implements OnInit {
 
   allUsers: User[] = [];
   usersWithoutDependency: User[] = [];
-  selectedUser: string | null = null;
 
-  selectedPackage: string | null = null;
+  selectedUser: User | null = null;
+  selectedPackage: Package | null = null;
+
   allPackages: Package[] = [];
 
   currentPage: number = 0;
@@ -73,6 +81,10 @@ export class AddContractComponent implements OnInit {
   packageSearchTerm = '';
 
   contractForm: FormGroup;
+  contractValue: number = 0;
+
+  contractStatus = ContractStatus;
+  statusOptions = Object.values(ContractStatus);
 
   constructor(
     private fb: FormBuilder,
@@ -87,7 +99,7 @@ export class AddContractComponent implements OnInit {
       payday: [1, [Validators.required, Validators.min(1), Validators.max(31)]],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
-      status: ['DRAFT', Validators.required],
+      status: ['PENDING', Validators.required],
     });
   }
 
@@ -107,6 +119,39 @@ export class AddContractComponent implements OnInit {
       this.currentPackagePage = 1;
       this.updatePackagePagination();
     });
+
+    this.contractForm = this.fb.group({
+      value: [{ value: 0, disabled: true }],
+      mode: ['MONTHLY', Validators.required],
+      payday: [1, [Validators.required, Validators.min(1), Validators.max(31)]],
+      status: ['PENDING', Validators.required],
+      startDate: ['', Validators.required],
+      endDate: ['', Validators.required],
+    });
+  }
+
+  calculateContractValue(pkgId: string) {
+    const selectedPkg = this.allPackages.find((p) => p.id === pkgId);
+
+    if (!selectedPkg || !selectedPkg.configurations) {
+      this.contractForm.get('value')?.setValue(0);
+      this.contractValue = 0;
+      return;
+    }
+
+    const total = selectedPkg.configurations.reduce((sum, config) => {
+      const qty = config.totalAccount || 0;
+      const price = parseFloat(config.price) || 0;
+      return sum + qty * price * 12;
+    }, 0);
+
+    this.contractForm.get('value')?.setValue(total);
+    this.contractValue = total;
+  }
+
+  onSelectPackage(pkg: Package) {
+    this.selectedPackage = pkg;
+    this.calculateContractValue(pkg.id);
   }
 
   loadUsersWithoutDependency(): void {
@@ -157,6 +202,13 @@ export class AddContractComponent implements OnInit {
     });
   }
 
+  cancelSelection(): void {
+    this.selectedUser = null;
+    this.search.setValue('');
+    this.currentPage = 1;
+    this.loadUsersWithoutDependency();
+  }
+
   updatePagination(): void {
     this.totalUsers = this.filteredUsers.length;
     this.totalPages = Math.max(1, Math.ceil(this.totalUsers / this.PAGE_SIZE));
@@ -176,6 +228,7 @@ export class AddContractComponent implements OnInit {
   }
 
   // Logica para paquetes
+  // ----------------------------------------
   loadPackages(): void {
     this.packageService.getAllPackages().subscribe({
       next: (pkgs: Package[]) => {
@@ -225,6 +278,14 @@ export class AddContractComponent implements OnInit {
       this.currentPackagePage--;
     }
   }
+
+  cancelSelectionP(): void {
+    this.selectedPackage = null;
+    this.searchPackage.setValue('');
+    this.currentPackagePage = 1;
+    this.loadPackages();
+  }
+
   // ---------------------------------------
 
   goToStep(direction: number) {
@@ -290,11 +351,11 @@ export class AddContractComponent implements OnInit {
       return;
     }
 
-    const formValues = this.contractForm.value;
+    const formValues = this.contractForm.getRawValue();
 
     const payload: CreateContractDto = {
-      userId: this.selectedUser,
-      packageId: this.selectedPackage,
+      userId: this.selectedUser.id,
+      packageId: this.selectedPackage.id,
       value: formValues.value,
       mode: formValues.mode,
       payday: formValues.payday,

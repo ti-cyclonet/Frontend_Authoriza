@@ -75,16 +75,13 @@ export default class LayoutComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.loadingService.show();
-    // setTimeout(() => this.loadingService.hide(), 3000);
     this.loadSidebarPreference();
     this.applicationsService.applications$.subscribe((apps) => {
       this.applications = apps;
     });
 
     this.applicationsService.loadApplications();
-    this.fetchApplication('Authoriza');
-    // this.showToast('Your password is about to expire. You should change it soon.','warning', 'B', 1);
+    this.fetchApplication('Authoriza');    
     if (sessionStorage.getItem('mustChangePassword') === 'true') {
       this.showToast(
         'Your password is about to expire. You should change it soon.',
