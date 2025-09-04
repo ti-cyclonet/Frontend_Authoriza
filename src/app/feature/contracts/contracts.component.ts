@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Contract } from '../../shared/model/contract.model';
-import { ContractService } from '../../shared/services/contracts/contract.service';
+import { ContractService, ContractStatus } from '../../shared/services/contracts/contract.service';
 import { CommonModule } from '@angular/common';
 import { AddContractComponent } from './add-contract/add-contract.component';
+import { CurrencyFormatPipe } from "../../shared/pipes/custom-currency.pipe";
 
 @Component({
   selector: 'app-contracts',
   standalone: true,
-  imports: [CommonModule, AddContractComponent],
+  imports: [CommonModule, AddContractComponent, CurrencyFormatPipe],
   templateUrl: './contracts.component.html',
   styleUrl: './contracts.component.css',
 })
@@ -17,6 +18,9 @@ export class ContractsComponent implements OnInit {
   page: number = 1;
   limit: number = 10;
   totalPages: number = 0;
+
+  ContractStatus = ContractStatus;
+  statusOptions = Object.values(ContractStatus);
 
   statuses: string[] = ['DRAFT', 'ACTIVE', 'EXPIRED'];
   selectedStatus: string | undefined;

@@ -1,9 +1,19 @@
-<svg 
-  [attr.fill]="'currentColor'" 
-  [attr.width]="size" 
-  [attr.height]="size" 
-  viewBox="0 0 16 16" 
-  class="bi"
+<span
+  class="icon-wrapper d-inline-flex align-items-center justify-content-center"
+  [ngClass]="cssClass"
+  [ngStyle]="{
+    'background-color': backgroundColor || 'transparent',
+    width: size + 'px',
+    height: size + 'px'
+  }"
 >
-  <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + name"></use>
-</svg>
+  <svg
+    [attr.fill]="color"
+    [attr.width]="size"
+    [attr.height]="size"
+    viewBox="0 0 16 16"
+    class="bi"
+  >
+    <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + name"></use>
+  </svg>
+</span>
