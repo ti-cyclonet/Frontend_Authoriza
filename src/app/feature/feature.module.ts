@@ -28,6 +28,7 @@ import { AddContractComponent } from './contracts/add-contract/add-contract.comp
     ContractsComponent,
     AddPackageComponent,
     AddContractComponent,
+
     NgbCarouselModule
   ]
 })

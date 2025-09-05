@@ -45,9 +45,7 @@
     <div class="card-body">
       <!-- Filtro de estado -->
       <div class="mb-3">
-        <select
-          class="form-select"
-        >
+        <select class="form-select">
           <option value="">All Statuses</option>
           <option *ngFor="let status of statuses" [value]="status">
             {{ status }}
@@ -57,17 +55,20 @@
 
       <!-- Tabla de contratos -->
       <div class="table-responsive px-3">
-        <table class="table table-hover table-sm table-bordered" style="font-size: 14px">
+        <table
+          class="table table-hover table-sm table-bordered"
+          style="font-size: 14px"
+        >
           <thead class="table-dark">
             <tr class="table-light">
               <th>ID</th>
               <th>User</th>
               <th>Package</th>
-              <th>Value</th>
-              <th>Payday</th>
-              <th>Start Date</th>
-              <th>End Date</th>
-              <th>Status</th>
+              <th class="text-center">Value</th>
+              <th class="text-center">Payday</th>
+              <th class="text-center">Start Date</th>
+              <th class="text-center">End Date</th>
+              <th class="text-center">Status</th>
               <th class="text-center">Actions</th>
             </tr>
           </thead>
@@ -76,13 +77,18 @@
               <td>{{ contract.id }}</td>
               <td>{{ contract.user.strUserName }}</td>
               <td>{{ contract.package.name }}</td>
-              <td>{{ contract.value }}</td>
-              <td>{{ contract.payday }}</td>
-              <td>{{ contract.startDate }}</td>
-              <td>{{ contract.endDate }}</td>
-              <td>
+              <td class="text-end">{{ contract.value | customCurrency }}</td>
+              <td class="text-center">{{ contract.payday }}</td>
+              <td class="text-center">{{ contract.startDate }}</td>
+              <td class="text-center">{{ contract.endDate }}</td>
+              <td class="text-center">
                 <span
                   class="badge"
+                  [ngStyle]="{
+                    'background-color':
+                      contract.status === 'PENDING' ? '#EA6B66' : '',
+                    color: contract.status === 'PENDING' ? 'black' : ''
+                  }"
                   [class.bg-success]="contract.status === 'ACTIVE'"
                   [class.bg-warning]="contract.status === 'DRAFT'"
                   [class.bg-danger]="contract.status === 'EXPIRED'"
@@ -180,11 +186,7 @@
         <ul class="pagination pagination-sm mb-0 custom-pagination">
           <!-- Botón Anterior -->
           <li class="page-item" [class.disabled]="page === 1">
-            <a
-              class="page-link"
-              href="#"
-              aria-label="Anterior"
-            >
+            <a class="page-link" href="#" aria-label="Anterior">
               <i class="bi bi-chevron-left"></i>
             </a>
           </li>
@@ -195,18 +197,12 @@
             *ngFor="let page of pages"
             [class.active]="page === page"
           >
-            <a class="page-link" href="#" >{{
-              page
-            }}</a>
+            <a class="page-link" href="#">{{ page }}</a>
           </li>
 
           <!-- Botón Siguiente -->
           <li class="page-item">
-            <a
-              class="page-link"
-              href="#"
-              aria-label="Siguiente"
-            >
+            <a class="page-link" href="#" aria-label="Siguiente">
               <i class="bi bi-chevron-right"></i>
             </a>
           </li>

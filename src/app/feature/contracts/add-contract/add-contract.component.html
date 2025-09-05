@@ -59,9 +59,9 @@
               >
                 <div class="card-body py-2 px-3">
                   <small class="text-muted">
-                    <label class="form-label mb-1"
-                      >Enter part of the username or first/last name</label
-                    >
+                    <label class="form-label mb-1">
+                      Enter part of the username or first/last name
+                    </label>
                   </small>
 
                   <div class="input-group">
@@ -81,13 +81,13 @@
                     </button>
                   </div>
                   <small class="text-muted" style="font-size: 0.7rem">
-                    If you can't find it, please create it in the users module
+                    If you can't find it, please create it in the Users Module
                   </small>
                 </div>
               </div>
             </div>
 
-            <!-- Tabla de usuarios sin dependencia -->
+            <!-- Tabla de usuarios -->
             <div class="user-list mt-4">
               <small class="text-muted">List of primary users found</small>
 
@@ -97,22 +97,18 @@
               >
                 <thead class="table-light">
                   <tr>
-                    <!-- <th>Id</th> -->
                     <th>User Name</th>
                     <th>Name</th>
-                    <!-- 👈 Nueva columna -->
                     <th class="text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr
                     *ngFor="let user of paginatedUsers"
-                    [class.table-success]="selectedUser === user.id"
+                    [class.table-success]="selectedUser?.id === user.id"
                   >
-                    <!-- <td>{{ user.id }}</td> -->
                     <td>{{ user.strUserName }}</td>
 
-                    <!-- 👇 Columna dinámica -->
                     <td>
                       <ng-container
                         *ngIf="
@@ -149,15 +145,15 @@
                       <button
                         class="btn btn-sm"
                         [ngClass]="{
-                          'btn-success': selectedUser === user.id,
-                          'btn-outline-primary': selectedUser !== user.id
+                          'btn-success': selectedUser?.id === user.id,
+                          'btn-outline-primary': selectedUser?.id !== user.id
                         }"
-                        (click)="selectedUser = user.id"
-                        [disabled]="selectedUser === user.id"
+                        (click)="selectedUser = user"
+                        [disabled]="selectedUser?.id === user.id"
                       >
                         <app-icon
                           [name]="
-                            selectedUser === user.id
+                            selectedUser?.id === user.id
                               ? 'check-circle-fill'
                               : 'person-plus-fill'
                           "
@@ -169,16 +165,27 @@
                 </tbody>
               </table>
 
-              <small
-                *ngIf="selectedUser != null"
-                class="text-success d-block mt-1"
-                style="font-size: 0.7rem"
-              >
-                <span
-                  ><b>{{ selectedUser }}</b></span
+              <div>
+                <small
+                  *ngIf="selectedUser"
+                  class="text-success d-block mt-2 d-flex align-items-center"
+                  style="font-size: 0.75rem"
                 >
-                was selected
-              </small>
+                  <span
+                    ><b>{{ selectedUser.strUserName }}</b></span
+                  >
+                  <span class="ms-1">was selected</span>
+
+                  <a
+                    role="button"
+                    (click)="cancelSelection()"
+                    class="ms-2 cancel-icon"
+                    title="Cancel Selection"
+                  >
+                    <app-icon name="x-circle" size="16" color="red"></app-icon>
+                  </a>
+                </small>
+              </div>
 
               <!-- Mensaje si no hay usuarios -->
               <div
@@ -188,6 +195,7 @@
                 No independent users available.
               </div>
 
+              <!-- Paginación -->
               <nav *ngIf="totalPages > 1" class="mt-3">
                 <ul class="pagination justify-content-center mb-0">
                   <li class="page-item" [class.disabled]="currentPage === 1">
@@ -235,9 +243,9 @@
             >
               <div class="card-body py-2 px-3">
                 <small class="text-muted">
-                  <label class="form-label mb-1"
-                    >Enter part of the package name or description</label
-                  >
+                  <label class="form-label mb-1">
+                    Enter part of the package name or description
+                  </label>
                 </small>
 
                 <div class="input-group">
@@ -256,6 +264,9 @@
                     <app-icon name="x-circle" size="16"></app-icon>
                   </button>
                 </div>
+                <small class="text-muted" style="font-size: 0.7rem">
+                    If you can't find it, please create it in the Packages Module
+                  </small>
               </div>
             </div>
 
@@ -277,7 +288,7 @@
                 <tbody>
                   <tr
                     *ngFor="let pkg of paginatedPackages"
-                    [class.table-success]="selectedPackage === pkg.id"
+                    [class.table-success]="selectedPackage?.id === pkg.id"
                   >
                     <td>{{ pkg.name }}</td>
                     <td>{{ pkg.description }}</td>
@@ -285,15 +296,15 @@
                       <button
                         class="btn btn-sm"
                         [ngClass]="{
-                          'btn-success': selectedPackage === pkg.id,
-                          'btn-outline-primary': selectedPackage !== pkg.id
+                          'btn-success': selectedPackage?.id === pkg.id,
+                          'btn-outline-primary': selectedPackage?.id !== pkg.id
                         }"
-                        (click)="selectedPackage = pkg.id"
-                        [disabled]="selectedPackage === pkg.id"
+                        (click)="onSelectPackage(pkg)"
+                        [disabled]="selectedPackage?.id === pkg.id"
                       >
                         <app-icon
                           [name]="
-                            selectedPackage === pkg.id
+                            selectedPackage?.id === pkg.id
                               ? 'check-circle-fill'
                               : 'check-square'
                           "
@@ -305,14 +316,28 @@
                 </tbody>
               </table>
 
-              <small
-                *ngIf="selectedPackage != null"
-                class="text-success d-block mt-1"
-                style="font-size: 0.7rem"
-              >
-                Package <span class="fw-bold">{{ selectedPackage }}</span> was
-                selected
-              </small>
+              <div>
+                <small
+                  *ngIf="selectedPackage"
+                  class="text-success d-block mt-2 d-flex align-items-center"
+                  style="font-size: 0.75rem"
+                >
+                  Package
+                  <span
+                    ><b>{{ selectedPackage.name }}</b></span
+                  >
+                  <span class="ms-1">was selected</span>
+
+                  <a
+                    role="button"
+                    (click)="cancelSelectionP()"
+                    class="ms-2 cancel-icon"
+                    title="Cancel Selection"
+                  >
+                    <app-icon name="x-circle" size="16" color="red"></app-icon>
+                  </a>
+                </small>
+              </div>
 
               <!-- Mensaje si no hay paquetes -->
               <div
@@ -364,7 +389,53 @@
               class="d-flex align-items-center pb-3 mb-2"
               style="border-bottom: 1px solid var(--sidebar-background-color)"
             >
-              <div class="title-form">CONTRACT CONFIGURATION</div>
+              <div class="title-form">CONTRACT DETAILS CONFIGURATION</div>
+            </div>
+
+            <!-- Cuadro verde con usuario y paquete -->
+            <div
+              class="p-2 pb-0 rounded"
+              style="border: 1px solid green; background-color: #f6fff6"
+            >
+              <table class="table p-1 pb-0">
+                <tbody>
+                  <tr>
+                    <td style="width: 100px">
+                      <small class="text-muted">User Name:</small>
+                    </td>
+                    <td>
+                      <small class="text-muted">
+                      <b>{{
+                        selectedUser?.basicData?.naturalPersonData
+                          ? selectedUser?.basicData?.naturalPersonData
+                              ?.firstName +
+                            " " +
+                            selectedUser?.basicData?.naturalPersonData
+                              ?.secondName +
+                            " " +
+                            selectedUser?.basicData?.naturalPersonData
+                              ?.firstSurname +
+                            " " +
+                            selectedUser?.basicData?.naturalPersonData
+                              ?.secondSurname
+                          : selectedUser?.basicData?.legalEntityData
+                              ?.businessName
+                      }}</b>
+                      </small>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="width: 100px">
+                      <small class="text-muted">Package:</small>
+                    </td>
+                    <td>
+                      <small class="text-muted">
+                        <b>{{ selectedPackage?.name }}</b>
+                      </small>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
 
             <!-- Formulario -->
@@ -372,17 +443,19 @@
               <div class="row mb-3">
                 <div class="col-md-6">
                   <label class="form-label">Contract Value</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    formControlName="value"
-                    placeholder="Enter contract value"
-                  />
+                  <div class="disabled-input">
+                    {{
+                      contractValue
+                        | currency : "COP" : "symbol-narrow" : "1.0-0"
+                    }}
+                  </div>
                 </div>
+
                 <div class="col-md-6">
                   <label class="form-label">Mode</label>
                   <select class="form-select" formControlName="mode">
                     <option value="MONTHLY">Monthly</option>
+                    <option value="SEMIANNUAL">Semiannual</option>
                     <option value="ANNUAL">Annual</option>
                   </select>
                 </div>
@@ -402,9 +475,12 @@
                 <div class="col-md-6">
                   <label class="form-label">Status</label>
                   <select class="form-select" formControlName="status">
-                    <option value="DRAFT">Draft</option>
-                    <option value="ACTIVE">Active</option>
-                    <option value="INACTIVE">Inactive</option>
+                    <option
+                      *ngFor="let status of statusOptions"
+                      [value]="status"
+                    >
+                      {{ status }}
+                    </option>
                   </select>
                 </div>
               </div>
@@ -462,6 +538,7 @@
               data-bs-toggle="tooltip"
               title="Next"
               (click)="goToStep(1)"
+              [disabled]="!selectedUser"
             >
               <span class="d-none d-md-inline">Next</span>
               <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
@@ -478,6 +555,7 @@
               data-bs-toggle="tooltip"
               title="Next"
               (click)="goToStep(3)"
+              [disabled]="!selectedPackage"
             >
               <span class="d-none d-md-inline">Next</span>
               <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
@@ -494,7 +572,7 @@
               data-bs-toggle="tooltip"
               title="Send"
               [disabled]="contractForm.invalid"
-              (click)="submitContract()"              
+              (click)="submitContract()"
             >
               <span class="d-none d-md-inline">Send</span>
               <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
