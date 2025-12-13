@@ -70,7 +70,7 @@ export class AddUserModalComponent {
     private cdr: ChangeDetectorRef
   ) {
     this.userForm = this.fb.group({
-      strUserName: ['', [Validators.required, Validators.email]],
+      strUserName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)]],
       strStatus: ['ACTIVE'],
     });
 
@@ -91,7 +91,7 @@ export class AddUserModalComponent {
 
     this.legalForm = this.fb.group({
       businessName: ['', Validators.required],
-      webSite: [''],
+      webSite: ['', Validators.required],
       contactName: ['', Validators.required],
       contactEmail: ['', Validators.required],
       contactPhone: ['', Validators.required],
@@ -121,12 +121,13 @@ export class AddUserModalComponent {
   createUser() {
     this.emailTaken = false;
 
-    const userName = this.userForm.value.strUserName;
-
-    if (!userName) {
-      this.userForm.get('strUserName')?.markAsTouched();
+    // Validar el formulario completo antes de continuar
+    if (this.userForm.invalid) {
+      this.userForm.markAllAsTouched();
       return;
     }
+
+    const userName = this.userForm.value.strUserName;
 
     this.userService.checkUserNameAvailability(userName).subscribe({
       next: (res) => {
@@ -155,6 +156,13 @@ export class AddUserModalComponent {
   }
 
   async finish() {
+    // Validar formulario básico
+    if (this.basicDataForm.invalid) {
+      this.basicDataForm.markAllAsTouched();
+      return;
+    }
+
+    // Validar formulario específico según tipo de persona
     if (
       this.basicDataForm.value.strPersonType === 'N' &&
       this.naturalForm.invalid

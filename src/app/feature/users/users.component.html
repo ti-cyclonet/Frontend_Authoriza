@@ -189,27 +189,27 @@
     <table class="table table-hover table-sm table-bordered" style="font-size: 14px">
       <thead>
         <tr class="table-light">
-          <th class="text-center d-none d-md-table.block">Id</th>
+          <th class="text-center d-none d-md-table-cell">Item</th>
           <th class="text-center">User Name</th>
-          <th class="text-center">Name</th>
-          <th class="text-center">Application</th>
-          <th class="text-center">Role</th>
-          <th class="text-center">State</th>
-          <th class="text-center d-none d-lg-table-block">Update date</th>
+          <th class="text-center d-none d-md-table-cell">Name</th>
+          <th class="text-center d-none d-md-table-cell">Application</th>
+          <th class="text-center d-none d-md-table-cell">Role</th>
+          <th class="text-center d-none d-md-table-cell">State</th>
+          <th class="text-center d-none d-lg-table-cell">Update date</th>
           <th class="text-center">Actions</th>
         </tr>
       </thead>
       <tbody>
         <tr
-          *ngFor="let user of pagedUsers"
+          *ngFor="let user of pagedUsers; let i = index"
           [ngClass]="{ 'table-active': selectedUser?.id === user.id }"
           [class.deleted]="user.isDeleted"
         >
-          <td class="text-center d-none d-md-table.block">
+          <td class="text-center d-none d-md-table-cell">
             <span
               class="badge"
               style="background-color: var(--header-icon-color)"
-              >{{ user.id }}</span
+              >{{ i + 1 }}</span
             >
           </td>
           <td >
@@ -223,12 +223,12 @@
             </span>
           </td>
 
-          <td>{{ getFullName(user) }}</td>
-          <td class="text-center">
+          <td class="d-none d-md-table-cell">{{ getFullName(user) }}</td>
+          <td class="text-center d-none d-md-table-cell">
             {{ getApplicationName(user).toUpperCase() }}
           </td>
-          <td class="text-center">{{ user.rol?.strDescription1 || "-" }}</td>
-          <td class="text-center position-relative">
+          <td class="text-center d-none d-md-table-cell">{{ user.rol?.strDescription1 || "-" }}</td>
+          <td class="text-center position-relative d-none d-md-table-cell">
             <!-- Mostrar estado DELETED si el usuario está borrado -->
             <ng-container *ngIf="user.isDeleted; else statusNormal">
               <span class="text-secondary fw-semibold">
@@ -292,7 +292,7 @@
             </ng-template>
           </td>
 
-          <td class="text-center d-none d-lg-table-block">
+          <td class="text-center d-none d-lg-table-cell">
             {{ user.dtmLatestUpdateDate | date : "dd/MM/yyyy" }}
           </td>
           <td class="text-center">

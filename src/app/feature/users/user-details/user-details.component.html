@@ -322,6 +322,72 @@
                       </ng-template>
                     </div>
                   </div>
+                  <div class="row">
+                    <div class="col-md-4 mb-2 form-group">
+                      <label>Birth Date</label>
+                      <ng-container *ngIf="!editingUser; else editBirthDate">
+                        <span
+                          class="form-control-plaintext"
+                          style="height: 38px !important"
+                        >
+                          {{ user.basicData.naturalPersonData.birthDate | date: 'yyyy-MM-dd' }}
+                        </span>
+                      </ng-container>
+                      <ng-template #editBirthDate>
+                        <input
+                          type="date"
+                          class="form-control"
+                          [(ngModel)]="user.basicData.naturalPersonData.birthDate"
+                          (ngModelChange)="detectChanges()"
+                        />
+                      </ng-template>
+                    </div>
+                    <div class="col-md-4 mb-2 form-group">
+                      <label>Marital Status</label>
+                      <ng-container *ngIf="!editingUser; else editMaritalStatus">
+                        <span
+                          class="form-control-plaintext"
+                          style="height: 38px !important"
+                        >
+                          {{ user.basicData.naturalPersonData.maritalStatus }}
+                        </span>
+                      </ng-container>
+                      <ng-template #editMaritalStatus>
+                        <select
+                          class="form-control"
+                          [(ngModel)]="user.basicData.naturalPersonData.maritalStatus"
+                          (ngModelChange)="detectChanges()"
+                        >
+                          <option value="SOLTERO (a)">SOLTERO (a)</option>
+                          <option value="CASADO (a)">CASADO (a)</option>
+                          <option value="UNION LIBRE">UNION LIBRE</option>
+                          <option value="OTRO">OTRO</option>
+                        </select>
+                      </ng-template>
+                    </div>
+                    <div class="col-md-4 mb-2 form-group">
+                      <label>Sex</label>
+                      <ng-container *ngIf="!editingUser; else editSex">
+                        <span
+                          class="form-control-plaintext"
+                          style="height: 38px !important"
+                        >
+                          {{ user.basicData.naturalPersonData.sex }}
+                        </span>
+                      </ng-container>
+                      <ng-template #editSex>
+                        <select
+                          class="form-control"
+                          [(ngModel)]="user.basicData.naturalPersonData.sex"
+                          (ngModelChange)="detectChanges()"
+                        >
+                          <option value="M">M</option>
+                          <option value="F">F</option>
+                          <option value="O">O</option>
+                        </select>
+                      </ng-template>
+                    </div>
+                  </div>
                 </div>
 
                 <!-- Juridical -->
