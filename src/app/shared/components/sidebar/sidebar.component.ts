@@ -17,7 +17,7 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     this.optionsMenu.sort(
-      (a, b) => parseInt(a.ingOrder, 10) - parseInt(b.ingOrder, 10)
+      (a, b) => a.ingOrder - b.ingOrder
     );
   }
 
@@ -25,7 +25,7 @@ export class SidebarComponent implements OnInit {
     const menu = this.optionsMenu.find((option) => option.id === id);
     return (
       menu?.strSubmenus.sort(
-        (a, b) => parseInt(a.ingOrder, 10) - parseInt(b.ingOrder, 10)
+        (a, b) => a.ingOrder - b.ingOrder
       ) || []
     );
   }

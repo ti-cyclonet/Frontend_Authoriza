@@ -92,7 +92,7 @@ export class CuOptionMenuComponent implements OnInit {
       ingOrder: parseInt(
         this.optionMenuForm.get('order')?.value,
         10
-      ).toString(),
+      ),
       strState: 'TEMPORARY',
       strSubmenus: [],
       hasSubmenu: this.optionMenuForm.get('submenu')?.value === 'yes',

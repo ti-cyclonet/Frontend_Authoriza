@@ -124,11 +124,14 @@ export default class LayoutComponent implements OnInit {
                   strUrl: menu?.strUrl ?? '#',
                   strIcon: menu?.strIcon ?? 'default-icon',
                   strType: menu?.strType ?? 'main_menu',
-                  ingOrder: menu?.ingOrder ?? '99',
+                  ingOrder: menu?.ingOrder ?? 99,
                   strState: menu?.strState ?? 'active',
                   strSubmenus: menu?.strSubmenus ?? [],
                 })) || []
             ) || [];
+
+          // Ordenar por ingOrder numérico
+          this.optionsMenu.sort((a, b) => a.ingOrder - b.ingOrder);
         },
         (error) => {
           console.error('Error fetching application:', error);
