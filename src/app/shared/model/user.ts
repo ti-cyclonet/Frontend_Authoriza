@@ -1,5 +1,6 @@
 export interface User {
   id: string;
+  code?: string;
   strUserName: string;
   strStatus: string;
   dtmLatestUpdateDate: string;

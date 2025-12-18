@@ -73,7 +73,7 @@
         <table class="table table-hover table-sm table-bordered" style="font-size: 14px">
           <thead class="table-dark">
             <tr class="table-light">
-              <th>ID</th>
+              <th>Code</th>
               <th>Name</th>
               <th class="d-none d-lg-table-block">Description</th>
               <th># Roles</th>
@@ -83,7 +83,14 @@
           </thead>
           <tbody>
             <tr *ngFor="let pkg of paginatedPackages">
-              <td>{{ pkg.id }}</td>
+              <td>
+                <span class="entity-code-badge" *ngIf="pkg?.code; else noCode">
+                  {{ pkg?.code }}
+                </span>
+                <ng-template #noCode>
+                  <span class="text-muted">-</span>
+                </ng-template>
+              </td>
               <td>{{ pkg.name }}</td>
               <td class="d-none d-lg-table-block">{{ pkg.description }}</td>
               <td>{{ getNumberOfRoles(pkg) }}</td>

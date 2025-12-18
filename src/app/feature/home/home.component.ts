@@ -15,6 +15,7 @@ import { DashboardService, DashboardStats } from '../../shared/services/dashboar
 export class HomeComponent implements OnInit {
   stats: DashboardStats | null = null;
   recentActivity: any = null;
+  entityCodes: any = null;
   loading = true;
   error: string | null = null;
   
@@ -53,6 +54,18 @@ export class HomeComponent implements OnInit {
     this.dashboardService.getRecentActivity().subscribe({
       next: (data) => {
         this.recentActivity = data;
+        this.loadEntityCodes();
+      },
+      error: (err) => {
+        this.loading = false;
+      }
+    });
+  }
+
+  loadEntityCodes() {
+    this.dashboardService.getEntityCodes().subscribe({
+      next: (data) => {
+        this.entityCodes = data;
         this.loading = false;
       },
       error: (err) => {

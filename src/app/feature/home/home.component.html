@@ -283,5 +283,63 @@
         </div>
       </div>
     </div>
+
+    <!-- Entity Codes Section -->
+    <div *ngIf="entityCodes" class="codes-section">
+      <h5 class="section-title">Recent Entity Codes</h5>
+      
+      <div class="codes-grid">
+        <!-- Recent User Codes -->
+        <div class="codes-card">
+          <div class="codes-header">
+            <svg viewBox="0 0 16 16">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#person-badge"/>
+            </svg>
+            <h6>User Codes</h6>
+          </div>
+          <div class="codes-list">
+            <div *ngFor="let user of entityCodes.users" class="code-item">
+              <span class="entity-code">{{ user.code }}</span>
+              <span class="entity-name">{{ user.strUserName }}</span>
+              <small class="entity-date">{{ formatDate(user.dtmCreateDate) }}</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Invoice Codes -->
+        <div class="codes-card">
+          <div class="codes-header">
+            <svg viewBox="0 0 16 16">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#receipt-cutoff"/>
+            </svg>
+            <h6>Invoice Codes</h6>
+          </div>
+          <div class="codes-list">
+            <div *ngFor="let invoice of entityCodes.invoices" class="code-item">
+              <span class="entity-code">{{ invoice.code }}</span>
+              <span class="entity-name">{{ formatCurrency(invoice.value) }}</span>
+              <small class="entity-date">{{ formatDate(invoice.createdAt) }}</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Contract Codes -->
+        <div class="codes-card">
+          <div class="codes-header">
+            <svg viewBox="0 0 16 16">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#file-earmark-code"/>
+            </svg>
+            <h6>Contract Codes</h6>
+          </div>
+          <div class="codes-list">
+            <div *ngFor="let contract of entityCodes.contracts" class="code-item">
+              <span class="entity-code">{{ contract.code }}</span>
+              <span class="entity-name">{{ formatCurrency(contract.value) }}</span>
+              <small class="entity-date">{{ formatDate(contract.createdAt) }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

@@ -2,6 +2,7 @@ import { MenuOption } from "./menu_option";
 
 export interface Rol {
     id: string;
+    code?: string;
     strName: string;
     strDescription1: string;
     strDescription2: string;

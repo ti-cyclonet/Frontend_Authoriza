@@ -44,4 +44,8 @@ export class DashboardService {
   getRecentActivity(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/recent-activity`);
   }
+
+  getEntityCodes(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/entity-codes`);
+  }
 }

@@ -96,7 +96,7 @@
         <table class="table table-hover table-sm table-bordered" style="font-size: 14px">
           <thead>
             <tr class="table-light">
-              <th scope="col" class="id-col text-center">Item</th>
+              <th scope="col" class="id-col text-center">Code</th>
               <th scope="col" class="text-center">Name</th>
               <th scope="col" class="text-center d-none d-xl-table-cell">
                 Description
@@ -119,23 +119,12 @@
                     application !== selectedApplication
                 }"
               >
-                <span
-                  class="badge rounded-badge position-relative d-inline-block"
-                  [ngClass]="{
-                    bgd: application.strState === 'TEMPORARY',
-                    'badge-selected': application === selectedApplication,
-                    'badge-default': application !== selectedApplication
-                  }"
-                >
-                  {{ index + 1 }}
-    
-                  <!-- Badge circular sin texto -->
-                  <span
-                    *ngIf="application.strState === 'TEMPORARY'"
-                    class="badge-app-circle"
-                    title="Aplicación con novedades"
-                  ></span>
+                <span class="entity-code-badge" *ngIf="application?.code; else noCode">
+                  {{ application?.code }}
                 </span>
+                <ng-template #noCode>
+                  <span class="text-muted">-</span>
+                </ng-template>
               </th>
     
               <td
@@ -347,7 +336,7 @@
         <table class="table table-hover table-sm table-bordered" style="font-size: 14px">
           <thead>
             <tr class="table-light">
-              <th scope="col" class="id-col text-center">Item</th>
+              <th scope="col" class="id-col text-center">Code</th>
               <th scope="col" class="text-center d-none d-xl-table-cell">Name</th>
               <th scope="col" class="text-center">Description A</th>
               <th scope="col" class="text-center d-none d-xl-table-cell">
@@ -369,23 +358,12 @@
                   'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
                 }"
               >
-                <span
-                  class="badge rounded-badge position-relative d-inline-block"
-                  [ngClass]="{
-                    bgd: rol.strState === 'TEMPORARY',
-                    'badge-selected': rol === selectedRol,
-                    'badge-default': rol !== selectedRol
-                  }"
-                >
-                  {{ i + 1 }}
-    
-                  <!-- Badge circular sin texto -->
-                  <span
-                    *ngIf="rol.strState === 'TEMPORARY'"
-                    class="badge-app-circle"
-                    title="Nuevo rol"
-                  ></span>
+                <span class="entity-code-badge" *ngIf="rol?.code; else noRoleCode">
+                  {{ rol?.code }}
                 </span>
+                <ng-template #noRoleCode>
+                  <span class="text-muted">-</span>
+                </ng-template>
               </th>
               <td
                 [ngClass]="{
