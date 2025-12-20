@@ -69,4 +69,8 @@ export class PackageService {
 
     return this.http.post(this.packageUrl, formData);
   }
+
+  deletePackage(id: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.packageUrl}/${id}`);
+  }
 }

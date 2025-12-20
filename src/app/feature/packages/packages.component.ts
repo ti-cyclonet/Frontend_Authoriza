@@ -116,4 +116,41 @@ export class PackagesComponent implements OnInit {
       timerProgressBar: true,
     });
   }
+
+  deletePackage(pkg: Package) {
+    Swal.fire({
+      title: 'Delete Package',
+      html: `Are you sure you want to delete the package <strong>"${pkg.name}"</strong>?<br><br><small class="text-muted">This action cannot be undone. The package will be permanently removed if it has no active contracts.</small>`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.packageService.deletePackage(pkg.id).subscribe({
+          next: (response) => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: response.message,
+              showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: true,
+            });
+            this.loadPackages();
+          },
+          error: (error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Cannot Delete Package',
+              text: error.error?.message || 'An error occurred while deleting the package',
+              confirmButtonText: 'OK'
+            });
+          }
+        });
+      }
+    });
+  }
 }

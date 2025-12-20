@@ -140,6 +140,8 @@
                       color: var(--sidebar-background-color);
                       cursor: pointer;
                     "
+                    (click)="deletePackage(pkg)"
+                    title="Delete package"
                   >
                     <svg
                       fill="currentColor"
@@ -273,7 +275,7 @@
                 />
               </svg>
             </a>
-            <a class="action-icon">
+            <a class="action-icon" (click)="deletePackage(pkg)" title="Delete package">
               <svg
                 fill="currentColor"
                 viewBox="0 0 16 16"
