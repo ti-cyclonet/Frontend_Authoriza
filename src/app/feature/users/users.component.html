@@ -39,11 +39,11 @@
         class="card-title text-nowrap bg-body-secondary border"
         style="width: 2.8rem"
       >
-        User <b>Management</b>.
+        {{ 'users.title' | translate }}
       </h5>
       <div class="btn-group ms-auto custom-btn-group">
         <a
-          title="Add new user"
+          title="{{ 'users.addNew' | translate }}"
           class="btn btn-sm btn-light"
           (click)="openAddUserModal()"
         >
@@ -65,7 +65,7 @@
       <!-- Buscador por nombre/email -->
       <div class="col-sm-12 col-md-6 mb-2 mb-md-0">
         <div class="subtitle">
-          <h6 class="users-titleOne">Search by name, email, or application</h6>
+          <h6 class="users-titleOne">{{ 'users.searchPlaceholder' | translate }}</h6>
         </div>
         <div
           class="input-group"
@@ -78,7 +78,7 @@
           <input
             type="text"
             class="form-control custom-search-input"
-            placeholder="Write some words to filter"
+            placeholder="{{ 'users.filterPlaceholder' | translate }}"
             [(ngModel)]="searchTerm"
             (input)="onSearch()"
           />
@@ -115,7 +115,7 @@
       <!-- Buscador por dependencia -->
       <div class="col-sm-12 col-md-6">
         <div class="subtitle">
-          <h6 class="users-titleOne">Filter by dependency</h6>
+          <h6 class="users-titleOne">{{ 'users.filterByDependency' | translate }}</h6>
         </div>
         <div
           class="input-group"
@@ -128,7 +128,7 @@
           <input
             type="text"
             class="form-control custom-search-input"
-            placeholder="Filter by leader ID"
+            placeholder="{{ 'users.filterByLeader' | translate }}"
             [(ngModel)]="dependentId"
           />
           <button
@@ -173,30 +173,30 @@
       "
     >
       <div>
-        Showing {{ pagedUsers.length }} of {{ filteredUsers.length }} users
+        {{ 'users.showing' | translate }} {{ pagedUsers.length }} {{ 'users.of' | translate }} {{ filteredUsers.length }} {{ 'users.users' | translate }}
       </div>
-      <div>Page {{ currentPage }} of {{ totalPages }}</div>
+      <div>{{ 'users.page' | translate }} {{ currentPage }} {{ 'users.of' | translate }} {{ totalPages }}</div>
     </div>
     <!-- Mensaje cuando no hay resultados -->
     <div
       *ngIf="filteredUsers.length === 0"
       class="text-center text-danger fw-semibold m-3"
     >
-      No results were found.
+      {{ 'users.noResults' | translate }}
     </div>
 
     <!-- Tabla de usuarios -->
     <table class="table table-hover table-sm table-bordered" style="font-size: 14px">
       <thead>
         <tr class="table-light">
-          <th class="text-center d-none d-md-table-cell">Code</th>
-          <th class="text-center">User Name</th>
-          <th class="text-center d-none d-md-table-cell">Name</th>
-          <th class="text-center d-none d-md-table-cell">Application</th>
-          <th class="text-center d-none d-md-table-cell">Role</th>
-          <th class="text-center d-none d-md-table-cell">State</th>
-          <th class="text-center d-none d-lg-table-cell">Update date</th>
-          <th class="text-center">Actions</th>
+          <th class="text-center d-none d-md-table-cell">{{ 'users.code' | translate }}</th>
+          <th class="text-center">{{ 'users.userName' | translate }}</th>
+          <th class="text-center d-none d-md-table-cell">{{ 'users.name' | translate }}</th>
+          <th class="text-center d-none d-md-table-cell">{{ 'users.application' | translate }}</th>
+          <th class="text-center d-none d-md-table-cell">{{ 'users.role' | translate }}</th>
+          <th class="text-center d-none d-md-table-cell">{{ 'users.state' | translate }}</th>
+          <th class="text-center d-none d-lg-table-cell">{{ 'users.updateDate' | translate }}</th>
+          <th class="text-center">{{ 'users.actions' | translate }}</th>
         </tr>
       </thead>
       <tbody>
@@ -355,7 +355,7 @@
                 xlink:href="./assets/icons/bootstrap-icons.svg#chevron-left"
               />
             </svg>
-            Previous
+            {{ 'users.previous' | translate }}
           </button>
         </li>
         <li
@@ -372,7 +372,7 @@
             class="page-link d-flex align-items-center"
             (click)="goToPage(currentPage + 1)"
           >
-            Next
+            {{ 'users.next' | translate }}
             <svg
               fill="currentColor"
               width="16"

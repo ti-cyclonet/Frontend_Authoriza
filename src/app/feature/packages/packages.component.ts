@@ -6,11 +6,12 @@ import { PackageService } from '../../shared/services/packages/package.service';
 import { AddPackageComponent } from './add-package/add-package.component';
 import 'bootstrap';
 import Swal from 'sweetalert2';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-packages',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, AddPackageComponent],
+  imports: [CommonModule, CurrencyPipe, AddPackageComponent, TranslatePipe],
   templateUrl: './packages.component.html',
   styleUrls: ['./packages.component.css'],
 })

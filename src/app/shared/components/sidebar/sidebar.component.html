@@ -14,7 +14,7 @@
           <svg fill="currentcolor" viewBox="0 0 16 16">
             <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + option.strIcon"></use>
           </svg>
-          <div>{{ option.strDescription }}</div>
+          <div>{{ getTranslatedMenuText(option.strDescription) }}</div>
         
           <!-- Renderiza el badge solo si hay submenú -->
           <span class="badge" *ngIf="hasSubmenu(option.id)" [class.show]="isSubmenuOpen(option.id)">
@@ -34,7 +34,7 @@
             <svg fill="currentcolor" viewBox="0 0 16 16">
               <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + submenu.strIcon"></use>
             </svg>
-            {{ submenu.strDescription }}
+            {{ getTranslatedMenuText(submenu.strDescription) }}
           </a>
         </div>
       </ng-container>      

@@ -29,6 +29,8 @@ import { Rol } from '../../shared/model/rol';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Modal } from 'bootstrap';
 import { CuOptionMenuComponent } from './cu-optionmenu/cu-optionmenu.component';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+
 declare var bootstrap: any;
 
 @Component({
@@ -43,6 +45,7 @@ declare var bootstrap: any;
     ReactiveFormsModule,
     CuRolComponent,
     CuOptionMenuComponent,
+    TranslatePipe,
   ],
   templateUrl: './applications.component.html',
   styleUrls: ['./applications.component.css'],

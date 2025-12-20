@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChartModule } from 'primeng/chart';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { CardModule } from 'primeng/card';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { DashboardService, DashboardStats } from '../../shared/services/dashboard/dashboard.service';
@@ -8,7 +9,7 @@ import { DashboardService, DashboardStats } from '../../shared/services/dashboar
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, ChartModule, CardModule, ProgressBarModule],
+  imports: [CommonModule, ChartModule, CardModule, ProgressBarModule, TranslatePipe],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })

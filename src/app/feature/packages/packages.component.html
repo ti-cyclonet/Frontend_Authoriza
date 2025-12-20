@@ -17,10 +17,10 @@
           class="card-title text-nowrap bg-body-secondary border"
           style="width: 5.5rem"
         >
-          Packages <b>Management</b>.
+          {{ 'packages.title' | translate }}
           <div class="btn-group">
             <a
-              title="List view"
+              title="{{ 'packages.listView' | translate }}"
               style="cursor: pointer"
               (click)="setView('list')"
             >
@@ -31,7 +31,7 @@
               </svg>
             </a>
             <a
-              title="Cards view"
+              title="{{ 'packages.cardsView' | translate }}"
               style="cursor: pointer"
               (click)="setView('cards')"
             >
@@ -44,12 +44,12 @@
           </div>
         </h5>
         <p class="card-text text-muted" style="font-size: 0.9rem">
-          Manage your packages, add new ones, and view details.
+          {{ 'packages.description' | translate }}
         </p>
       </div>
       <div class="btn-group ms-auto custom-btn-group">
         <a
-          title="Add new package"
+          title="{{ 'packages.addNew' | translate }}"
           style="cursor: pointer"
           (click)="openAddPackageModal()"
         >

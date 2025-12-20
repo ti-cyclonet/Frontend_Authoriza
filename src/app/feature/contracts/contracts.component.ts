@@ -4,11 +4,12 @@ import { ContractService, ContractStatus } from '../../shared/services/contracts
 import { CommonModule } from '@angular/common';
 import { AddContractComponent } from './add-contract/add-contract.component';
 import { CurrencyFormatPipe } from "../../shared/pipes/custom-currency.pipe";
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-contracts',
   standalone: true,
-  imports: [CommonModule, AddContractComponent, CurrencyFormatPipe],
+  imports: [CommonModule, AddContractComponent, CurrencyFormatPipe, TranslatePipe],
   templateUrl: './contracts.component.html',
   styleUrl: './contracts.component.css',
 })

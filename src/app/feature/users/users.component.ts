@@ -20,6 +20,7 @@ import { ApplicationsService } from '../../shared/services/applications/applicat
 import { forkJoin, map, switchMap } from 'rxjs';
 import { Application } from '../../shared/model/application.model';
 import Swal from 'sweetalert2';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 @Component({
   selector: 'app-users',
   standalone: true,
@@ -31,6 +32,7 @@ import Swal from 'sweetalert2';
     AddUserModalComponent,
     NotificationsComponent,
     UserDetailsComponent,
+    TranslatePipe,
   ],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css'],

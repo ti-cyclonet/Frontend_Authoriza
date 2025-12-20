@@ -45,7 +45,7 @@
         class="card-title text-nowrap bg-body-secondary border"
         style="width: 6.7rem"
       >
-        Application <b>Management</b>.
+        {{ 'apps.title' | translate }}
       </h5>
 
       <div class="btn-group ms-auto custom-btn-group">
@@ -54,7 +54,7 @@
           [class.disabled]="!hasApplications"
           [attr.aria-disabled]="!hasApplications"
           [style.pointer-events]="hasApplications ? 'auto' : 'none'"
-          title="Save"
+          title="{{ 'apps.save' | translate }}"
         >
           <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
             <use
@@ -70,7 +70,7 @@
           [attr.aria-disabled]="selectedApplication ? 'true' : null"
           [attr.tabindex]="selectedApplication ? -1 : 0"
           (click)="handleClickNewApp()"
-          title="Add new app"
+          title="{{ 'apps.addNew' | translate }}"
         >
           <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
             <use
@@ -91,7 +91,7 @@
       <div class="table-responsive mt-3" [class.disabled]="isRolesTableVisible">
         <div class="roles-header">
           <!-- Título alineado a la izquierda -->
-          <h6 class="roles-title">Applications list</h6>
+          <h6 class="roles-title">{{ 'apps.list' | translate }}</h6>
         </div>
         <table class="table table-hover table-sm table-bordered" style="font-size: 14px">
           <thead>

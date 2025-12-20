@@ -17,15 +17,15 @@
           class="card-title text-nowrap bg-body-secondary border"
           style="width: 5.9rem"
         >
-          Contracts <b>Management</b>.
+          {{ 'contracts.title' | translate }}
         </h5>
         <p class="card-text text-muted" style="font-size: 0.9rem">
-          Manage your contracts, add new ones, and view details.
+          {{ 'contracts.description' | translate }}
         </p>
       </div>
       <div class="btn-group ms-auto custom-btn-group">
         <a
-          title="Add new contract"
+          title="{{ 'contracts.addNew' | translate }}"
           style="cursor: pointer"
           (click)="openAddContractModal()"
         >
