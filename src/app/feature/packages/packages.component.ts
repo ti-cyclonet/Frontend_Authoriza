@@ -7,11 +7,12 @@ import { AddPackageComponent } from './add-package/add-package.component';
 import 'bootstrap';
 import Swal from 'sweetalert2';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { CyclonAssistantComponent } from '../../shared/components/cyclon-assistant/cyclon-assistant.component';
 
 @Component({
   selector: 'app-packages',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, AddPackageComponent, TranslatePipe],
+  imports: [CommonModule, CurrencyPipe, AddPackageComponent, TranslatePipe, CyclonAssistantComponent],
   templateUrl: './packages.component.html',
   styleUrls: ['./packages.component.css'],
 })
@@ -153,5 +154,20 @@ export class PackagesComponent implements OnInit {
         });
       }
     });
+  }
+
+  // Contexto para CYCLON
+  get cyclonContext() {
+    return {
+      currentPage: this.currentPage,
+      totalPages: this.totalPages,
+      totalPackages: this.packages.length,
+      viewMode: this.viewMode,
+      showingModal: this.showAddPackageModal
+    };
+  }
+
+  get currentLanguage(): string {
+    return localStorage.getItem('language') || 'en';
   }
 }

@@ -330,7 +330,7 @@ export class ApplicationsService {
   }
 
   loadApplications(): Observable<Application[]> {
-    return this.getApplications(10, 0).pipe(
+    return this.getApplications(5, 0).pipe(
       tap((apps) => this.applicationsSubject.next(apps)),
       catchError((error) => {
         console.error('Error loading applications.', error);

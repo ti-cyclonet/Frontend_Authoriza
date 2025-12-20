@@ -60,6 +60,10 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     return this.translationService.translateAppDescription(DESCRIPTION_APP, 'Authoriza');
   }
 
+  get currentLanguage(): string {
+    return localStorage.getItem('language') || 'en';
+  }
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private authService: AuthService,

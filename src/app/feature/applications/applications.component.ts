@@ -30,6 +30,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Modal } from 'bootstrap';
 import { CuOptionMenuComponent } from './cu-optionmenu/cu-optionmenu.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { CyclonAssistantComponent } from '../../shared/components/cyclon-assistant/cyclon-assistant.component';
 
 declare var bootstrap: any;
 
@@ -46,6 +47,7 @@ declare var bootstrap: any;
     CuRolComponent,
     CuOptionMenuComponent,
     TranslatePipe,
+    CyclonAssistantComponent,
   ],
   templateUrl: './applications.component.html',
   styleUrls: ['./applications.component.css'],
@@ -55,6 +57,11 @@ export class ApplicationsComponent implements OnInit {
   private destroy$ = new Subject<void>();
   @Input() applications: Application[] = [];
   @Input() localApplications: Application[] = [];
+  
+  // Paginación
+  currentPage: number = 1;
+  itemsPerPage: number = 5;
+  totalItems: number = 0;
   @ViewChild(CuApplicationComponent) appCuApplication!: CuApplicationComponent;
   @ViewChild('rolesModal') rolesModalElement!: ElementRef;
   @ViewChild('optionMenuModal') optionMenuModal!: ElementRef;
@@ -113,11 +120,23 @@ export class ApplicationsComponent implements OnInit {
   }
 
   reloadApplications(): void {
-    this.applicationsService.loadApplications().subscribe();
+    this.loadApplicationsPage();
+  }
 
-    this.applicationsService.applications$.subscribe((apps) => {
-      this.applications = apps;
-      this.localApplications = [...apps];
+  loadApplicationsPage(): void {
+    const offset = (this.currentPage - 1) * this.itemsPerPage;
+    this.applicationsService.getApplications(this.itemsPerPage, offset).subscribe({
+      next: (apps) => {
+        this.applications = apps;
+        this.localApplications = [...apps];
+        // Simular total para demo - en producción vendría del backend
+        this.totalItems = apps.length < this.itemsPerPage ? 
+          offset + apps.length : 
+          offset + apps.length + 1;
+      },
+      error: (error) => {
+        console.error('Error loading applications:', error);
+      }
     });
   }
 
@@ -776,4 +795,50 @@ export class ApplicationsComponent implements OnInit {
     }
   }
   // ----------------------------------------------
+
+  // Métodos de paginación
+  get totalPages(): number {
+    return Math.ceil(this.totalItems / this.itemsPerPage);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.loadApplicationsPage();
+    }
+  }
+
+  previousPage(): void {
+    this.goToPage(this.currentPage - 1);
+  }
+
+  nextPage(): void {
+    this.goToPage(this.currentPage + 1);
+  }
+
+  get startItem(): number {
+    return (this.currentPage - 1) * this.itemsPerPage + 1;
+  }
+
+  get endItem(): number {
+    return Math.min(this.currentPage * this.itemsPerPage, this.totalItems);
+  }
+
+  // Contexto para CYCLON
+  get cyclonContext() {
+    return {
+      currentPage: this.currentPage,
+      totalPages: this.totalPages,
+      totalItems: this.totalItems,
+      selectedApplication: this.selectedApplication?.strName,
+      selectedRole: this.selectedRol?.strName,
+      hasTemporaryChanges: this.hasApplications
+    };
+  }
+
+  // Detectar idioma actual (puedes conectar esto con tu servicio de traducción)
+  get currentLanguage(): string {
+    // Aquí puedes obtener el idioma del localStorage, servicio de traducción, etc.
+    return localStorage.getItem('language') || 'en';
+  }
 }

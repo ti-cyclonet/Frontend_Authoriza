@@ -21,6 +21,7 @@ import { forkJoin, map, switchMap } from 'rxjs';
 import { Application } from '../../shared/model/application.model';
 import Swal from 'sweetalert2';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { CyclonAssistantComponent } from '../../shared/components/cyclon-assistant/cyclon-assistant.component';
 @Component({
   selector: 'app-users',
   standalone: true,
@@ -33,6 +34,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     NotificationsComponent,
     UserDetailsComponent,
     TranslatePipe,
+    CyclonAssistantComponent,
   ],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css'],
@@ -577,4 +579,20 @@ export class UsersComponent implements OnInit {
     }
   }
   // ----------------------------------------------
+
+  // Contexto para CYCLON
+  get cyclonContext() {
+    return {
+      currentPage: this.currentPage,
+      totalPages: this.totalPages,
+      totalUsers: this.filteredUsers.length,
+      selectedUser: this.selectedUser?.strUserName,
+      searchTerm: this.searchTerm,
+      showingModal: this.showAddUserModal || this.showUserDetailsModal
+    };
+  }
+
+  get currentLanguage(): string {
+    return localStorage.getItem('language') || 'en';
+  }
 }

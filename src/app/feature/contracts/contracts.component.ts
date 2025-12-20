@@ -5,11 +5,12 @@ import { CommonModule } from '@angular/common';
 import { AddContractComponent } from './add-contract/add-contract.component';
 import { CurrencyFormatPipe } from "../../shared/pipes/custom-currency.pipe";
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { CyclonAssistantComponent } from '../../shared/components/cyclon-assistant/cyclon-assistant.component';
 
 @Component({
   selector: 'app-contracts',
   standalone: true,
-  imports: [CommonModule, AddContractComponent, CurrencyFormatPipe, TranslatePipe],
+  imports: [CommonModule, AddContractComponent, CurrencyFormatPipe, TranslatePipe, CyclonAssistantComponent],
   templateUrl: './contracts.component.html',
   styleUrl: './contracts.component.css',
 })
@@ -68,5 +69,20 @@ export class ContractsComponent implements OnInit {
   closeModal() {
     this.showAddContractModal = false;
     this.loadContracts();
+  }
+
+  // Contexto para CYCLON
+  get cyclonContext() {
+    return {
+      currentPage: this.page,
+      totalPages: this.totalPages,
+      totalContracts: this.total,
+      selectedStatus: this.selectedStatus,
+      showingModal: this.showAddContractModal
+    };
+  }
+
+  get currentLanguage(): string {
+    return localStorage.getItem('language') || 'en';
   }
 }
