@@ -77,7 +77,7 @@
 /* Progress Steps */
 .progress-container {
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: var(--sidebar-background-color);
   border-radius: 8px 8px 0 0;
 }
 
@@ -123,7 +123,7 @@
 
 .step.active .step-number {
   background-color: #fff;
-  color: #667eea;
+  color: var(--sidebar-background-color);
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
 }
 

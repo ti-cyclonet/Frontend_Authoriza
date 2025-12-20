@@ -11,9 +11,9 @@
   <!-- Loading State -->
   <div *ngIf="loading" class="text-center p-5">
     <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Cargando...</span>
+      <span class="visually-hidden">Loading...</span>
     </div>
-    <p class="mt-2">Cargando estadísticas...</p>
+    <p class="mt-2">Loading statistics...</p>
   </div>
 
   <!-- Error State -->
@@ -28,8 +28,8 @@
   <div *ngIf="!loading && !error && stats" class="dashboard-content">
     <!-- Header -->
     <div class="dashboard-header">
-      <h3 class="dashboard-title">Dashboard Principal</h3>
-      <p class="dashboard-subtitle">Resumen general del sistema</p>
+      <h3 class="dashboard-title">Main Dashboard</h3>
+      <p class="dashboard-subtitle">System overview</p>
     </div>
 
     <!-- Stats Cards Row -->
@@ -44,21 +44,21 @@
           </div>
           <div class="stat-info">
             <h4>{{ stats.users.total }}</h4>
-            <p>Usuarios Totales</p>
+            <p>Total Users</p>
           </div>
         </div>
         <div class="stat-details">
           <div class="stat-item">
             <span class="badge badge-success">{{ stats.users.active }}</span>
-            <span>Activos</span>
+            <span>Active</span>
           </div>
           <div class="stat-item">
             <span class="badge badge-secondary">{{ stats.users.inactive }}</span>
-            <span>Inactivos</span>
+            <span>Inactive</span>
           </div>
           <div class="stat-item">
             <span class="badge badge-warning">{{ stats.users.unconfirmed }}</span>
-            <span>Sin confirmar</span>
+            <span>Unconfirmed</span>
           </div>
         </div>
       </div>
@@ -73,21 +73,21 @@
           </div>
           <div class="stat-info">
             <h4>{{ stats.invoices.total }}</h4>
-            <p>Facturas</p>
+            <p>Invoices</p>
           </div>
         </div>
         <div class="stat-details">
           <div class="stat-item">
             <span class="badge badge-success">{{ stats.invoices.paid }}</span>
-            <span>Pagadas</span>
+            <span>Paid</span>
           </div>
           <div class="stat-item">
             <span class="badge badge-primary">{{ stats.invoices.pending }}</span>
-            <span>Pendientes</span>
+            <span>Pending</span>
           </div>
           <div class="stat-item">
             <span class="badge badge-danger">{{ stats.invoices.overdue }}</span>
-            <span>Vencidas</span>
+            <span>Overdue</span>
           </div>
         </div>
       </div>
@@ -102,7 +102,7 @@
           </div>
           <div class="stat-info">
             <h4>{{ formatCurrency(stats.invoices.totalValue) }}</h4>
-            <p>Ingresos Totales</p>
+            <p>Total Revenue</p>
           </div>
         </div>
       </div>
@@ -117,17 +117,17 @@
           </div>
           <div class="stat-info">
             <h4>{{ stats.contracts.total }}</h4>
-            <p>Contratos</p>
+            <p>Contracts</p>
           </div>
         </div>
         <div class="stat-details">
           <div class="stat-item">
             <span class="badge badge-success">{{ stats.contracts.active }}</span>
-            <span>Activos</span>
+            <span>Active</span>
           </div>
           <div class="stat-item">
             <span class="badge badge-secondary">{{ stats.contracts.expired }}</span>
-            <span>Expirados</span>
+            <span>Expired</span>
           </div>
         </div>
       </div>
@@ -138,7 +138,7 @@
       <!-- Users by Role Chart -->
       <div class="chart-card">
         <div class="chart-header">
-          <h5>Usuarios por Rol</h5>
+          <h5>Users by Role</h5>
         </div>
         <div class="chart-content">
           <div class="chart-container">
@@ -168,7 +168,7 @@
       <!-- Invoice Status Chart -->
       <div class="chart-card">
         <div class="chart-header">
-          <h5>Estado de Facturas</h5>
+          <h5>Invoice Status</h5>
         </div>
         <div class="chart-content">
           <div class="chart-container">
@@ -196,7 +196,7 @@
       <!-- Monthly Revenue Chart -->
       <div *ngIf="monthlyRevenueChartData" class="chart-card full-width">
         <div class="chart-header">
-          <h5>Ingresos Mensuales</h5>
+          <h5>Monthly Revenue</h5>
         </div>
         <div class="chart-content">
           <div class="chart-container-large">
@@ -213,7 +213,7 @@
 
     <!-- Recent Activity -->
     <div *ngIf="recentActivity" class="activity-section">
-      <h5 class="section-title">Actividad Reciente</h5>
+      <h5 class="section-title">Recent Activity</h5>
       
       <div class="activity-grid">
         <!-- Recent Users -->
@@ -222,7 +222,7 @@
             <svg viewBox="0 0 16 16">
               <use xlink:href="./assets/icons/bootstrap-icons.svg#person-plus"/>
             </svg>
-            <h6>Usuarios Recientes</h6>
+            <h6>Recent Users</h6>
           </div>
           <div class="activity-list">
             <div *ngFor="let user of recentActivity.recentUsers" class="activity-item">
@@ -244,7 +244,7 @@
             <svg viewBox="0 0 16 16">
               <use xlink:href="./assets/icons/bootstrap-icons.svg#receipt"/>
             </svg>
-            <h6>Facturas Recientes</h6>
+            <h6>Recent Invoices</h6>
           </div>
           <div class="activity-list">
             <div *ngFor="let invoice of recentActivity.recentInvoices" class="activity-item">
@@ -266,7 +266,7 @@
             <svg viewBox="0 0 16 16">
               <use xlink:href="./assets/icons/bootstrap-icons.svg#file-earmark-plus"/>
             </svg>
-            <h6>Contratos Recientes</h6>
+            <h6>Recent Contracts</h6>
           </div>
           <div class="activity-list">
             <div *ngFor="let contract of recentActivity.recentContracts" class="activity-item">
