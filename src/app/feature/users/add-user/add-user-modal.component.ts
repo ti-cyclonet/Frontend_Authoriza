@@ -22,6 +22,8 @@ import { ApplicationWithRoles } from '../../../shared/model/application-with-rol
 import Swal from 'sweetalert2';
 import { AssignRoleComponent } from '../assign-role/assign-role.component';
 import { AssignDependencyComponent } from '../assign-dependency/assign-dependency.component';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { TranslationService } from '../../../shared/services/translation.service';
 
 @Component({
   selector: 'app-add-user-modal',
@@ -31,6 +33,7 @@ import { AssignDependencyComponent } from '../assign-dependency/assign-dependenc
     ReactiveFormsModule,
     AssignRoleComponent,
     AssignDependencyComponent,
+    TranslatePipe,
   ],
   templateUrl: './add-user-modal.component.html',
   styleUrls: ['./add-user-modal.component.css'],
@@ -67,7 +70,8 @@ export class AddUserModalComponent {
     private fb: FormBuilder,
     private userService: UserService,
     private roleService: RolesService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private translationService: TranslationService
   ) {
     this.userForm = this.fb.group({
       strUserName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)]],
@@ -180,12 +184,12 @@ export class AddUserModalComponent {
     }
 
     const isPrincipalResult = await Swal.fire({
-      title: '¿Is this a primary user?',
-      text: 'The primary user does not require role assignment or dependency.',
+      title: this.translationService.translate('users.modal.isPrimaryUser'),
+      text: this.translationService.translate('users.modal.primaryUserText'),
       icon: 'question',
       showCancelButton: true,
-      confirmButtonText: 'Yes, it is a primary user',
-      cancelButtonText: 'No, it requires role assignment',
+      confirmButtonText: this.translationService.translate('users.modal.yesPrimary'),
+      cancelButtonText: this.translationService.translate('users.modal.noRequiresRole'),
     });
 
     const isPrincipal = isPrincipalResult.isConfirmed;

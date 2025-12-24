@@ -7,7 +7,7 @@
           class="card-header d-flex justify-content-between align-items-center"
           style="background-color: #6900d1; color: white"
         >
-          User Details: <span class="fw-bold">{{ user.strUserName }}</span>
+          {{ 'users.details.title' | translate }}: <span class="fw-bold">{{ user.strUserName }}</span>
         </div>
         <!-- Contenedor flotante (derecha) -->
         <div class="notification-container">
@@ -81,7 +81,7 @@
                         disabled
                       />
                       <label class="form-check-label" for="personTypeN"
-                        >Natural</label
+                        >{{ 'users.details.natural' | translate }}</label
                       >
                     </div>
                     <div class="form-check">
@@ -97,7 +97,7 @@
                         disabled
                       />
                       <label class="form-check-label" for="personTypeJ"
-                        >Juridical</label
+                        >{{ 'users.details.juridical' | translate }}</label
                       >
                     </div>
                   </div>
@@ -111,7 +111,7 @@
                       [class.active]="activeTab === 'BasicData'"
                       (click)="activeTab = 'BasicData'"
                     >
-                      Basic User Data
+                      {{ 'users.details.basicData' | translate }}
                     </a>
                   </li>
                   <li class="nav-item">
@@ -120,7 +120,7 @@
                       [class.active]="activeTab === 'GeneralData'"
                       (click)="activeTab = 'GeneralData'"
                     >
-                      General User Data
+                      {{ 'users.details.generalData' | translate }}
                     </a>
                   </li>
                 </div>
@@ -130,14 +130,14 @@
               <div class="mt-3" *ngIf="activeTab === 'BasicData'">
                 <div class="row">
                   <div class="col-md-6 mb-2 form-group">
-                    <label>Username</label>
+                    <label>{{ 'users.details.username' | translate }}</label>
                     <span class="form-control-plaintext">{{
                       user.strUserName
                     }}</span>
                   </div>
 
                   <div class="col-md-6 mb-2 form-group">
-                    <label>Last Update</label>
+                    <label>{{ 'users.details.lastUpdate' | translate }}</label>
                     <span class="form-control-plaintext">
                       {{
                         user.dtmLatestUpdateDate | date : "yyyy-MM-dd HH:mm:ss"
@@ -149,19 +149,19 @@
                 <div class="row">
                   <!-- Role Name with Update button -->
                   <div class="col-md-6 mb-3 form-group">
-                    <label>Role Assigned</label>
+                    <label>{{ 'users.details.roleAssigned' | translate }}</label>
                     <div class="input-group">
                       <input
                         type="text"
                         class="form-control"
-                        [value]="user.rol?.strName || 'No Role Assigned'"
+                        [value]="user.rol?.strName || translationService.translate('users.details.noRole')"
                         disabled
                       />
                       <button
                         class="btn btn-outline-secondary"
                         type="button"
                         (click)="openAssignRoleModal()"
-                        title="Change Role"
+                        title="{{ 'users.details.changeRole' | translate }}"
                       >
                         <svg
                           fill="currentColor"
@@ -180,20 +180,20 @@
 
                   <!-- User Dependency with Update and Remove button -->
                   <div class="col-md-6 mb-3 form-group">
-                    <label>User Dependency</label>
+                    <label>{{ 'users.details.userDependency' | translate }}</label>
                     <div class="input-group">
                       <input
                         type="text"
                         class="form-control"
                         [value]="
-                          user.dependentOn?.strUserName || 'No Dependency'
+                          user.dependentOn?.strUserName || translationService.translate('users.details.noDependency')
                         "
                         disabled
                       />
                       <button
                         class="btn btn-outline-secondary"
                         type="button"
-                        title="Change Dependency"
+                        title="{{ 'users.details.changeDependency' | translate }}"
                         (click)="showAssignDependencyModal = true"
                       >
                         <svg
@@ -211,7 +211,7 @@
                       <button
                         class="btn btn-outline-secondary"
                         type="button"
-                        title="Remove Dependency"
+                        title="{{ 'users.details.removeDependency' | translate }}"
                         (click)="removeDependency()"
                         [disabled]="user?.dependentOn == null"
                       >
@@ -238,7 +238,7 @@
                 <div *ngIf="user.basicData.strPersonType === 'N'">
                   <div class="row">
                     <div class="col-md-6 mb-2 form-group">
-                      <label>First Name</label>
+                      <label>{{ 'users.details.firstName' | translate }}</label>
                       <ng-container *ngIf="!editingUser; else editFirstName">
                         <span
                           class="form-control-plaintext"
@@ -258,7 +258,7 @@
                       </ng-template>
                     </div>
                     <div class="col-md-6 mb-2 form-group">
-                      <label>Second Name</label>
+                      <label>{{ 'users.details.secondName' | translate }}</label>
                       <ng-container *ngIf="!editingUser; else editSecondName">
                         <span
                           class="form-control-plaintext"
@@ -280,7 +280,7 @@
                   </div>
                   <div class="row">
                     <div class="col-md-6 mb-2 form-group">
-                      <label>First Surname</label>
+                      <label>{{ 'users.details.firstSurname' | translate }}</label>
                       <ng-container *ngIf="!editingUser; else editFirstSurname">
                         <span
                           class="form-control-plaintext"
@@ -300,7 +300,7 @@
                       </ng-template>
                     </div>
                     <div class="col-md-6 mb-2 form-group">
-                      <label>Second Surname</label>
+                      <label>{{ 'users.details.secondSurname' | translate }}</label>
                       <ng-container
                         *ngIf="!editingUser; else editSecondSurname"
                       >
@@ -324,7 +324,7 @@
                   </div>
                   <div class="row">
                     <div class="col-md-4 mb-2 form-group">
-                      <label>Birth Date</label>
+                      <label>{{ 'users.details.birthDate' | translate }}</label>
                       <ng-container *ngIf="!editingUser; else editBirthDate">
                         <span
                           class="form-control-plaintext"
@@ -343,7 +343,7 @@
                       </ng-template>
                     </div>
                     <div class="col-md-4 mb-2 form-group">
-                      <label>Marital Status</label>
+                      <label>{{ 'users.details.maritalStatus' | translate }}</label>
                       <ng-container *ngIf="!editingUser; else editMaritalStatus">
                         <span
                           class="form-control-plaintext"
@@ -358,15 +358,15 @@
                           [(ngModel)]="user.basicData.naturalPersonData.maritalStatus"
                           (ngModelChange)="detectChanges()"
                         >
-                          <option value="SOLTERO (a)">SOLTERO (a)</option>
-                          <option value="CASADO (a)">CASADO (a)</option>
-                          <option value="UNION LIBRE">UNION LIBRE</option>
-                          <option value="OTRO">OTRO</option>
+                          <option value="SOLTERO (a)">{{ 'users.details.single' | translate }}</option>
+                          <option value="CASADO (a)">{{ 'users.details.married' | translate }}</option>
+                          <option value="UNION LIBRE">{{ 'users.details.freeUnion' | translate }}</option>
+                          <option value="OTRO">{{ 'users.details.other' | translate }}</option>
                         </select>
                       </ng-template>
                     </div>
                     <div class="col-md-4 mb-2 form-group">
-                      <label>Sex</label>
+                      <label>{{ 'users.details.sex' | translate }}</label>
                       <ng-container *ngIf="!editingUser; else editSex">
                         <span
                           class="form-control-plaintext"
@@ -394,7 +394,7 @@
                 <div *ngIf="user.basicData.strPersonType === 'J'">
                   <div class="row">
                     <div class="col-md-6 mb-2 form-group">
-                      <label>Business Name</label>
+                      <label>{{ 'users.details.businessName' | translate }}</label>
                       <ng-container *ngIf="!editingUser; else editBusinessName">
                         <span
                           class="form-control-plaintext"
@@ -414,7 +414,7 @@
                       </ng-template>
                     </div>
                     <div class="col-md-6 mb-2 form-group">
-                      <label>Website</label>
+                      <label>{{ 'users.details.website' | translate }}</label>
                       <ng-container *ngIf="!editingUser; else editWebsite">
                         <span
                           class="form-control-plaintext"
@@ -432,7 +432,7 @@
                       </ng-template>
                     </div>
                     <div class="col-md-12 mb-2 form-group">
-                      <label>Contact Name</label>
+                      <label>{{ 'users.details.contactName' | translate }}</label>
                       <ng-container *ngIf="!editingUser; else editContactName">
                         <span
                           class="form-control-plaintext"
@@ -454,7 +454,7 @@
                   </div>
                   <div class="row">
                     <div class="col-md-6 mb-2 form-group">
-                      <label>Contact Email</label>
+                      <label>{{ 'users.details.contactEmail' | translate }}</label>
                       <ng-container *ngIf="!editingUser; else editContactEmail">
                         <span
                           class="form-control-plaintext"
@@ -474,7 +474,7 @@
                       </ng-template>
                     </div>
                     <div class="col-md-6 mb-2 form-group">
-                      <label>Contact Phone</label>
+                      <label>{{ 'users.details.contactPhone' | translate }}</label>
                       <ng-container *ngIf="!editingUser; else editContactPhone">
                         <span
                           class="form-control-plaintext"
@@ -518,7 +518,7 @@
                       xlink:href="./assets/icons/bootstrap-icons.svg#floppy2-fill"
                     ></use>
                   </svg>
-                  <span class="d-none d-md-inline">Save changes</span>
+                  <span class="d-none d-md-inline">{{ 'users.details.saveChanges' | translate }}</span>
                 </button>
                 <button
                   class="btn btn-outline-dark btn-sm me-4 btn-fixed-width mt-3"
@@ -549,7 +549,7 @@
                     />
                   </svg>
                   <span class="d-none d-md-inline">
-                    {{ editingUser ? "Cancel edit" : "Edit user" }}
+                    {{ editingUser ? (translationService.translate('users.details.cancelEdit')) : (translationService.translate('users.details.editUser')) }}
                   </span>
                 </button>
 
@@ -557,7 +557,7 @@
                   class="btn btn-outline-dark btn-sm me-4 btn-fixed-width mt-3"
                   (click)="cancelChanges()"
                 >
-                  Close
+                  {{ 'users.details.close' | translate }}
                 </button>
               </div>
             </div>

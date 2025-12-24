@@ -17,6 +17,8 @@ import { NotificationsComponent } from '../../../shared/components/notifications
 import { AssignDependencyComponent } from '../assign-dependency/assign-dependency.component';
 import { UserService } from '../../../shared/services/user/user.service';
 import Swal from 'sweetalert2';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { TranslationService } from '../../../shared/services/translation.service';
 
 @Component({
   selector: 'app-user-details',
@@ -27,6 +29,7 @@ import Swal from 'sweetalert2';
     AssignRoleComponent,
     NotificationsComponent,
     AssignDependencyComponent,
+    TranslatePipe,
   ],
   templateUrl: './user-details.component.html',
   styleUrls: ['./user-details.component.scss'],
@@ -68,7 +71,8 @@ export class UserDetailsComponent implements OnChanges {
   constructor(
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
-    private userService: UserService
+    private userService: UserService,
+    public translationService: TranslationService
   ) {
     this.notifications = [];
   }
@@ -96,15 +100,15 @@ export class UserDetailsComponent implements OnChanges {
         this.showAssignDependency = false;
         Swal.fire({
           icon: 'success',
-          title: 'Dependency assigned successfully!',
+          title: this.translationService.translate('users.details.dependencyAssigned'),
           showConfirmButton: false,
           timer: 2000,
         });
       },
       error: () => {
         Swal.fire(
-          'Error',
-          'There was an error assigning the dependency.',
+          this.translationService.translate('common.error'),
+          this.translationService.translate('users.details.errorAssigning'),
           'error'
         );
       },
@@ -209,7 +213,7 @@ export class UserDetailsComponent implements OnChanges {
     this.showAssignRole = false;
     Swal.fire({
       icon: 'success',
-      title: 'Role assigned successfully!',
+      title: this.translationService.translate('users.assignRole.successMessage'),
       showConfirmButton: false,
       timer: 2000,
     });
@@ -223,19 +227,19 @@ export class UserDetailsComponent implements OnChanges {
 
   removeDependency(): void {
     Swal.fire({
-      title: '¿Are you sure?',
-      text: 'Type "Confirm" to remove the dependency',
+      title: this.translationService.translate('users.details.confirmRemove'),
+      text: this.translationService.translate('users.details.typeConfirm'),
       input: 'text',
-      inputPlaceholder: 'Type "Confirm" here',
+      inputPlaceholder: this.translationService.translate('users.details.typeConfirmHere'),
       inputAttributes: {
         autocomplete: 'off',
       },
       showCancelButton: true,
-      confirmButtonText: 'Remove',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: this.translationService.translate('users.details.remove'),
+      cancelButtonText: this.translationService.translate('common.cancel'),
       inputValidator: (value) => {
         if (value !== 'Confirm') {
-          return 'You must type exactly "Confirm" to continue';
+          return this.translationService.translate('users.details.mustTypeConfirm');
         }
         return null;
       },
@@ -245,7 +249,7 @@ export class UserDetailsComponent implements OnChanges {
           next: () => {
             Swal.fire({
               icon: 'success',
-              title: 'Dependency successfully removed',
+              title: this.translationService.translate('users.details.dependencyRemoved'),
               showConfirmButton: false,
               timer: 2000,
             }).then(() => {
@@ -253,7 +257,7 @@ export class UserDetailsComponent implements OnChanges {
             });
           },
           error: (err) => {
-            this.showToast('Error removing dependency', 'danger', 'A', 0);
+            this.showToast(this.translationService.translate('users.details.errorRemoving'), 'danger', 'A', 0);
             console.error(err);
           },
         });

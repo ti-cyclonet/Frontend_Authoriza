@@ -31,6 +31,7 @@ import { Modal } from 'bootstrap';
 import { CuOptionMenuComponent } from './cu-optionmenu/cu-optionmenu.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { CyclonAssistantComponent } from '../../shared/components/cyclon-assistant/cyclon-assistant.component';
+import { TranslationService } from '../../shared/services/translation.service';
 
 declare var bootstrap: any;
 
@@ -110,7 +111,8 @@ export class ApplicationsComponent implements OnInit {
     public applicationsService: ApplicationsService,
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
-    public modalRef: BsModalRef
+    public modalRef: BsModalRef,
+    private translationService: TranslationService
   ) {
     this.notifications = [];
   }
@@ -285,7 +287,7 @@ export class ApplicationsComponent implements OnInit {
 
     // Verificar si hay registros que procesar
     if (!map || map.size === 0) {
-      this.showToast('There are no applications to save.', 'warning', 'A', 1);
+      this.showToast(this.translationService.translate('apps.noApplicationsToSave'), 'warning', 'A', 1);
       return;
     }
 
@@ -301,7 +303,7 @@ export class ApplicationsComponent implements OnInit {
       // Validar que las nuevas tengan imagen
       if (isNewApp && !dto.imageFile) {
         this.showToast(
-          `Application "${dto.strName}" must include an image.`,
+          `${this.translationService.translate('apps.applicationMustIncludeImage')} "${dto.strName}".`,
           'danger',
           'A',
           1
@@ -318,7 +320,7 @@ export class ApplicationsComponent implements OnInit {
     // Si hubo errores o no hay cambios válidos, salir
     if (hasValidationError || validApplications.length === 0) {
       if (!hasValidationError) {
-        this.showToast('No changes to save.', 'warning', 'A', 1);
+        this.showToast(this.translationService.translate('apps.noChangesToSave'), 'warning', 'A', 1);
       }
       return;
     }
@@ -624,7 +626,7 @@ export class ApplicationsComponent implements OnInit {
     if (this.applicationsService.getEditMode() && this.selectedApplicationId) {
       return `Application <b>ID</b> <span class="badge rounded-pill text-bg-light">${this.selectedApplicationId}</span>`;
     } else {
-      return `New <b>Application</b>`;
+      return this.translationService.translate('apps.newApplication');
     }
   }
 
@@ -838,7 +840,9 @@ export class ApplicationsComponent implements OnInit {
 
   // Detectar idioma actual (puedes conectar esto con tu servicio de traducción)
   get currentLanguage(): string {
-    // Aquí puedes obtener el idioma del localStorage, servicio de traducción, etc.
-    return localStorage.getItem('language') || 'en';
+    if (typeof localStorage !== 'undefined') {
+      return localStorage.getItem('language') || 'en';
+    }
+    return 'en';
   }
 }

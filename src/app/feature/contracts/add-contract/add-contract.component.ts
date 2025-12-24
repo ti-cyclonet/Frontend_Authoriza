@@ -30,6 +30,8 @@ import {
 import { Contract } from '../../../shared/model/contract.model';
 import Swal from 'sweetalert2';
 import { CurrencyFormatPipe } from '../../../shared/pipes/custom-currency.pipe';
+import { TranslationService } from '../../../shared/services/translation.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-add-contract',
@@ -40,6 +42,7 @@ import { CurrencyFormatPipe } from '../../../shared/pipes/custom-currency.pipe';
     ReactiveFormsModule,
     IconComponent,
     CurrencyFormatPipe,
+    TranslatePipe,
   ],
   templateUrl: './add-contract.component.html',
   styleUrl: './add-contract.component.css',
@@ -91,7 +94,8 @@ export class AddContractComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private userService: UserService,
     private packageService: PackageService,
-    private contractService: ContractService
+    private contractService: ContractService,
+    private translationService: TranslationService
   ) {
     this.contractForm = this.fb.group({
       value: [null, Validators.required],
@@ -320,8 +324,8 @@ export class AddContractComponent implements OnInit {
     if (!this.selectedUser) {
       Swal.fire({
         icon: 'warning',
-        title: 'Warning',
-        text: 'Please select a user',
+        title: this.translationService.translate('common.warning'),
+        text: this.translationService.translate('contracts.selectUser'),
         timer: 2000,
         showConfirmButton: false,
       });
@@ -331,8 +335,8 @@ export class AddContractComponent implements OnInit {
     if (!this.selectedPackage) {
       Swal.fire({
         icon: 'warning',
-        title: 'Warning',
-        text: 'Please select a package',
+        title: this.translationService.translate('common.warning'),
+        text: this.translationService.translate('contracts.selectPackage'),
         timer: 2000,
         showConfirmButton: false,
       });
@@ -343,8 +347,8 @@ export class AddContractComponent implements OnInit {
       this.contractForm.markAllAsTouched();
       Swal.fire({
         icon: 'error',
-        title: 'Form Incomplete',
-        text: 'Please fill all required fields',
+        title: this.translationService.translate('contracts.formIncomplete'),
+        text: this.translationService.translate('contracts.fillRequiredFields'),
         timer: 2000,
         showConfirmButton: false,
       });
@@ -371,7 +375,7 @@ export class AddContractComponent implements OnInit {
 
         Swal.fire({
           icon: 'success',
-          title: 'Contract successfully created!',
+          title: this.translationService.translate('contracts.contractCreated'),
           timer: 2000,
           showConfirmButton: false,
           willClose: () => {
@@ -383,8 +387,8 @@ export class AddContractComponent implements OnInit {
         console.error('Error al crear contrato:', error);
         Swal.fire({
           icon: 'error',
-          title: 'Error',
-          text: 'There was an error creating the contract.',
+          title: this.translationService.translate('common.error'),
+          text: this.translationService.translate('contracts.errorCreating'),
           timer: 2500,
           showConfirmButton: false,
         });

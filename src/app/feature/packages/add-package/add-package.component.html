@@ -36,7 +36,7 @@
           </svg>
         </div>
         <h1 class="modal-title fs-5" id="staticBackdropLabel">
-          Add a New <span style="color: white">Package</span>
+          {{ 'packages.addNew' | translate }}
         </h1>
       </div>
       <div class="modal-body">
@@ -48,13 +48,13 @@
               class="d-flex align-items-center pb-3 mb-2"
               style="border-bottom: 1px solid var(--sidebar-background-color)"
             >
-              <div class="title-form">BASIC PACKAGE DATA FORM</div>
+              <div class="title-form">{{ 'packages.createPackage.basicData' | translate }}</div>
             </div>
             <form [formGroup]="basicPackageForm">
               <!-- <hr style="border: 1px solid var(--sidebar-background-color)" /> -->
               <div class="basic-package-form">
                 <div class="form-group">
-                  <label for="applicationName">Package Name</label>
+                  <label for="applicationName">{{ 'packages.createPackage.packageName' | translate }}</label>
                   <input
                     id="name"
                     formControlName="name"
@@ -68,14 +68,14 @@
                     "
                     class="error"
                   >
-                    The package name is required.
+                    {{ 'packages.createPackage.nameRequired' | translate }}
                   </div>
                   <div class="error" *ngIf="nameExists">
-                    This package name is not available. Please use another one.
+                    {{ 'packages.createPackage.nameUnavailable' | translate }}
                   </div>
                 </div>
                 <div class="form-group">
-                  <label for="description">Description</label>
+                  <label for="description">{{ 'packages.createPackage.description' | translate }}</label>
                   <textarea
                     id="description"
                     formControlName="description"
@@ -88,7 +88,7 @@
                     "
                     class="error"
                   >
-                    The package description is required.
+                    {{ 'packages.createPackage.descriptionRequired' | translate }}
                   </div>
                 </div>
               </div>
@@ -101,7 +101,7 @@
               class="d-flex align-items-center pb-3 mb-2"
               style="border-bottom: 1px solid var(--sidebar-background-color)"
             >
-              <div class="title-form">PACKAGE CONFIGURATION SECTION</div>
+              <div class="title-form">{{ 'packages.createPackage.configuration' | translate }}</div>
               <div class="btn-group ms-auto custom-btn-group">
                 <a
                   title="Add new package configuration record"
@@ -146,7 +146,7 @@
               class="row d-flex justify-content-between align-items-center small-info"
             >
               <div class="d-flex justify-content-between align-items-center">
-                <div>Package name:</div>
+                <div>{{ 'packages.createPackage.packageNameLabel' | translate }}</div>
                 <div>
                   <strong class="highlight">{{
                     basicPackageForm.get("name")?.value | uppercase
@@ -154,11 +154,11 @@
                 </div>
               </div>
               <div class="d-flex justify-content-between align-items-center">
-                Total roles:
+                {{ 'packages.createPackage.totalRoles' | translate }}
                 <strong class="highlight">{{ roleConfigs.length }}</strong>
               </div>
               <div class="d-flex justify-content-between align-items-center">
-                Total price:
+                {{ 'packages.createPackage.totalPrice' | translate }}
                 <strong class="highlight"
                   >$ {{ getTotalPrice() | number : "1.0-0" }} COP/month</strong
                 >
@@ -182,7 +182,7 @@
                     <div class="col-sm-12 mb-2 mb-md-0">
                       <div class="subtitle">
                         <h6 class="users-titleOne">
-                          Search by application or role name
+                          {{ 'packages.createPackage.searchByAppOrRole' | translate }}
                         </h6>
                       </div>
                       <div
@@ -196,7 +196,7 @@
                         <input
                           type="text"
                           class="form-control custom-search-input"
-                          placeholder="Write some words to filter"
+                          placeholder="{{ 'packages.createPackage.writeWordsToFilter' | translate }}"
                           [(ngModel)]="searchText"
                           (input)="onFilterChange($event)"
                         />
@@ -243,9 +243,9 @@
                   >
                     <thead class="table-dark">
                       <tr class="table-light">
-                        <th>Application</th>
-                        <th>Role Name</th>
-                        <th class="text-center">Actions</th>
+                        <th>{{ 'packages.createPackage.application' | translate }}</th>
+                        <th>{{ 'packages.createPackage.roleName' | translate }}</th>
+                        <th class="text-center">{{ 'packages.createPackage.actions' | translate }}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -301,17 +301,17 @@
                     (click)="previousPage()"
                     [disabled]="currentPage === 0"
                   >
-                    Previous
+                    {{ 'packages.createPackage.previous' | translate }}
                   </button>
-                  {{ totalRoles }} result{{ totalRoles !== 1 ? "s" : "" }} —
-                  Page {{ currentPage + 1 }} of
+                  {{ totalRoles }} {{ 'packages.createPackage.results' | translate }}{{ totalRoles !== 1 ? "s" : "" }} —
+                  {{ 'packages.createPackage.page' | translate }} {{ currentPage + 1 }} {{ 'packages.createPackage.of' | translate }}
                   {{ Math.ceil(totalRoles / PAGE_SIZE) }}
                   <button
                     class="btn btn-outline-purple btn-sm"
                     (click)="nextPage()"
                     [disabled]="(currentPage + 1) * PAGE_SIZE >= totalRoles"
                   >
-                    Next
+                    {{ 'packages.createPackage.next' | translate }}
                   </button>
                 </div>
               </div>
@@ -327,12 +327,12 @@
                 >
                   <thead class="table-dark">
                     <tr class="table-light">
-                      <th>Item</th>
-                      <th class="d-none d-md-table-cell">Application</th>
-                      <th>Role Name</th>
-                      <th class="d-none d-md-table-cell">Quantity</th>
-                      <th class="d-none d-md-table-cell">Unit price</th>
-                      <th class="text-center">Actions</th>
+                      <th>{{ 'packages.createPackage.item' | translate }}</th>
+                      <th class="d-none d-md-table-cell">{{ 'packages.createPackage.application' | translate }}</th>
+                      <th>{{ 'packages.createPackage.roleName' | translate }}</th>
+                      <th class="d-none d-md-table-cell">{{ 'packages.createPackage.quantity' | translate }}</th>
+                      <th class="d-none d-md-table-cell">{{ 'packages.createPackage.unitPrice' | translate }}</th>
+                      <th class="text-center">{{ 'packages.createPackage.actions' | translate }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -423,12 +423,12 @@
               class="d-flex align-items-center pb-3 mb-2"
               style="border-bottom: 1px solid var(--sidebar-background-color)"
             >
-              <div class="title-form">PACKAGE BUSINESS CARD CONFIGURATION</div>
+              <div class="title-form">Configuración de Tarjeta de Presentación del Paquete</div>
             </div>
             <div class="row">
               <!-- Columna izquierda -->
               <div class="col-md-4">
-                <h6>Add images (optional, max 3):</h6>
+                <h6>{{ 'packages.createPackage.addImages' | translate }}</h6>
                 <input
                   type="file"
                   (change)="onImageSelected($event)"
@@ -462,7 +462,7 @@
 
               <!-- Columna derecha: Vista previa -->
               <div class="col-md-8">
-                <h6>Preview:</h6>
+                <h6>{{ 'packages.createPackage.preview' | translate }}</h6>
                 <div
                   class="card shadow-sm"
                   style="
@@ -536,7 +536,7 @@
                     </ul>
 
                     <p class="fw-bold">
-                      Total price: ${{
+                      {{ 'packages.createPackage.totalPrice' | translate }} ${{
                         getTotalPrice() | number : "1.0-0"
                       }}
                       COP/month
@@ -561,7 +561,7 @@
                   xlink:href="./assets/icons/bootstrap-icons.svg#arrow-left"
                 ></use>
               </svg>
-              <span class="d-none d-md-inline">Previous</span>
+              <span class="d-none d-md-inline">{{ 'packages.createPackage.previous' | translate }}</span>
             </button>
 
             <button
@@ -570,7 +570,7 @@
               title="Cancel"
               (click)="onCancel()"
             >
-              Cancel
+              {{ 'packages.createPackage.cancel' | translate }}
             </button>
 
             <button
@@ -583,7 +583,7 @@
               [disabled]="!basicPackageForm.valid"
               (click)="step1 && formOneValid()"
             >
-              <span class="d-none d-md-inline">Next</span>
+              <span class="d-none d-md-inline">{{ 'packages.createPackage.next' | translate }}</span>
               <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
                 <use
                   xlink:href="./assets/icons/bootstrap-icons.svg#arrow-right"
@@ -600,7 +600,7 @@
               [disabled]="!hasRoleConfigs"
               (click)="step2 && formTwoValid()"
             >
-              <span class="d-none d-md-inline">Next</span>
+              <span class="d-none d-md-inline">{{ 'packages.createPackage.next' | translate }}</span>
               <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
                 <use
                   xlink:href="./assets/icons/bootstrap-icons.svg#arrow-right"
@@ -616,7 +616,7 @@
               title="Send"
               (click)="step3 && submitPackage()"
             >
-              <span class="d-none d-md-inline">Send</span>
+              <span class="d-none d-md-inline">{{ 'packages.createPackage.send' | translate }}</span>
               <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
                 <use xlink:href="./assets/icons/bootstrap-icons.svg#send"></use>
               </svg>

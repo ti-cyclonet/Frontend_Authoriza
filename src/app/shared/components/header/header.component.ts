@@ -23,13 +23,14 @@ import { HttpClient } from '@angular/common/http';
 import { ChangePasswordComponent } from '../change-password/change-password.component';
 import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
 import { TranslationService } from '../../services/translation.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 let bootstrap: any;
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ChangePasswordComponent, LanguageSelectorComponent],
+  imports: [CommonModule, ReactiveFormsModule, ChangePasswordComponent, LanguageSelectorComponent, TranslatePipe],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
   providers: [AuthService],
@@ -57,7 +58,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   form!: FormGroup;
 
   getTranslatedAppName(): string {
-    return this.translationService.translateAppDescription(DESCRIPTION_APP, 'Authoriza');
+    return this.translationService.translate('header.appTitle');
   }
 
   get currentLanguage(): string {

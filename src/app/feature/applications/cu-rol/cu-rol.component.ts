@@ -6,11 +6,13 @@ import { RolesService } from '../../../shared/services/roles/roles.service';
 import { Rol } from '../../../shared/model/rol';
 import { ApplicationsService } from '../../../shared/services/applications/applications.service';
 import { BsModalRef } from 'ngx-bootstrap/modal';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { TranslationService } from '../../../shared/services/translation.service';
 
 @Component({
   selector: 'app-cu-rol',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './cu-rol.component.html',
   styleUrls: ['./cu-rol.component.scss']
 })
@@ -25,7 +27,7 @@ export class CuRolComponent {
   temporaryRoles: Rol[] = [];
   shouldCloseModal: boolean = false;
 
-  constructor(private fb: FormBuilder, private rolesService: RolesService, private applicationsService: ApplicationsService) {
+  constructor(private fb: FormBuilder, private rolesService: RolesService, private applicationsService: ApplicationsService, private translationService: TranslationService) {
     this.rolesForm = this.fb.group({
       name: ['', Validators.required],
       description1: ['', Validators.required],

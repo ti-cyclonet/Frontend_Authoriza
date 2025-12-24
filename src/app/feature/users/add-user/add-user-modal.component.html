@@ -7,19 +7,19 @@
         <div class="progress-steps">
           <div class="step" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1">
             <div class="step-number">1</div>
-            <div class="step-label">User Data</div>
+            <div class="step-label">{{ 'users.modal.userData' | translate }}</div>
           </div>
           <div class="step" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2">
             <div class="step-number">2</div>
-            <div class="step-label">Personal Info</div>
+            <div class="step-label">{{ 'users.modal.personalInfo' | translate }}</div>
           </div>
           <div class="step" [class.active]="currentStep >= 3" [class.completed]="currentStep > 3">
             <div class="step-number">3</div>
-            <div class="step-label">Role</div>
+            <div class="step-label">{{ 'users.modal.role' | translate }}</div>
           </div>
           <div class="step" [class.active]="currentStep >= 4">
             <div class="step-number">4</div>
-            <div class="step-label">Dependency</div>
+            <div class="step-label">{{ 'users.modal.dependency' | translate }}</div>
           </div>
         </div>
       </div>
@@ -33,15 +33,15 @@
                   <svg class="step-icon" viewBox="0 0 16 16">
                     <use xlink:href="./assets/icons/bootstrap-icons.svg#person-fill"></use>
                   </svg>
-                  User Data
+                  {{ 'users.modal.userData' | translate }}
                 </h5>
-                <p class="step-description">Enter the basic user information</p>
+                <p class="step-description">{{ 'users.modal.userDataDesc' | translate }}</p>
               </div>
             <div class="form-group">
-              <label for="applicationName">User Name *</label>
+              <label for="applicationName">{{ 'users.modal.userNameLabel' | translate }}</label>
               <input
                 formControlName="strUserName"
-                placeholder="Email"
+                placeholder="{{ 'users.modal.emailPlaceholder' | translate }}"
                 class="form-control mb-1"
               />
             </div>
@@ -49,19 +49,19 @@
               class="text-danger mb-2"
               *ngIf="userForm.get('strUserName')?.touched && userForm.get('strUserName')?.errors?.['taken']"
             >
-              This email is unavailable. Please try another.
+              {{ 'users.modal.emailTaken' | translate }}
             </div>
             <div
               *ngIf="userForm.get('strUserName')?.touched && userForm.get('strUserName')?.errors?.['required']"
               class="text-danger small mb-2"
             >
-              This field is required
+              {{ 'users.modal.fieldRequired' | translate }}
             </div>
             <div
               *ngIf="userForm.get('strUserName')?.touched && userForm.get('strUserName')?.errors?.['pattern']"
               class="text-danger small mb-2"
             >
-              Please enter a valid email format (example&#64;domain.com).
+              {{ 'users.modal.invalidEmail' | translate }}
             </div>
           </form>
 
@@ -71,17 +71,17 @@
                   <svg class="step-icon" viewBox="0 0 16 16">
                     <use xlink:href="./assets/icons/bootstrap-icons.svg#person-lines-fill"></use>
                   </svg>
-                  Personal Information
+                  {{ 'users.modal.personalInfo' | translate }}
                 </h5>
-                <p class="step-description">Select person type and complete details</p>
+                <p class="step-description">{{ 'users.modal.personalInfoDesc' | translate }}</p>
               </div>
               
               <form [formGroup]="basicDataForm">
                 <div class="form-group">
-                  <label for="applicationName">Person Type</label>
+                  <label for="applicationName">{{ 'users.modal.personType' | translate }}</label>
                   <select formControlName="strPersonType" class="form-select mb-2">
-                    <option value="N">Natural Person</option>
-                    <option value="J">Legal Entity</option>
+                    <option value="N">{{ 'users.modal.naturalPerson' | translate }}</option>
+                    <option value="J">{{ 'users.modal.legalEntity' | translate }}</option>
                   </select>
                 </div>
               </form>
@@ -93,26 +93,26 @@
                 <div class="row">
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label for="firstName">First Name *</label>
+                      <label for="firstName">{{ 'users.modal.firstName' | translate }}</label>
                       <input
                         formControlName="firstName"
-                        placeholder="First name"
+                        placeholder="{{ 'users.modal.firstName' | translate }}"
                         class="form-control mb-2"
                       />
                       <div
                         *ngIf="naturalForm.get('firstName')?.touched && naturalForm.get('firstName')?.errors?.['required']"
                         class="text-danger small mb-2"
                       >
-                        This field is required
+                        {{ 'users.modal.fieldRequired' | translate }}
                       </div>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label for="secondName">Second Name</label>
+                      <label for="secondName">{{ 'users.modal.secondName' | translate }}</label>
                       <input
                         formControlName="secondName"
-                        placeholder="Second name"
+                        placeholder="{{ 'users.modal.secondName' | translate }}"
                         class="form-control mb-2"
                       />
                     </div>
@@ -121,26 +121,26 @@
                 <div class="row">
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label for="firstSurname">First Surname *</label>
+                      <label for="firstSurname">{{ 'users.modal.firstSurname' | translate }}</label>
                       <input
                         formControlName="firstSurname"
-                        placeholder="First surname"
+                        placeholder="{{ 'users.modal.firstSurname' | translate }}"
                         class="form-control mb-2"
                       />
                       <div
                         *ngIf="naturalForm.get('firstSurname')?.touched && naturalForm.get('firstSurname')?.errors?.['required']"
                         class="text-danger small mb-2"
                       >
-                        This field is required
+                        {{ 'users.modal.fieldRequired' | translate }}
                       </div>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label for="secondSurname">Second Surname</label>
+                      <label for="secondSurname">{{ 'users.modal.secondSurname' | translate }}</label>
                       <input
                         formControlName="secondSurname"
-                        placeholder="Second surname"
+                        placeholder="{{ 'users.modal.secondSurname' | translate }}"
                         class="form-control mb-2"
                       />
                     </div>
@@ -149,7 +149,7 @@
                 <div class="row">
                   <div class="col-md-4">
                     <div class="form-group">
-                      <label for="birthDate">Birth Date *</label>
+                      <label for="birthDate">{{ 'users.modal.birthDate' | translate }}</label>
                       <input
                         type="date"
                         formControlName="birthDate"
@@ -159,39 +159,39 @@
                         *ngIf="naturalForm.get('birthDate')?.touched && naturalForm.get('birthDate')?.errors?.['required']"
                         class="text-danger small mb-2"
                       >
-                        This field is required
+                        {{ 'users.modal.fieldRequired' | translate }}
                       </div>
                     </div>
                   </div>
                   <div class="col-md-4">
                     <div class="form-group">
-                      <label for="maritalStatus">Marital Status *</label>
+                      <label for="maritalStatus">{{ 'users.modal.maritalStatus' | translate }}</label>
                       <select
                         formControlName="maritalStatus"
                         class="form-control mb-2"
                       >
-                        <option value="">Select marital status</option>
-                        <option value="SOLTERO (a)">SOLTERO (a)</option>
-                        <option value="CASADO (a)">CASADO (a)</option>
-                        <option value="UNION LIBRE">UNION LIBRE</option>
-                        <option value="OTRO">OTRO</option>
+                        <option value="">{{ 'users.modal.selectMaritalStatus' | translate }}</option>
+                        <option value="SOLTERO (a)">{{ 'users.modal.single' | translate }}</option>
+                        <option value="CASADO (a)">{{ 'users.modal.married' | translate }}</option>
+                        <option value="UNION LIBRE">{{ 'users.modal.freeUnion' | translate }}</option>
+                        <option value="OTRO">{{ 'users.modal.other' | translate }}</option>
                       </select>
                       <div
                         *ngIf="naturalForm.get('maritalStatus')?.touched && naturalForm.get('maritalStatus')?.errors?.['required']"
                         class="text-danger small mb-2"
                       >
-                        This field is required
+                        {{ 'users.modal.fieldRequired' | translate }}
                       </div>
                     </div>
                   </div>
                   <div class="col-md-4">
                     <div class="form-group">
-                      <label for="sex">Sex *</label>
+                      <label for="sex">{{ 'users.modal.sex' | translate }}</label>
                       <select
                         formControlName="sex"
                         class="form-control mb-2"
                       >
-                        <option value="">Select sex</option>
+                        <option value="">{{ 'users.modal.selectSex' | translate }}</option>
                         <option value="M">M</option>
                         <option value="F">F</option>
                         <option value="O">O</option>
@@ -200,7 +200,7 @@
                         *ngIf="naturalForm.get('sex')?.touched && naturalForm.get('sex')?.errors?.['required']"
                         class="text-danger small mb-2"
                       >
-                        This field is required
+                        {{ 'users.modal.fieldRequired' | translate }}
                       </div>
                     </div>
                   </div>
@@ -214,33 +214,33 @@
                 <div class="row">
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label for="businessName">Business Name *</label>
+                      <label for="businessName">{{ 'users.modal.businessName' | translate }}</label>
                       <input
                         formControlName="businessName"
-                        placeholder="Business name"
+                        placeholder="{{ 'users.modal.businessName' | translate }}"
                         class="form-control mb-2"
                       />
                       <div
                         *ngIf="legalForm.get('businessName')?.touched && legalForm.get('businessName')?.errors?.['required']"
                         class="text-danger small mb-2"
                       >
-                        This field is required
+                        {{ 'users.modal.fieldRequired' | translate }}
                       </div>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label for="webSite">Website *</label>
+                      <label for="webSite">{{ 'users.modal.website' | translate }}</label>
                       <input
                         formControlName="webSite"
-                        placeholder="Web site"
+                        placeholder="{{ 'users.modal.website' | translate }}"
                         class="form-control mb-2"
                       />
                       <div
                         *ngIf="legalForm.get('webSite')?.touched && legalForm.get('webSite')?.errors?.['required']"
                         class="text-danger small mb-2"
                       >
-                        This field is required
+                        {{ 'users.modal.fieldRequired' | translate }}
                       </div>
                     </div>
                   </div>
@@ -248,49 +248,49 @@
                 <div class="row">
                   <div class="col-md-4">
                     <div class="form-group">
-                      <label for="contactName">Contact Name *</label>
+                      <label for="contactName">{{ 'users.modal.contactName' | translate }}</label>
                       <input
                         formControlName="contactName"
-                        placeholder="Contact name"
+                        placeholder="{{ 'users.modal.contactName' | translate }}"
                         class="form-control mb-2"
                       />
                       <div
                         *ngIf="legalForm.get('contactName')?.touched && legalForm.get('contactName')?.errors?.['required']"
                         class="text-danger small mb-2"
                       >
-                        This field is required
+                        {{ 'users.modal.fieldRequired' | translate }}
                       </div>
                     </div>
                   </div>
                   <div class="col-md-4">
                     <div class="form-group">
-                      <label for="contactEmail">Contact Email *</label>
+                      <label for="contactEmail">{{ 'users.modal.contactEmail' | translate }}</label>
                       <input
                         formControlName="contactEmail"
-                        placeholder="Contact email"
+                        placeholder="{{ 'users.modal.contactEmail' | translate }}"
                         class="form-control mb-2"
                       />
                       <div
                         *ngIf="legalForm.get('contactEmail')?.touched && legalForm.get('contactEmail')?.errors?.['required']"
                         class="text-danger small mb-2"
                       >
-                        This field is required
+                        {{ 'users.modal.fieldRequired' | translate }}
                       </div>
                     </div>
                   </div>
                   <div class="col-md-4">
                     <div class="form-group">
-                      <label for="contactPhone">Contact Phone *</label>
+                      <label for="contactPhone">{{ 'users.modal.contactPhone' | translate }}</label>
                       <input
                         formControlName="contactPhone"
-                        placeholder="Contact phone"
+                        placeholder="{{ 'users.modal.contactPhone' | translate }}"
                         class="form-control mb-2"
                       />
                       <div
                         *ngIf="legalForm.get('contactPhone')?.touched && legalForm.get('contactPhone')?.errors?.['required']"
                         class="text-danger small mb-2"
                       >
-                        This field is required
+                        {{ 'users.modal.fieldRequired' | translate }}
                       </div>
                     </div>
                   </div>
@@ -305,9 +305,9 @@
                   <svg class="step-icon" viewBox="0 0 16 16">
                     <use xlink:href="./assets/icons/bootstrap-icons.svg#shield-fill-check"></use>
                   </svg>
-                  Assign Role
+                  {{ 'users.modal.role' | translate }}
                 </h5>
-                <p class="step-description">Select user permissions</p>
+                <p class="step-description">{{ 'users.modal.roleDesc' | translate }}</p>
               </div>
               <app-assign-role-modal
                 [userId]="createdUserId"
@@ -321,9 +321,9 @@
                   <svg class="step-icon" viewBox="0 0 16 16">
                     <use xlink:href="./assets/icons/bootstrap-icons.svg#diagram-3-fill"></use>
                   </svg>
-                  Assign Dependency
+                  {{ 'users.modal.dependency' | translate }}
                 </h5>
-                <p class="step-description">Set organizational structure</p>
+                <p class="step-description">{{ 'users.modal.dependencyDesc' | translate }}</p>
               </div>
               <app-assign-dependency
                 [currentUser]="createdUserId"
@@ -332,7 +332,7 @@
             </div>
             
             <div class="required-fields-note">
-              * Fields marked with asterisk are required
+              {{ 'users.modal.requiredFields' | translate }}
             </div>
           </div>
 
@@ -348,7 +348,7 @@
                   xlink:href="./assets/icons/bootstrap-icons.svg#arrow-left"
                 ></use>
               </svg>
-              <span class="d-none d-md-inline">Previous</span>
+              <span class="d-none d-md-inline">{{ 'common.previous' | translate }}</span>
             </button>
 
             <button
@@ -356,7 +356,7 @@
               type="button"
               (click)="close2.emit()"
             >
-              Cancel
+              {{ 'common.cancel' | translate }}
             </button>
             <button
               *ngIf="currentStep === 1"
@@ -365,7 +365,7 @@
               [disabled]="userForm.invalid"
               (click)="createUser()"
             >
-              <span class="d-none d-md-inline">Next</span>
+              <span class="d-none d-md-inline">{{ 'common.next' | translate }}</span>
               <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
                 <use
                   xlink:href="./assets/icons/bootstrap-icons.svg#arrow-right"
@@ -378,7 +378,7 @@
               type="button"
               (click)="finish()"
             >
-              <span class="d-none d-md-inline">Send</span>
+              <span class="d-none d-md-inline">{{ 'users.modal.send' | translate }}</span>
               <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
                 <use xlink:href="./assets/icons/bootstrap-icons.svg#send"></use>
               </svg>

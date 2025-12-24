@@ -19,11 +19,13 @@ import { ApplicationWithRoles } from '../../../shared/model/application-with-rol
 import { Rol } from '../../../shared/model/rol';
 import Swal from 'sweetalert2';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { TranslationService } from '../../../shared/services/translation.service';
 
 @Component({
   selector: 'app-assign-role-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslatePipe],
   templateUrl: './assign-role.component.html',
   styleUrls: ['./assign-role.component.css'],
 })
@@ -57,7 +59,8 @@ export class AssignRoleComponent {
     private fb: FormBuilder,
     private userService: UserService,
     private roleService: RolesService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private translationService: TranslationService
   ) {
     this.roleSearchForm = this.fb.group({
       appName: [''],
@@ -189,22 +192,24 @@ export class AssignRoleComponent {
   assignRole(role: Rol) {
     const targetUserId = this.createdUserId || this.userId;
     Swal.fire({
-      title: 'Assign Role',
+      title: this.translationService.translate('users.assignRole.confirmTitle'),
       html: `
-        <p>Are you sure you want to assign the role <b>${role.strName}</b> to this user?</p>
-        <p>Please type <b>Assign</b> to confirm.</p>
+        <p>${this.translationService.translate('users.assignRole.confirmText').replace('{roleName}', role.strName)}</p>
+        <p>${this.translationService.translate('users.assignRole.typeAssign')}</p>
       `,
       input: 'text',
-      inputPlaceholder: 'Type Assign here...',
+      inputPlaceholder: this.translationService.translate('users.assignRole.placeholder'),
       inputAttributes: {
         autocomplete: 'off',
       },
       showCancelButton: true,
-      confirmButtonText: 'Confirm',
+      confirmButtonText: this.translationService.translate('users.assignRole.confirm'),
+      cancelButtonText: this.translationService.translate('common.cancel'),
       preConfirm: (inputValue: any) => {
-        if (inputValue !== 'Assign') {
+        const expectedText = this.translationService.getCurrentLanguage() === 'es' ? 'Asignar' : 'Assign';
+        if (inputValue !== expectedText) {
           Swal.showValidationMessage(
-            'You must type "Assign" exactly to confirm.'
+            this.translationService.translate('users.assignRole.mustType')
           );
           return false;
         }
@@ -216,7 +221,7 @@ export class AssignRoleComponent {
           next: () => {
             this.roleAssigned.emit({
               role,
-              message: 'Role Assigned to User Successfully!',
+              message: this.translationService.translate('users.assignRole.successMessage'),
               type: 'success',
               alertType: 'A',
               container: 1,

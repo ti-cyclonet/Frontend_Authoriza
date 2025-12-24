@@ -22,6 +22,7 @@ import { Application } from '../../shared/model/application.model';
 import Swal from 'sweetalert2';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { CyclonAssistantComponent } from '../../shared/components/cyclon-assistant/cyclon-assistant.component';
+import { TranslationService } from '../../shared/services/translation.service';
 @Component({
   selector: 'app-users',
   standalone: true,
@@ -91,7 +92,8 @@ export class UsersComponent implements OnInit {
     private userService: UserService,
     private roleService: RolesService,
     private applicationsService: ApplicationsService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private translationService: TranslationService
   ) {
     this.notifications = [];
   }
@@ -212,12 +214,12 @@ export class UsersComponent implements OnInit {
   saveUserDetails() {
     this.userService.updateUser(this.selectedUser).subscribe({
       next: () => {
-        this.showToast('User updated successfully!', 'success', 'A', 0);
+        this.showToast(this.translationService.translate('users.success.updated'), 'success', 'A', 0);
         this.editingUser = false;
       },
       error: (err) => {
         this.showToast(
-          'Error updating user: ' + (err.error?.message || 'Unknown'),
+          this.translationService.translate('users.error.updating') + ': ' + (err.error?.message || 'Unknown'),
           'danger',
           'B',
           0
@@ -257,7 +259,7 @@ export class UsersComponent implements OnInit {
         (user as any).showStatusMenu = false;
         this.cdr.markForCheck();
         this.showToast(
-          `Status changed to <b>${updatedUser.strStatus}</b> for <b>${updatedUser.strUserName} and depentents</b>.`,
+          `Status changed to <b>${this.translationService.translate('users.status.' + updatedUser.strStatus)}</b> for <b>${updatedUser.strUserName} and depentents</b>.`,
           updatedUser.strStatus === 'ACTIVE' ? 'success' : 'warning',
           'A',
           0
@@ -384,7 +386,7 @@ export class UsersComponent implements OnInit {
         this.applyFilter();
       },
       error: (error) => {
-        this.showToast('Error loading users', 'danger', 'B', 0);
+        this.showToast(this.translationService.translate('users.error.loading'), 'danger', 'B', 0);
       },
     });
   }
@@ -404,8 +406,8 @@ export class UsersComponent implements OnInit {
 
     Swal.fire({
       icon: 'success',
-      title: 'User created',
-      text: 'The user was created successfully',
+      title: this.translationService.translate('users.success.created'),
+      text: this.translationService.translate('users.success.createdMessage'),
       showConfirmButton: false,
       timer: 2000,
       timerProgressBar: true,
@@ -593,6 +595,9 @@ export class UsersComponent implements OnInit {
   }
 
   get currentLanguage(): string {
-    return localStorage.getItem('language') || 'en';
+    if (typeof localStorage !== 'undefined') {
+      return localStorage.getItem('language') || 'en';
+    }
+    return 'en';
   }
 }

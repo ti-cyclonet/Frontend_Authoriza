@@ -73,12 +73,12 @@
         <table class="table table-hover table-sm table-bordered" style="font-size: 14px">
           <thead class="table-dark">
             <tr class="table-light">
-              <th>Code</th>
-              <th>Name</th>
-              <th class="d-none d-lg-table-block">Description</th>
-              <th># Roles</th>
-              <th class="text-center">Price (Total)</th>
-              <th class="text-center">Actions</th>
+              <th>{{ 'apps.code' | translate }}</th>
+              <th>{{ 'apps.name' | translate }}</th>
+              <th class="d-none d-md-table-cell">{{ 'apps.description' | translate }}</th>
+              <th class="d-none d-md-table-cell">{{ 'packages.roles' | translate }}</th>
+              <th class="d-none d-md-table-cell text-center">{{ 'packages.priceTotal' | translate }}</th>
+              <th class="text-center">{{ 'common.actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -92,9 +92,9 @@
                 </ng-template>
               </td>
               <td>{{ pkg.name }}</td>
-              <td class="d-none d-lg-table-block">{{ pkg.description }}</td>
-              <td>{{ getNumberOfRoles(pkg) }}</td>
-              <td class="text-end">
+              <td class="d-none d-md-table-cell">{{ pkg.description }}</td>
+              <td class="d-none d-md-table-cell">{{ getNumberOfRoles(pkg) }}</td>
+              <td class="d-none d-md-table-cell text-end">
                 $ {{ getTotalPrice(pkg) | number : "1.2-2" }} COP/month
               </td>
               <td class="text-center">
@@ -299,17 +299,17 @@
     <div>
       <h6 class="view-badge">
         <span class="badge badge-list" *ngIf="viewMode === 'list'"
-          >List view</span
+          >{{ 'packages.listView' | translate }}</span
         >
         <span class="badge badge-cards" *ngIf="viewMode === 'cards'"
-          >Cards view</span
+          >{{ 'packages.cardsView' | translate }}</span
         >
       </h6>
     </div>
 
     <!-- Contador -->
     <div class="user-counter">
-      Showing {{ paginatedPackages.length }} of {{ packages.length }} packages
+      {{ 'packages.showing' | translate }} {{ paginatedPackages.length }} {{ 'packages.of' | translate }} {{ packages.length }} {{ 'packages.packages' | translate }}
     </div>
 
     <!-- Paginación -->

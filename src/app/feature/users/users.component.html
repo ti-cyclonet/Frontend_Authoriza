@@ -242,7 +242,7 @@
                     xlink:href="./assets/icons/bootstrap-icons.svg#slash-circle"
                   />
                 </svg>
-                <span class="d-none d-lg-inline">DELETED</span>
+                <span class="d-none d-lg-inline">{{ 'users.deleted' | translate }}</span>
               </span>
             </ng-container>
 
@@ -270,7 +270,7 @@
                     "
                   ></use>
                 </svg>
-                <span>{{ user.strStatus }}</span>
+                <span>{{ ('users.status.' + user.strStatus) | translate }}</span>
               </a>
 
               <div
@@ -287,7 +287,7 @@
                     'text-danger': status === 'INACTIVE'
                   }"
                 >
-                  {{ status }}
+                  {{ ('users.status.' + status) | translate }}
                 </div>
               </div>
             </ng-template>

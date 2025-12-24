@@ -36,7 +36,7 @@
           </svg>
         </div>
         <h1 class="modal-title fs-5" id="staticBackdropLabel">
-          Add a New <span style="color: white">Contract</span>
+          {{ 'contracts.addNew' | translate }}
         </h1>
       </div>
       <div class="modal-body">
@@ -48,7 +48,7 @@
               class="d-flex align-items-center pb-3 mb-2"
               style="border-bottom: 1px solid var(--sidebar-background-color)"
             >
-              <div class="title-form">SELECT A PRIMARY USER</div>
+              <div class="title-form">{{ 'contracts.selectPrimaryUser' | translate }}</div>
             </div>
 
             <!-- Buscador -->
@@ -60,7 +60,7 @@
                 <div class="card-body py-2 px-3">
                   <small class="text-muted">
                     <label class="form-label mb-1">
-                      Enter part of the username or first/last name
+                      {{ 'contracts.searchUserPlaceholder' | translate }}
                     </label>
                   </small>
 
@@ -69,7 +69,7 @@
                       type="text"
                       class="form-control"
                       [formControl]="search"
-                      placeholder="Type a word here"
+                      [placeholder]="'contracts.searchUserLabel' | translate"
                       aria-label="Search users"
                     />
                     <button
@@ -81,7 +81,7 @@
                     </button>
                   </div>
                   <small class="text-muted" style="font-size: 0.7rem">
-                    If you can't find it, please create it in the Users Module
+                    {{ 'contracts.userNotFound' | translate }}
                   </small>
                 </div>
               </div>
@@ -89,7 +89,7 @@
 
             <!-- Tabla de usuarios -->
             <div class="user-list mt-4">
-              <small class="text-muted">List of primary users found</small>
+              <small class="text-muted">{{ 'contracts.listUsersFound' | translate }}</small>
 
               <table
                 class="table table-hover table-sm table-bordered"
@@ -97,9 +97,9 @@
               >
                 <thead class="table-light">
                   <tr>
-                    <th>User Name</th>
-                    <th>Name</th>
-                    <th class="text-center">Action</th>
+                    <th>{{ 'contracts.userName' | translate }}</th>
+                    <th>{{ 'contracts.name' | translate }}</th>
+                    <th class="text-center">{{ 'contracts.action' | translate }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -174,13 +174,13 @@
                   <span
                     ><b>{{ selectedUser.strUserName }}</b></span
                   >
-                  <span class="ms-1">was selected</span>
+                  <span class="ms-1">{{ 'contracts.selected' | translate }}</span>
 
                   <a
                     role="button"
                     (click)="cancelSelection()"
                     class="ms-2 cancel-icon"
-                    title="Cancel Selection"
+                    [title]="'contracts.cancelSelection' | translate"
                   >
                     <app-icon name="x-circle" size="16" color="red"></app-icon>
                   </a>
@@ -192,7 +192,7 @@
                 *ngIf="filteredUsers.length === 0"
                 class="text-center text-muted mt-3"
               >
-                No independent users available.
+                {{ 'contracts.noUsersAvailable' | translate }}
               </div>
 
               <!-- Paginación -->
@@ -233,7 +233,7 @@
               class="d-flex align-items-center pb-3 mb-2"
               style="border-bottom: 1px solid var(--sidebar-background-color)"
             >
-              <div class="title-form">SELECT A PACKAGE</div>
+              <div class="title-form">{{ 'contracts.selectPackage' | translate }}</div>
             </div>
 
             <!-- Buscador -->
@@ -244,7 +244,7 @@
               <div class="card-body py-2 px-3">
                 <small class="text-muted">
                   <label class="form-label mb-1">
-                    Enter part of the package name or description
+                    {{ 'contracts.searchPackagePlaceholder' | translate }}
                   </label>
                 </small>
 
@@ -253,7 +253,7 @@
                     type="text"
                     class="form-control"
                     [formControl]="searchPackage"
-                    placeholder="Type a word here"
+                    [placeholder]="'contracts.searchUserLabel' | translate"
                     aria-label="Search packages"
                   />
                   <button
@@ -265,14 +265,14 @@
                   </button>
                 </div>
                 <small class="text-muted" style="font-size: 0.7rem">
-                    If you can't find it, please create it in the Packages Module
+                    {{ 'contracts.packageNotFound' | translate }}
                   </small>
               </div>
             </div>
 
             <!-- Lista de paquetes -->
             <div class="package-list mt-4">
-              <small class="text-muted">List of packages found</small>
+              <small class="text-muted">{{ 'contracts.listPackagesFound' | translate }}</small>
 
               <table
                 class="table table-hover table-sm table-bordered"
@@ -280,9 +280,9 @@
               >
                 <thead class="table-light">
                   <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th class="text-center">Action</th>
+                    <th>{{ 'contracts.name' | translate }}</th>
+                    <th>{{ 'contracts.description' | translate }}</th>
+                    <th class="text-center">{{ 'contracts.action' | translate }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -322,17 +322,17 @@
                   class="text-success d-block mt-2 d-flex align-items-center"
                   style="font-size: 0.75rem"
                 >
-                  Package
+                  {{ 'contracts.packageSelected' | translate }}
                   <span
                     ><b>{{ selectedPackage.name }}</b></span
                   >
-                  <span class="ms-1">was selected</span>
+                  <span class="ms-1">{{ 'contracts.selected' | translate }}</span>
 
                   <a
                     role="button"
                     (click)="cancelSelectionP()"
                     class="ms-2 cancel-icon"
-                    title="Cancel Selection"
+                    [title]="'contracts.cancelSelection' | translate"
                   >
                     <app-icon name="x-circle" size="16" color="red"></app-icon>
                   </a>
@@ -344,7 +344,7 @@
                 *ngIf="filteredPackages.length === 0"
                 class="text-center text-muted mt-3"
               >
-                No packages available.
+                {{ 'contracts.noPackagesAvailable' | translate }}
               </div>
 
               <!-- Paginación -->
@@ -389,7 +389,7 @@
               class="d-flex align-items-center pb-3 mb-2"
               style="border-bottom: 1px solid var(--sidebar-background-color)"
             >
-              <div class="title-form">CONTRACT DETAILS CONFIGURATION</div>
+              <div class="title-form">{{ 'contracts.contractDetails' | translate }}</div>
             </div>
 
             <!-- Cuadro verde con usuario y paquete -->
@@ -401,7 +401,7 @@
                 <tbody>
                   <tr>
                     <td style="width: 100px">
-                      <small class="text-muted">User Name:</small>
+                      <small class="text-muted">{{ 'contracts.userName' | translate }}:</small>
                     </td>
                     <td>
                       <small class="text-muted">
@@ -426,7 +426,7 @@
                   </tr>
                   <tr>
                     <td style="width: 100px">
-                      <small class="text-muted">Package:</small>
+                      <small class="text-muted">{{ 'contracts.packageSelected' | translate }}:</small>
                     </td>
                     <td>
                       <small class="text-muted">
@@ -442,7 +442,7 @@
             <form [formGroup]="contractForm" class="mt-3">
               <div class="row mb-3">
                 <div class="col-md-6">
-                  <label class="form-label">Contract Value</label>
+                  <label class="form-label">{{ 'contracts.contractValue' | translate }}</label>
                   <div class="disabled-input">
                     {{
                       contractValue
@@ -452,18 +452,18 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label class="form-label">Mode</label>
+                  <label class="form-label">{{ 'contracts.mode' | translate }}</label>
                   <select class="form-select" formControlName="mode">
-                    <option value="MONTHLY">Monthly</option>
-                    <option value="SEMIANNUAL">Semiannual</option>
-                    <option value="ANNUAL">Annual</option>
+                    <option value="MONTHLY">{{ 'contracts.monthly' | translate }}</option>
+                    <option value="SEMIANNUAL">{{ 'contracts.semiannual' | translate }}</option>
+                    <option value="ANNUAL">{{ 'contracts.annual' | translate }}</option>
                   </select>
                 </div>
               </div>
 
               <div class="row mb-3">
                 <div class="col-md-6">
-                  <label class="form-label">Payday</label>
+                  <label class="form-label">{{ 'contracts.payday' | translate }}</label>
                   <input
                     type="number"
                     min="1"
@@ -473,7 +473,7 @@
                   />
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label">Status</label>
+                  <label class="form-label">{{ 'contracts.status' | translate }}</label>
                   <select class="form-select" formControlName="status">
                     <option
                       *ngFor="let status of statusOptions"
@@ -487,7 +487,7 @@
 
               <div class="row mb-3">
                 <div class="col-md-6">
-                  <label class="form-label">Start Date</label>
+                  <label class="form-label">{{ 'contracts.startDate' | translate }}</label>
                   <input
                     type="date"
                     class="form-control"
@@ -495,7 +495,7 @@
                   />
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label">End Date</label>
+                  <label class="form-label">{{ 'contracts.endDate' | translate }}</label>
                   <input
                     type="date"
                     class="form-control"
@@ -520,7 +520,7 @@
                   xlink:href="./assets/icons/bootstrap-icons.svg#arrow-left"
                 ></use>
               </svg>
-              <span class="d-none d-md-inline">Previous</span>
+              <span class="d-none d-md-inline">{{ 'contracts.previous' | translate }}</span>
             </button>
             <button
               type="button"
@@ -528,7 +528,7 @@
               title="Cancel"
               (click)="onCancel()"
             >
-              Cancel
+              {{ 'contracts.cancel' | translate }}
             </button>
             <button
               *ngIf="step1"
@@ -540,7 +540,7 @@
               (click)="goToStep(1)"
               [disabled]="!selectedUser"
             >
-              <span class="d-none d-md-inline">Next</span>
+              <span class="d-none d-md-inline">{{ 'contracts.next' | translate }}</span>
               <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
                 <use
                   xlink:href="./assets/icons/bootstrap-icons.svg#arrow-right"
@@ -557,7 +557,7 @@
               (click)="goToStep(3)"
               [disabled]="!selectedPackage"
             >
-              <span class="d-none d-md-inline">Next</span>
+              <span class="d-none d-md-inline">{{ 'contracts.next' | translate }}</span>
               <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
                 <use
                   xlink:href="./assets/icons/bootstrap-icons.svg#arrow-right"
@@ -574,7 +574,7 @@
               [disabled]="contractForm.invalid"
               (click)="submitContract()"
             >
-              <span class="d-none d-md-inline">Send</span>
+              <span class="d-none d-md-inline">{{ 'contracts.send' | translate }}</span>
               <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
                 <use xlink:href="./assets/icons/bootstrap-icons.svg#send"></use>
               </svg>

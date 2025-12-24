@@ -1,14 +1,15 @@
-// ... [Importaciones sin cambios] ...
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output,} from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators, } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ApplicationDTO, ApplicationsService } from '../../../shared/services/applications/applications.service';
 import { ChangeDetectorRef } from '@angular/core';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { TranslationService } from '../../../shared/services/translation.service';
 
 @Component({
   selector: 'app-cu-application',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './cu-application.component.html',
   styleUrls: ['./cu-application.component.css'],
 })
@@ -39,8 +40,8 @@ export class CuApplicationComponent implements OnInit, OnChanges {
   constructor(
     private fb: FormBuilder,
     public applicationsService: ApplicationsService,
-    private cdr: ChangeDetectorRef 
-    
+    private cdr: ChangeDetectorRef,
+    private translationService: TranslationService
   ) {
     this.applicationForm = this.fb.group({
       applicationName: ['', Validators.required],
@@ -242,12 +243,12 @@ export class CuApplicationComponent implements OnInit, OnChanges {
           }
           this.nameAvailabilityMessage = null;
         } else {
-          this.nameAvailabilityMessage = 'Application name is already taken.';
+          this.nameAvailabilityMessage = this.translationService.translate('apps.createApp.nameAlreadyTaken');
         }
       },
       error: (error) => {
         console.error('Error checking application name:', error);
-        this.nameAvailabilityMessage = 'Error checking name availability.';
+        this.nameAvailabilityMessage = this.translationService.translate('apps.createApp.errorCheckingName');
       },
     });
   }

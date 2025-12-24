@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../shared/services/user/user.service';
 import Swal from 'sweetalert2';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { TranslationService } from '../../../shared/services/translation.service';
 
 @Component({
   selector: 'app-assign-dependency',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './assign-dependency.component.html',
   styleUrls: ['./assign-dependency.component.scss'],
 })
@@ -24,7 +26,7 @@ export class AssignDependencyComponent implements OnInit {
   pageSize = 6;
   totalPages = 0;
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private translationService: TranslationService) {}
 
   ngOnInit() {
     this.loadUsersOnce();
@@ -95,22 +97,24 @@ export class AssignDependencyComponent implements OnInit {
 
   async selectDependency(user: any) {
     const result = await Swal.fire({
-      title: 'Assign Dependency',
+      title: this.translationService.translate('users.assignDependency.confirmTitle'),
       html: `
-      <p>Are you sure you want to assign <b>${user.strUserName}</b> as the dependency?</p>
-      <p>Please type <b>Assign</b> to confirm.</p>
+      <p>${this.translationService.translate('users.assignDependency.confirmText').replace('{username}', user.strUserName)}</p>
+      <p>${this.translationService.translate('users.assignDependency.typeAssign')}</p>
     `,
       input: 'text',
-      inputPlaceholder: 'Type Assign here...',
+      inputPlaceholder: this.translationService.translate('users.assignDependency.placeholder'),
       inputAttributes: {
         autocomplete: 'off',
       },
       showCancelButton: true,
-      confirmButtonText: 'Confirm',
+      confirmButtonText: this.translationService.translate('users.assignDependency.confirm'),
+      cancelButtonText: this.translationService.translate('common.cancel'),
       preConfirm: (inputValue: any) => {
-        if (inputValue !== 'Assign') {
+        const expectedText = this.translationService.getCurrentLanguage() === 'es' ? 'Asignar' : 'Assign';
+        if (inputValue !== expectedText) {
           Swal.showValidationMessage(
-            'You must type "Assign" exactly to confirm.'
+            this.translationService.translate('users.assignDependency.mustType')
           );
           return false;
         }
@@ -123,7 +127,7 @@ export class AssignDependencyComponent implements OnInit {
         next: () => {
           Swal.fire({
             icon: 'success',
-            title: 'Dependency successfully assigned!',
+            title: this.translationService.translate('users.assignDependency.successTitle'),
             showConfirmButton: false,
             timer: 2000,
           });
@@ -134,8 +138,8 @@ export class AssignDependencyComponent implements OnInit {
         error: () => {
           Swal.fire({
             icon: 'error',
-            title: 'Error assigning dependency',
-            text: 'Please try again later.',
+            title: this.translationService.translate('users.assignDependency.errorTitle'),
+            text: this.translationService.translate('users.assignDependency.errorText'),
           });
         },
       });

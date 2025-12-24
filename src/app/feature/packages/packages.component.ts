@@ -8,6 +8,7 @@ import 'bootstrap';
 import Swal from 'sweetalert2';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { CyclonAssistantComponent } from '../../shared/components/cyclon-assistant/cyclon-assistant.component';
+import { TranslationService } from '../../shared/services/translation.service';
 
 @Component({
   selector: 'app-packages',
@@ -25,7 +26,7 @@ export class PackagesComponent implements OnInit {
   itemsPerPageList: number = 10;
   itemsPerPageCards: number = 6;
 
-  constructor(private packageService: PackageService) {}
+  constructor(private packageService: PackageService, private translationService: TranslationService) {}
 
   ngOnInit(): void {
     this.loadPackages();
@@ -111,8 +112,8 @@ export class PackagesComponent implements OnInit {
     this.loadPackages();
     Swal.fire({
       icon: 'success',
-      title: 'Package created',
-      text: 'The package was created successfully',
+      title: this.translationService.translate('packages.success.created'),
+      text: this.translationService.translate('packages.success.createdMessage'),
       showConfirmButton: false,
       timer: 2000,
       timerProgressBar: true,
@@ -121,21 +122,21 @@ export class PackagesComponent implements OnInit {
 
   deletePackage(pkg: Package) {
     Swal.fire({
-      title: 'Delete Package',
-      html: `Are you sure you want to delete the package <strong>"${pkg.name}"</strong>?<br><br><small class="text-muted">This action cannot be undone. The package will be permanently removed if it has no active contracts.</small>`,
+      title: 'Eliminar Paquete',
+      html: `¿Estás seguro de que quieres eliminar el paquete <strong>"${pkg.name}"</strong>?<br><br><small class="text-muted">Esta acción no se puede deshacer. El paquete será eliminado permanentemente si no tiene contratos activos.</small>`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#dc3545',
       cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'Cancel'
+      confirmButtonText: '¡Sí, eliminarlo!',
+      cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
         this.packageService.deletePackage(pkg.id).subscribe({
           next: (response) => {
             Swal.fire({
               icon: 'success',
-              title: 'Deleted!',
+              title: '¡Eliminado!',
               text: response.message,
               showConfirmButton: false,
               timer: 2000,
@@ -146,8 +147,8 @@ export class PackagesComponent implements OnInit {
           error: (error) => {
             Swal.fire({
               icon: 'error',
-              title: 'Cannot Delete Package',
-              text: error.error?.message || 'An error occurred while deleting the package',
+              title: 'No se puede eliminar el paquete',
+              text: error.error?.message || 'Ocurrió un error al eliminar el paquete',
               confirmButtonText: 'OK'
             });
           }

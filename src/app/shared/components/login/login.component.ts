@@ -165,6 +165,9 @@ export class LoginComponent {
   }
 
   get currentLanguage(): string {
-    return localStorage.getItem('language') || 'en';
+    if (typeof localStorage !== 'undefined') {
+      return localStorage.getItem('language') || 'en';
+    }
+    return 'en';
   }
 }

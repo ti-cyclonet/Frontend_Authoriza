@@ -96,16 +96,16 @@
         <table class="table table-hover table-sm table-bordered" style="font-size: 14px">
           <thead>
             <tr class="table-light">
-              <th scope="col" class="id-col text-center">Code</th>
-              <th scope="col" class="text-center">Name</th>
+              <th scope="col" class="id-col text-center">{{ 'apps.code' | translate }}</th>
+              <th scope="col" class="text-center">{{ 'apps.name' | translate }}</th>
               <th scope="col" class="text-center d-none d-xl-table-cell">
-                Description
+                {{ 'apps.description' | translate }}
               </th>
-              <th scope="col" class="text-center d-none d-xl-table-cell">Logo</th>
-              <th scope="col" class="text-center d-none d-xl-table-cell">Slug</th>
-              <th scope="col" class="text-center d-none d-xl-table-cell">Tags</th>
-              <th scope="col" class="text-center">State</th>
-              <th class="actions-col text-center" scope="col">Actions</th>
+              <th scope="col" class="text-center d-none d-xl-table-cell">{{ 'apps.logo' | translate }}</th>
+              <th scope="col" class="text-center d-none d-xl-table-cell">{{ 'apps.slug' | translate }}</th>
+              <th scope="col" class="text-center d-none d-xl-table-cell">{{ 'apps.tags' | translate }}</th>
+              <th scope="col" class="text-center">{{ 'common.status' | translate }}</th>
+              <th class="actions-col text-center" scope="col">{{ 'common.actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -227,12 +227,16 @@
                     application !== selectedApplication
                 }"
               >
-                <div>
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    data-bs-toggle="tooltip"
-                    title="Details"
+                <div
+                  class="btn-group btn-group-sm"
+                  role="group"
+                  aria-label="Small button group"
+                >
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
                     (click)="showRoles(application)"
                   >
                     <svg
@@ -241,18 +245,19 @@
                       class="status-icon"
                     >
                       <use
-                        xlink:href="./assets/icons/bootstrap-icons.svg#list-nested"
+                        xlink:href="./assets/icons/bootstrap-icons.svg#eye"
                       ></use>
                     </svg>
-                  </button>
+                  </a>
     
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
                     data-bs-toggle="tooltip"
                     data-bs-target="#crearAplicacion"
                     (click)="openModal(true, application.id)"
-                    title="Edit"
                   >
                     <svg
                       fill="currentColor"
@@ -260,16 +265,16 @@
                       class="status-icon"
                     >
                       <use
-                        xlink:href="./assets/icons/bootstrap-icons.svg#pencil"
+                        xlink:href="./assets/icons/bootstrap-icons.svg#pencil-square"
                       ></use>
                     </svg>
-                  </button>
+                  </a>
     
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    data-bs-toggle="tooltip"
-                    title="Delete"
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
                     (click)="setSelectedApplication(application)"
                     data-bs-target="#confirmDelete"
                   >
@@ -279,10 +284,10 @@
                       class="status-icon"
                     >
                       <use
-                        xlink:href="./assets/icons/bootstrap-icons.svg#trash3"
+                        xlink:href="./assets/icons/bootstrap-icons.svg#trash"
                       ></use>
                     </svg>
-                  </button>
+                  </a>
                 </div>
               </td>
             </tr>
@@ -299,11 +304,11 @@
         <div class="roles-header">
           <!-- Título alineado a la izquierda -->
           <h6 class="roles-title">
-            Roles for
+            {{ 'apps.rolesFor' | translate }}
             <span class="text-primary">{{
               (selectedApplication?.strName || "").toUpperCase()
             }}</span>
-            app
+            {{ 'apps.app' | translate }}
           </h6>
     
           <!-- Contenedor de botones alineado a la derecha -->
@@ -336,14 +341,14 @@
         <table class="table table-hover table-sm table-bordered" style="font-size: 14px">
           <thead>
             <tr class="table-light">
-              <th scope="col" class="id-col text-center">Code</th>
-              <th scope="col" class="text-center d-none d-xl-table-cell">Name</th>
-              <th scope="col" class="text-center">Description A</th>
+              <th scope="col" class="id-col text-center">{{ 'apps.code' | translate }}</th>
+              <th scope="col" class="text-center d-none d-xl-table-cell">{{ 'apps.name' | translate }}</th>
+              <th scope="col" class="text-center">{{ 'apps.descriptionA' | translate }}</th>
               <th scope="col" class="text-center d-none d-xl-table-cell">
-                Description B
+                {{ 'apps.descriptionB' | translate }}
               </th>
-              <th scope="col" class="text-center">State</th>
-              <th class="actions-col text-center" scope="col">Actions</th>
+              <th scope="col" class="text-center">{{ 'common.status' | translate }}</th>
+              <th class="actions-col text-center" scope="col">{{ 'common.actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -416,12 +421,16 @@
                 }"
                 class="text-center actions-col"
               >
-                <div>
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    data-bs-toggle="tooltip"
-                    title="Details"
+                <div
+                  class="btn-group btn-group-sm"
+                  role="group"
+                  aria-label="Small button group"
+                >
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
                     (click)="onSelectRol(rol)"
                   >
                     <svg
@@ -431,16 +440,17 @@
                     >
                       <use
                         [attr.xlink:href]="
-                          './assets/icons/bootstrap-icons.svg#list-nested'
+                          './assets/icons/bootstrap-icons.svg#eye'
                         "
                       ></use>
                     </svg>
-                  </button>
+                  </a>
     
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    title="Edit"
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
                   >
                     <svg
                       fill="currentColor"
@@ -449,16 +459,17 @@
                     >
                       <use
                         [attr.xlink:href]="
-                          './assets/icons/bootstrap-icons.svg#pencil'
+                          './assets/icons/bootstrap-icons.svg#pencil-square'
                         "
                       ></use>
                     </svg>
-                  </button>
+                  </a>
     
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    title="Delete"
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
                   >
                     <svg
                       fill="currentColor"
@@ -467,11 +478,11 @@
                     >
                       <use
                         [attr.xlink:href]="
-                          './assets/icons/bootstrap-icons.svg#trash3'
+                          './assets/icons/bootstrap-icons.svg#trash'
                         "
                       ></use>
                     </svg>
-                  </button>
+                  </a>
                 </div>
               </td>
             </tr>
@@ -488,11 +499,11 @@
         <div class="roles-header">
           <!-- Título alineado a la izquierda -->
           <h6 class="roles-title">
-            Menu options for
+            {{ 'apps.menuOptionsFor' | translate }}
             <span class="text-primary">{{
               (selectedRol?.strDescription1 || "").toUpperCase()
             }}</span>
-            rol
+            {{ 'apps.rol' | translate }}
           </h6>
     
           <!-- Contenedor de botones alineado a la derecha -->
@@ -544,15 +555,15 @@
         <table class="table table-hover table-sm table-bordered" style="font-size: 14px">
           <thead>
             <tr class="table-light">
-              <th scope="col" class="id-col text-center">Order</th>
-              <th class="text-center d-none d-xl-table-cell">Name</th>
-              <th class="text-center">Description A</th>
-              <th class="text-center d-none d-xl-table-cell">Url</th>
-              <th class="text-center d-none d-xl-table-cell">Icon</th>
-              <th class="text-center d-none d-xl-table-cell">Type</th>
-              <th class="text-center d-none d-xl-table-cell">Submenu</th>
-              <th class="text-center">State</th>
-              <th class="actions-col text-center" scope="col">Actions</th>
+              <th scope="col" class="id-col text-center">{{ 'apps.order' | translate }}</th>
+              <th class="text-center d-none d-xl-table-cell">{{ 'apps.name' | translate }}</th>
+              <th class="text-center">{{ 'apps.descriptionA' | translate }}</th>
+              <th class="text-center d-none d-xl-table-cell">{{ 'apps.url' | translate }}</th>
+              <th class="text-center d-none d-xl-table-cell">{{ 'apps.icon' | translate }}</th>
+              <th class="text-center d-none d-xl-table-cell">{{ 'apps.type' | translate }}</th>
+              <th class="text-center d-none d-xl-table-cell">{{ 'apps.submenu' | translate }}</th>
+              <th class="text-center">{{ 'common.status' | translate }}</th>
+              <th class="actions-col text-center" scope="col">{{ 'common.actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -656,13 +667,17 @@
                 [ngClass]="{ selected: menu === selectedMenuOption }"
                 class="text-center actions-col"
               >
-                <div>
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    data-bs-toggle="tooltip"
-                    title="Details"
-                    [disabled]="!(menu.strSubmenus && menu.strSubmenus.length > 0)"
+                <div
+                  class="btn-group btn-group-sm"
+                  role="group"
+                  aria-label="Small button group"
+                >
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
+                    [class.disabled]="!(menu.strSubmenus && menu.strSubmenus.length > 0)"
                     (click)="onSelectMenu(menu)"
                   >
                     <svg
@@ -672,16 +687,17 @@
                     >
                       <use
                         [attr.xlink:href]="
-                          './assets/icons/bootstrap-icons.svg#list-nested'
+                          './assets/icons/bootstrap-icons.svg#eye'
                         "
                       ></use>
                     </svg>
-                  </button>
+                  </a>
     
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    title="Edit"
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
                   >
                     <svg
                       fill="currentColor"
@@ -690,16 +706,17 @@
                     >
                       <use
                         [attr.xlink:href]="
-                          './assets/icons/bootstrap-icons.svg#pencil'
+                          './assets/icons/bootstrap-icons.svg#pencil-square'
                         "
                       ></use>
                     </svg>
-                  </button>
+                  </a>
     
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    title="Delete"
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
                   >
                     <svg
                       fill="currentColor"
@@ -708,11 +725,11 @@
                     >
                       <use
                         [attr.xlink:href]="
-                          './assets/icons/bootstrap-icons.svg#trash3'
+                          './assets/icons/bootstrap-icons.svg#trash'
                         "
                       ></use>
                     </svg>
-                  </button>
+                  </a>
                 </div>
               </td>
             </tr>
@@ -727,13 +744,13 @@
     
         <!-- Opciones de menú disponibles en la aplicación -->
         <div class="mt-4">
-          <h6 class="roles-title">Available Menu Options</h6>
+          <h6 class="roles-title">{{ 'apps.availableMenuOptions' | translate }}</h6>
           <table class="table table-bordered table-sm table-bordered mt-3">
             <thead>
               <tr>
-                <th>Select</th>
-                <th>Name</th>
-                <th>Description</th>
+                <th>{{ 'apps.select' | translate }}</th>
+                <th>{{ 'apps.name' | translate }}</th>
+                <th>{{ 'apps.description' | translate }}</th>
               </tr>
             </thead>
             <tbody>
@@ -1101,8 +1118,8 @@
             </svg>
           </div>
           <h1 class="modal-title fs-5" id="staticBackdropLabel">
-            New Rol for
-            <b>{{ (selectedApplication?.strName || "").toUpperCase() }} </b>app
+            {{ 'roles.create.newRoleFor' | translate }}
+            <b>{{ (selectedApplication?.strName || "").toUpperCase() }} </b>{{ 'roles.create.app' | translate }}
           </h1>
         </div>
 
@@ -1184,7 +1201,7 @@
           </svg>
         </div>
 
-        <h5 class="modal-title" id="optionMenuModalLabel">Add Menu Option</h5>
+        <h5 class="modal-title" id="optionMenuModalLabel">{{ 'apps.addMenuOption' | translate }}</h5>
       </div>
 
       <!-- Cuerpo del modal con el componente -->
