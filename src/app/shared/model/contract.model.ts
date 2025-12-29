@@ -3,6 +3,7 @@ import { User } from "./user";
 
 export interface Contract {
   id: string;
+  code: string;
   value: number;
   mode: string;
   payday: number;

@@ -5,7 +5,9 @@ export const AUTHORIZA_TRANSLATIONS: AppTranslations = {
     common: {
       error: 'Error',
       cancel: 'Cancel',
-      actions: 'Actions'
+      actions: 'Actions',
+      previous: 'Previous',
+      next: 'Next'
     },
     app: {
       name: 'Authoriza',
@@ -98,6 +100,35 @@ export const AUTHORIZA_TRANSLATIONS: AppTranslations = {
       legalEntity: 'Legal Entity',
       status: 'Status',
       role: 'Role',
+      assignRole: {
+        confirmTitle: 'Assign Role',
+        confirmText: 'Are you sure you want to assign the role "{roleName}"?',
+        typeAssign: 'Type "Assign" to confirm',
+        placeholder: 'Type "Assign" here',
+        confirm: 'Assign Role',
+        mustType: 'You must type exactly "Assign" to continue',
+        successMessage: 'Role assigned successfully!',
+        searchApp: 'Search by application',
+        searchRole: 'Search by role name',
+        assign: 'Assign'
+      },
+      assignDependency: {
+        title: 'Dependency',
+        searchPlaceholder: 'Search by name, email or application',
+        username: 'Username',
+        name: 'Name',
+        role: 'Role',
+        select: 'Select',
+        confirmTitle: 'Assign Dependency',
+        confirmText: 'Are you sure you want to assign dependency to "{username}"?',
+        typeAssign: 'Type "Assign" to confirm',
+        placeholder: 'Type "Assign" here',
+        confirm: 'Assign Dependency',
+        mustType: 'You must type exactly "Assign" to continue',
+        successTitle: 'Success!',
+        errorTitle: 'Error',
+        errorText: 'There was an error assigning the dependency.'
+      },
       details: {
         title: 'User Details',
         username: 'Username',
@@ -238,7 +269,9 @@ export const AUTHORIZA_TRANSLATIONS: AppTranslations = {
     common: {
       error: 'Error',
       cancel: 'Cancelar',
-      actions: 'Acciones'
+      actions: 'Acciones',
+      previous: 'Anterior',
+      next: 'Siguiente'
     },
     app: {
       name: 'Authoriza',
@@ -331,6 +364,35 @@ export const AUTHORIZA_TRANSLATIONS: AppTranslations = {
       legalEntity: 'Persona Jurídica',
       status: 'Estado',
       role: 'Rol',
+      assignRole: {
+        confirmTitle: 'Asignar Rol',
+        confirmText: '¿Estás seguro de que quieres asignar el rol "{roleName}"?',
+        typeAssign: 'Escribe "Asignar" para confirmar',
+        placeholder: 'Escribe "Asignar" aquí',
+        confirm: 'Asignar Rol',
+        mustType: 'Debes escribir exactamente "Asignar" para continuar',
+        successMessage: '¡Rol asignado exitosamente!',
+        searchApp: 'Buscar por aplicación',
+        searchRole: 'Buscar por nombre del rol',
+        assign: 'Asignar'
+      },
+      assignDependency: {
+        title: 'Dependencia',
+        searchPlaceholder: 'Buscar por nombre, email o aplicación',
+        username: 'Nombre de Usuario',
+        name: 'Nombre',
+        role: 'Rol',
+        select: 'Seleccionar',
+        confirmTitle: 'Asignar Dependencia',
+        confirmText: '¿Estás seguro de que quieres asignar dependencia a "{username}"?',
+        typeAssign: 'Escribe "Asignar" para confirmar',
+        placeholder: 'Escribe "Asignar" aquí',
+        confirm: 'Asignar Dependencia',
+        mustType: 'Debes escribir exactamente "Asignar" para continuar',
+        successTitle: '¡Éxito!',
+        errorTitle: 'Error',
+        errorText: 'Hubo un error asignando la dependencia.'
+      },
       details: {
         title: 'Detalles del Usuario',
         username: 'Nombre de Usuario',

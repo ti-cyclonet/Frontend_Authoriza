@@ -61,7 +61,7 @@
         >
           <thead class="table-dark">
             <tr class="table-light">
-              <th>ID</th>
+              <th>{{ getTranslation('contracts.code') }}</th>
               <th>{{ getTranslation('contracts.user') }}</th>
               <th class="d-none d-md-table-cell">{{ getTranslation('contracts.package') }}</th>
               <th class="d-none d-md-table-cell text-center">{{ getTranslation('contracts.value') }}</th>
@@ -74,7 +74,14 @@
           </thead>
           <tbody>
             <tr *ngFor="let contract of contracts">
-              <td>{{ contract.id }}</td>
+              <td>
+                <span class="entity-code-badge" *ngIf="contract?.code; else noCode">
+                  {{ contract?.code }}
+                </span>
+                <ng-template #noCode>
+                  <span class="text-muted">-</span>
+                </ng-template>
+              </td>
               <td>{{ contract.user.strUserName }}</td>
               <td class="d-none d-md-table-cell">{{ contract.package.name }}</td>
               <td class="d-none d-md-table-cell text-end">{{ contract.value | customCurrency }}</td>

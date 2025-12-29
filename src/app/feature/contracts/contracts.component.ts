@@ -107,6 +107,7 @@ export class ContractsComponent implements OnInit {
       'contracts.title': { en: 'Contract Management', es: 'Gestión de Contratos' },
       'contracts.description': { en: 'Manage contracts and agreements', es: 'Gestionar contratos y acuerdos' },
       'contracts.allStatuses': { en: 'All Statuses', es: 'Todos los Estados' },
+      'contracts.code': { en: 'Code', es: 'Código' },
       'contracts.user': { en: 'User', es: 'Usuario' },
       'contracts.package': { en: 'Package', es: 'Paquete' },
       'contracts.value': { en: 'Value', es: 'Valor' },
