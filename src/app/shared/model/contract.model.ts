@@ -13,6 +13,7 @@ export interface Contract {
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
+  pdfUrl?: string;
   user: User;
   package: Package;
 }

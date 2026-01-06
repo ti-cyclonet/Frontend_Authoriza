@@ -6,5 +6,5 @@ import { AUTHORIZA_TRANSLATIONS } from './shared/translations/authoriza-translat
 CycloNetI18nModule.forRoot({
   appName: 'authoriza',
   translations: AUTHORIZA_TRANSLATIONS,
-  defaultLanguage: 'en'
+  defaultLanguage: 'es'
 })

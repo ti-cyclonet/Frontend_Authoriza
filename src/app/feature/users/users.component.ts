@@ -364,7 +364,8 @@ export class UsersComponent implements OnInit {
         users.forEach((user: User) => {
           user.isDeleted = !!user.deletedAt;
           const dependsOnId = user.dependentOn?.id;
-          if (dependsOnId) {
+          // Solo contar usuarios dependientes que NO estén eliminados
+          if (dependsOnId && !user.deletedAt) {
             dependentMap[dependsOnId] = (dependentMap[dependsOnId] || 0) + 1;
           }
         });
@@ -435,20 +436,20 @@ export class UsersComponent implements OnInit {
 
   removeUser(user: any) {
     Swal.fire({
-      title: 'Are you sure?',
-      text: 'To confirm, type "Delete" below.',
+      title: '¿Estás seguro?',
+      text: 'Para confirmar, escribe "Eliminar" abajo.',
       input: 'text',
-      inputPlaceholder: 'Type "Delete" here',
+      inputPlaceholder: 'Escribe "Eliminar" aquí',
       inputAttributes: {
         autocomplete: 'off',
       },
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Delete',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: 'Eliminar',
+      cancelButtonText: 'Cancelar',
       preConfirm: (value) => {
-        if (value !== 'Delete') {
-          Swal.showValidationMessage('You must type "Delete" to proceed.');
+        if (value !== 'Eliminar') {
+          Swal.showValidationMessage('Debes escribir "Eliminar" para proceder.');
           return false;
         }
         return true;
@@ -458,8 +459,8 @@ export class UsersComponent implements OnInit {
         this.userService.deleteUser(user.id).subscribe({
           next: () => {
             Swal.fire({
-              title: 'Deleted!',
-              text: 'The user was deleted successfully.',
+              title: '¡Eliminado!',
+              text: 'El usuario fue eliminado exitosamente.',
               icon: 'success',
               confirmButtonText: 'OK',
             });
@@ -474,21 +475,21 @@ export class UsersComponent implements OnInit {
               errorMsg.includes('force=true')
             ) {
               Swal.fire({
-                title: 'This user has dependents',
-                text: "Deleting this user will also delete all their dependent users. To confirm, type 'Delete All' below.",
+                title: 'Este usuario tiene dependientes',
+                text: 'Eliminar este usuario también eliminará todos sus usuarios dependientes. Para confirmar, escribe "Eliminar Todo" abajo.',
                 input: 'text',
-                inputPlaceholder: "Type 'Delete All' here",
+                inputPlaceholder: 'Escribe "Eliminar Todo" aquí',
                 inputAttributes: {
                   autocomplete: 'off',
                 },
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Delete All',
-                cancelButtonText: 'Cancel',
+                confirmButtonText: 'Eliminar Todo',
+                cancelButtonText: 'Cancelar',
                 preConfirm: (value) => {
-                  if (value !== 'Delete All') {
+                  if (value !== 'Eliminar Todo') {
                     Swal.showValidationMessage(
-                      "You must type 'Delete All' to proceed."
+                      'Debes escribir "Eliminar Todo" para proceder.'
                     );
                     return false;
                   }
@@ -499,8 +500,8 @@ export class UsersComponent implements OnInit {
                   this.userService.deleteUser(user.id, true).subscribe({
                     next: () => {
                       Swal.fire({
-                        title: 'Deleted!',
-                        text: 'User and all dependents deleted successfully.',
+                        title: '¡Eliminado!',
+                        text: 'Usuario y todos los dependientes eliminados exitosamente.',
                         icon: 'success',
                         confirmButtonText: 'OK',
                       });
@@ -510,7 +511,7 @@ export class UsersComponent implements OnInit {
                       const fallbackMsg =
                         err2?.error?.message || 'Forced deletion failed.';
                       Swal.fire({
-                        title: 'Error!',
+                        title: 'Error',
                         text: fallbackMsg,
                         icon: 'error',
                         confirmButtonText: 'OK',
@@ -521,7 +522,7 @@ export class UsersComponent implements OnInit {
               });
             } else {
               Swal.fire({
-                title: 'Error!',
+                title: 'Error',
                 text: errorMsg,
                 icon: 'error',
                 confirmButtonText: 'OK',
@@ -596,8 +597,8 @@ export class UsersComponent implements OnInit {
 
   get currentLanguage(): string {
     if (typeof localStorage !== 'undefined') {
-      return localStorage.getItem('language') || 'en';
+      return localStorage.getItem('language') || 'es';
     }
-    return 'en';
+    return 'es';
   }
 }

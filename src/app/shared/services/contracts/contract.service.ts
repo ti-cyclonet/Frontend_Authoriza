@@ -49,4 +49,8 @@ export class ContractService {
       totalPages: number;
     }>(`${this.contractsUrl}?limit=${limit}&offset=${offset}`);
   }
+
+  activateContract(contractId: string): Observable<any> {
+    return this.http.patch<any>(`${this.contractsUrl}/${contractId}/status`, { status: 'ACTIVE' });
+  }
 }

@@ -58,7 +58,7 @@ import { TranslationService } from '../../services/translation.service';
   `]
 })
 export class LanguageSelectorComponent {
-  currentLanguage: string = 'en';
+  currentLanguage: string = 'es';
 
   constructor(private translationService: TranslationService) {
     this.translationService.language$.subscribe(lang => {
