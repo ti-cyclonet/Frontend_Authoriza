@@ -184,7 +184,7 @@
           <div class="status-list">
             <div *ngFor="let status of stats.invoices.byStatus" class="status-item">
               <div class="status-info">
-                <span [class]="'badge ' + getStatusBadgeClass(status.status)">{{ status.status }}</span>
+                <span [class]="'badge ' + getStatusBadgeClass(status.status)">{{ translateInvoiceStatus(status.status) }}</span>
                 <span class="status-count">{{ status.count }}</span>
                 <span class="status-value">{{ formatCurrency(status.value) }}</span>
               </div>
@@ -253,7 +253,7 @@
                 <span class="activity-detail">{{ invoice.user }}</span>
               </div>
               <div class="activity-meta">
-                <span [class]="'badge ' + getStatusBadgeClass(invoice.status)">{{ invoice.status }}</span>
+                <span [class]="'badge ' + getStatusBadgeClass(invoice.status)">{{ translateInvoiceStatus(invoice.status) }}</span>
                 <small>{{ formatDate(invoice.createdAt) }}</small>
               </div>
             </div>

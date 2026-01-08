@@ -8,6 +8,8 @@ interface UserUpdateDto {
     id: string;
     strPersonType: string;
     strStatus: string;
+    documentTypeId?: string;
+    documentNumber?: string;
     naturalPersonData?: {
       id: string;
       firstName: string;

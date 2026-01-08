@@ -91,6 +91,8 @@ export class TranslationService {
       'users.modal.personType': 'Person Type',
       'users.modal.naturalPerson': 'Natural Person',
       'users.modal.legalEntity': 'Legal Entity',
+      'users.modal.documentType': 'Document Type',
+      'users.modal.documentNumber': 'Document Number',
       'users.modal.firstName': 'First Name',
       'users.modal.secondName': 'Second Name',
       'users.modal.firstSurname': 'First Surname',
@@ -183,7 +185,7 @@ export class TranslationService {
       'dashboard.unconfirmed': 'Unconfirmed',
       'dashboard.invoices': 'Invoices',
       'dashboard.paid': 'Paid',
-      'dashboard.pending': 'Pending',
+      'dashboard.pending': 'Unconfirmed',
       'dashboard.overdue': 'Overdue',
       'dashboard.totalRevenue': 'Total Revenue',
       'dashboard.contracts': 'Contracts',
@@ -199,6 +201,12 @@ export class TranslationService {
       'dashboard.userCodes': 'User Codes',
       'dashboard.invoiceCodes': 'Invoice Codes',
       'dashboard.contractCodes': 'Contract Codes',
+      'dashboard.errorLoading': 'Error loading statistics',
+      'dashboard.revenue': 'Revenue',
+      'dashboard.invoiceStatuses.Paid': 'Paid',
+      'dashboard.invoiceStatuses.Issued': 'Unconfirmed',
+      'dashboard.invoiceStatuses.In arrears': 'Overdue',
+      'dashboard.invoiceStatuses.Unconfirmed': 'Unconfirmed',
       
       // Applications
       'apps.title': 'Gestión de Aplicaciones',
@@ -384,7 +392,18 @@ export class TranslationService {
       'users.delete.deleteAll': 'Eliminar Todo',
       'users.delete.deleteAllWord': 'Eliminar Todo',
       'users.delete.mustTypeDeleteAll': 'Debes escribir "Eliminar Todo" para proceder.',
-      'users.delete.allDeletedText': 'Usuario y todos los dependientes eliminados exitosamente.'
+      'users.delete.allDeletedText': 'Usuario y todos los dependientes eliminados exitosamente.',
+      
+      // Change Password
+      'changePassword.success.title': 'Password updated successfully!',
+      'changePassword.success.message': 'Your password has been changed successfully.',
+      'changePassword.error.title': 'Error changing password',
+      'changePassword.error.message': 'An unexpected error occurred.',
+      'changePassword.warning.title': 'Passwords do not match',
+      'changePassword.warning.message': 'The new password and its repetition do not match.',
+      
+      // Password Expiry
+      'passwordExpiry.warning': 'Your password is about to expire. You should change it soon.'
     },
     es: {
       // Common
@@ -468,6 +487,8 @@ export class TranslationService {
       'users.modal.personType': 'Tipo de Persona',
       'users.modal.naturalPerson': 'Persona Natural',
       'users.modal.legalEntity': 'Persona Jurídica',
+      'users.modal.documentType': 'Tipo de Documento',
+      'users.modal.documentNumber': 'Número de Documento',
       'users.modal.firstName': 'Primer Nombre',
       'users.modal.secondName': 'Segundo Nombre',
       'users.modal.firstSurname': 'Primer Apellido',
@@ -560,7 +581,7 @@ export class TranslationService {
       'dashboard.unconfirmed': 'Sin confirmar',
       'dashboard.invoices': 'Facturas',
       'dashboard.paid': 'Pagado',
-      'dashboard.pending': 'Pendiente',
+      'dashboard.pending': 'Sin confirmar',
       'dashboard.overdue': 'Vencido',
       'dashboard.totalRevenue': 'Ingresos Totales',
       'dashboard.contracts': 'Contratos',
@@ -576,6 +597,12 @@ export class TranslationService {
       'dashboard.userCodes': 'Códigos de Usuario',
       'dashboard.invoiceCodes': 'Códigos de Factura',
       'dashboard.contractCodes': 'Códigos de Contrato',
+      'dashboard.errorLoading': 'Error al cargar las estadísticas',
+      'dashboard.revenue': 'Ingresos',
+      'dashboard.invoiceStatuses.Paid': 'Pagado',
+      'dashboard.invoiceStatuses.Issued': 'Sin confirmar',
+      'dashboard.invoiceStatuses.In arrears': 'Vencido',
+      'dashboard.invoiceStatuses.Unconfirmed': 'Sin confirmar',
       
       // Applications
       'apps.title': 'Gestión de Aplicaciones',
@@ -743,7 +770,18 @@ export class TranslationService {
       'users.details.mustTypeConfirm': 'Debe Escribir Confirmar',
       'users.details.dependencyRemoved': 'Dependencia Removida',
       'users.details.errorRemoving': 'Error Removiendo',
-      'users.details.cancelEdit': 'Cancelar Edición'
+      'users.details.cancelEdit': 'Cancelar Edición',
+      
+      // Change Password
+      'changePassword.success.title': '¡Contraseña actualizada exitosamente!',
+      'changePassword.success.message': 'La contraseña se ha cambiado correctamente.',
+      'changePassword.error.title': 'Error al cambiar la contraseña',
+      'changePassword.error.message': 'Ocurrió un error inesperado.',
+      'changePassword.warning.title': 'Las contraseñas no coinciden',
+      'changePassword.warning.message': 'La nueva contraseña y su repetición no coinciden.',
+      
+      // Password Expiry
+      'passwordExpiry.warning': 'Tu contraseña está a punto de expirar. Deberías cambiarla pronto.'
     }
   };
 

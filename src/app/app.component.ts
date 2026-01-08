@@ -21,7 +21,9 @@ export class AppComponent implements OnInit{
   
   title = NAME_APP_LONG;
   
-  constructor(@Inject(PLATFORM_ID) private platformId: object, private idleTimeoutService: IdleTimeoutService ) {this.idleTimeoutService.startWatching();}
+  constructor(@Inject(PLATFORM_ID) private platformId: object, private idleTimeoutService: IdleTimeoutService) {
+    this.idleTimeoutService.startWatching();
+  }
 
   ngOnInit() {    
     if (isPlatformBrowser(this.platformId)) {

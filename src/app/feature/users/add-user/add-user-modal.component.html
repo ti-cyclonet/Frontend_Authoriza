@@ -86,6 +86,76 @@
                 </div>
               </form>
 
+              <!-- Línea púrpura separadora -->
+              <hr style="border: 2px solid #6f42c1; margin: 20px 0;">
+
+              <form [formGroup]="documentForm">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="documentType">{{ 'users.modal.documentType' | translate }}</label>
+                      <select 
+                        formControlName="strDocumentType" 
+                        class="form-select mb-2"
+                        [disabled]="basicDataForm.value.strPersonType === 'J'">
+                        <option value="CC">Cédula de Ciudadanía</option>
+                        <option value="CE">Cédula de Extranjería</option>
+                        <option value="TI">Tarjeta de Identidad</option>
+                        <option value="PP">Pasaporte</option>
+                        <option value="NIT">NIT</option>
+                      </select>
+                      <div
+                        *ngIf="documentForm.get('strDocumentType')?.touched && documentForm.get('strDocumentType')?.errors?.['required']"
+                        class="text-danger small mb-2">
+                        {{ 'users.modal.fieldRequired' | translate }}
+                      </div>
+                    </div>
+                  </div>
+                  <div [ngClass]="basicDataForm.value.strPersonType === 'J' ? 'col-md-6' : 'col-md-8'">
+                    <div class="form-group">
+                      <label for="documentNumber">{{ 'users.modal.documentNumber' | translate }}</label>
+                      <input
+                        formControlName="strDocumentNumber"
+                        [placeholder]="basicDataForm.value.strPersonType === 'J' ? 'NIT (9 dígitos)' : 'Número de documento'"
+                        class="form-control mb-2"
+                        [maxlength]="basicDataForm.value.strPersonType === 'J' ? 9 : 50"
+                      />
+                      <div
+                        *ngIf="documentForm.get('strDocumentNumber')?.touched && documentForm.get('strDocumentNumber')?.errors?.['required']"
+                        class="text-danger small mb-2">
+                        {{ 'users.modal.fieldRequired' | translate }}
+                      </div>
+                      <div
+                        *ngIf="documentForm.get('strDocumentNumber')?.touched && documentForm.get('strDocumentNumber')?.errors?.['pattern']"
+                        class="text-danger small mb-2">
+                        El NIT debe tener exactamente 9 dígitos
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-2" *ngIf="basicDataForm.value.strPersonType === 'J'">
+                    <div class="form-group">
+                      <label>&nbsp;</label>
+                      <input
+                        formControlName="strDocumentDV"
+                        placeholder="DV"
+                        class="form-control mb-2"
+                        maxlength="1"
+                      />
+                      <div
+                        *ngIf="documentForm.get('strDocumentDV')?.touched && documentForm.get('strDocumentDV')?.errors?.['required']"
+                        class="text-danger small mb-2">
+                        {{ 'users.modal.fieldRequired' | translate }}
+                      </div>
+                      <div
+                        *ngIf="documentForm.get('strDocumentDV')?.touched && documentForm.get('strDocumentDV')?.errors?.['pattern']"
+                        class="text-danger small mb-2">
+                        Debe ser un solo dígito
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+
               <form
                 *ngIf="basicDataForm.value.strPersonType === 'N'"
                 [formGroup]="naturalForm"
@@ -236,12 +306,6 @@
                         placeholder="{{ 'users.modal.website' | translate }}"
                         class="form-control mb-2"
                       />
-                      <div
-                        *ngIf="legalForm.get('webSite')?.touched && legalForm.get('webSite')?.errors?.['required']"
-                        class="text-danger small mb-2"
-                      >
-                        {{ 'users.modal.fieldRequired' | translate }}
-                      </div>
                     </div>
                   </div>
                 </div>

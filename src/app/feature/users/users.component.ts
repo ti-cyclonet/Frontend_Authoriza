@@ -212,7 +212,7 @@ export class UsersComponent implements OnInit {
   }
 
   saveUserDetails() {
-    this.userService.updateUser(this.selectedUser).subscribe({
+    this.userService.updateUser(this.selectedUser.id, this.selectedUser).subscribe({
       next: () => {
         this.showToast(this.translationService.translate('users.success.updated'), 'success', 'A', 0);
         this.editingUser = false;

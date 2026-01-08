@@ -54,6 +54,7 @@ export class AddUserModalComponent {
 
   userForm: FormGroup;
   basicDataForm: FormGroup;
+  documentForm: FormGroup;
   naturalForm: FormGroup;
   legalForm: FormGroup;
   roleSearchForm: FormGroup;
@@ -83,6 +84,12 @@ export class AddUserModalComponent {
       strStatus: ['ACTIVE'],
     });
 
+    this.documentForm = this.fb.group({
+      strDocumentType: ['CC', Validators.required],
+      strDocumentNumber: ['', Validators.required],
+      strDocumentDV: [''],
+    });
+
     this.naturalForm = this.fb.group({
       firstName: ['', Validators.required],
       secondName: [''],
@@ -95,7 +102,7 @@ export class AddUserModalComponent {
 
     this.legalForm = this.fb.group({
       businessName: ['', Validators.required],
-      webSite: ['', Validators.required],
+      webSite: [''],
       contactName: ['', Validators.required],
       contactEmail: ['', Validators.required],
       contactPhone: ['', Validators.required],
@@ -104,6 +111,22 @@ export class AddUserModalComponent {
     this.roleSearchForm = this.fb.group({
       appName: [''],
       roleName: [''],
+    });
+
+    this.basicDataForm.get('strPersonType')?.valueChanges.subscribe(personType => {
+      if (personType === 'J') {
+        this.documentForm.patchValue({ strDocumentType: 'NIT' });
+        this.documentForm.get('strDocumentType')?.disable();
+        this.documentForm.get('strDocumentNumber')?.setValidators([Validators.required, Validators.pattern(/^\d{9}$/)]);
+        this.documentForm.get('strDocumentDV')?.setValidators([Validators.required, Validators.pattern(/^\d{1}$/)]);
+      } else {
+        this.documentForm.get('strDocumentType')?.enable();
+        this.documentForm.patchValue({ strDocumentType: 'CC' });
+        this.documentForm.get('strDocumentNumber')?.setValidators([Validators.required]);
+        this.documentForm.get('strDocumentDV')?.clearValidators();
+      }
+      this.documentForm.get('strDocumentNumber')?.updateValueAndValidity();
+      this.documentForm.get('strDocumentDV')?.updateValueAndValidity();
     });
   }
 
@@ -166,6 +189,12 @@ export class AddUserModalComponent {
       return;
     }
 
+    // Validar formulario de documento
+    if (this.documentForm.invalid) {
+      this.documentForm.markAllAsTouched();
+      return;
+    }
+
     // Validar formulario específico según tipo de persona
     if (
       this.basicDataForm.value.strPersonType === 'N' &&
@@ -205,6 +234,12 @@ export class AddUserModalComponent {
           ? 'ACTIVE'
           : this.basicDataForm.value.strStatus,
       },
+      documentType: {
+        strDocumentType: this.basicDataForm.value.strPersonType === 'J' ? 'NIT' : this.documentForm.value.strDocumentType,
+        strDocumentNumber: this.basicDataForm.value.strPersonType === 'J' 
+          ? `${this.documentForm.value.strDocumentNumber}-${this.documentForm.value.strDocumentDV}`
+          : this.documentForm.value.strDocumentNumber,
+      },
       naturalPersonData:
         this.basicDataForm.value.strPersonType === 'N'
           ? this.naturalForm.value
@@ -215,16 +250,26 @@ export class AddUserModalComponent {
           : undefined,
     };
 
+    console.log('Sending DTO to backend:', dto);
+
     this.userService.createFullUser(dto).subscribe({
       next: (createdUser) => {
         this.createdUserId = createdUser?.id;
         if (isPrincipal) {
-            this.close.emit();
-          } else {
-            this.nextStep();
-          }
+          this.userCreated.emit({
+            message: 'Usuario primario creado exitosamente',
+            type: 'success',
+            alertType: 'A',
+            container: 0,
+            id: createdUser?.id
+          });
+          this.close.emit();
+        } else {
+          this.nextStep();
+        }
       },
       error: (err) => {
+        console.error('Error creating user:', err);
         this.userCreated.emit({
           message:
             'Error creating user: ' + (err.error?.message || 'Desconocido'),

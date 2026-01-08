@@ -137,8 +137,8 @@ export class UserService {
   }
 
   // Actualizar usuario
-  updateUser(user: User): Observable<User> {
-    return this.http.put<User>(`${this.userUrl}/${user.id}`, user);
+  updateUser(userId: string, updateData: any): Observable<User> {
+    return this.http.put<User>(`${this.userUrl}/${userId}`, updateData);
   }
 
   getUsersByDependentOnId(dependentOnId: string): Observable<User[]> {

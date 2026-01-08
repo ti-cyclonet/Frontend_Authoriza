@@ -5,6 +5,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { CardModule } from 'primeng/card';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { DashboardService, DashboardStats } from '../../shared/services/dashboard/dashboard.service';
+import { TranslationService } from '../../shared/services/translation.service';
 
 @Component({
   selector: 'app-home',
@@ -26,7 +27,10 @@ export class HomeComponent implements OnInit {
   monthlyRevenueChartData: any;
   chartOptions: any;
 
-  constructor(private dashboardService: DashboardService) {
+  constructor(
+    private dashboardService: DashboardService,
+    private translationService: TranslationService
+  ) {
     this.initChartOptions();
   }
 
@@ -45,7 +49,7 @@ export class HomeComponent implements OnInit {
         this.loadRecentActivity();
       },
       error: (err) => {
-        this.error = 'Error al cargar las estadísticas';
+        this.error = this.translationService.translate('dashboard.errorLoading');
         this.loading = false;
       }
     });
@@ -85,6 +89,10 @@ export class HomeComponent implements OnInit {
       'In arrears': 'badge-danger'
     };
     return statusMap[status] || 'badge-secondary';
+  }
+
+  translateInvoiceStatus(status: string): string {
+    return this.translationService.translate(`dashboard.invoiceStatuses.${status}`) || status;
   }
 
   formatCurrency(value: number): string {
@@ -157,7 +165,7 @@ export class HomeComponent implements OnInit {
       this.monthlyRevenueChartData = {
         labels: this.stats.invoices.monthlyRevenue.map(item => item.month),
         datasets: [{
-          label: 'Ingresos',
+          label: this.translationService.translate('dashboard.revenue'),
           data: this.stats.invoices.monthlyRevenue.map(item => item.revenue),
           backgroundColor: 'rgba(102, 126, 234, 0.1)',
           borderColor: '#667eea',

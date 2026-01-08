@@ -30,7 +30,7 @@ let bootstrap: any;
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ChangePasswordComponent, LanguageSelectorComponent, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, ChangePasswordComponent, LanguageSelectorComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
   providers: [AuthService],
@@ -62,7 +62,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   }
 
   get currentLanguage(): string {
-    return localStorage.getItem('language') || 'en';
+    return this.translationService.getCurrentLanguage();
   }
 
   constructor(

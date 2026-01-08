@@ -146,6 +146,56 @@
                   </div>
                 </div>
 
+                <!-- Tipo y Número de Documento -->
+                <div class="row">
+                  <div class="col-md-4 mb-2 form-group">
+                    <label>{{ 'users.modal.documentType' | translate }} <span style="color: red;">*</span></label>
+                    <ng-container *ngIf="!editingUser; else editDocumentType">
+                      <span class="form-control-plaintext" style="height: 38px !important">
+                        {{ getDocumentTypeDescription() }}
+                      </span>
+                    </ng-container>
+                    <ng-template #editDocumentType>
+                      <select
+                        class="form-control"
+                        [(ngModel)]="documentTypeId"
+                        (ngModelChange)="detectChanges()"
+                        [disabled]="user.basicData.strPersonType === 'J'">
+                        <option *ngFor="let docType of documentTypes" [value]="docType.id">
+                          {{ docType.description }}
+                        </option>
+                      </select>
+                    </ng-template>
+                  </div>
+                  <div [ngClass]="user.basicData.strPersonType === 'J' && editingUser ? 'col-md-6' : 'col-md-8'" class="mb-2 form-group">
+                    <label>{{ 'users.modal.documentNumber' | translate }} <span style="color: red;">*</span></label>
+                    <ng-container *ngIf="!editingUser; else editDocumentNumber">
+                      <span class="form-control-plaintext" style="height: 38px !important">
+                        {{ user.basicData?.documentNumber || 'No especificado' }}
+                      </span>
+                    </ng-container>
+                    <ng-template #editDocumentNumber>
+                      <input
+                        class="form-control"
+                        [(ngModel)]="documentNumber"
+                        (ngModelChange)="detectChanges()"
+                        [placeholder]="user.basicData.strPersonType === 'J' ? 'NIT (9 dígitos)' : 'Número de documento'"
+                        [maxlength]="user.basicData.strPersonType === 'J' ? 9 : 50"
+                      />
+                    </ng-template>
+                  </div>
+                  <div class="col-md-2 mb-2 form-group" *ngIf="user.basicData.strPersonType === 'J' && editingUser">
+                    <label>&nbsp;</label>
+                    <input
+                      class="form-control"
+                      [(ngModel)]="documentDV"
+                      (ngModelChange)="detectChanges()"
+                      placeholder="DV"
+                      maxlength="1"
+                    />
+                  </div>
+                </div>
+
                 <div class="row">
                   <!-- Role Name with Update button -->
                   <div class="col-md-6 mb-3 form-group">

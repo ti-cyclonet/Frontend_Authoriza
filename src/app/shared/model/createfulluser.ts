@@ -8,6 +8,10 @@ export interface CreateFullUser {
     strPersonType: 'N' | 'J';
     strStatus: string;
   };
+  documentType: {
+    strDocumentType: string;
+    strDocumentNumber: string;
+  };
   naturalPersonData?: {
     firstName: string;
     secondName?: string;

@@ -50,6 +50,12 @@ export class UserDetailsComponent implements OnChanges {
   roleName: string = '';
   roleId: string = '';
 
+  // Campos para documento
+  documentTypes: any[] = [];
+  documentTypeId: string = '';
+  documentNumber: string = '';
+  documentDV: string = '';
+
   // configuración notificaciones tipo toast
   toastTitle: string = '';
   toastType: 'success' | 'warning' | 'danger' | 'primary' = 'success';
@@ -82,7 +88,43 @@ export class UserDetailsComponent implements OnChanges {
       this.originalUser = JSON.parse(JSON.stringify(this.user));
       this.roleId = this.user?.rol?.id ?? '';
       this.loadRoleName();
+      this.loadDocumentTypes();
+      this.initializeDocumentFields();
     }
+  }
+
+  loadDocumentTypes() {
+    this.http.get<any[]>(`${this.baseApiUrl}/api/document-types`).subscribe({
+      next: (types) => {
+        this.documentTypes = types;
+      },
+      error: (err) => console.error('Error loading document types:', err)
+    });
+  }
+
+  initializeDocumentFields() {
+    if (this.user?.basicData?.documentNumber) {
+      const parts = this.user.basicData.documentNumber.split('-');
+      if (parts.length === 2 && this.user.basicData.strPersonType === 'J') {
+        this.documentNumber = parts[0];
+        this.documentDV = parts[1];
+      } else {
+        this.documentNumber = this.user.basicData.documentNumber;
+        this.documentDV = '';
+      }
+    } else {
+      this.documentNumber = '';
+      this.documentDV = '';
+    }
+    this.documentTypeId = this.user?.basicData?.documentTypeId || '';
+  }
+
+  getDocumentTypeDescription(): string {
+    if (!this.user?.basicData?.documentTypeId) {
+      return 'No especificado';
+    }
+    const docType = this.documentTypes.find(dt => dt.id === this.user.basicData.documentTypeId);
+    return docType?.description || 'No especificado';
   }
 
   openAssignDependency() {
@@ -151,14 +193,76 @@ export class UserDetailsComponent implements OnChanges {
   }
 
   saveChanges() {
-    this.user.rol = {
-      id: this.roleId,
-      strName: this.roleName,
-      strDescription1: this.user.rol.strDescription1,
+    // Actualizar documento si es persona jurídica
+    if (this.user.basicData.strPersonType === 'J') {
+      this.user.basicData.documentNumber = `${this.documentNumber}-${this.documentDV}`;
+    } else {
+      this.user.basicData.documentNumber = this.documentNumber;
+    }
+    this.user.basicData.documentTypeId = this.documentTypeId;
+    
+    // Preparar datos para actualización
+    const updateData: any = {
+      strUserName: this.user.strUserName,
+      strStatus: 'ACTIVE',
+      basicData: {
+        documentTypeId: this.documentTypeId,
+        documentNumber: this.user.basicData.documentNumber
+      }
     };
-    // this.user.strStatus = 'ACTIVE';
-    this.originalUser = JSON.parse(JSON.stringify(this.user));
-    this.toggleEditing();
+
+    // Solo agregar rolId si no está vacío
+    if (this.roleId && this.roleId.trim() !== '') {
+      updateData.rolId = this.roleId;
+    }
+
+    // Agregar naturalPersonData si es persona natural
+    if (this.user.basicData.strPersonType === 'N' && this.user.basicData.naturalPersonData) {
+      updateData.naturalPersonData = {
+        firstName: this.user.basicData.naturalPersonData.firstName,
+        secondName: this.user.basicData.naturalPersonData.secondName,
+        firstSurname: this.user.basicData.naturalPersonData.firstSurname,
+        secondSurname: this.user.basicData.naturalPersonData.secondSurname,
+        birthDate: this.user.basicData.naturalPersonData.birthDate,
+        maritalStatus: this.user.basicData.naturalPersonData.maritalStatus,
+        sex: this.user.basicData.naturalPersonData.sex
+      };
+    }
+
+    // Agregar legalEntityData si es persona jurídica
+    if (this.user.basicData.strPersonType === 'J' && this.user.basicData.legalEntityData) {
+      updateData.legalEntityData = {
+        businessName: this.user.basicData.legalEntityData.businessName,
+        webSite: this.user.basicData.legalEntityData.webSite,
+        contactName: this.user.basicData.legalEntityData.contactName,
+        contactEmail: this.user.basicData.legalEntityData.contactEmail,
+        contactPhone: this.user.basicData.legalEntityData.contactPhone
+      };
+    }
+
+    console.log('Updating user with data:', updateData);
+
+    // Llamar al servicio para actualizar
+    this.userService.updateUser(this.user.id, updateData).subscribe({
+      next: (updatedUser) => {
+        console.log('User updated successfully:', updatedUser);
+        this.user = updatedUser;
+        this.originalUser = JSON.parse(JSON.stringify(this.user));
+        this.user.strStatus = 'ACTIVE';
+        this.toggleEditing();
+        this.userUpdated.emit();
+        Swal.fire({
+          icon: 'success',
+          title: 'Usuario actualizado correctamente',
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      },
+      error: (err) => {
+        console.error('Error updating user:', err);
+        this.showToast('Error al actualizar usuario: ' + (err.error?.message || 'Error desconocido'), 'danger', 'A', 0);
+      }
+    });
   }
 
   cancelChanges() {
@@ -309,7 +413,13 @@ export class UserDetailsComponent implements OnChanges {
       setTimeout(() => {
         notification.visible = false;
         this.cdr.detectChanges();
-      }, 5000);
+        setTimeout(() => {
+          const index = this.notifications.indexOf(notification);
+          if (index > -1) {
+            this.notifications.splice(index, 1);
+          }
+        }, 300);
+      }, 3000);
     }
   }
   // ----------------------------------------------

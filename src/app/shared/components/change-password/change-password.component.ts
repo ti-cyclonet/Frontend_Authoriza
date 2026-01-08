@@ -16,6 +16,8 @@ import {
 } from '@angular/forms';
 import { UserService } from '../../services/user/user.service';
 import { HttpClient } from '@angular/common/http';
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { TranslationService } from '../../services/translation.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -33,7 +35,8 @@ export class ChangePasswordComponent implements OnInit {
     private fb: FormBuilder,
     private usersService: UserService,
     private cdr: ChangeDetectorRef,
-    private http: HttpClient
+    private http: HttpClient,
+    private translationService: TranslationService
   ) {}
 
   ngOnInit() {
@@ -64,18 +67,17 @@ export class ChangePasswordComponent implements OnInit {
           next: (res) => {
             Swal.fire({
               icon: 'success',
-              title: '¡Contraseña actualizada!',
-              text: res.message,
+              title: this.translationService.translate('changePassword.success.title'),
+              text: this.translationService.translate('changePassword.success.message'),
               confirmButtonColor: '#3085d6',
             });
-            // this.passwordChanged.emit();
             this.form.reset();
           },
           error: (err: any) => {
             Swal.fire({
               icon: 'error',
-              title: 'Error al cambiar la contraseña',
-              text: err.error?.message || 'Ocurrió un error inesperado.',
+              title: this.translationService.translate('changePassword.error.title'),
+              text: err.error?.message || this.translationService.translate('changePassword.error.message'),
               confirmButtonColor: '#d33',
             });
           },
@@ -83,8 +85,8 @@ export class ChangePasswordComponent implements OnInit {
     } else {
       Swal.fire({
         icon: 'warning',
-        title: 'Contraseñas no coinciden',
-        text: 'La nueva contraseña y su repetición no coinciden.',
+        title: this.translationService.translate('changePassword.warning.title'),
+        text: this.translationService.translate('changePassword.warning.message'),
         confirmButtonColor: '#f0ad4e',
       });
     }
