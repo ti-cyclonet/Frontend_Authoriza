@@ -39,6 +39,10 @@ export class ContractService {
     return this.http.post<any>(`${this.contractsUrl}`, contractData);
   }
 
+  getContractsByUser(userId: string): Observable<Contract[]> {
+    return this.http.get<Contract[]>(`${this.contractsUrl}/user/${userId}`);
+  }
+
   findAll(page: number, limit: number) {
     const offset = (page - 1) * limit;
     return this.http.get<{

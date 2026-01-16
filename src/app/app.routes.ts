@@ -41,6 +41,11 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
       },
       {
+        path: 'user-dependencies',
+        loadComponent: () => import('./feature/user-dependencies/user-dependencies.component').then((m) => m.UserDependenciesComponent),
+        canActivate: [AuthGuard],
+      },
+      {
         path: ROOT_PACKAGES,
         loadComponent: () => import('./feature/packages/packages.component').then((m) => m.PackagesComponent),
         canActivate: [AuthGuard],

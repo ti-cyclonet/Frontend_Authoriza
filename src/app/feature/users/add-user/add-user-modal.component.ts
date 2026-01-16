@@ -98,6 +98,7 @@ export class AddUserModalComponent {
       birthDate: ['', Validators.required],
       maritalStatus: ['', Validators.required],
       sex: ['', Validators.required],
+      phone: [''],
     });
 
     this.legalForm = this.fb.group({
@@ -212,27 +213,14 @@ export class AddUserModalComponent {
       return;
     }
 
-    const isPrincipalResult = await Swal.fire({
-      title: this.translationService.translate('users.modal.isPrimaryUser'),
-      text: this.translationService.translate('users.modal.primaryUserText'),
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: this.translationService.translate('users.modal.yesPrimary'),
-      cancelButtonText: this.translationService.translate('users.modal.noRequiresRole'),
-    });
-
-    const isPrincipal = isPrincipalResult.isConfirmed;
-
     const dto: CreateFullUser = {
       user: {
         ...this.userForm.value,
-        strStatus: isPrincipal ? 'UNCONFIRMED' : this.userForm.value.strStatus,
+        strStatus: 'UNCONFIRMED', // Todos los usuarios se crean sin confirmar
       },
       basicData: {
         ...this.basicDataForm.value,
-        strStatus: isPrincipal
-          ? 'ACTIVE'
-          : this.basicDataForm.value.strStatus,
+        strStatus: 'ACTIVE',
       },
       documentType: {
         strDocumentType: this.basicDataForm.value.strPersonType === 'J' ? 'NIT' : this.documentForm.value.strDocumentType,
@@ -255,18 +243,14 @@ export class AddUserModalComponent {
     this.userService.createFullUser(dto).subscribe({
       next: (createdUser) => {
         this.createdUserId = createdUser?.id;
-        if (isPrincipal) {
-          this.userCreated.emit({
-            message: 'Usuario primario creado exitosamente',
-            type: 'success',
-            alertType: 'A',
-            container: 0,
-            id: createdUser?.id
-          });
-          this.close.emit();
-        } else {
-          this.nextStep();
-        }
+        this.userCreated.emit({
+          message: 'Usuario creado exitosamente. Asigne roles y dependencias por separado.',
+          type: 'success',
+          alertType: 'A',
+          container: 0,
+          id: createdUser?.id
+        });
+        this.close.emit();
       },
       error: (err) => {
         console.error('Error creating user:', err);

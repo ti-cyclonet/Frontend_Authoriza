@@ -159,7 +159,7 @@ export class AddContractComponent implements OnInit {
   }
 
   loadUsersWithoutDependency(): void {
-    this.userService.getIndependentUsers().subscribe({
+    this.userService.getUsers().subscribe({
       next: (users: User[]) => {
         this.usersWithoutDependency = users;
         this.updatePagination();
@@ -170,7 +170,7 @@ export class AddContractComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error al cargar usuarios independientes:', err);
+        console.error('Error al cargar usuarios:', err);
       },
     });
   }

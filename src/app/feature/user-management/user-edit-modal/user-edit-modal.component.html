@@ -1,0 +1,174 @@
+<!-- Modal de Edición de Usuario -->
+<div class="modal-overlay" (click)="onOverlayClick($event)">
+  <div class="modal-container animate__animated animate__zoomIn">
+    <div class="modal-header">
+      <h4>{{ 'users.details.editUser' | translate }}</h4>
+      <button class="btn-close" (click)="closeModal()">
+        <svg viewBox="0 0 16 16">
+          <use xlink:href="./assets/icons/bootstrap-icons.svg#x-lg" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
+        <!-- Información Básica -->
+        <div class="form-section">
+          <h6>{{ 'users.details.basicData' | translate }}</h6>
+          
+          <div class="form-group">
+            <label>{{ 'users.modal.userNameLabel' | translate }}</label>
+            <input 
+              type="email" 
+              class="form-control"
+              formControlName="strUserName"
+              [class.is-invalid]="isFieldInvalid('strUserName')">
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('strUserName')">
+              {{ getFieldError('strUserName') | translate }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>{{ 'users.status' | translate }}</label>
+            <select class="form-control" formControlName="strStatus">
+              <option value="ACTIVE">{{ 'users.status.ACTIVE' | translate }}</option>
+              <option value="INACTIVE">{{ 'users.status.INACTIVE' | translate }}</option>
+              <option value="UNCONFIRMED">{{ 'users.status.UNCONFIRMED' | translate }}</option>
+              <option value="SUSPENDED">{{ 'users.status.SUSPENDED' | translate }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Datos de Persona Natural -->
+        <div *ngIf="user.basicData?.strPersonType === 'N'" class="form-section">
+          <h6>{{ 'users.details.generalData' | translate }}</h6>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>{{ 'users.modal.firstName' | translate }}</label>
+              <input 
+                type="text" 
+                class="form-control"
+                formControlName="firstName">
+            </div>
+            <div class="form-group">
+              <label>{{ 'users.modal.secondName' | translate }}</label>
+              <input 
+                type="text" 
+                class="form-control"
+                formControlName="secondName">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>{{ 'users.modal.firstSurname' | translate }}</label>
+              <input 
+                type="text" 
+                class="form-control"
+                formControlName="firstSurname">
+            </div>
+            <div class="form-group">
+              <label>{{ 'users.modal.secondSurname' | translate }}</label>
+              <input 
+                type="text" 
+                class="form-control"
+                formControlName="secondSurname">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>{{ 'users.modal.birthDate' | translate }}</label>
+              <input 
+                type="date" 
+                class="form-control"
+                formControlName="birthDate">
+            </div>
+            <div class="form-group">
+              <label>{{ 'users.modal.sex' | translate }}</label>
+              <select class="form-control" formControlName="sex">
+                <option value="">{{ 'users.modal.selectSex' | translate }}</option>
+                <option value="M">M</option>
+                <option value="F">F</option>
+                <option value="O">O</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>{{ 'users.modal.maritalStatus' | translate }}</label>
+            <select class="form-control" formControlName="maritalStatus">
+              <option value="">{{ 'users.modal.selectMaritalStatus' | translate }}</option>
+              <option value="SOLTERO (a)">{{ 'users.modal.single' | translate }}</option>
+              <option value="CASADO (a)">{{ 'users.modal.married' | translate }}</option>
+              <option value="UNION LIBRE">{{ 'users.modal.freeUnion' | translate }}</option>
+              <option value="OTRO">{{ 'users.modal.other' | translate }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Datos de Persona Jurídica -->
+        <div *ngIf="user.basicData?.strPersonType === 'J'" class="form-section">
+          <h6>{{ 'users.details.generalData' | translate }}</h6>
+          
+          <div class="form-group">
+            <label>{{ 'users.modal.businessName' | translate }}</label>
+            <input 
+              type="text" 
+              class="form-control"
+              formControlName="businessName">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>{{ 'users.modal.website' | translate }}</label>
+              <input 
+                type="url" 
+                class="form-control"
+                formControlName="webSite">
+            </div>
+            <div class="form-group">
+              <label>{{ 'users.modal.contactName' | translate }}</label>
+              <input 
+                type="text" 
+                class="form-control"
+                formControlName="contactName">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>{{ 'users.modal.contactEmail' | translate }}</label>
+              <input 
+                type="email" 
+                class="form-control"
+                formControlName="contactEmail">
+            </div>
+            <div class="form-group">
+              <label>{{ 'users.modal.contactPhone' | translate }}</label>
+              <input 
+                type="tel" 
+                class="form-control"
+                formControlName="contactPhone">
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="closeModal()">
+        {{ 'common.cancel' | translate }}
+      </button>
+      <button 
+        type="button" 
+        class="btn btn-primary" 
+        (click)="onSubmit()"
+        [disabled]="editForm.invalid || isLoading">
+        <span *ngIf="!isLoading">{{ 'users.details.saveChanges' | translate }}</span>
+        <span *ngIf="isLoading">{{ 'common.saving' | translate }}</span>
+      </button>
+    </div>
+  </div>
+</div>
