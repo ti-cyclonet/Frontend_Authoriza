@@ -25,6 +25,7 @@ export interface CreateContractDto {
   startDate: string;
   endDate: string;
   status: ContractStatus;
+  codePrefix?: string;
 }
 
 @Injectable({ providedIn: 'root' })

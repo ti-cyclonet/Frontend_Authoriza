@@ -131,6 +131,7 @@ export class AddContractComponent implements OnInit {
       status: ['PENDING', Validators.required],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
+      codePrefix: ['', [Validators.maxLength(3)]],
     });
   }
 
@@ -366,6 +367,7 @@ export class AddContractComponent implements OnInit {
       startDate: formValues.startDate,
       endDate: formValues.endDate,
       status: formValues.status || ContractStatus.DRAFT,
+      codePrefix: formValues.codePrefix?.toUpperCase() || undefined,
     };
 
     this.contractService.createContract(payload).subscribe({
