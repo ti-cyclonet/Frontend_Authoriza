@@ -804,7 +804,66 @@
   animation-name: fadeIn;
 }
 
-/* Responsive */
+/* Sección de Código de Empresa */
+.company-code-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.company-code-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.company-code-inputs {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.code-select {
+  width: 60px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.code-result {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #e3f2fd;
+  border-radius: 4px;
+  border: 1px solid #bbdefb;
+}
+
+.result-label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.result-code {
+  font-size: 1.2rem;
+  color: #0066CC;
+  font-weight: bold;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-label {
+  margin: 0;
+  font-weight: 500;
+  cursor: pointer;
+}
 @media (max-width: 768px) {
   .modal-overlay {
     padding: 0.5rem;

@@ -71,10 +71,10 @@
                   formControlName="documentType"
                   [class.is-invalid]="isFieldInvalid('documentType')">
                   <option value="">{{ 'userWizard.step1.selectDocumentType' | translate }}</option>
-                  <option value="CC">Cédula de Ciudadanía</option>
-                  <option value="CE">Cédula de Extranjería</option>
-                  <option value="PA">Pasaporte</option>
-                  <option value="TI">Tarjeta de Identidad</option>
+                  <option value="CC">{{ 'documentTypes.CC' | translate }}</option>
+                  <option value="CE">{{ 'documentTypes.CE' | translate }}</option>
+                  <option value="PA">{{ 'documentTypes.PA' | translate }}</option>
+                  <option value="TI">{{ 'documentTypes.TI' | translate }}</option>
                 </select>
                 <div class="invalid-feedback" *ngIf="isFieldInvalid('documentType')">
                   {{ getFieldError('documentType') | translate }}
@@ -152,9 +152,9 @@
                 <label class="form-label">{{ 'userWizard.step1.sex' | translate }}</label>
                 <select class="form-control" formControlName="sex">
                   <option value="">{{ 'userWizard.step1.selectSex' | translate }}</option>
-                  <option value="M">Masculino</option>
-                  <option value="F">Femenino</option>
-                  <option value="O">Otro</option>
+                  <option value="M">{{ 'sex.M' | translate }}</option>
+                  <option value="F">{{ 'sex.F' | translate }}</option>
+                  <option value="O">{{ 'sex.O' | translate }}</option>
                 </select>
               </div>
             </div>
@@ -164,11 +164,11 @@
                 <label class="form-label">{{ 'userWizard.step1.maritalStatus' | translate }}</label>
                 <select class="form-control" formControlName="maritalStatus">
                   <option value="">{{ 'userWizard.step1.selectMaritalStatus' | translate }}</option>
-                  <option value="S">Soltero(a)</option>
-                  <option value="M">Casado(a)</option>
-                  <option value="U">Unión Libre</option>
-                  <option value="D">Divorciado(a)</option>
-                  <option value="V">Viudo(a)</option>
+                  <option value="S">{{ 'maritalStatus.S' | translate }}</option>
+                  <option value="M">{{ 'maritalStatus.M' | translate }}</option>
+                  <option value="U">{{ 'maritalStatus.U' | translate }}</option>
+                  <option value="D">{{ 'maritalStatus.D' | translate }}</option>
+                  <option value="V">{{ 'maritalStatus.V' | translate }}</option>
                 </select>
               </div>
 
@@ -206,7 +206,7 @@
                   formControlName="documentTypeJ"
                   [class.is-invalid]="isFieldInvalid('documentTypeJ')"
                   [disabled]="true">
-                  <option value="NIT">NIT</option>
+                  <option value="NIT">{{ 'documentTypes.NIT' | translate }}</option>
                 </select>
                 <div class="invalid-feedback" *ngIf="isFieldInvalid('documentTypeJ')">
                   {{ getFieldError('documentTypeJ') | translate }}

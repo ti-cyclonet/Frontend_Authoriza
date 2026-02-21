@@ -116,8 +116,8 @@ export class AddUserModalComponent {
 
     this.basicDataForm.get('strPersonType')?.valueChanges.subscribe(personType => {
       if (personType === 'J') {
-        this.documentForm.patchValue({ strDocumentType: 'NIT' });
         this.documentForm.get('strDocumentType')?.disable();
+        this.documentForm.patchValue({ strDocumentType: 'NIT' });
         this.documentForm.get('strDocumentNumber')?.setValidators([Validators.required, Validators.pattern(/^\d{9}$/)]);
         this.documentForm.get('strDocumentDV')?.setValidators([Validators.required, Validators.pattern(/^\d{1}$/)]);
       } else {
@@ -128,6 +128,7 @@ export class AddUserModalComponent {
       }
       this.documentForm.get('strDocumentNumber')?.updateValueAndValidity();
       this.documentForm.get('strDocumentDV')?.updateValueAndValidity();
+      this.cdr.detectChanges();
     });
   }
 
@@ -223,7 +224,7 @@ export class AddUserModalComponent {
         strStatus: 'ACTIVE',
       },
       documentType: {
-        strDocumentType: this.basicDataForm.value.strPersonType === 'J' ? 'NIT' : this.documentForm.value.strDocumentType,
+        strDocumentType: this.basicDataForm.value.strPersonType === 'J' ? 'NIT' : this.documentForm.getRawValue().strDocumentType,
         strDocumentNumber: this.basicDataForm.value.strPersonType === 'J' 
           ? `${this.documentForm.value.strDocumentNumber}-${this.documentForm.value.strDocumentDV}`
           : this.documentForm.value.strDocumentNumber,
@@ -237,8 +238,6 @@ export class AddUserModalComponent {
           ? this.legalForm.value
           : undefined,
     };
-
-    console.log('Sending DTO to backend:', dto);
 
     this.userService.createFullUser(dto).subscribe({
       next: (createdUser) => {
@@ -276,5 +275,9 @@ export class AddUserModalComponent {
 
   onDependencyAssigned() {
     this.close.emit();
+  }
+
+  get isLegalEntity(): boolean {
+    return this.basicDataForm.get('strPersonType')?.value === 'J';
   }
 }

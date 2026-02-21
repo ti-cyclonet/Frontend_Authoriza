@@ -26,6 +26,7 @@ export interface CreateContractDto {
   endDate: string;
   status: ContractStatus;
   codePrefix?: string;
+  businessSector?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -57,5 +58,11 @@ export class ContractService {
 
   activateContract(contractId: string): Observable<any> {
     return this.http.patch<any>(`${this.contractsUrl}/${contractId}/status`, { status: 'ACTIVE' });
+  }
+
+  validateCodePrefix(codePrefix: string): Observable<{ isAvailable: boolean; message?: string }> {
+    return this.http.get<{ isAvailable: boolean; message?: string }>(
+      `${this.contractsUrl}/validate-prefix/${codePrefix}`
+    );
   }
 }

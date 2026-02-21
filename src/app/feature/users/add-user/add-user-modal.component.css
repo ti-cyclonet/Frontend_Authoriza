@@ -200,6 +200,13 @@
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+.form-group select:disabled {
+  pointer-events: none;
+  background-color: #e9ecef;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Button Improvements */
 .form-buttons {
   background-color: #f8f9fa;

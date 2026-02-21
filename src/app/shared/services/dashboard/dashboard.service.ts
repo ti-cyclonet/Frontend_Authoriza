@@ -11,20 +11,21 @@ export interface DashboardStats {
     unconfirmed: number;
     byRole: { role: string; count: number }[];
   };
-  invoices: {
+  principalUsers: {
     total: number;
-    totalValue: number;
-    paid: number;
-    pending: number;
-    overdue: number;
-    byStatus: { status: string; count: number; value: number }[];
-    monthlyRevenue: { month: string; revenue: number }[];
-  };
-  contracts: {
-    total: number;
+    unconfirmed: number;
     active: number;
-    expired: number;
-    byStatus: { status: string; count: number }[];
+    suspended: number;
+    expiring: number;
+    delinquent: number;
+  };
+  applications: {
+    total: number;
+    byApplication: { name: string; userCount: number; roleCount: number }[];
+  };
+  packages: {
+    total: number;
+    byPackage: { name: string; contractCount: number; roleCount: number }[];
   };
   lastUpdated: Date;
 }

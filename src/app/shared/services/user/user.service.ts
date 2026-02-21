@@ -47,6 +47,14 @@ export class UserService {
     );
   }
 
+  checkCompanyCodeAvailability(
+    companyCode: string
+  ): Observable<{ available: boolean }> {
+    return this.http.get<{ available: boolean }>(
+      `${this.userUrl}/check-company-code/${encodeURIComponent(companyCode)}`
+    );
+  }
+
   // Crear datos básicos asociados a un usuario
   createBasicData(userId: string, basicData: any): Observable<any> {
     return this.http.post<any>(

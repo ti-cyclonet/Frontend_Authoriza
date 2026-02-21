@@ -34,6 +34,36 @@
 
     <!-- Stats Cards Row -->
     <div class="stats-grid">
+      <!-- Applications Card -->
+      <div class="stat-card" *ngIf="stats.applications">
+        <div class="stat-header">
+          <div class="stat-icon invoices-icon">
+            <svg viewBox="0 0 16 16">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#grid-3x3-gap-fill"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <h4>{{ stats.applications.total }}</h4>
+            <p>{{ 'dashboard.applications' | translate }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Packages Card -->
+      <div class="stat-card" *ngIf="stats.packages">
+        <div class="stat-header">
+          <div class="stat-icon revenue-icon">
+            <svg viewBox="0 0 16 16">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#box-seam"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <h4>{{ stats.packages.total }}</h4>
+            <p>{{ 'dashboard.packages' | translate }}</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Users Card -->
       <div class="stat-card">
         <div class="stat-header">
@@ -63,71 +93,39 @@
         </div>
       </div>
 
-      <!-- Invoices Card -->
-      <div class="stat-card">
-        <div class="stat-header">
-          <div class="stat-icon invoices-icon">
-            <svg viewBox="0 0 16 16">
-              <use xlink:href="./assets/icons/bootstrap-icons.svg#receipt"/>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <h4>{{ stats.invoices.total }}</h4>
-            <p>{{ 'dashboard.invoices' | translate }}</p>
-          </div>
-        </div>
-        <div class="stat-details">
-          <div class="stat-item">
-            <span class="badge badge-success">{{ stats.invoices.paid }}</span>
-            <span>{{ 'dashboard.paid' | translate }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="badge badge-primary">{{ stats.invoices.pending }}</span>
-            <span>{{ 'dashboard.pending' | translate }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="badge badge-danger">{{ stats.invoices.overdue }}</span>
-            <span>{{ 'dashboard.overdue' | translate }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Revenue Card -->
-      <div class="stat-card">
-        <div class="stat-header">
-          <div class="stat-icon revenue-icon">
-            <svg viewBox="0 0 16 16">
-              <use xlink:href="./assets/icons/bootstrap-icons.svg#currency-dollar"/>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <h4>{{ formatCurrency(stats.invoices.totalValue) }}</h4>
-            <p>{{ 'dashboard.totalRevenue' | translate }}</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Contracts Card -->
-      <div class="stat-card">
+      <!-- Principal Users Card -->
+      <div class="stat-card" *ngIf="stats.principalUsers">
         <div class="stat-header">
           <div class="stat-icon contracts-icon">
             <svg viewBox="0 0 16 16">
-              <use xlink:href="./assets/icons/bootstrap-icons.svg#file-earmark-text"/>
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#person-badge-fill"/>
             </svg>
           </div>
           <div class="stat-info">
-            <h4>{{ stats.contracts.total }}</h4>
-            <p>{{ 'dashboard.contracts' | translate }}</p>
+            <h4>{{ stats.principalUsers.total }}</h4>
+            <p>{{ 'dashboard.principalUsers' | translate }}</p>
           </div>
         </div>
         <div class="stat-details">
-          <div class="stat-item">
-            <span class="badge badge-success">{{ stats.contracts.active }}</span>
-            <span>{{ 'dashboard.active' | translate }}</span>
+          <div class="stat-item" *ngIf="stats.principalUsers.unconfirmed > 0">
+            <span class="badge badge-warning">{{ stats.principalUsers.unconfirmed }}</span>
+            <span>{{ 'users.status.UNCONFIRMED' | translate }}</span>
           </div>
-          <div class="stat-item">
-            <span class="badge badge-secondary">{{ stats.contracts.expired }}</span>
-            <span>{{ 'dashboard.expired' | translate }}</span>
+          <div class="stat-item" *ngIf="stats.principalUsers.active > 0">
+            <span class="badge badge-success">{{ stats.principalUsers.active }}</span>
+            <span>{{ 'users.status.ACTIVE' | translate }}</span>
+          </div>
+          <div class="stat-item" *ngIf="stats.principalUsers.suspended > 0">
+            <span class="badge badge-secondary">{{ stats.principalUsers.suspended }}</span>
+            <span>{{ 'users.status.SUSPENDED' | translate }}</span>
+          </div>
+          <div class="stat-item" *ngIf="stats.principalUsers.expiring > 0">
+            <span class="badge badge-info">{{ stats.principalUsers.expiring }}</span>
+            <span>{{ 'users.status.EXPIRING' | translate }}</span>
+          </div>
+          <div class="stat-item" *ngIf="stats.principalUsers.delinquent > 0">
+            <span class="badge badge-danger">{{ stats.principalUsers.delinquent }}</span>
+            <span>{{ 'users.status.DELINQUENT' | translate }}</span>
           </div>
         </div>
       </div>
@@ -165,47 +163,40 @@
         </div>
       </div>
 
-      <!-- Invoice Status Chart -->
-      <div class="chart-card">
+      <!-- Applications by Users Chart -->
+      <div class="chart-card" *ngIf="stats.applications">
         <div class="chart-header">
-          <h5>{{ 'dashboard.invoiceStatus' | translate }}</h5>
+          <h5>{{ 'dashboard.applicationsByUsers' | translate }}</h5>
         </div>
         <div class="chart-content">
-          <div class="chart-container">
-            <p-chart 
-              *ngIf="invoiceStatusChartData" 
-              type="pie" 
-              [data]="invoiceStatusChartData" 
-              [options]="chartOptions"
-              width="300"
-              height="300">
-            </p-chart>
-          </div>
-          <div class="status-list">
-            <div *ngFor="let status of stats.invoices.byStatus" class="status-item">
-              <div class="status-info">
-                <span [class]="'badge ' + getStatusBadgeClass(status.status)">{{ translateInvoiceStatus(status.status) }}</span>
-                <span class="status-count">{{ status.count }}</span>
-                <span class="status-value">{{ formatCurrency(status.value) }}</span>
+          <div class="role-list">
+            <div *ngFor="let app of stats.applications.byApplication" class="role-item">
+              <div class="role-info">
+                <span class="role-name">{{ app.name }}</span>
+                <span class="role-count">{{ app.userCount }} usuarios</span>
+              </div>
+              <div class="role-bar">
+                <div class="role-progress" [style.width.%]="(app.userCount / stats.users.total) * 100"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Monthly Revenue Chart -->
-      <div *ngIf="monthlyRevenueChartData" class="chart-card full-width">
+      <!-- Packages Chart -->
+      <div class="chart-card" *ngIf="stats.packages">
         <div class="chart-header">
-          <h5>{{ 'dashboard.monthlyRevenue' | translate }}</h5>
+          <h5>{{ 'dashboard.packagesByContracts' | translate }}</h5>
         </div>
         <div class="chart-content">
-          <div class="chart-container-large">
-            <p-chart 
-              type="line" 
-              [data]="monthlyRevenueChartData" 
-              [options]="chartOptions"
-              height="300">
-            </p-chart>
+          <div class="status-list">
+            <div *ngFor="let pkg of stats.packages.byPackage" class="status-item">
+              <div class="status-info">
+                <span class="badge badge-primary">{{ pkg.name }}</span>
+                <span class="status-count">{{ pkg.contractCount }} contratos</span>
+                <span class="status-value">{{ pkg.roleCount }} roles</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -215,71 +206,21 @@
     <div *ngIf="recentActivity" class="activity-section">
       <h5 class="section-title">{{ 'dashboard.recentActivity' | translate }}</h5>
       
-      <div class="activity-grid">
-        <!-- Recent Users -->
-        <div class="activity-card">
-          <div class="activity-header">
+      <div class="logs-container">
+        <div *ngFor="let log of recentActivity.recentLogs" class="log-entry" [class]="'log-' + log.level.toLowerCase()">
+          <div class="log-icon">
             <svg viewBox="0 0 16 16">
-              <use xlink:href="./assets/icons/bootstrap-icons.svg#person-plus"/>
+              <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + getLogIcon(log.action)"/>
             </svg>
-            <h6>{{ 'dashboard.recentUsers' | translate }}</h6>
           </div>
-          <div class="activity-list">
-            <div *ngFor="let user of recentActivity.recentUsers" class="activity-item">
-              <div class="activity-info">
-                <span class="activity-name">{{ user.username }}</span>
-                <span class="activity-detail">{{ user.role }}</span>
-              </div>
-              <div class="activity-meta">
-                <span [class]="'badge ' + getStatusBadgeClass(user.status)">{{ user.status }}</span>
-                <small>{{ formatDate(user.createdAt) }}</small>
-              </div>
+          <div class="log-content">
+            <div class="log-message">{{ log.message }}</div>
+            <div class="log-meta">
+              <span class="log-action">{{ getLogActionLabel(log.action) }}</span>
+              <span class="log-time">{{ formatDate(log.createdAt) }}</span>
             </div>
           </div>
-        </div>
-
-        <!-- Recent Invoices -->
-        <div class="activity-card">
-          <div class="activity-header">
-            <svg viewBox="0 0 16 16">
-              <use xlink:href="./assets/icons/bootstrap-icons.svg#receipt"/>
-            </svg>
-            <h6>{{ 'dashboard.recentInvoices' | translate }}</h6>
-          </div>
-          <div class="activity-list">
-            <div *ngFor="let invoice of recentActivity.recentInvoices" class="activity-item">
-              <div class="activity-info">
-                <span class="activity-name">{{ formatCurrency(invoice.value) }}</span>
-                <span class="activity-detail">{{ invoice.user }}</span>
-              </div>
-              <div class="activity-meta">
-                <span [class]="'badge ' + getStatusBadgeClass(invoice.status)">{{ translateInvoiceStatus(invoice.status) }}</span>
-                <small>{{ formatDate(invoice.createdAt) }}</small>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recent Contracts -->
-        <div class="activity-card">
-          <div class="activity-header">
-            <svg viewBox="0 0 16 16">
-              <use xlink:href="./assets/icons/bootstrap-icons.svg#file-earmark-plus"/>
-            </svg>
-            <h6>{{ 'dashboard.recentContracts' | translate }}</h6>
-          </div>
-          <div class="activity-list">
-            <div *ngFor="let contract of recentActivity.recentContracts" class="activity-item">
-              <div class="activity-info">
-                <span class="activity-name">{{ formatCurrency(contract.value) }}</span>
-                <span class="activity-detail">{{ contract.user }}</span>
-              </div>
-              <div class="activity-meta">
-                <span [class]="'badge ' + getStatusBadgeClass(contract.status)">{{ contract.status }}</span>
-                <small>{{ formatDate(contract.createdAt) }}</small>
-              </div>
-            </div>
-          </div>
+          <div class="log-badge" [class]="'badge-' + log.level.toLowerCase()">{{ log.level }}</div>
         </div>
       </div>
     </div>

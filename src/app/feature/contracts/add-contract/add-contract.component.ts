@@ -32,6 +32,7 @@ import Swal from 'sweetalert2';
 import { CurrencyFormatPipe } from '../../../shared/pipes/custom-currency.pipe';
 import { TranslationService } from '../../../shared/services/translation.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-add-contract',
@@ -88,6 +89,8 @@ export class AddContractComponent implements OnInit {
 
   contractStatus = ContractStatus;
   statusOptions = Object.values(ContractStatus);
+  alphabet: string[] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  codePrefixError: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -131,8 +134,37 @@ export class AddContractComponent implements OnInit {
       status: ['PENDING', Validators.required],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
-      codePrefix: ['', [Validators.maxLength(3)]],
+      codeLetter1: ['', Validators.required],
+      codeLetter2: ['', Validators.required],
+      codeLetter3: ['', Validators.required],
+      businessSector: ['general', Validators.required],
     });
+
+    // Validar prefijo con debounce
+    this.contractForm.valueChanges
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged((prev, curr) => 
+          prev.codeLetter1 === curr.codeLetter1 &&
+          prev.codeLetter2 === curr.codeLetter2 &&
+          prev.codeLetter3 === curr.codeLetter3
+        )
+      )
+      .subscribe(() => {
+        const codePrefix = this.getCodePreview();
+        if (codePrefix && codePrefix.length === 3) {
+          this.validateCodePrefixAvailability(codePrefix);
+        } else {
+          this.codePrefixError = '';
+        }
+      });
+  }
+
+  getCodePreview(): string {
+    const l1 = this.contractForm.get('codeLetter1')?.value;
+    const l2 = this.contractForm.get('codeLetter2')?.value;
+    const l3 = this.contractForm.get('codeLetter3')?.value;
+    return (l1 && l2 && l3) ? `${l1}${l2}${l3}` : '';
   }
 
   calculateContractValue(pkgId: string) {
@@ -367,13 +399,13 @@ export class AddContractComponent implements OnInit {
       startDate: formValues.startDate,
       endDate: formValues.endDate,
       status: formValues.status || ContractStatus.DRAFT,
-      codePrefix: formValues.codePrefix?.toUpperCase() || undefined,
+      codePrefix: this.getCodePreview() || undefined,
+      businessSector: formValues.businessSector,
     };
 
     this.contractService.createContract(payload).subscribe({
       next: (response: Contract) => {
         this.showStepIcons(true, true, true);
-        console.log('Contrato creado con éxito:', response);
 
         Swal.fire({
           icon: 'success',
@@ -406,5 +438,20 @@ export class AddContractComponent implements OnInit {
 
   onCancel(): void {
     this.close.emit();
+  }
+
+  private validateCodePrefixAvailability(codePrefix: string): void {
+    this.contractService.validateCodePrefix(codePrefix).subscribe({
+      next: (response) => {
+        if (!response.isAvailable) {
+          this.codePrefixError = response.message || 'Este prefijo no está disponible';
+        } else {
+          this.codePrefixError = '';
+        }
+      },
+      error: () => {
+        this.codePrefixError = 'Error al validar el prefijo';
+      }
+    });
   }
 }

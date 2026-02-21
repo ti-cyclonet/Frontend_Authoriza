@@ -240,12 +240,9 @@ export class UserDetailsComponent implements OnChanges {
       };
     }
 
-    console.log('Updating user with data:', updateData);
-
     // Llamar al servicio para actualizar
     this.userService.updateUser(this.user.id, updateData).subscribe({
       next: (updatedUser) => {
-        console.log('User updated successfully:', updatedUser);
         this.user = updatedUser;
         this.originalUser = JSON.parse(JSON.stringify(this.user));
         this.user.strStatus = 'ACTIVE';

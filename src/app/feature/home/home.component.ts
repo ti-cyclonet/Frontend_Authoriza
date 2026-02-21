@@ -103,7 +103,43 @@ export class HomeComponent implements OnInit {
   }
 
   formatDate(date: string): string {
-    return new Date(date).toLocaleDateString('es-CO');
+    return new Date(date).toLocaleDateString('es-CO', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  getLogIcon(action: string): string {
+    const iconMap: { [key: string]: string } = {
+      'USER_CREATED': 'person-plus-fill',
+      'USER_ACTIVATED': 'person-check-fill',
+      'USER_DEACTIVATED': 'person-x-fill',
+      'USER_DELETED': 'person-dash-fill',
+      'CONTRACT_ACTIVATED': 'file-earmark-check-fill',
+      'CONTRACT_DEACTIVATED': 'file-earmark-x-fill',
+      'LOGIN': 'box-arrow-in-right',
+      'LOGOUT': 'box-arrow-right',
+      'PDF_GENERATED': 'file-pdf-fill'
+    };
+    return iconMap[action] || 'info-circle-fill';
+  }
+
+  getLogActionLabel(action: string): string {
+    const labelMap: { [key: string]: string } = {
+      'USER_CREATED': 'Usuario creado',
+      'USER_ACTIVATED': 'Usuario activado',
+      'USER_DEACTIVATED': 'Usuario desactivado',
+      'USER_DELETED': 'Usuario eliminado',
+      'CONTRACT_ACTIVATED': 'Contrato activado',
+      'CONTRACT_DEACTIVATED': 'Contrato desactivado',
+      'LOGIN': 'Inicio de sesión',
+      'LOGOUT': 'Cierre de sesión',
+      'PDF_GENERATED': 'PDF generado'
+    };
+    return labelMap[action] || action;
   }
 
   initChartOptions() {
@@ -143,37 +179,5 @@ export class HomeComponent implements OnInit {
         borderWidth: 0
       }]
     };
-
-    // Invoice Status Chart
-    this.invoiceStatusChartData = {
-      labels: this.stats.invoices.byStatus.map(status => status.status),
-      datasets: [{
-        data: this.stats.invoices.byStatus.map(status => status.count),
-        backgroundColor: [
-          '#10b981',
-          '#3b82f6',
-          '#ef4444',
-          '#f59e0b',
-          '#8b5cf6'
-        ],
-        borderWidth: 0
-      }]
-    };
-
-    // Monthly Revenue Chart
-    if (this.stats.invoices.monthlyRevenue.length > 0) {
-      this.monthlyRevenueChartData = {
-        labels: this.stats.invoices.monthlyRevenue.map(item => item.month),
-        datasets: [{
-          label: this.translationService.translate('dashboard.revenue'),
-          data: this.stats.invoices.monthlyRevenue.map(item => item.revenue),
-          backgroundColor: 'rgba(102, 126, 234, 0.1)',
-          borderColor: '#667eea',
-          borderWidth: 2,
-          fill: true,
-          tension: 0.4
-        }]
-      };
-    }
   }
 }

@@ -280,6 +280,22 @@
                     </div>
                   </div>
                 </div>
+
+                <!-- Usuario Principal y Código de Empresa -->
+                <div class="row">
+                  <div class="col-md-6 mb-2 form-group">
+                    <label>{{ 'userTypes.principal' | translate }}</label>
+                    <span class="form-control-plaintext">
+                      {{ user.isPrincipal ? 'Sí' : 'No' }}
+                    </span>
+                  </div>
+                  <div class="col-md-6 mb-2 form-group" *ngIf="user.isPrincipal">
+                    <label>{{ 'userWizard.step1.companyCode' | translate }}</label>
+                    <span class="form-control-plaintext">
+                      {{ user.strCompanyCode || 'No especificado' }}
+                    </span>
+                  </div>
+                </div>
               </div>
 
               <!-- GENERAL DATA -->

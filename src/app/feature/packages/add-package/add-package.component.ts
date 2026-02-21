@@ -131,15 +131,15 @@ export class AddPackageComponent {
 
   async onAddRole(rol: Rol) {
     const { value: formValues } = await Swal.fire({
-      title: `Agregar configuración para el rol: <b>${rol.strName}</b>`,
+      title: this.translationService.translate('packages.createPackage.addRoleConfig').replace('{roleName}', `<b>${rol.strName}</b>`),
       html: `
-      <input id="swal-quantity" type="number" min="1" class="swal2-input" placeholder="Cantidad">
-      <input id="swal-price" type="number" min="0" step="0.01" class="swal2-input" placeholder="Precio unitario (COP)">
+      <input id="swal-quantity" type="number" min="1" class="swal2-input" placeholder="${this.translationService.translate('packages.createPackage.quantity')}">
+      <input id="swal-price" type="number" min="0" step="0.01" class="swal2-input" placeholder="${this.translationService.translate('packages.createPackage.unitPrice')} (COP)">
     `,
       focusConfirm: false,
       showCancelButton: true,
-      confirmButtonText: 'Agregar',
-      cancelButtonText: 'Cancelar',
+      confirmButtonText: this.translationService.translate('packages.createPackage.add'),
+      cancelButtonText: this.translationService.translate('common.cancel'),
       preConfirm: () => {
         const quantity = parseInt(
           (document.getElementById('swal-quantity') as HTMLInputElement)?.value
@@ -149,7 +149,7 @@ export class AddPackageComponent {
         );
 
         if (!quantity || isNaN(unitPrice) || quantity <= 0 || unitPrice < 0) {
-          Swal.showValidationMessage('Por favor ingresa valores válidos');
+          Swal.showValidationMessage(this.translationService.translate('packages.createPackage.enterValidValues'));
           return;
         }
 
@@ -171,8 +171,8 @@ export class AddPackageComponent {
 
       Swal.fire({
         icon: 'success',
-        title: 'Rol agregado',
-        text: 'Rol agregado exitosamente',
+        title: this.translationService.translate('packages.createPackage.roleAdded'),
+        text: this.translationService.translate('packages.createPackage.roleAddedSuccess'),
         timer: 2000,
         showConfirmButton: false,
       });
@@ -320,9 +320,9 @@ export class AddPackageComponent {
       error: (error) => {
         Swal.fire({
           icon: 'error',
-          title: 'Error creando paquete',
-          text: 'Hubo un problema guardando tus datos. Por favor intenta de nuevo.',
-          confirmButtonText: 'Aceptar',
+          title: this.translationService.translate('packages.createPackage.errorCreating'),
+          text: this.translationService.translate('packages.createPackage.errorSaving'),
+          confirmButtonText: this.translationService.translate('common.ok'),
         });
         console.error('Error creating package:', error);
       },
@@ -343,12 +343,12 @@ export class AddPackageComponent {
 
   viewRole(config: RoleConfigurationDTO): void {
     Swal.fire({
-      title: 'Información del Rol',
+      title: this.translationService.translate('packages.createPackage.roleInfo'),
       html: `
-      <strong>Aplicación:</strong> ${this.getApplicationName(config.rolId)}<br>
-      <strong>Nombre del Rol:</strong> ${config.roleName}<br>
-      <strong>Cantidad:</strong> ${config.totalAccount}<br>
-      <strong>Precio Unitario:</strong> $${config.price} COP
+      <strong>${this.translationService.translate('packages.createPackage.application')}:</strong> ${this.getApplicationName(config.rolId)}<br>
+      <strong>${this.translationService.translate('packages.createPackage.roleName')}:</strong> ${config.roleName}<br>
+      <strong>${this.translationService.translate('packages.createPackage.quantity')}:</strong> ${config.totalAccount}<br>
+      <strong>${this.translationService.translate('packages.createPackage.unitPrice')}:</strong> $${config.price} COP
     `,
       icon: 'info',
     });
@@ -356,14 +356,14 @@ export class AddPackageComponent {
 
   editRole(config: RoleConfigurationDTO): void {
     Swal.fire({
-      title: 'Editar Rol',
+      title: this.translationService.translate('packages.createPackage.editRole'),
       html: `
-      <input id="quantity" class="swal2-input" placeholder="Cantidad" value="${config.totalAccount}" />
-      <input id="price" class="swal2-input" placeholder="Precio unitario (COP)" value="${config.price}" />
+      <input id="quantity" class="swal2-input" placeholder="${this.translationService.translate('packages.createPackage.quantity')}" value="${config.totalAccount}" />
+      <input id="price" class="swal2-input" placeholder="${this.translationService.translate('packages.createPackage.unitPrice')} (COP)" value="${config.price}" />
     `,
       showCancelButton: true,
-      confirmButtonText: 'Actualizar',
-      cancelButtonText: 'Cancelar',
+      confirmButtonText: this.translationService.translate('packages.createPackage.update'),
+      cancelButtonText: this.translationService.translate('common.cancel'),
       preConfirm: () => {
         const quantity = Number(
           (<HTMLInputElement>Swal.getPopup()!.querySelector('#quantity')).value
@@ -372,7 +372,7 @@ export class AddPackageComponent {
           (<HTMLInputElement>Swal.getPopup()!.querySelector('#price')).value
         );
         if (isNaN(quantity) || isNaN(price)) {
-          Swal.showValidationMessage('Por favor ingresa números válidos.');
+          Swal.showValidationMessage(this.translationService.translate('packages.createPackage.enterValidNumbers'));
           return;
         }
         return { quantity, unitPrice: price };

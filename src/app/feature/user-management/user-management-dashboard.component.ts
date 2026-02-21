@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { UserService } from '../../shared/services/user/user.service';
 import { UserDependenciesService } from '../../shared/services/user-dependencies/user-dependencies.service';
 import { UserRolesService } from '../../shared/services/user-roles/user-roles.service';
+import { ContractService } from '../../shared/services/contracts/contract.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { User } from '../../shared/model/user';
 import { UserCreationWizardComponent } from './user-creation-wizard/user-creation-wizard.component';
@@ -18,6 +19,7 @@ interface ExtendedUser extends User {
   dependentCount: number;
   avatar?: string;
   email?: string;
+  hasContracts?: boolean;
 }
 
 @Component({
@@ -73,6 +75,7 @@ export class UserManagementDashboardComponent implements OnInit {
     private userService: UserService,
     private userDependenciesService: UserDependenciesService,
     private userRolesService: UserRolesService,
+    private contractService: ContractService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -88,6 +91,7 @@ export class UserManagementDashboardComponent implements OnInit {
       next: (users) => {
         this.processUsers(users);
         this.loadUserDependencies();
+        this.loadUserContracts();
         this.calculateStats();
         this.applyFilters();
         this.isLoading = false;
@@ -143,6 +147,27 @@ export class UserManagementDashboardComponent implements OnInit {
     });
   }
 
+  loadUserContracts(): void {
+    this.contractService.findAll(1, 1000).subscribe({
+      next: (response: any) => {
+        const usersWithContracts = new Set(
+          response.data.map((c: any) => c.user.id)
+        );
+        
+        this.users.forEach(user => {
+          user.hasContracts = usersWithContracts.has(user.id);
+        });
+        
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.users.forEach(user => {
+          user.hasContracts = false;
+        });
+      }
+    });
+  }
+
   private calculateStats(): void {
     this.totalUsers = this.users.length;
     this.activeUsers = this.users.filter(u => u.strStatus === 'ACTIVE').length;
@@ -178,7 +203,9 @@ export class UserManagementDashboardComponent implements OnInit {
     }
 
     // Filtro por estado
-    if (this.statusFilter !== 'all') {
+    if (this.statusFilter === 'principals') {
+      filtered = filtered.filter(u => u.hasContracts);
+    } else if (this.statusFilter !== 'all') {
       filtered = filtered.filter(u => u.strStatus === this.statusFilter);
     }
 
@@ -291,13 +318,11 @@ export class UserManagementDashboardComponent implements OnInit {
 
   // Acciones de usuario
   viewUser(user: ExtendedUser): void {
-    console.log('User data:', user);
     this.selectedUser = user;
     this.showViewModal = true;
   }
 
   editUser(user: ExtendedUser): void {
-    console.log('Opening edit modal for user:', user);
     this.selectedUser = user;
     this.showEditModal = true;
     this.cdr.detectChanges();

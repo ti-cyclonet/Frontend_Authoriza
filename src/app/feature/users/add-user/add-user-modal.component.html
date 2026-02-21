@@ -94,10 +94,17 @@
                   <div class="col-md-4">
                     <div class="form-group">
                       <label for="documentType">{{ 'users.modal.documentType' | translate }}</label>
+                      <input 
+                        *ngIf="isLegalEntity"
+                        type="text"
+                        value="Tax ID Number"
+                        class="form-control mb-2"
+                        readonly
+                        style="background-color: #e9ecef; cursor: not-allowed;">
                       <select 
+                        *ngIf="!isLegalEntity"
                         formControlName="strDocumentType" 
-                        class="form-select mb-2"
-                        [disabled]="basicDataForm.value.strPersonType === 'J'">
+                        class="form-select mb-2">
                         <option value="CC">Cédula de Ciudadanía</option>
                         <option value="CE">Cédula de Extranjería</option>
                         <option value="TI">Tarjeta de Identidad</option>

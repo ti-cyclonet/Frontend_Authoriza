@@ -394,6 +394,17 @@
   font-weight: 600;
   color: var(--marine-blue);
   margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.principal-user-icon {
+  width: 1rem;
+  height: 1rem;
+  fill: #fbbf24;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+  flex-shrink: 0;
 }
 
 .user-email {
@@ -481,21 +492,27 @@
 
 .action-buttons .btn {
   padding: 0.5rem;
-  border: none;
-  background: transparent;
+  border: 1px solid var(--sidebar-background-color);
+  background: white;
   transition: all 0.2s ease;
-  color: var(--cool-gray);
+  color: var(--sidebar-background-color);
+  border-radius: 6px;
 }
 
 .action-buttons .btn svg {
   width: 1.25rem;
   height: 1.25rem;
-  fill: currentColor;
+  fill: var(--sidebar-background-color);
 }
 
 .action-buttons .btn:hover {
   transform: scale(1.2);
-  color: var(--purplish-blue);
+  background: var(--sidebar-background-color);
+  color: white;
+}
+
+.action-buttons .btn:hover svg {
+  fill: white;
 }
 
 /* Vista de Tarjetas */
@@ -599,6 +616,9 @@
 
 .card-actions .btn {
   padding: 0.5rem;
+  border: 1px solid var(--sidebar-background-color);
+  background: white;
+  color: var(--sidebar-background-color);
   border-radius: 4px;
   transition: all 0.2s ease;
   flex: 1;
@@ -608,17 +628,17 @@
 .card-actions .btn svg {
   width: 1rem;
   height: 1rem;
-  fill: currentColor;
+  fill: var(--sidebar-background-color);
 }
 
 .card-actions .btn:hover {
   transform: scale(1.1);
+  background: var(--sidebar-background-color);
+  color: white;
 }
 
-.card-actions .btn-outline-danger:hover {
-  background: var(--strawberry-red);
-  color: white;
-  border-color: var(--strawberry-red);
+.card-actions .btn:hover svg {
+  fill: white;
 }
 
 /* Paginación */

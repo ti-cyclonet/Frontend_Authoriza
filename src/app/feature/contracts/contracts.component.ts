@@ -74,15 +74,8 @@ export class ContractsComponent implements OnInit {
   }
 
   activateContract(contract: Contract): void {
-    console.log('=== ACTIVATING CONTRACT ===');
-    console.log('Contract data:', contract);
-    console.log('PDF URL:', contract.pdfUrl);
-    console.log('User:', contract.user);
-    console.log('User dependent count:', contract.user?.dependentCount);
-    
     // Validar que tenga usuarios dependientes
     if (!contract.user || !contract.user.dependentCount || contract.user.dependentCount === 0) {
-      console.log('VALIDATION FAILED: No dependent users');
       Swal.fire({
         title: 'No se puede activar',
         text: 'Debe crear al menos una cuenta de usuario dependiente antes de activar el contrato.',
@@ -94,7 +87,6 @@ export class ContractsComponent implements OnInit {
 
     // Validar que tenga PDF generado
     if (!contract.pdfUrl || contract.pdfUrl.trim() === '' || contract.pdfUrl === null) {
-      console.log('VALIDATION FAILED: No PDF URL');
       Swal.fire({
         title: 'No se puede activar',
         text: 'Debe generar el PDF del contrato antes de activarlo.',
@@ -104,7 +96,6 @@ export class ContractsComponent implements OnInit {
       return;
     }
 
-    console.log('VALIDATIONS PASSED - Showing spinner');
     // Mostrar spinner mientras valida
     Swal.fire({
       title: 'Activando contrato...',
@@ -115,10 +106,8 @@ export class ContractsComponent implements OnInit {
       }
     });
 
-    console.log('Making API call...');
     this.contractService.activateContract(contract.id).subscribe({
       next: () => {
-        console.log('API call successful');
         Swal.fire({
           title: '¡Activado!',
           text: 'El contrato ha sido activado exitosamente.',
@@ -128,7 +117,6 @@ export class ContractsComponent implements OnInit {
         this.loadContracts();
       },
       error: (error) => {
-        console.log('API call failed:', error);
         const errorMsg = error?.error?.message || 'Error al activar el contrato';
         Swal.fire({
           title: 'Error',

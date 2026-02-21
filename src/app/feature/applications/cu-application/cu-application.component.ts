@@ -101,7 +101,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
           });
 
           if (!this.applicationForm.valid) {
-            console.log('Formulario NO válido en modo edición.');
+            // Formulario NO válido en modo edición.
           }
 
           this.imageTmp = application.strUrlImage || '';
@@ -116,11 +116,11 @@ export class CuApplicationComponent implements OnInit, OnChanges {
           this.applicationForm.markAsDirty();
 
           if (this.applicationForm.valid) {
-            console.log('Formulario válido en modo edición.');
+            // Formulario válido en modo edición.
           }
         },
         error: (error) => {
-          console.error('Error loading application data:', error);
+          // Error loading application data
         },
       });
   }
@@ -135,13 +135,15 @@ export class CuApplicationComponent implements OnInit, OnChanges {
   
         // Validaciones
         if (!file.type.includes('image')) {
-          console.error('El archivo seleccionado no es una imagen.');
+          alert(this.translationService.translate('apps.createApp.invalidFileType'));
+          input.value = '';
           return;
         }
   
         const maxSize = 10 * 1024 * 1024;
         if (file.size > maxSize) {
-          console.error('El archivo es demasiado grande. Máximo permitido: 10MB');
+          alert(this.translationService.translate('apps.createApp.fileTooLarge'));
+          input.value = '';
           return;
         }
   
@@ -183,7 +185,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
         });
       }
     } catch (error) {
-      console.error('Error al seleccionar el archivo:', error);
+      // Error al seleccionar el archivo
     }
   }
   
@@ -226,10 +228,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
             this.isBlueVisible = true;
             setTimeout(() => this.cdr.detectChanges(), 0);
             if (this.selectedFile) {
-              console.log(
-                'SELECTED FILE: ',
-                URL.createObjectURL(this.selectedFile)
-              );
+              // Archivo seleccionado
             } else {
               // console.log('No file selected.');
             }
@@ -247,7 +246,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
         }
       },
       error: (error) => {
-        console.error('Error checking application name:', error);
+        // Error checking application name
         this.nameAvailabilityMessage = this.translationService.translate('apps.createApp.errorCheckingName');
       },
     });

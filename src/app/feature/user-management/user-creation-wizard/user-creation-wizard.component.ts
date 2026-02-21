@@ -53,6 +53,9 @@ export class UserCreationWizardComponent implements OnInit {
   basicInfoForm!: FormGroup;
   accountConfigForm!: FormGroup;
 
+  // Alfabeto para selección de código
+  alphabet: string[] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
   // Datos para selección
   availablePrincipals: any[] = [];
   availablePackages: Package[] = [];
@@ -219,7 +222,17 @@ export class UserCreationWizardComponent implements OnInit {
     return (this.currentStep / this.steps.length) * 100;
   }
 
-  // Selección de tipos
+  onPrincipalChange(): void {
+    // Método eliminado - ya no se usa
+  }
+
+  getCompanyCodePreview(): string {
+    return '';
+  }
+
+  updateCodePreview(): void {
+    // Trigger change detection
+  }
   selectPersonType(type: string): void {
     this.basicInfoForm.patchValue({ personType: type });
   }
@@ -312,9 +325,11 @@ export class UserCreationWizardComponent implements OnInit {
   // Creación del usuario
   createUser(): void {
     if (!this.canProceedToNext()) return;
+    this.proceedWithUserCreation();
+  }
 
+  private proceedWithUserCreation(): void {
     this.isCreating = true;
-
     const userData = this.buildUserData();
 
     this.userService.createFullUser(userData).subscribe({
@@ -330,7 +345,6 @@ export class UserCreationWizardComponent implements OnInit {
 
   private buildUserData(): any {
     const basicInfo = this.basicInfoForm.value;
-    const accountConfig = this.accountConfigForm.value;
 
     const userData: any = {
       user: {

@@ -15,6 +15,7 @@ export interface Contract {
   deletedAt: string | null;
   pdfUrl?: string;
   codePrefix?: string;
+  businessSector?: string;
   user: User;
   package: Package;
 }

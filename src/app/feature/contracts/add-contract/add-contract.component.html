@@ -505,17 +505,48 @@
               </div>
 
               <div class="row mb-3">
-                <div class="col-md-6">
-                  <label class="form-label">Prefijo de Código (3 letras)</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    formControlName="codePrefix"
-                    maxlength="3"
-                    placeholder="Ej: ABC"
-                    style="text-transform: uppercase"
-                  />
-                  <small class="text-muted">Este prefijo se usará para generar códigos de materiales, productos, etc.</small>
+                <div class="col-md-12">
+                  <label class="form-label">{{ 'contracts.codePrefix' | translate }}</label>
+                  <div class="d-flex align-items-center gap-2">
+                    <select class="form-select" style="width: 80px" formControlName="codeLetter1">
+                      <option value="">-</option>
+                      <option *ngFor="let letter of alphabet" [value]="letter">{{ letter }}</option>
+                    </select>
+                    <select class="form-select" style="width: 80px" formControlName="codeLetter2">
+                      <option value="">-</option>
+                      <option *ngFor="let letter of alphabet" [value]="letter">{{ letter }}</option>
+                    </select>
+                    <select class="form-select" style="width: 80px" formControlName="codeLetter3">
+                      <option value="">-</option>
+                      <option *ngFor="let letter of alphabet" [value]="letter">{{ letter }}</option>
+                    </select>
+                    <span class="ms-3 fw-bold" style="font-size: 1.1rem">{{ getCodePreview() || '---' }}</span>
+                  </div>
+                  <small class="text-muted">{{ 'contracts.codePrefixHelp' | translate }}</small>
+                  <div *ngIf="codePrefixError" class="text-danger mt-1" style="font-size: 0.8rem">
+                    <i class="bi bi-exclamation-triangle"></i> {{ codePrefixError }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-md-12">
+                  <label class="form-label">{{ 'contracts.businessSector' | translate }}</label>
+                  <select class="form-select" formControlName="businessSector">
+                    <option value="general">{{ 'contracts.sectors.general' | translate }}</option>
+                    <option value="restaurant">{{ 'contracts.sectors.restaurant' | translate }}</option>
+                    <option value="fashion">{{ 'contracts.sectors.fashion' | translate }}</option>
+                    <option value="hardware">{{ 'contracts.sectors.hardware' | translate }}</option>
+                    <option value="retail">{{ 'contracts.sectors.retail' | translate }}</option>
+                    <option value="beauty">{{ 'contracts.sectors.beauty' | translate }}</option>
+                    <option value="electronics">{{ 'contracts.sectors.electronics' | translate }}</option>
+                    <option value="automotive">{{ 'contracts.sectors.automotive' | translate }}</option>
+                    <option value="health">{{ 'contracts.sectors.health' | translate }}</option>
+                    <option value="sports">{{ 'contracts.sectors.sports' | translate }}</option>
+                    <option value="home">{{ 'contracts.sectors.home' | translate }}</option>
+                    <option value="services">{{ 'contracts.sectors.services' | translate }}</option>
+                  </select>
+                  <small class="text-muted">{{ 'contracts.businessSectorHelp' | translate }}</small>
                 </div>
               </div>
             </form>
@@ -586,7 +617,7 @@
               class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width"
               data-bs-toggle="tooltip"
               title="Send"
-              [disabled]="contractForm.invalid"
+              [disabled]="contractForm.invalid || codePrefixError"
               (click)="submitContract()"
             >
               <span class="d-none d-md-inline">{{ 'contracts.send' | translate }}</span>

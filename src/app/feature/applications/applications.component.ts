@@ -137,7 +137,7 @@ export class ApplicationsComponent implements OnInit {
           offset + apps.length + 1;
       },
       error: (error) => {
-        console.error('Error loading applications:', error);
+        // Error loading applications
       }
     });
   }
@@ -203,7 +203,7 @@ export class ApplicationsComponent implements OnInit {
       // 6. Forzar render
       this.cdr.detectChanges();
     } else {
-      console.warn('⚠️ Rol no encontrado en DTO tras crear opción');
+      // Rol no encontrado en DTO tras crear opción
     }
   }
 
@@ -218,7 +218,7 @@ export class ApplicationsComponent implements OnInit {
       this.selectedRol = dtoRol;
       this.selectedMenuOptions = [...(dtoRol.menuOptions || [])];
     } else {
-      console.warn('No se encontró el rol en el DTO para sincronizar.');
+      // No se encontró el rol en el DTO para sincronizar.
     }
   }
 

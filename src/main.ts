@@ -10,4 +10,8 @@ bootstrapApplication(AppComponent, {
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor]), withFetch()),
   ],
-}).catch((err) => console.error(err));
+})
+.then(() => {
+  console.log('🔐 Authoriza corriendo en el puerto 4200');
+})
+.catch((err) => console.error(err));

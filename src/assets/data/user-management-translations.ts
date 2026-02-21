@@ -82,7 +82,11 @@ export const USER_MANAGEMENT_TRANSLATIONS = {
         contactPhone: 'Teléfono de Contacto',
         contactEmail: 'Correo de Contacto',
         taxId: 'NIT/RUT',
-        legalRepresentative: 'Representante Legal'
+        legalRepresentative: 'Representante Legal',
+        isPrincipal: 'Usuario Principal',
+        companyCode: 'Código de Empresa',
+        companyCodeRequired: 'El código de empresa es obligatorio para usuarios principales',
+        companyCodePreview: 'Código generado'
       },
       step2: {
         title: 'Configuración de Cuenta',
@@ -164,6 +168,18 @@ export const USER_MANAGEMENT_TRANSLATIONS = {
       saveChanges: 'Guardar Cambios',
       active: 'Activo',
       inactive: 'Inactivo'
+    },
+    packages: {
+      title: 'Paquetes',
+      description: 'Gestión y configuración de paquetes',
+      addNew: 'Agregar Nuevo Paquete',
+      listView: 'Vista de Lista',
+      cardsView: 'Vista de Tarjetas',
+      roles: 'Roles',
+      priceTotal: 'Precio Total',
+      showing: 'Mostrando',
+      of: 'de',
+      packages: 'paquetes'
     }
   },
   en: {
@@ -249,7 +265,11 @@ export const USER_MANAGEMENT_TRANSLATIONS = {
         contactPhone: 'Contact Phone',
         contactEmail: 'Contact Email',
         taxId: 'Tax ID',
-        legalRepresentative: 'Legal Representative'
+        legalRepresentative: 'Legal Representative',
+        isPrincipal: 'Principal User',
+        companyCode: 'Company Code',
+        companyCodeRequired: 'Company code is required for principal users',
+        companyCodePreview: 'Generated code'
       },
       step2: {
         title: 'Account Configuration',
@@ -331,6 +351,18 @@ export const USER_MANAGEMENT_TRANSLATIONS = {
       saveChanges: 'Save Changes',
       active: 'Active',
       inactive: 'Inactive'
+    },
+    packages: {
+      title: 'Packages',
+      description: 'Package management and configuration',
+      addNew: 'Add New Package',
+      listView: 'List View',
+      cardsView: 'Cards View',
+      roles: 'Roles',
+      priceTotal: 'Total Price',
+      showing: 'Showing',
+      of: 'of',
+      packages: 'packages'
     }
   }
 };

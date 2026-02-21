@@ -43,6 +43,9 @@
             <button class="btn btn-sm" [class.active]="statusFilter === 'all'" (click)="setStatusFilter('all')">
               {{ 'userManagement.filters.all' | translate }}
             </button>
+            <button class="btn btn-sm" [class.active]="statusFilter === 'principals'" (click)="setStatusFilter('principals')">
+              {{ 'userManagement.filters.principals' | translate }}
+            </button>
             <button class="btn btn-sm" [class.active]="statusFilter === 'ACTIVE'" (click)="setStatusFilter('ACTIVE')">
               {{ 'users.status.ACTIVE' | translate }}
             </button>
@@ -108,7 +111,12 @@
                   <img [src]="getUserAvatar(user)" [alt]="user.displayName" />
                 </div>
                 <div class="user-details">
-                  <div class="user-name">{{ user.displayName }}</div>
+                  <div class="user-name">
+                    {{ user.displayName }}
+                    <svg *ngIf="user.hasContracts" class="principal-user-icon" viewBox="0 0 16 16" title="Usuario principal con contratos">
+                      <use xlink:href="./assets/icons/bootstrap-icons.svg#award-fill" />
+                    </svg>
+                  </div>
                   <div class="user-email">{{ user.email || user.strUserName }}</div>
                 </div>
               </div>
@@ -171,7 +179,12 @@
           </div>
         </div>
         <div class="card-body">
-          <h6 class="user-name">{{ user.displayName }}</h6>
+          <h6 class="user-name">
+            {{ user.displayName }}
+            <svg *ngIf="user.hasContracts" class="principal-user-icon" viewBox="0 0 16 16" title="Usuario principal con contratos">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#award-fill" />
+            </svg>
+          </h6>
           <p class="user-username">{{ user.strUserName }}</p>
         </div>
         <div class="card-actions">
