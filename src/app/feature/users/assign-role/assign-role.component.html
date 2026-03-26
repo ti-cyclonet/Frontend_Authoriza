@@ -4,7 +4,7 @@
       <input
         type="text"
         class="form-control"
-        placeholder="Search by application"
+        placeholder="{{ 'users.assignRole.searchApp' | translate }}"
         [formControl]="appNameControl"
       />
     </div>
@@ -12,7 +12,7 @@
       <input
         type="text"
         class="form-control"
-        placeholder="Search by role name"
+        placeholder="{{ 'users.assignRole.searchRole' | translate }}"
         [formControl]="roleNameControl"
       />
     </div>
@@ -35,7 +35,7 @@
         >
           <use xlink:href="./assets/icons/bootstrap-icons.svg#check2-circle" />
         </svg>
-        Assign
+        {{ 'users.assignRole.assign' | translate }}
       </button>
     </div>
   </div>
@@ -60,7 +60,7 @@
       >
         <use xlink:href="./assets/icons/bootstrap-icons.svg#arrow-left"></use>
       </svg>
-      <span class="d-none d-md-inline">Previous</span>
+      <span class="d-none d-md-inline">{{ 'common.previous' | translate }}</span>
     </button>
 
     <button
@@ -71,7 +71,7 @@
       <svg fill="currentColor" width="16" height="16" class="status-icon">
         <use xlink:href="./assets/icons/bootstrap-icons.svg#slash-circle"></use>
       </svg>
-      Cancel
+      {{ 'common.cancel' | translate }}
     </button>
 
     <button
@@ -79,7 +79,7 @@
       [disabled]="page * pageSize >= flattenedRoles.length"
       (click)="page = page + 1"
     >
-      <span class="d-none d-md-inline">Next</span>
+      <span class="d-none d-md-inline">{{ 'common.next' | translate }}</span>
       <svg
         fill="currentColor"
         viewBox="0 0 16 16"

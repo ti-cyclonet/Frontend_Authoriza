@@ -1,5 +1,5 @@
 import { ApplicationConfig } from '@angular/core';
-import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withInterceptorsFromDi, withFetch } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -11,7 +11,8 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(
       withInterceptors([authInterceptor]),   // ⬅ funcional
-      withInterceptorsFromDi()               // ⬅ para clase (LoadingInterceptor)
+      withInterceptorsFromDi(),              // ⬅ para clase (LoadingInterceptor)
+      withFetch()                            // ⬅ para mejor rendimiento
     ),
     {
       provide: HTTP_INTERCEPTORS,

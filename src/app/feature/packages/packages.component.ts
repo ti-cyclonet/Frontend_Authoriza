@@ -6,11 +6,14 @@ import { PackageService } from '../../shared/services/packages/package.service';
 import { AddPackageComponent } from './add-package/add-package.component';
 import 'bootstrap';
 import Swal from 'sweetalert2';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { CyclonAssistantComponent } from '../../shared/components/cyclon-assistant/cyclon-assistant.component';
+import { TranslationService } from '../../shared/services/translation.service';
 
 @Component({
   selector: 'app-packages',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, AddPackageComponent],
+  imports: [CommonModule, CurrencyPipe, AddPackageComponent, TranslatePipe, CyclonAssistantComponent],
   templateUrl: './packages.component.html',
   styleUrls: ['./packages.component.css'],
 })
@@ -23,7 +26,7 @@ export class PackagesComponent implements OnInit {
   itemsPerPageList: number = 10;
   itemsPerPageCards: number = 6;
 
-  constructor(private packageService: PackageService) {}
+  constructor(private packageService: PackageService, private translationService: TranslationService) {}
 
   ngOnInit(): void {
     this.loadPackages();
@@ -109,11 +112,63 @@ export class PackagesComponent implements OnInit {
     this.loadPackages();
     Swal.fire({
       icon: 'success',
-      title: 'Package created',
-      text: 'The package was created successfully',
+      title: this.translationService.translate('packages.success.created'),
+      text: this.translationService.translate('packages.success.createdMessage'),
       showConfirmButton: false,
       timer: 2000,
       timerProgressBar: true,
     });
+  }
+
+  deletePackage(pkg: Package) {
+    Swal.fire({
+      title: 'Eliminar Paquete',
+      html: `¿Estás seguro de que quieres eliminar el paquete <strong>"${pkg.name}"</strong>?<br><br><small class="text-muted">Esta acción no se puede deshacer. El paquete será eliminado permanentemente si no tiene contratos activos.</small>`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: '¡Sí, eliminarlo!',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.packageService.deletePackage(pkg.id).subscribe({
+          next: (response) => {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Eliminado!',
+              text: response.message,
+              showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: true,
+            });
+            this.loadPackages();
+          },
+          error: (error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'No se puede eliminar el paquete',
+              text: error.error?.message || 'Ocurrió un error al eliminar el paquete',
+              confirmButtonText: 'OK'
+            });
+          }
+        });
+      }
+    });
+  }
+
+  // Contexto para CYCLON
+  get cyclonContext() {
+    return {
+      currentPage: this.currentPage,
+      totalPages: this.totalPages,
+      totalPackages: this.packages.length,
+      viewMode: this.viewMode,
+      showingModal: this.showAddPackageModal
+    };
+  }
+
+  get currentLanguage(): string {
+    return localStorage.getItem('language') || 'en';
   }
 }

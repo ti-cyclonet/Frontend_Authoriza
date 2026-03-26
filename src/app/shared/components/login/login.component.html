@@ -43,7 +43,7 @@
             </a>
           </div>
           <br />
-          <h3 class="text-center custom-welcome">Welcome</h3>
+          <h3 class="text-center custom-welcome">{{ currentLanguage === 'es' ? 'Bienvenido' : 'Welcome' }}</h3>
           <hr style="border: 2px solid rgb(255, 255, 255)" />
 
           <!-- Campo Email -->
@@ -67,7 +67,7 @@
               <input
                 type="email"
                 class="form-control custom-search-input border-start-0"
-                placeholder="Email"
+                [placeholder]="currentLanguage === 'es' ? 'Correo electrónico' : 'Email'"
                 formControlName="username"
                 autocomplete="username"
               />
@@ -79,12 +79,12 @@
                 loginForm.get('username')?.invalid
               "
             >
-              <small *ngIf="loginForm.get('username')?.errors?.['required']"
-                >Email is required.</small
-              >
-              <small *ngIf="loginForm.get('username')?.errors?.['email']"
-                >Invalid email format.</small
-              >
+              <small *ngIf="loginForm.get('username')?.errors?.['required']">
+                {{ currentLanguage === 'es' ? 'El correo electrónico es requerido.' : 'Email is required.' }}
+              </small>
+              <small *ngIf="loginForm.get('username')?.errors?.['email']">
+                {{ currentLanguage === 'es' ? 'Formato de correo inválido.' : 'Invalid email format.' }}
+              </small>
             </div>
           </div>
 
@@ -107,7 +107,7 @@
               <input
                 [type]="showPassword ? 'text' : 'password'"
                 class="form-control custom-search-input border-start-0 border-end-0"
-                placeholder="Password"
+                [placeholder]="currentLanguage === 'es' ? 'Contraseña' : 'Password'"
                 formControlName="password"
                 autocomplete="current-password"
               />
@@ -143,10 +143,10 @@
               "
             >
               <small *ngIf="loginForm.get('password')?.errors?.['required']">
-                Password is required.
+                {{ currentLanguage === 'es' ? 'La contraseña es requerida.' : 'Password is required.' }}
               </small>
               <small *ngIf="loginForm.get('password')?.errors?.['minlength']">
-                Minimum 6 characters.
+                {{ currentLanguage === 'es' ? 'Mínimo 6 caracteres.' : 'Minimum 6 characters.' }}
               </small>
             </div>
           </div>
@@ -160,13 +160,15 @@
               class="custom-btn"
               [disabled]="loginForm.invalid"
             >
-              Sign in
+              {{ currentLanguage === 'es' ? 'Iniciar sesión' : 'Sign in' }}
             </button>
           </div>
 
           <!-- Link -->
           <div class="text-center mt-3">
-            <a href="#" class="forgot-password-link">Forgot your password?</a>
+            <a href="#" class="forgot-password-link">
+              {{ currentLanguage === 'es' ? '¿Olvidaste tu contraseña?' : 'Forgot your password?' }}
+            </a>
           </div>
         </div>
       </form>
@@ -174,3 +176,9 @@
     <div class="col-md-3 col-lg-4 d-none d-md-block"></div>
   </div>
 </div>
+<!-- CYCLON Assistant -->
+<app-cyclon-assistant 
+  [currentModule]="'login'"
+  [moduleContext]="cyclonContext"
+  [language]="currentLanguage">
+</app-cyclon-assistant>

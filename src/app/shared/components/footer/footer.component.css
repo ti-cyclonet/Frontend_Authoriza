@@ -1,7 +1,11 @@
 .footer {
     background-color: #151616;
     padding: 2px 0px; 
-    padding-right: 15px !important;   
+    padding-right: 15px !important;
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow: hidden;
 }
 /* .footer .small-text {
     font-size: 10px; 

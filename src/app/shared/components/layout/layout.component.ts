@@ -19,6 +19,7 @@ import { Application } from '../../model/application.model';
 import { SpinnerComponent } from '../spinner/spinner.component';
 import { LoadingService } from '../../services/loading.service';
 import { NotificationsComponent } from '../notifications/notifications.component';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-layout',
@@ -66,7 +67,8 @@ export default class LayoutComponent implements OnInit {
     private rolesService: RolesService,
     private userService: UserService,
     private applicationsService: ApplicationsService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private translationService: TranslationService
   ) {
     this.notifications = [];
     if (typeof window !== 'undefined') {
@@ -84,7 +86,7 @@ export default class LayoutComponent implements OnInit {
     this.fetchApplication('Authoriza');    
     if (sessionStorage.getItem('mustChangePassword') === 'true') {
       this.showToast(
-        'Your password is about to expire. You should change it soon.',
+        this.translationService.translate('passwordExpiry.warning'),
         'warning',
         'B',
         1
@@ -124,11 +126,14 @@ export default class LayoutComponent implements OnInit {
                   strUrl: menu?.strUrl ?? '#',
                   strIcon: menu?.strIcon ?? 'default-icon',
                   strType: menu?.strType ?? 'main_menu',
-                  ingOrder: menu?.ingOrder ?? '99',
+                  ingOrder: menu?.ingOrder ?? 99,
                   strState: menu?.strState ?? 'active',
                   strSubmenus: menu?.strSubmenus ?? [],
                 })) || []
             ) || [];
+
+          // Ordenar por ingOrder numérico
+          this.optionsMenu.sort((a, b) => a.ingOrder - b.ingOrder);
         },
         (error) => {
           console.error('Error fetching application:', error);

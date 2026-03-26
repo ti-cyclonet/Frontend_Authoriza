@@ -8,11 +8,12 @@ import {
 import { CommonModule } from '@angular/common';
 import { ApplicationsService } from '../../../shared/services/applications/applications.service';
 import { MenuOption } from '../../../shared/model/menu_option';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-cuoptionmenu',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './cu-optionmenu.component.html',
   styleUrls: ['./cu-optionmenu.component.css'],
 })
@@ -92,7 +93,7 @@ export class CuOptionMenuComponent implements OnInit {
       ingOrder: parseInt(
         this.optionMenuForm.get('order')?.value,
         10
-      ).toString(),
+      ),
       strState: 'TEMPORARY',
       strSubmenus: [],
       hasSubmenu: this.optionMenuForm.get('submenu')?.value === 'yes',

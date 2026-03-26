@@ -1,14 +1,15 @@
-// ... [Importaciones sin cambios] ...
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output,} from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators, } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ApplicationDTO, ApplicationsService } from '../../../shared/services/applications/applications.service';
 import { ChangeDetectorRef } from '@angular/core';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { TranslationService } from '../../../shared/services/translation.service';
 
 @Component({
   selector: 'app-cu-application',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './cu-application.component.html',
   styleUrls: ['./cu-application.component.css'],
 })
@@ -39,8 +40,8 @@ export class CuApplicationComponent implements OnInit, OnChanges {
   constructor(
     private fb: FormBuilder,
     public applicationsService: ApplicationsService,
-    private cdr: ChangeDetectorRef 
-    
+    private cdr: ChangeDetectorRef,
+    private translationService: TranslationService
   ) {
     this.applicationForm = this.fb.group({
       applicationName: ['', Validators.required],
@@ -100,7 +101,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
           });
 
           if (!this.applicationForm.valid) {
-            console.log('Formulario NO válido en modo edición.');
+            // Formulario NO válido en modo edición.
           }
 
           this.imageTmp = application.strUrlImage || '';
@@ -115,11 +116,11 @@ export class CuApplicationComponent implements OnInit, OnChanges {
           this.applicationForm.markAsDirty();
 
           if (this.applicationForm.valid) {
-            console.log('Formulario válido en modo edición.');
+            // Formulario válido en modo edición.
           }
         },
         error: (error) => {
-          console.error('Error loading application data:', error);
+          // Error loading application data
         },
       });
   }
@@ -134,13 +135,15 @@ export class CuApplicationComponent implements OnInit, OnChanges {
   
         // Validaciones
         if (!file.type.includes('image')) {
-          console.error('El archivo seleccionado no es una imagen.');
+          alert(this.translationService.translate('apps.createApp.invalidFileType'));
+          input.value = '';
           return;
         }
   
         const maxSize = 10 * 1024 * 1024;
         if (file.size > maxSize) {
-          console.error('El archivo es demasiado grande. Máximo permitido: 10MB');
+          alert(this.translationService.translate('apps.createApp.fileTooLarge'));
+          input.value = '';
           return;
         }
   
@@ -182,7 +185,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
         });
       }
     } catch (error) {
-      console.error('Error al seleccionar el archivo:', error);
+      // Error al seleccionar el archivo
     }
   }
   
@@ -225,10 +228,7 @@ export class CuApplicationComponent implements OnInit, OnChanges {
             this.isBlueVisible = true;
             setTimeout(() => this.cdr.detectChanges(), 0);
             if (this.selectedFile) {
-              console.log(
-                'SELECTED FILE: ',
-                URL.createObjectURL(this.selectedFile)
-              );
+              // Archivo seleccionado
             } else {
               // console.log('No file selected.');
             }
@@ -242,12 +242,12 @@ export class CuApplicationComponent implements OnInit, OnChanges {
           }
           this.nameAvailabilityMessage = null;
         } else {
-          this.nameAvailabilityMessage = 'Application name is already taken.';
+          this.nameAvailabilityMessage = this.translationService.translate('apps.createApp.nameAlreadyTaken');
         }
       },
       error: (error) => {
-        console.error('Error checking application name:', error);
-        this.nameAvailabilityMessage = 'Error checking name availability.';
+        // Error checking application name
+        this.nameAvailabilityMessage = this.translationService.translate('apps.createApp.errorCheckingName');
       },
     });
   }

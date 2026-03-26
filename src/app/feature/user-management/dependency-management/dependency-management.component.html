@@ -1,0 +1,376 @@
+<!-- Modal Simple de Gestión de Dependencias -->
+<div class="modal-overlay" (click)="onOverlayClick($event)">
+  <div class="dependency-modal">
+    <div class="modal-header">
+      <h4>Gestión de Dependencias - {{ user.displayName }}</h4>
+      <button class="btn-close" (click)="closeModal()">×</button>
+    </div>
+
+    <div class="modal-content">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button [class.active]="activeTab === 'overview'" (click)="activeTab = 'overview'">Resumen</button>
+        <button [class.active]="activeTab === 'dependents'" (click)="activeTab = 'dependents'">Asignar dependencias</button>
+        <button [class.active]="activeTab === 'packages'" (click)="activeTab = 'packages'">Asignar roles</button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <!-- Overview -->
+        <div *ngIf="activeTab === 'overview'">
+          <h5>Estadísticas</h5>
+          <p>Roles asignados: {{ getTotalAssignedRolesToDependents() }}</p>
+          <p>Contratos: {{ contractedPackages.length }}</p>
+          <p>Número de dependientes: {{ dependentUsers.length }}</p>
+          
+          <div *ngIf="principalUsers.length > 0" class="principals-list">
+            <h6>Depende de:</h6>
+            <div *ngFor="let principal of principalUsers" class="dependent-item">
+              <div class="dependent-info">
+                <strong>{{ principal.displayName }}</strong>
+                <small>{{ principal.strUserName }}</small>
+                <div *ngIf="principal.roles && principal.roles.length > 0" class="roles-in-card">
+                  <span *ngFor="let role of principal.roles" class="role-tag">{{ role.strName }}</span>
+                </div>
+              </div>
+              <span class="dependency-status" [class.active]="principal.dependencyStatus === 'ACTIVE'" [class.inactive]="principal.dependencyStatus === 'INACTIVE'">
+                {{ principal.dependencyStatus }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Packages -->
+        <div *ngIf="activeTab === 'packages'">
+          <div *ngIf="contractedPackages.length > 0">
+            <h5>Seleccionar Contrato</h5>
+            <div *ngFor="let contract of contractedPackages" class="item contract-item" 
+                 [class.selected]="selectedContract?.id === contract.id"
+                 (click)="selectContract(contract)">
+              <div>
+                <strong>{{ contract.package?.name || contract.code }}</strong>
+                <br><small>{{ contract.package?.description || 'Sin descripción' }}</small>
+              </div>
+            </div>
+
+            <div *ngIf="selectedContract" class="mt-3">
+              <h5>Roles Disponibles</h5>
+              <div *ngFor="let config of selectedContract.package?.configurations" class="item role-item">
+                <div class="role-info">
+                  <strong>{{ config.rol.strName }}</strong>
+                  <br><small>{{ config.rol.strDescription1 }}</small>
+                </div>
+                <div class="role-availability">
+                  <span class="badge bg-info">Total: {{ roleAvailability.get(config.rol.id)?.total || 0 }}</span>
+                  <span class="badge bg-success">Disponibles: {{ roleAvailability.get(config.rol.id)?.available || 0 }}</span>
+                  <span class="badge bg-secondary">Asignados: {{ roleAvailability.get(config.rol.id)?.assigned || 0 }}</span>
+                  <button class="btn btn-primary btn-sm" 
+                          *ngIf="(roleAvailability.get(config.rol.id)?.available || 0) > 0"
+                          (click)="openAssignRoleModal(config.rol)">
+                    Asignar
+                  </button>
+                  <button class="btn btn-danger btn-sm" 
+                          *ngIf="(roleAvailability.get(config.rol.id)?.assigned || 0) > 0"
+                          (click)="openUnassignRoleModal(config.rol)">
+                    Desasignar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div *ngIf="contractedPackages.length === 0" class="no-contracts-message">
+            <svg viewBox="0 0 16 16" class="info-icon">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#info-circle" />
+            </svg>
+            <h6>No hay contratos disponibles</h6>
+            <p>Este usuario no tiene contratos. Debe suscribir un paquete para poder asignar roles.</p>
+          </div>
+        </div>
+
+        <!-- Dependents -->
+        <div *ngIf="activeTab === 'dependents'">
+          <!-- Filtro de búsqueda para usuarios disponibles -->
+          <div class="search-section">
+            <input 
+              type="text" 
+              class="form-control search-input"
+              [(ngModel)]="dependentSearchTerm"
+              (input)="searchAvailableUsers()"
+              placeholder="Buscar usuarios disponibles...">
+          </div>
+
+          <h5>Usuarios Disponibles ({{ filteredAvailableUsers.length }})</h5>
+          <div class="users-list">
+            <div *ngFor="let user of filteredAvailableUsers" class="item">
+              <div class="user-info-dep">
+                <strong>{{ user.displayName }}</strong> - {{ user.strUserName }}
+              </div>
+              <div class="assign-controls">
+                <select class="form-select form-select-sm" [(ngModel)]="selectedDependencyStatus">
+                  <option value="ACTIVE">ACTIVE</option>
+                  <option value="INACTIVE">INACTIVE</option>
+                  <option value="UNCONFIRMED">UNCONFIRMED</option>
+                </select>
+                <button class="btn btn-primary btn-sm" (click)="assignUserAsDependent(user)">
+                  Asignar
+                </button>
+              </div>
+            </div>
+            <div *ngIf="filteredAvailableUsers.length === 0" class="no-results">
+              No se encontraron usuarios disponibles
+            </div>
+          </div>
+          
+          <h5 *ngIf="dependentUsers.length > 0">Dependientes Actuales ({{ dependentUsers.length }})</h5>
+          <div class="users-list">
+            <div *ngFor="let dependent of dependentUsers" class="item">
+              <div class="user-info-dep">
+                <strong>{{ dependent.displayName }}</strong> - {{ dependent.strUserName }}
+              </div>
+              <div class="assign-controls">
+                <span class="dependency-status" [class.active]="dependent.dependencyStatus === 'ACTIVE'" [class.inactive]="dependent.dependencyStatus === 'INACTIVE'">
+                  {{ dependent.dependencyStatus }}
+                </span>
+                <button class="btn btn-danger btn-sm" (click)="removeDependency(dependent)">
+                  Remover
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeModal()">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Modal de asignación de rol -->
+  <div *ngIf="showAssignRoleModal" class="modal-overlay" (click)="showAssignRoleModal = false">
+    <div class="assign-role-modal" (click)="$event.stopPropagation()">
+      <h5>Asignar Rol: {{ selectedRoleForAssignment?.strName }}</h5>
+      <p>Seleccione el usuario dependiente:</p>
+      <div class="users-list">
+        <div *ngFor="let dependent of dependentUsers" 
+             class="item user-item"
+             (click)="assignRoleToDependent(dependent)">
+          <strong>{{ dependent.displayName }}</strong>
+          <small>{{ dependent.strUserName }}</small>
+        </div>
+      </div>
+      <button class="btn btn-secondary" (click)="showAssignRoleModal = false">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Modal de desasignación de rol -->
+  <div *ngIf="showUnassignRoleModal" class="modal-overlay" (click)="showUnassignRoleModal = false">
+    <div class="assign-role-modal" (click)="$event.stopPropagation()">
+      <h5>Desasignar Rol: {{ selectedRoleForAssignment?.strName }}</h5>
+      <p>Seleccione el usuario dependiente:</p>
+      <div class="users-list">
+        <div *ngFor="let dependent of dependentUsers" 
+             class="item user-item"
+             (click)="unassignRoleFromDependent(dependent)">
+          <strong>{{ dependent.displayName }}</strong>
+          <small>{{ dependent.strUserName }}</small>
+        </div>
+      </div>
+      <button class="btn btn-secondary" (click)="showUnassignRoleModal = false">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.dependency-modal {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modal-content {
+  padding: 20px;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  padding: 10px 20px;
+  border: 1px solid #ddd;
+  background: #f5f5f5;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.tabs button.active {
+  background: #007bff;
+  color: white;
+}
+
+.tab-content {
+  min-height: 300px;
+}
+
+.search-section {
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.users-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.no-results {
+  padding: 20px;
+  text-align: center;
+  color: #999;
+}
+
+.item {
+  padding: 15px;
+  border: 1px solid #eee;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+.role-tag {
+  display: inline-block;
+  background: #007bff;
+  color: white;
+  padding: 4px 10px;
+  margin: 2px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.contract-item {
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.contract-item:hover {
+  background: #f8f9fa;
+  transform: translateX(5px);
+}
+
+.contract-item.selected {
+  background: #e7f3ff;
+  border-left: 4px solid #007bff;
+}
+
+.role-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.role-availability {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.assign-role-modal {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.user-item {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.user-item:hover {
+  background: #f0f0f0;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.bg-info { background: #17a2b8; color: white; }
+.bg-success { background: #28a745; color: white; }
+.bg-secondary { background: #6c757d; color: white; }
+.bg-warning { background: #ffc107; color: black; }
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: white;
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.modal-footer {
+  padding: 20px;
+  border-top: 1px solid #eee;
+  text-align: right;
+}
+</style>

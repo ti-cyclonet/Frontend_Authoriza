@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth/auth.service';
 import { NAME_APP_SHORT } from '../../../config/config';
 import { NotificationsComponent } from '../notifications/notifications.component';
 import { LoginDTO } from '../../model/login';
+import { CyclonAssistantComponent } from '../cyclon-assistant/cyclon-assistant.component';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -15,6 +16,7 @@ import { LoginDTO } from '../../model/login';
     FormsModule,
     ReactiveFormsModule,
     NotificationsComponent,
+    CyclonAssistantComponent,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
@@ -86,18 +88,21 @@ export class LoginComponent {
       (response) => {
         if (response.access_token) {
           sessionStorage.setItem('authToken', response.access_token);
-          this.showToast('Successful login.', 'success', 'A', 0);
+          const successMessage = this.currentLanguage === 'es' ? 'Inicio de sesión exitoso.' : 'Successful login.';
+          this.showToast(successMessage, 'success', 'A', 0);
 
           setTimeout(() => {
             this.router.navigate(['/home']);
           }, 5000);
         } else {
-          this.showToast('Incorrect credentials', 'danger', 'A', 0);
+          const errorMessage = this.currentLanguage === 'es' ? 'Credenciales incorrectas' : 'Incorrect credentials';
+          this.showToast(errorMessage, 'danger', 'A', 0);
           console.error('❌ Error: No valid token received.');
         }
       },
       (error) => {
-        this.showToast('Error en la autenticación', 'danger', 'A', 0);
+        const errorMessage = this.currentLanguage === 'es' ? 'Error en la autenticación' : 'Authentication error';
+        this.showToast(errorMessage, 'danger', 'A', 0);
         console.error('❌ Error de login:', error);
       }
     );
@@ -147,4 +152,22 @@ export class LoginComponent {
     }
   }
   // ----------------------------------------------
+
+  // Contexto para CYCLON
+  get cyclonContext() {
+    return {
+      formValid: this.loginForm.valid,
+      submitted: this.submitted,
+      hasErrors: this.loginForm.invalid && this.submitted,
+      applicationName: NAME_APP_SHORT,
+      showingPassword: this.showPassword
+    };
+  }
+
+  get currentLanguage(): string {
+    if (typeof localStorage !== 'undefined') {
+      return localStorage.getItem('language') || 'en';
+    }
+    return 'en';
+  }
 }

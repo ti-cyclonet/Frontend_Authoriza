@@ -130,21 +130,8 @@
   transition: color 0.3s ease;
 }
 
-/* Animación de la sección */
 .add-configuration-record {
-  /* background-color: #b6b0b0; */
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transition: max-height 5s ease, opacity 5s ease, padding 5s ease;
-  padding: 0 1rem;
-}
-
-/* Se activa cuando está visible */
-.add-configuration-record.visible {
-  max-height: 500px;
-  opacity: 1;
-  padding: 1rem;
+  margin-bottom: 1rem;
 }
 
 a.disabled {

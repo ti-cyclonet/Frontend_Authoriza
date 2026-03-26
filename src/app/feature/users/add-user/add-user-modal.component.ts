@@ -22,6 +22,8 @@ import { ApplicationWithRoles } from '../../../shared/model/application-with-rol
 import Swal from 'sweetalert2';
 import { AssignRoleComponent } from '../assign-role/assign-role.component';
 import { AssignDependencyComponent } from '../assign-dependency/assign-dependency.component';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { TranslationService } from '../../../shared/services/translation.service';
 
 @Component({
   selector: 'app-add-user-modal',
@@ -31,6 +33,7 @@ import { AssignDependencyComponent } from '../assign-dependency/assign-dependenc
     ReactiveFormsModule,
     AssignRoleComponent,
     AssignDependencyComponent,
+    TranslatePipe,
   ],
   templateUrl: './add-user-modal.component.html',
   styleUrls: ['./add-user-modal.component.css'],
@@ -51,6 +54,7 @@ export class AddUserModalComponent {
 
   userForm: FormGroup;
   basicDataForm: FormGroup;
+  documentForm: FormGroup;
   naturalForm: FormGroup;
   legalForm: FormGroup;
   roleSearchForm: FormGroup;
@@ -67,16 +71,23 @@ export class AddUserModalComponent {
     private fb: FormBuilder,
     private userService: UserService,
     private roleService: RolesService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private translationService: TranslationService
   ) {
     this.userForm = this.fb.group({
-      strUserName: ['', [Validators.required, Validators.email]],
+      strUserName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)]],
       strStatus: ['ACTIVE'],
     });
 
     this.basicDataForm = this.fb.group({
       strPersonType: ['N', Validators.required],
       strStatus: ['ACTIVE'],
+    });
+
+    this.documentForm = this.fb.group({
+      strDocumentType: ['CC', Validators.required],
+      strDocumentNumber: ['', Validators.required],
+      strDocumentDV: [''],
     });
 
     this.naturalForm = this.fb.group({
@@ -87,6 +98,7 @@ export class AddUserModalComponent {
       birthDate: ['', Validators.required],
       maritalStatus: ['', Validators.required],
       sex: ['', Validators.required],
+      phone: [''],
     });
 
     this.legalForm = this.fb.group({
@@ -100,6 +112,23 @@ export class AddUserModalComponent {
     this.roleSearchForm = this.fb.group({
       appName: [''],
       roleName: [''],
+    });
+
+    this.basicDataForm.get('strPersonType')?.valueChanges.subscribe(personType => {
+      if (personType === 'J') {
+        this.documentForm.get('strDocumentType')?.disable();
+        this.documentForm.patchValue({ strDocumentType: 'NIT' });
+        this.documentForm.get('strDocumentNumber')?.setValidators([Validators.required, Validators.pattern(/^\d{9}$/)]);
+        this.documentForm.get('strDocumentDV')?.setValidators([Validators.required, Validators.pattern(/^\d{1}$/)]);
+      } else {
+        this.documentForm.get('strDocumentType')?.enable();
+        this.documentForm.patchValue({ strDocumentType: 'CC' });
+        this.documentForm.get('strDocumentNumber')?.setValidators([Validators.required]);
+        this.documentForm.get('strDocumentDV')?.clearValidators();
+      }
+      this.documentForm.get('strDocumentNumber')?.updateValueAndValidity();
+      this.documentForm.get('strDocumentDV')?.updateValueAndValidity();
+      this.cdr.detectChanges();
     });
   }
 
@@ -121,12 +150,13 @@ export class AddUserModalComponent {
   createUser() {
     this.emailTaken = false;
 
-    const userName = this.userForm.value.strUserName;
-
-    if (!userName) {
-      this.userForm.get('strUserName')?.markAsTouched();
+    // Validar el formulario completo antes de continuar
+    if (this.userForm.invalid) {
+      this.userForm.markAllAsTouched();
       return;
     }
+
+    const userName = this.userForm.value.strUserName;
 
     this.userService.checkUserNameAvailability(userName).subscribe({
       next: (res) => {
@@ -155,6 +185,19 @@ export class AddUserModalComponent {
   }
 
   async finish() {
+    // Validar formulario básico
+    if (this.basicDataForm.invalid) {
+      this.basicDataForm.markAllAsTouched();
+      return;
+    }
+
+    // Validar formulario de documento
+    if (this.documentForm.invalid) {
+      this.documentForm.markAllAsTouched();
+      return;
+    }
+
+    // Validar formulario específico según tipo de persona
     if (
       this.basicDataForm.value.strPersonType === 'N' &&
       this.naturalForm.invalid
@@ -171,27 +214,20 @@ export class AddUserModalComponent {
       return;
     }
 
-    const isPrincipalResult = await Swal.fire({
-      title: '¿Is this a primary user?',
-      text: 'The primary user does not require role assignment or dependency.',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, it is a primary user',
-      cancelButtonText: 'No, it requires role assignment',
-    });
-
-    const isPrincipal = isPrincipalResult.isConfirmed;
-
     const dto: CreateFullUser = {
       user: {
         ...this.userForm.value,
-        strStatus: isPrincipal ? 'UNCONFIRMED' : this.userForm.value.strStatus,
+        strStatus: 'UNCONFIRMED', // Todos los usuarios se crean sin confirmar
       },
       basicData: {
         ...this.basicDataForm.value,
-        strStatus: isPrincipal
-          ? 'ACTIVE'
-          : this.basicDataForm.value.strStatus,
+        strStatus: 'ACTIVE',
+      },
+      documentType: {
+        strDocumentType: this.basicDataForm.value.strPersonType === 'J' ? 'NIT' : this.documentForm.getRawValue().strDocumentType,
+        strDocumentNumber: this.basicDataForm.value.strPersonType === 'J' 
+          ? `${this.documentForm.value.strDocumentNumber}-${this.documentForm.value.strDocumentDV}`
+          : this.documentForm.value.strDocumentNumber,
       },
       naturalPersonData:
         this.basicDataForm.value.strPersonType === 'N'
@@ -206,13 +242,17 @@ export class AddUserModalComponent {
     this.userService.createFullUser(dto).subscribe({
       next: (createdUser) => {
         this.createdUserId = createdUser?.id;
-        if (isPrincipal) {
-            this.close.emit();
-          } else {
-            this.nextStep();
-          }
+        this.userCreated.emit({
+          message: 'Usuario creado exitosamente. Asigne roles y dependencias por separado.',
+          type: 'success',
+          alertType: 'A',
+          container: 0,
+          id: createdUser?.id
+        });
+        this.close.emit();
       },
       error: (err) => {
+        console.error('Error creating user:', err);
         this.userCreated.emit({
           message:
             'Error creating user: ' + (err.error?.message || 'Desconocido'),
@@ -235,5 +275,9 @@ export class AddUserModalComponent {
 
   onDependencyAssigned() {
     this.close.emit();
+  }
+
+  get isLegalEntity(): boolean {
+    return this.basicDataForm.get('strPersonType')?.value === 'J';
   }
 }

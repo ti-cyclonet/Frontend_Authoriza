@@ -17,15 +17,15 @@
           class="card-title text-nowrap bg-body-secondary border"
           style="width: 5.9rem"
         >
-          Contracts <b>Management</b>.
+          {{ getTranslation('contracts.title') }}
         </h5>
         <p class="card-text text-muted" style="font-size: 0.9rem">
-          Manage your contracts, add new ones, and view details.
+          {{ getTranslation('contracts.description') }}
         </p>
       </div>
       <div class="btn-group ms-auto custom-btn-group">
         <a
-          title="Add new package"
+          title="{{ 'contracts.addNew' | translate }}"
           style="cursor: pointer"
           (click)="openAddContractModal()"
         >
@@ -46,9 +46,9 @@
       <!-- Filtro de estado -->
       <div class="mb-3">
         <select class="form-select">
-          <option value="">All Statuses</option>
+          <option value="">{{ getTranslation('contracts.allStatuses') }}</option>
           <option *ngFor="let status of statuses" [value]="status">
-            {{ status }}
+            {{ getStatusTranslation(status) }}
           </option>
         </select>
       </div>
@@ -61,27 +61,34 @@
         >
           <thead class="table-dark">
             <tr class="table-light">
-              <th>ID</th>
-              <th>User</th>
-              <th>Package</th>
-              <th class="text-center">Value</th>
-              <th class="text-center">Payday</th>
-              <th class="text-center">Start Date</th>
-              <th class="text-center">End Date</th>
-              <th class="text-center">Status</th>
-              <th class="text-center">Actions</th>
+              <th>{{ getTranslation('contracts.code') }}</th>
+              <th>{{ getTranslation('contracts.user') }}</th>
+              <th class="d-none d-md-table-cell">{{ getTranslation('contracts.package') }}</th>
+              <th class="d-none d-md-table-cell text-center">{{ getTranslation('contracts.value') }}</th>
+              <th class="d-none d-md-table-cell text-center">{{ getTranslation('contracts.payday') }}</th>
+              <th class="d-none d-md-table-cell text-center">{{ getTranslation('contracts.startDate') }}</th>
+              <th class="d-none d-md-table-cell text-center">{{ getTranslation('contracts.endDate') }}</th>
+              <th class="d-none d-md-table-cell text-center">{{ getTranslation('contracts.status') }}</th>
+              <th class="text-center">{{ getTranslation('common.actions') }}</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let contract of contracts">
-              <td>{{ contract.id }}</td>
+              <td>
+                <span class="entity-code-badge" *ngIf="contract?.code; else noCode">
+                  {{ contract?.code }}
+                </span>
+                <ng-template #noCode>
+                  <span class="text-muted">-</span>
+                </ng-template>
+              </td>
               <td>{{ contract.user.strUserName }}</td>
-              <td>{{ contract.package.name }}</td>
-              <td class="text-end">{{ contract.value | customCurrency }}</td>
-              <td class="text-center">{{ contract.payday }}</td>
-              <td class="text-center">{{ contract.startDate }}</td>
-              <td class="text-center">{{ contract.endDate }}</td>
-              <td class="text-center">
+              <td class="d-none d-md-table-cell">{{ contract.package.name }}</td>
+              <td class="d-none d-md-table-cell text-end">{{ contract.value | customCurrency }}</td>
+              <td class="d-none d-md-table-cell text-center">{{ contract.payday }}</td>
+              <td class="d-none d-md-table-cell text-center">{{ contract.startDate }}</td>
+              <td class="d-none d-md-table-cell text-center">{{ contract.endDate }}</td>
+              <td class="d-none d-md-table-cell text-center">
                 <span
                   class="badge"
                   [ngStyle]="{
@@ -93,7 +100,7 @@
                   [class.bg-warning]="contract.status === 'DRAFT'"
                   [class.bg-danger]="contract.status === 'EXPIRED'"
                 >
-                  {{ contract.status }}
+                  {{ getStatusTranslation(contract.status) }}
                 </span>
               </td>
               <td class="text-center">
@@ -177,7 +184,7 @@
 
     <!-- Contador -->
     <div class="user-counter">
-      Showing {{ contracts.length }} of {{ contracts.length }} contracts
+      {{ getTranslation('contracts.showing') }} {{ contracts.length }} {{ getTranslation('contracts.of') }} {{ contracts.length }} {{ getTranslation('contracts.contracts') }}
     </div>
 
     <!-- Paginación -->
@@ -216,3 +223,9 @@
     (close)="closeModal()"
   ></app-add-contract>
 </div>
+<!-- CYCLON Assistant -->
+<app-cyclon-assistant 
+  [currentModule]="'contracts'"
+  [moduleContext]="cyclonContext"
+  [language]="currentLanguage">
+</app-cyclon-assistant>

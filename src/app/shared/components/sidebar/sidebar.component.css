@@ -47,14 +47,14 @@
 }
 
 .menu-item svg {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     fill: var(--primary-text-color);
     margin-bottom: 0.5rem;
 }
 
 .menu-item div {
-    font-size: 14px;
+    font-size: 12px;
     text-align: center;
 }
 

@@ -1,0 +1,309 @@
+<!-- Wizard de Creación de Usuario -->
+<div class="modal-overlay" (click)="onOverlayClick($event)">
+  <div class="wizard-container animate__animated animate__zoomIn">
+    <div class="wizard-header">
+      <div class="wizard-title">
+        <svg class="wizard-icon" viewBox="0 0 16 16">
+          <use xlink:href="./assets/icons/bootstrap-icons.svg#person-plus-fill" />
+        </svg>
+        <h3>{{ 'userWizard.title' | translate }}</h3>
+      </div>
+      <button class="btn-close-wizard" (click)="closeWizard()">
+        <svg viewBox="0 0 16 16">
+          <use xlink:href="./assets/icons/bootstrap-icons.svg#x-lg" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Contenido del Wizard -->
+    <div class="wizard-content">
+      <!-- Paso 1: Información Básica -->
+      <div *ngIf="currentStep === 1" class="step-content animate__animated animate__fadeInRight">
+        <div class="step-header">
+          <h4>{{ 'userWizard.step1.title' | translate }}</h4>
+          <p>{{ 'userWizard.step1.description' | translate }}</p>
+        </div>
+
+        <form [formGroup]="basicInfoForm" class="wizard-form">
+          <div class="form-group">
+            <label class="form-label required">{{ 'userWizard.step1.username' | translate }}</label>
+            <input 
+              type="email" 
+              class="form-control"
+              formControlName="username"
+              [class.is-invalid]="isFieldInvalid('username')"
+              placeholder="{{ 'userWizard.step1.emailPlaceholder' | translate }}">
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('username')">
+              {{ getFieldError('username') | translate }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label required">{{ 'userWizard.step1.personType' | translate }}</label>
+            <div class="person-type-selector">
+              <div class="type-option" 
+                   [class.selected]="basicInfoForm.get('personType')?.value === 'N'"
+                   (click)="selectPersonType('N')">
+                <svg viewBox="0 0 16 16">
+                  <use xlink:href="./assets/icons/bootstrap-icons.svg#person" />
+                </svg>
+                <span>{{ 'userWizard.step1.naturalPerson' | translate }}</span>
+              </div>
+              <div class="type-option" 
+                   [class.selected]="basicInfoForm.get('personType')?.value === 'J'"
+                   (click)="selectPersonType('J')">
+                <svg viewBox="0 0 16 16">
+                  <use xlink:href="./assets/icons/bootstrap-icons.svg#building" />
+                </svg>
+                <span>{{ 'userWizard.step1.legalEntity' | translate }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Campos para Persona Natural -->
+          <div *ngIf="basicInfoForm.get('personType')?.value === 'N'" 
+               class="person-fields animate__animated animate__fadeIn">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label required">{{ 'userWizard.step1.documentType' | translate }}</label>
+                <select 
+                  class="form-control"
+                  formControlName="documentType"
+                  [class.is-invalid]="isFieldInvalid('documentType')">
+                  <option value="">{{ 'userWizard.step1.selectDocumentType' | translate }}</option>
+                  <option value="CC">{{ 'documentTypes.CC' | translate }}</option>
+                  <option value="CE">{{ 'documentTypes.CE' | translate }}</option>
+                  <option value="PA">{{ 'documentTypes.PA' | translate }}</option>
+                  <option value="TI">{{ 'documentTypes.TI' | translate }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('documentType')">
+                  {{ getFieldError('documentType') | translate }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label required">{{ 'userWizard.step1.documentNumber' | translate }}</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  formControlName="documentNumber"
+                  [class.is-invalid]="isFieldInvalid('documentNumber')"
+                  placeholder="{{ 'userWizard.step1.documentNumberPlaceholder' | translate }}">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('documentNumber')">
+                  {{ getFieldError('documentNumber') | translate }}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label required">{{ 'userWizard.step1.firstName' | translate }}</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  formControlName="firstName"
+                  [class.is-invalid]="isFieldInvalid('firstName')">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('firstName')">
+                  {{ getFieldError('firstName') | translate }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">{{ 'userWizard.step1.secondName' | translate }}</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  formControlName="secondName">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label required">{{ 'userWizard.step1.firstSurname' | translate }}</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  formControlName="firstSurname"
+                  [class.is-invalid]="isFieldInvalid('firstSurname')">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('firstSurname')">
+                  {{ getFieldError('firstSurname') | translate }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">{{ 'userWizard.step1.secondSurname' | translate }}</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  formControlName="secondSurname">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">{{ 'userWizard.step1.birthDate' | translate }}</label>
+                <input 
+                  type="date" 
+                  class="form-control"
+                  formControlName="birthDate">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">{{ 'userWizard.step1.sex' | translate }}</label>
+                <select class="form-control" formControlName="sex">
+                  <option value="">{{ 'userWizard.step1.selectSex' | translate }}</option>
+                  <option value="M">{{ 'sex.M' | translate }}</option>
+                  <option value="F">{{ 'sex.F' | translate }}</option>
+                  <option value="O">{{ 'sex.O' | translate }}</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">{{ 'userWizard.step1.maritalStatus' | translate }}</label>
+                <select class="form-control" formControlName="maritalStatus">
+                  <option value="">{{ 'userWizard.step1.selectMaritalStatus' | translate }}</option>
+                  <option value="S">{{ 'maritalStatus.S' | translate }}</option>
+                  <option value="M">{{ 'maritalStatus.M' | translate }}</option>
+                  <option value="U">{{ 'maritalStatus.U' | translate }}</option>
+                  <option value="D">{{ 'maritalStatus.D' | translate }}</option>
+                  <option value="V">{{ 'maritalStatus.V' | translate }}</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">{{ 'userWizard.step1.phone' | translate }}</label>
+                <input 
+                  type="tel" 
+                  class="form-control"
+                  formControlName="phone"
+                  placeholder="{{ 'userWizard.step1.phonePlaceholder' | translate }}">
+              </div>
+            </div>
+          </div>
+
+          <!-- Campos para Persona Jurídica -->
+          <div *ngIf="basicInfoForm.get('personType')?.value === 'J'" 
+               class="person-fields animate__animated animate__fadeIn">
+            <div class="form-group">
+              <label class="form-label required">{{ 'userWizard.step1.businessName' | translate }}</label>
+              <input 
+                type="text" 
+                class="form-control"
+                formControlName="businessName"
+                [class.is-invalid]="isFieldInvalid('businessName')">
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('businessName')">
+                {{ getFieldError('businessName') | translate }}
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label required">{{ 'userWizard.step1.documentType' | translate }}</label>
+                <select 
+                  class="form-control"
+                  formControlName="documentTypeJ"
+                  [class.is-invalid]="isFieldInvalid('documentTypeJ')"
+                  [disabled]="true">
+                  <option value="NIT">{{ 'documentTypes.NIT' | translate }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('documentTypeJ')">
+                  {{ getFieldError('documentTypeJ') | translate }}
+                </div>
+              </div>
+
+              <div class="form-group document-number-group">
+                <label class="form-label required">{{ 'userWizard.step1.documentNumber' | translate }}</label>
+                <div class="document-input-group">
+                  <input 
+                    type="text" 
+                    class="form-control document-number"
+                    formControlName="documentNumberJ"
+                    [class.is-invalid]="isFieldInvalid('documentNumberJ')"
+                    placeholder="{{ 'userWizard.step1.documentNumberPlaceholder' | translate }}"
+                    maxlength="9"
+                    pattern="[0-9]{9}"
+                    (input)="onDocumentNumberInput($event)">
+                  <input 
+                    type="text" 
+                    class="form-control dv-input"
+                    formControlName="documentDV"
+                    placeholder="DV"
+                    maxlength="1"
+                    pattern="[0-9Kk]">
+                </div>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('documentNumberJ')">
+                  {{ getFieldError('documentNumberJ') | translate }}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">{{ 'userWizard.step1.website' | translate }}</label>
+                <input 
+                  type="url" 
+                  class="form-control"
+                  formControlName="website"
+                  placeholder="{{ 'userWizard.step1.websitePlaceholder' | translate }}">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">{{ 'userWizard.step1.contactName' | translate }}</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  formControlName="contactName">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">{{ 'userWizard.step1.contactPhone' | translate }}</label>
+                <input 
+                  type="tel" 
+                  class="form-control"
+                  formControlName="phoneJ"
+                  placeholder="{{ 'userWizard.step1.phonePlaceholder' | translate }}">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">{{ 'userWizard.step1.contactEmail' | translate }}</label>
+                <input 
+                  type="email" 
+                  class="form-control"
+                  formControlName="contactEmail">
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Botones de Navegación -->
+    <div class="wizard-footer">
+      <button 
+        class="btn btn-secondary"
+        (click)="closeWizard()">
+        {{ 'common.cancel' | translate }}
+      </button>
+
+      <button 
+        class="btn btn-success"
+        [disabled]="isCreating || !basicInfoForm.valid"
+        (click)="createUser()">
+        <span *ngIf="!isCreating">
+          <svg viewBox="0 0 16 16">
+            <use xlink:href="./assets/icons/bootstrap-icons.svg#check-lg" />
+          </svg>
+          {{ 'userWizard.create' | translate }}
+        </span>
+        <span *ngIf="isCreating">
+          <div class="spinner-sm"></div>
+          {{ 'userWizard.creating' | translate }}
+        </span>
+      </button>
+    </div>
+  </div>
+</div>

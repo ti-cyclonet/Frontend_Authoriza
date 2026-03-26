@@ -45,7 +45,7 @@
         class="card-title text-nowrap bg-body-secondary border"
         style="width: 6.7rem"
       >
-        Application <b>Management</b>.
+        {{ 'apps.title' | translate }}
       </h5>
 
       <div class="btn-group ms-auto custom-btn-group">
@@ -54,7 +54,7 @@
           [class.disabled]="!hasApplications"
           [attr.aria-disabled]="!hasApplications"
           [style.pointer-events]="hasApplications ? 'auto' : 'none'"
-          title="Save"
+          title="{{ 'apps.save' | translate }}"
         >
           <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
             <use
@@ -70,7 +70,7 @@
           [attr.aria-disabled]="selectedApplication ? 'true' : null"
           [attr.tabindex]="selectedApplication ? -1 : 0"
           (click)="handleClickNewApp()"
-          title="Add new app"
+          title="{{ 'apps.addNew' | translate }}"
         >
           <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
             <use
@@ -91,21 +91,21 @@
       <div class="table-responsive mt-3" [class.disabled]="isRolesTableVisible">
         <div class="roles-header">
           <!-- Título alineado a la izquierda -->
-          <h6 class="roles-title">Applications list</h6>
+          <h6 class="roles-title">{{ 'apps.list' | translate }}</h6>
         </div>
         <table class="table table-hover table-sm table-bordered" style="font-size: 14px">
           <thead>
             <tr class="table-light">
-              <th scope="col" class="id-col text-center">Item</th>
-              <th scope="col" class="text-center">Name</th>
+              <th scope="col" class="id-col text-center">{{ 'apps.code' | translate }}</th>
+              <th scope="col" class="text-center">{{ 'apps.name' | translate }}</th>
               <th scope="col" class="text-center d-none d-xl-table-cell">
-                Description
+                {{ 'apps.description' | translate }}
               </th>
-              <th scope="col" class="text-center d-none d-xl-table-cell">Logo</th>
-              <th scope="col" class="text-center d-none d-xl-table-cell">Slug</th>
-              <th scope="col" class="text-center d-none d-xl-table-cell">Tags</th>
-              <th scope="col" class="text-center">State</th>
-              <th class="actions-col text-center" scope="col">Actions</th>
+              <th scope="col" class="text-center d-none d-xl-table-cell">{{ 'apps.logo' | translate }}</th>
+              <th scope="col" class="text-center d-none d-xl-table-cell">{{ 'apps.slug' | translate }}</th>
+              <th scope="col" class="text-center d-none d-xl-table-cell">{{ 'apps.tags' | translate }}</th>
+              <th scope="col" class="text-center">{{ 'common.status' | translate }}</th>
+              <th class="actions-col text-center" scope="col">{{ 'common.actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -119,23 +119,12 @@
                     application !== selectedApplication
                 }"
               >
-                <span
-                  class="badge rounded-badge position-relative d-inline-block"
-                  [ngClass]="{
-                    bgd: application.strState === 'TEMPORARY',
-                    'badge-selected': application === selectedApplication,
-                    'badge-default': application !== selectedApplication
-                  }"
-                >
-                  {{ index + 1 }}
-    
-                  <!-- Badge circular sin texto -->
-                  <span
-                    *ngIf="application.strState === 'TEMPORARY'"
-                    class="badge-app-circle"
-                    title="Aplicación con novedades"
-                  ></span>
+                <span class="entity-code-badge" *ngIf="application?.code; else noCode">
+                  {{ application?.code }}
                 </span>
+                <ng-template #noCode>
+                  <span class="text-muted">-</span>
+                </ng-template>
               </th>
     
               <td
@@ -238,12 +227,16 @@
                     application !== selectedApplication
                 }"
               >
-                <div>
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    data-bs-toggle="tooltip"
-                    title="Details"
+                <div
+                  class="btn-group btn-group-sm"
+                  role="group"
+                  aria-label="Small button group"
+                >
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
                     (click)="showRoles(application)"
                   >
                     <svg
@@ -252,18 +245,19 @@
                       class="status-icon"
                     >
                       <use
-                        xlink:href="./assets/icons/bootstrap-icons.svg#list-nested"
+                        xlink:href="./assets/icons/bootstrap-icons.svg#eye"
                       ></use>
                     </svg>
-                  </button>
+                  </a>
     
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
                     data-bs-toggle="tooltip"
                     data-bs-target="#crearAplicacion"
                     (click)="openModal(true, application.id)"
-                    title="Edit"
                   >
                     <svg
                       fill="currentColor"
@@ -271,16 +265,16 @@
                       class="status-icon"
                     >
                       <use
-                        xlink:href="./assets/icons/bootstrap-icons.svg#pencil"
+                        xlink:href="./assets/icons/bootstrap-icons.svg#pencil-square"
                       ></use>
                     </svg>
-                  </button>
+                  </a>
     
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    data-bs-toggle="tooltip"
-                    title="Delete"
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
                     (click)="setSelectedApplication(application)"
                     data-bs-target="#confirmDelete"
                   >
@@ -290,10 +284,10 @@
                       class="status-icon"
                     >
                       <use
-                        xlink:href="./assets/icons/bootstrap-icons.svg#trash3"
+                        xlink:href="./assets/icons/bootstrap-icons.svg#trash"
                       ></use>
                     </svg>
-                  </button>
+                  </a>
                 </div>
               </td>
             </tr>
@@ -310,11 +304,11 @@
         <div class="roles-header">
           <!-- Título alineado a la izquierda -->
           <h6 class="roles-title">
-            Roles for
+            {{ 'apps.rolesFor' | translate }}
             <span class="text-primary">{{
               (selectedApplication?.strName || "").toUpperCase()
             }}</span>
-            app
+            {{ 'apps.app' | translate }}
           </h6>
     
           <!-- Contenedor de botones alineado a la derecha -->
@@ -347,14 +341,14 @@
         <table class="table table-hover table-sm table-bordered" style="font-size: 14px">
           <thead>
             <tr class="table-light">
-              <th scope="col" class="id-col text-center">Item</th>
-              <th scope="col" class="text-center d-none d-xl-table-cell">Name</th>
-              <th scope="col" class="text-center">Description A</th>
+              <th scope="col" class="id-col text-center">{{ 'apps.code' | translate }}</th>
+              <th scope="col" class="text-center d-none d-xl-table-cell">{{ 'apps.name' | translate }}</th>
+              <th scope="col" class="text-center">{{ 'apps.descriptionA' | translate }}</th>
               <th scope="col" class="text-center d-none d-xl-table-cell">
-                Description B
+                {{ 'apps.descriptionB' | translate }}
               </th>
-              <th scope="col" class="text-center">State</th>
-              <th class="actions-col text-center" scope="col">Actions</th>
+              <th scope="col" class="text-center">{{ 'common.status' | translate }}</th>
+              <th class="actions-col text-center" scope="col">{{ 'common.actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -369,23 +363,12 @@
                   'bg-temp': rol.strState === 'TEMPORARY' && rol !== selectedRol
                 }"
               >
-                <span
-                  class="badge rounded-badge position-relative d-inline-block"
-                  [ngClass]="{
-                    bgd: rol.strState === 'TEMPORARY',
-                    'badge-selected': rol === selectedRol,
-                    'badge-default': rol !== selectedRol
-                  }"
-                >
-                  {{ i + 1 }}
-    
-                  <!-- Badge circular sin texto -->
-                  <span
-                    *ngIf="rol.strState === 'TEMPORARY'"
-                    class="badge-app-circle"
-                    title="Nuevo rol"
-                  ></span>
+                <span class="entity-code-badge" *ngIf="rol?.code; else noRoleCode">
+                  {{ rol?.code }}
                 </span>
+                <ng-template #noRoleCode>
+                  <span class="text-muted">-</span>
+                </ng-template>
               </th>
               <td
                 [ngClass]="{
@@ -438,12 +421,16 @@
                 }"
                 class="text-center actions-col"
               >
-                <div>
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    data-bs-toggle="tooltip"
-                    title="Details"
+                <div
+                  class="btn-group btn-group-sm"
+                  role="group"
+                  aria-label="Small button group"
+                >
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
                     (click)="onSelectRol(rol)"
                   >
                     <svg
@@ -453,16 +440,17 @@
                     >
                       <use
                         [attr.xlink:href]="
-                          './assets/icons/bootstrap-icons.svg#list-nested'
+                          './assets/icons/bootstrap-icons.svg#eye'
                         "
                       ></use>
                     </svg>
-                  </button>
+                  </a>
     
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    title="Edit"
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
                   >
                     <svg
                       fill="currentColor"
@@ -471,16 +459,17 @@
                     >
                       <use
                         [attr.xlink:href]="
-                          './assets/icons/bootstrap-icons.svg#pencil'
+                          './assets/icons/bootstrap-icons.svg#pencil-square'
                         "
                       ></use>
                     </svg>
-                  </button>
+                  </a>
     
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    title="Delete"
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
                   >
                     <svg
                       fill="currentColor"
@@ -489,11 +478,11 @@
                     >
                       <use
                         [attr.xlink:href]="
-                          './assets/icons/bootstrap-icons.svg#trash3'
+                          './assets/icons/bootstrap-icons.svg#trash'
                         "
                       ></use>
                     </svg>
-                  </button>
+                  </a>
                 </div>
               </td>
             </tr>
@@ -510,11 +499,11 @@
         <div class="roles-header">
           <!-- Título alineado a la izquierda -->
           <h6 class="roles-title">
-            Menu options for
+            {{ 'apps.menuOptionsFor' | translate }}
             <span class="text-primary">{{
               (selectedRol?.strDescription1 || "").toUpperCase()
             }}</span>
-            rol
+            {{ 'apps.rol' | translate }}
           </h6>
     
           <!-- Contenedor de botones alineado a la derecha -->
@@ -566,15 +555,15 @@
         <table class="table table-hover table-sm table-bordered" style="font-size: 14px">
           <thead>
             <tr class="table-light">
-              <th scope="col" class="id-col text-center">Order</th>
-              <th class="text-center d-none d-xl-table-cell">Name</th>
-              <th class="text-center">Description A</th>
-              <th class="text-center d-none d-xl-table-cell">Url</th>
-              <th class="text-center d-none d-xl-table-cell">Icon</th>
-              <th class="text-center d-none d-xl-table-cell">Type</th>
-              <th class="text-center d-none d-xl-table-cell">Submenu</th>
-              <th class="text-center">State</th>
-              <th class="actions-col text-center" scope="col">Actions</th>
+              <th scope="col" class="id-col text-center">{{ 'apps.order' | translate }}</th>
+              <th class="text-center d-none d-xl-table-cell">{{ 'apps.name' | translate }}</th>
+              <th class="text-center">{{ 'apps.descriptionA' | translate }}</th>
+              <th class="text-center d-none d-xl-table-cell">{{ 'apps.url' | translate }}</th>
+              <th class="text-center d-none d-xl-table-cell">{{ 'apps.icon' | translate }}</th>
+              <th class="text-center d-none d-xl-table-cell">{{ 'apps.type' | translate }}</th>
+              <th class="text-center d-none d-xl-table-cell">{{ 'apps.submenu' | translate }}</th>
+              <th class="text-center">{{ 'common.status' | translate }}</th>
+              <th class="actions-col text-center" scope="col">{{ 'common.actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -678,13 +667,17 @@
                 [ngClass]="{ selected: menu === selectedMenuOption }"
                 class="text-center actions-col"
               >
-                <div>
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    data-bs-toggle="tooltip"
-                    title="Details"
-                    [disabled]="!(menu.strSubmenus && menu.strSubmenus.length > 0)"
+                <div
+                  class="btn-group btn-group-sm"
+                  role="group"
+                  aria-label="Small button group"
+                >
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
+                    [class.disabled]="!(menu.strSubmenus && menu.strSubmenus.length > 0)"
                     (click)="onSelectMenu(menu)"
                   >
                     <svg
@@ -694,16 +687,17 @@
                     >
                       <use
                         [attr.xlink:href]="
-                          './assets/icons/bootstrap-icons.svg#list-nested'
+                          './assets/icons/bootstrap-icons.svg#eye'
                         "
                       ></use>
                     </svg>
-                  </button>
+                  </a>
     
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    title="Edit"
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
                   >
                     <svg
                       fill="currentColor"
@@ -712,16 +706,17 @@
                     >
                       <use
                         [attr.xlink:href]="
-                          './assets/icons/bootstrap-icons.svg#pencil'
+                          './assets/icons/bootstrap-icons.svg#pencil-square'
                         "
                       ></use>
                     </svg>
-                  </button>
+                  </a>
     
-                  <button
-                    type="button"
-                    class="btn btn-outline-dark btn-sm me-2"
-                    title="Delete"
+                  <a
+                    style="
+                      color: var(--sidebar-background-color);
+                      cursor: pointer;
+                    "
                   >
                     <svg
                       fill="currentColor"
@@ -730,11 +725,11 @@
                     >
                       <use
                         [attr.xlink:href]="
-                          './assets/icons/bootstrap-icons.svg#trash3'
+                          './assets/icons/bootstrap-icons.svg#trash'
                         "
                       ></use>
                     </svg>
-                  </button>
+                  </a>
                 </div>
               </td>
             </tr>
@@ -749,13 +744,13 @@
     
         <!-- Opciones de menú disponibles en la aplicación -->
         <div class="mt-4">
-          <h6 class="roles-title">Available Menu Options</h6>
+          <h6 class="roles-title">{{ 'apps.availableMenuOptions' | translate }}</h6>
           <table class="table table-bordered table-sm table-bordered mt-3">
             <thead>
               <tr>
-                <th>Select</th>
-                <th>Name</th>
-                <th>Description</th>
+                <th>{{ 'apps.select' | translate }}</th>
+                <th>{{ 'apps.name' | translate }}</th>
+                <th>{{ 'apps.description' | translate }}</th>
               </tr>
             </thead>
             <tbody>
@@ -906,27 +901,27 @@
     </div>
 
     <!-- Contador -->
-    <div class="user-counter">Showing 1 of 1 applications</div>
+    <div class="user-counter">Showing {{ startItem }} to {{ endItem }} of {{ totalItems }} applications</div>
 
     <!-- Paginación -->
     <div>
-      <nav aria-label="Paginación de tarjetas" class="m-2">
+      <nav aria-label="Paginación de aplicaciones" class="m-2">
         <ul class="pagination pagination-sm mb-0 custom-pagination">
           <!-- Botón Anterior -->
-          <li class="page-item">
-            <a class="page-link" aria-label="Anterior">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <a class="page-link" (click)="previousPage()" [style.cursor]="currentPage === 1 ? 'not-allowed' : 'pointer'" aria-label="Anterior">
               <i class="bi bi-chevron-left"></i>
             </a>
           </li>
 
           <!-- Números de página -->
-          <li class="page-item">
-            <a class="page-link"> </a>
+          <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index" [class.active]="currentPage === i + 1">
+            <a class="page-link" (click)="goToPage(i + 1)" style="cursor: pointer">{{ i + 1 }}</a>
           </li>
 
           <!-- Botón Siguiente -->
-          <li class="page-item">
-            <a class="page-link" aria-label="Siguiente">
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <a class="page-link" (click)="nextPage()" [style.cursor]="currentPage === totalPages ? 'not-allowed' : 'pointer'" aria-label="Siguiente">
               <i class="bi bi-chevron-right"></i>
             </a>
           </li>
@@ -1123,8 +1118,8 @@
             </svg>
           </div>
           <h1 class="modal-title fs-5" id="staticBackdropLabel">
-            New Rol for
-            <b>{{ (selectedApplication?.strName || "").toUpperCase() }} </b>app
+            {{ 'roles.create.newRoleFor' | translate }}
+            <b>{{ (selectedApplication?.strName || "").toUpperCase() }} </b>{{ 'roles.create.app' | translate }}
           </h1>
         </div>
 
@@ -1206,7 +1201,7 @@
           </svg>
         </div>
 
-        <h5 class="modal-title" id="optionMenuModalLabel">Add Menu Option</h5>
+        <h5 class="modal-title" id="optionMenuModalLabel">{{ 'apps.addMenuOption' | translate }}</h5>
       </div>
 
       <!-- Cuerpo del modal con el componente -->
@@ -1219,3 +1214,10 @@
     </div>
   </div>
 </div>
+
+<!-- CYCLON Assistant -->
+<app-cyclon-assistant 
+  [currentModule]="'applications'"
+  [moduleContext]="cyclonContext"
+  [language]="currentLanguage">
+</app-cyclon-assistant>

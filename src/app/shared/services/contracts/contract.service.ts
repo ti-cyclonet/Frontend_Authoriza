@@ -25,6 +25,8 @@ export interface CreateContractDto {
   startDate: string;
   endDate: string;
   status: ContractStatus;
+  codePrefix?: string;
+  businessSector?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -39,6 +41,10 @@ export class ContractService {
     return this.http.post<any>(`${this.contractsUrl}`, contractData);
   }
 
+  getContractsByUser(userId: string): Observable<Contract[]> {
+    return this.http.get<Contract[]>(`${this.contractsUrl}/user/${userId}`);
+  }
+
   findAll(page: number, limit: number) {
     const offset = (page - 1) * limit;
     return this.http.get<{
@@ -48,5 +54,15 @@ export class ContractService {
       offset: number;
       totalPages: number;
     }>(`${this.contractsUrl}?limit=${limit}&offset=${offset}`);
+  }
+
+  activateContract(contractId: string): Observable<any> {
+    return this.http.patch<any>(`${this.contractsUrl}/${contractId}/status`, { status: 'ACTIVE' });
+  }
+
+  validateCodePrefix(codePrefix: string): Observable<{ isAvailable: boolean; message?: string }> {
+    return this.http.get<{ isAvailable: boolean; message?: string }>(
+      `${this.contractsUrl}/validate-prefix/${codePrefix}`
+    );
   }
 }

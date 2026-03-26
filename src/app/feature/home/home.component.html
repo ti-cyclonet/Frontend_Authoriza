@@ -6,8 +6,278 @@
     /home
   </a>
 </div>
-<div class="card shadow m-3">
-  <div class="card-body">
-    <h5 class="card-title text-nowrap bg-body-secondary border" style="width: 3.2rem;">Main <b>Dashboard</b>.</h5>
+
+<div class="dashboard-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center p-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">{{ 'dashboard.loading' | translate }}</span>
+    </div>
+    <p class="mt-2">{{ 'dashboard.loadingStats' | translate }}</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="alert alert-danger m-3" role="alert">
+    <svg viewBox="0 0 16 16" class="me-2">
+      <use xlink:href="./assets/icons/bootstrap-icons.svg#exclamation-triangle-fill"/>
+    </svg>
+    {{ error }}
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading && !error && stats" class="dashboard-content">
+    <!-- Header -->
+    <div class="dashboard-header">
+      <h3 class="dashboard-title">{{ 'dashboard.title' | translate }}</h3>
+      <p class="dashboard-subtitle">{{ 'dashboard.subtitle' | translate }}</p>
+    </div>
+
+    <!-- Stats Cards Row -->
+    <div class="stats-grid">
+      <!-- Applications Card -->
+      <div class="stat-card" *ngIf="stats.applications">
+        <div class="stat-header">
+          <div class="stat-icon invoices-icon">
+            <svg viewBox="0 0 16 16">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#grid-3x3-gap-fill"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <h4>{{ stats.applications.total }}</h4>
+            <p>{{ 'dashboard.applications' | translate }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Packages Card -->
+      <div class="stat-card" *ngIf="stats.packages">
+        <div class="stat-header">
+          <div class="stat-icon revenue-icon">
+            <svg viewBox="0 0 16 16">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#box-seam"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <h4>{{ stats.packages.total }}</h4>
+            <p>{{ 'dashboard.packages' | translate }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users Card -->
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon users-icon">
+            <svg viewBox="0 0 16 16">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#people-fill"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <h4>{{ stats.users.total }}</h4>
+            <p>{{ 'dashboard.totalUsers' | translate }}</p>
+          </div>
+        </div>
+        <div class="stat-details">
+          <div class="stat-item">
+            <span class="badge badge-success">{{ stats.users.active }}</span>
+            <span>{{ 'dashboard.active' | translate }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="badge badge-secondary">{{ stats.users.inactive }}</span>
+            <span>{{ 'dashboard.inactive' | translate }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="badge badge-warning">{{ stats.users.unconfirmed }}</span>
+            <span>{{ 'dashboard.unconfirmed' | translate }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Principal Users Card -->
+      <div class="stat-card" *ngIf="stats.principalUsers">
+        <div class="stat-header">
+          <div class="stat-icon contracts-icon">
+            <svg viewBox="0 0 16 16">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#person-badge-fill"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <h4>{{ stats.principalUsers.total }}</h4>
+            <p>{{ 'dashboard.principalUsers' | translate }}</p>
+          </div>
+        </div>
+        <div class="stat-details">
+          <div class="stat-item" *ngIf="stats.principalUsers.unconfirmed > 0">
+            <span class="badge badge-warning">{{ stats.principalUsers.unconfirmed }}</span>
+            <span>{{ 'users.status.UNCONFIRMED' | translate }}</span>
+          </div>
+          <div class="stat-item" *ngIf="stats.principalUsers.active > 0">
+            <span class="badge badge-success">{{ stats.principalUsers.active }}</span>
+            <span>{{ 'users.status.ACTIVE' | translate }}</span>
+          </div>
+          <div class="stat-item" *ngIf="stats.principalUsers.suspended > 0">
+            <span class="badge badge-secondary">{{ stats.principalUsers.suspended }}</span>
+            <span>{{ 'users.status.SUSPENDED' | translate }}</span>
+          </div>
+          <div class="stat-item" *ngIf="stats.principalUsers.expiring > 0">
+            <span class="badge badge-info">{{ stats.principalUsers.expiring }}</span>
+            <span>{{ 'users.status.EXPIRING' | translate }}</span>
+          </div>
+          <div class="stat-item" *ngIf="stats.principalUsers.delinquent > 0">
+            <span class="badge badge-danger">{{ stats.principalUsers.delinquent }}</span>
+            <span>{{ 'users.status.DELINQUENT' | translate }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts and Details Row -->
+    <div class="charts-grid">
+      <!-- Users by Role Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h5>{{ 'dashboard.usersByRole' | translate }}</h5>
+        </div>
+        <div class="chart-content">
+          <div class="chart-container">
+            <p-chart 
+              *ngIf="userRoleChartData" 
+              type="doughnut" 
+              [data]="userRoleChartData" 
+              [options]="chartOptions"
+              width="300"
+              height="300">
+            </p-chart>
+          </div>
+          <div class="role-list">
+            <div *ngFor="let role of stats.users.byRole" class="role-item">
+              <div class="role-info">
+                <span class="role-name">{{ role.role }}</span>
+                <span class="role-count">{{ role.count }}</span>
+              </div>
+              <div class="role-bar">
+                <div class="role-progress" [style.width.%]="(role.count / stats.users.total) * 100"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Applications by Users Chart -->
+      <div class="chart-card" *ngIf="stats.applications">
+        <div class="chart-header">
+          <h5>{{ 'dashboard.applicationsByUsers' | translate }}</h5>
+        </div>
+        <div class="chart-content">
+          <div class="role-list">
+            <div *ngFor="let app of stats.applications.byApplication" class="role-item">
+              <div class="role-info">
+                <span class="role-name">{{ app.name }}</span>
+                <span class="role-count">{{ app.userCount }} usuarios</span>
+              </div>
+              <div class="role-bar">
+                <div class="role-progress" [style.width.%]="(app.userCount / stats.users.total) * 100"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Packages Chart -->
+      <div class="chart-card" *ngIf="stats.packages">
+        <div class="chart-header">
+          <h5>{{ 'dashboard.packagesByContracts' | translate }}</h5>
+        </div>
+        <div class="chart-content">
+          <div class="status-list">
+            <div *ngFor="let pkg of stats.packages.byPackage" class="status-item">
+              <div class="status-info">
+                <span class="badge badge-primary">{{ pkg.name }}</span>
+                <span class="status-count">{{ pkg.contractCount }} contratos</span>
+                <span class="status-value">{{ pkg.roleCount }} roles</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div *ngIf="recentActivity" class="activity-section">
+      <h5 class="section-title">{{ 'dashboard.recentActivity' | translate }}</h5>
+      
+      <div class="logs-container">
+        <div *ngFor="let log of recentActivity.recentLogs" class="log-entry" [class]="'log-' + log.level.toLowerCase()">
+          <div class="log-icon">
+            <svg viewBox="0 0 16 16">
+              <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + getLogIcon(log.action)"/>
+            </svg>
+          </div>
+          <div class="log-content">
+            <div class="log-message">{{ log.message }}</div>
+            <div class="log-meta">
+              <span class="log-action">{{ getLogActionLabel(log.action) }}</span>
+              <span class="log-time">{{ formatDate(log.createdAt) }}</span>
+            </div>
+          </div>
+          <div class="log-badge" [class]="'badge-' + log.level.toLowerCase()">{{ log.level }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entity Codes Section - HIDDEN -->
+    <!-- <div *ngIf="entityCodes" class="codes-section">
+      <h5 class="section-title">{{ 'dashboard.recentEntityCodes' | translate }}</h5>
+      
+      <div class="codes-grid">
+        <div class="codes-card">
+          <div class="codes-header">
+            <svg viewBox="0 0 16 16">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#person-badge"/>
+            </svg>
+            <h6>{{ 'dashboard.userCodes' | translate }}</h6>
+          </div>
+          <div class="codes-list">
+            <div *ngFor="let user of entityCodes.users" class="code-item">
+              <span class="entity-code">{{ user.code }}</span>
+              <span class="entity-name">{{ user.strUserName }}</span>
+              <small class="entity-date">{{ formatDate(user.dtmCreateDate) }}</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="codes-card">
+          <div class="codes-header">
+            <svg viewBox="0 0 16 16">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#receipt-cutoff"/>
+            </svg>
+            <h6>{{ 'dashboard.invoiceCodes' | translate }}</h6>
+          </div>
+          <div class="codes-list">
+            <div *ngFor="let invoice of entityCodes.invoices" class="code-item">
+              <span class="entity-code">{{ invoice.code }}</span>
+              <span class="entity-name">{{ formatCurrency(invoice.value) }}</span>
+              <small class="entity-date">{{ formatDate(invoice.createdAt) }}</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="codes-card">
+          <div class="codes-header">
+            <svg viewBox="0 0 16 16">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#file-earmark-code"/>
+            </svg>
+            <h6>{{ 'dashboard.contractCodes' | translate }}</h6>
+          </div>
+          <div class="codes-list">
+            <div *ngFor="let contract of entityCodes.contracts" class="code-item">
+              <span class="entity-code">{{ contract.code }}</span>
+              <span class="entity-name">{{ formatCurrency(contract.value) }}</span>
+              <small class="entity-date">{{ formatDate(contract.createdAt) }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
   </div>
 </div>

@@ -20,6 +20,7 @@ export interface Configuration {
 
 export interface Package {
   id: string;
+  code?: string;
   name: string;
   description: string;
   configurations: Configuration[];

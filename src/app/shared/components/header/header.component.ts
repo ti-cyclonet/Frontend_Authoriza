@@ -21,13 +21,16 @@ import {
 } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ChangePasswordComponent } from '../change-password/change-password.component';
+import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
+import { TranslationService } from '../../services/translation.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 let bootstrap: any;
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ChangePasswordComponent],
+  imports: [CommonModule, ReactiveFormsModule, ChangePasswordComponent, LanguageSelectorComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
   providers: [AuthService],
@@ -54,13 +57,22 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   nombreApp = DESCRIPTION_APP;
   form!: FormGroup;
 
+  getTranslatedAppName(): string {
+    return this.translationService.translate('header.appTitle');
+  }
+
+  get currentLanguage(): string {
+    return this.translationService.getCurrentLanguage();
+  }
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private authService: AuthService,
     private router: Router,
     private fb: FormBuilder,
     private http: HttpClient,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private translationService: TranslationService
   ) {}
 
   ngOnInit(): void {

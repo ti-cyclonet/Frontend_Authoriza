@@ -47,6 +47,14 @@ export class UserService {
     );
   }
 
+  checkCompanyCodeAvailability(
+    companyCode: string
+  ): Observable<{ available: boolean }> {
+    return this.http.get<{ available: boolean }>(
+      `${this.userUrl}/check-company-code/${encodeURIComponent(companyCode)}`
+    );
+  }
+
   // Crear datos básicos asociados a un usuario
   createBasicData(userId: string, basicData: any): Observable<any> {
     return this.http.post<any>(
@@ -137,8 +145,8 @@ export class UserService {
   }
 
   // Actualizar usuario
-  updateUser(user: User): Observable<User> {
-    return this.http.put<User>(`${this.userUrl}/${user.id}`, user);
+  updateUser(userId: string, updateData: any): Observable<User> {
+    return this.http.put<User>(`${this.userUrl}/${userId}`, updateData);
   }
 
   getUsersByDependentOnId(dependentOnId: string): Observable<User[]> {

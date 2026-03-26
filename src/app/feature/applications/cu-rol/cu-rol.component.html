@@ -2,40 +2,40 @@
     <form [formGroup]="rolesForm" (ngSubmit)="onSubmit()">
       <!-- Campo Name -->
       <div class="form-group mb-3">        
-        <label for="name">Rol Name </label>
+        <label for="name">{{ 'roles.create.roleName' | translate }}</label>
         <input type="text" id="name" class="form-control" formControlName="name">
       
         <div *ngIf="rolesForm.get('name')?.errors?.['required'] && rolesForm.get('name')?.touched" class="text-danger">
-          Rol name is required.
+          {{ 'roles.create.roleNameRequired' | translate }}
         </div>
       
         <div *ngIf="rolesForm.get('name')?.errors?.['notAvailable'] && !rolesForm.get('name')?.errors?.['required'] && rolesForm.get('name')?.touched" class="text-danger">
-          The rol name is already taken.  Please try another.
+          {{ 'roles.create.roleNameTaken' | translate }}
         </div>
       </div>
       
   
       <!-- Campo Description A -->
       <div class="form-group mb-3">
-        <label for="description1" class="form-label">Description A</label>
+        <label for="description1" class="form-label">{{ 'roles.create.descriptionA' | translate }}</label>
         <textarea id="description1" class="form-control" formControlName="description1"></textarea>
         <div *ngIf="rolesForm.get('description1')?.invalid && rolesForm.get('description1')?.touched" class="text-danger">
-          Description 1 is required.
+          {{ 'roles.create.descriptionARequired' | translate }}
         </div>
       </div>
   
       <!-- Campo Description B -->
       <div class="form-group mb-3">
-        <label for="description2" class="form-label">Description B</label>
+        <label for="description2" class="form-label">{{ 'roles.create.descriptionB' | translate }}</label>
         <textarea id="description2" class="form-control" formControlName="description2"></textarea>
         <div *ngIf="rolesForm.get('description2')?.invalid && rolesForm.get('description2')?.touched" class="text-danger">
-          Description 2 is required.
+          {{ 'roles.create.descriptionBRequired' | translate }}
         </div>
       </div>
       
       <div class="d-flex justify-content-between">
-        <button type="button" class="btn btn-outline-dark btn-sm mx-4" style="width: 100px" data-bs-dismiss="modal" (click)="onCancel()">Cancel</button>
-        <button type="submit" class="btn btn-outline-dark btn-sm mx-4" style="width: 100px" data-bs-dismiss="modal" [disabled]="rolesForm.invalid">Add</button>
+        <button type="button" class="btn btn-outline-dark btn-sm mx-4" style="width: 100px" data-bs-dismiss="modal" (click)="onCancel()">{{ 'common.cancel' | translate }}</button>
+        <button type="submit" class="btn btn-outline-dark btn-sm mx-4" style="width: 100px" data-bs-dismiss="modal" [disabled]="rolesForm.invalid">{{ 'roles.create.add' | translate }}</button>
       </div>
     </form>
   </div>

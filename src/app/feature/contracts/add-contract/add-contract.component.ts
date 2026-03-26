@@ -30,6 +30,9 @@ import {
 import { Contract } from '../../../shared/model/contract.model';
 import Swal from 'sweetalert2';
 import { CurrencyFormatPipe } from '../../../shared/pipes/custom-currency.pipe';
+import { TranslationService } from '../../../shared/services/translation.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-add-contract',
@@ -40,6 +43,7 @@ import { CurrencyFormatPipe } from '../../../shared/pipes/custom-currency.pipe';
     ReactiveFormsModule,
     IconComponent,
     CurrencyFormatPipe,
+    TranslatePipe,
   ],
   templateUrl: './add-contract.component.html',
   styleUrl: './add-contract.component.css',
@@ -85,13 +89,16 @@ export class AddContractComponent implements OnInit {
 
   contractStatus = ContractStatus;
   statusOptions = Object.values(ContractStatus);
+  alphabet: string[] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  codePrefixError: string = '';
 
   constructor(
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
     private userService: UserService,
     private packageService: PackageService,
-    private contractService: ContractService
+    private contractService: ContractService,
+    private translationService: TranslationService
   ) {
     this.contractForm = this.fb.group({
       value: [null, Validators.required],
@@ -127,7 +134,37 @@ export class AddContractComponent implements OnInit {
       status: ['PENDING', Validators.required],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
+      codeLetter1: ['', Validators.required],
+      codeLetter2: ['', Validators.required],
+      codeLetter3: ['', Validators.required],
+      businessSector: ['general', Validators.required],
     });
+
+    // Validar prefijo con debounce
+    this.contractForm.valueChanges
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged((prev, curr) => 
+          prev.codeLetter1 === curr.codeLetter1 &&
+          prev.codeLetter2 === curr.codeLetter2 &&
+          prev.codeLetter3 === curr.codeLetter3
+        )
+      )
+      .subscribe(() => {
+        const codePrefix = this.getCodePreview();
+        if (codePrefix && codePrefix.length === 3) {
+          this.validateCodePrefixAvailability(codePrefix);
+        } else {
+          this.codePrefixError = '';
+        }
+      });
+  }
+
+  getCodePreview(): string {
+    const l1 = this.contractForm.get('codeLetter1')?.value;
+    const l2 = this.contractForm.get('codeLetter2')?.value;
+    const l3 = this.contractForm.get('codeLetter3')?.value;
+    return (l1 && l2 && l3) ? `${l1}${l2}${l3}` : '';
   }
 
   calculateContractValue(pkgId: string) {
@@ -155,7 +192,7 @@ export class AddContractComponent implements OnInit {
   }
 
   loadUsersWithoutDependency(): void {
-    this.userService.getIndependentUsers().subscribe({
+    this.userService.getUsers().subscribe({
       next: (users: User[]) => {
         this.usersWithoutDependency = users;
         this.updatePagination();
@@ -166,7 +203,7 @@ export class AddContractComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error al cargar usuarios independientes:', err);
+        console.error('Error al cargar usuarios:', err);
       },
     });
   }
@@ -320,8 +357,8 @@ export class AddContractComponent implements OnInit {
     if (!this.selectedUser) {
       Swal.fire({
         icon: 'warning',
-        title: 'Warning',
-        text: 'Please select a user',
+        title: this.translationService.translate('common.warning'),
+        text: this.translationService.translate('contracts.selectUser'),
         timer: 2000,
         showConfirmButton: false,
       });
@@ -331,8 +368,8 @@ export class AddContractComponent implements OnInit {
     if (!this.selectedPackage) {
       Swal.fire({
         icon: 'warning',
-        title: 'Warning',
-        text: 'Please select a package',
+        title: this.translationService.translate('common.warning'),
+        text: this.translationService.translate('contracts.selectPackage'),
         timer: 2000,
         showConfirmButton: false,
       });
@@ -343,8 +380,8 @@ export class AddContractComponent implements OnInit {
       this.contractForm.markAllAsTouched();
       Swal.fire({
         icon: 'error',
-        title: 'Form Incomplete',
-        text: 'Please fill all required fields',
+        title: this.translationService.translate('contracts.formIncomplete'),
+        text: this.translationService.translate('contracts.fillRequiredFields'),
         timer: 2000,
         showConfirmButton: false,
       });
@@ -362,16 +399,17 @@ export class AddContractComponent implements OnInit {
       startDate: formValues.startDate,
       endDate: formValues.endDate,
       status: formValues.status || ContractStatus.DRAFT,
+      codePrefix: this.getCodePreview() || undefined,
+      businessSector: formValues.businessSector,
     };
 
     this.contractService.createContract(payload).subscribe({
       next: (response: Contract) => {
         this.showStepIcons(true, true, true);
-        console.log('Contrato creado con éxito:', response);
 
         Swal.fire({
           icon: 'success',
-          title: 'Contract successfully created!',
+          title: this.translationService.translate('contracts.contractCreated'),
           timer: 2000,
           showConfirmButton: false,
           willClose: () => {
@@ -383,8 +421,8 @@ export class AddContractComponent implements OnInit {
         console.error('Error al crear contrato:', error);
         Swal.fire({
           icon: 'error',
-          title: 'Error',
-          text: 'There was an error creating the contract.',
+          title: this.translationService.translate('common.error'),
+          text: this.translationService.translate('contracts.errorCreating'),
           timer: 2500,
           showConfirmButton: false,
         });
@@ -400,5 +438,20 @@ export class AddContractComponent implements OnInit {
 
   onCancel(): void {
     this.close.emit();
+  }
+
+  private validateCodePrefixAvailability(codePrefix: string): void {
+    this.contractService.validateCodePrefix(codePrefix).subscribe({
+      next: (response) => {
+        if (!response.isAvailable) {
+          this.codePrefixError = response.message || 'Este prefijo no está disponible';
+        } else {
+          this.codePrefixError = '';
+        }
+      },
+      error: () => {
+        this.codePrefixError = 'Error al validar el prefijo';
+      }
+    });
   }
 }

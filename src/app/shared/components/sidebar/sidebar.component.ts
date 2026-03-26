@@ -2,11 +2,13 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule, NgStyle } from '@angular/common';
 import { MenuOption } from '../../model/menu_option';
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, NgStyle],
+  imports: [CommonModule, RouterLink, RouterLinkActive, NgStyle, TranslatePipe],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css'],
 })
@@ -15,9 +17,11 @@ export class SidebarComponent implements OnInit {
   @Output() sidebarToggle = new EventEmitter<void>();
   private openSubmenuId: string | null = null;
 
+  constructor(private translationService: TranslationService) {}
+
   ngOnInit(): void {
     this.optionsMenu.sort(
-      (a, b) => parseInt(a.ingOrder, 10) - parseInt(b.ingOrder, 10)
+      (a, b) => a.ingOrder - b.ingOrder
     );
   }
 
@@ -25,7 +29,7 @@ export class SidebarComponent implements OnInit {
     const menu = this.optionsMenu.find((option) => option.id === id);
     return (
       menu?.strSubmenus.sort(
-        (a, b) => parseInt(a.ingOrder, 10) - parseInt(b.ingOrder, 10)
+        (a, b) => a.ingOrder - b.ingOrder
       ) || []
     );
   }
@@ -45,5 +49,24 @@ export class SidebarComponent implements OnInit {
   hasSubmenu(optionId: string): boolean {
     const submenus = this.getSubmenus(optionId);
     return submenus && submenus.length > 0;
+  }
+
+  getTranslatedMenuText(description: string): string {
+    const menuMap: { [key: string]: string } = {
+      'Home': 'menu.home',
+      'Users': 'menu.users',
+      'Applications': 'menu.applications',
+      'Packages': 'menu.packages',
+      'Contracts': 'menu.contracts',
+      'Settings': 'menu.settings',
+      'Dashboard': 'menu.dashboard',
+      'Materials': 'menu.materials',
+      'Kardex': 'menu.kardex',
+      'Invoices': 'menu.invoices',
+      'Parameters': 'menu.parameters'
+    };
+    
+    const translationKey = menuMap[description];
+    return translationKey ? this.translationService.translate(translationKey) : description;
   }
 }

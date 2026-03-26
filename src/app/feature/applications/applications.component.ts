@@ -29,6 +29,10 @@ import { Rol } from '../../shared/model/rol';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Modal } from 'bootstrap';
 import { CuOptionMenuComponent } from './cu-optionmenu/cu-optionmenu.component';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { CyclonAssistantComponent } from '../../shared/components/cyclon-assistant/cyclon-assistant.component';
+import { TranslationService } from '../../shared/services/translation.service';
+
 declare var bootstrap: any;
 
 @Component({
@@ -43,6 +47,8 @@ declare var bootstrap: any;
     ReactiveFormsModule,
     CuRolComponent,
     CuOptionMenuComponent,
+    TranslatePipe,
+    CyclonAssistantComponent,
   ],
   templateUrl: './applications.component.html',
   styleUrls: ['./applications.component.css'],
@@ -52,6 +58,11 @@ export class ApplicationsComponent implements OnInit {
   private destroy$ = new Subject<void>();
   @Input() applications: Application[] = [];
   @Input() localApplications: Application[] = [];
+  
+  // Paginación
+  currentPage: number = 1;
+  itemsPerPage: number = 5;
+  totalItems: number = 0;
   @ViewChild(CuApplicationComponent) appCuApplication!: CuApplicationComponent;
   @ViewChild('rolesModal') rolesModalElement!: ElementRef;
   @ViewChild('optionMenuModal') optionMenuModal!: ElementRef;
@@ -100,7 +111,8 @@ export class ApplicationsComponent implements OnInit {
     public applicationsService: ApplicationsService,
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
-    public modalRef: BsModalRef
+    public modalRef: BsModalRef,
+    private translationService: TranslationService
   ) {
     this.notifications = [];
   }
@@ -110,11 +122,23 @@ export class ApplicationsComponent implements OnInit {
   }
 
   reloadApplications(): void {
-    this.applicationsService.loadApplications().subscribe();
+    this.loadApplicationsPage();
+  }
 
-    this.applicationsService.applications$.subscribe((apps) => {
-      this.applications = apps;
-      this.localApplications = [...apps];
+  loadApplicationsPage(): void {
+    const offset = (this.currentPage - 1) * this.itemsPerPage;
+    this.applicationsService.getApplications(this.itemsPerPage, offset).subscribe({
+      next: (apps) => {
+        this.applications = apps;
+        this.localApplications = [...apps];
+        // Simular total para demo - en producción vendría del backend
+        this.totalItems = apps.length < this.itemsPerPage ? 
+          offset + apps.length : 
+          offset + apps.length + 1;
+      },
+      error: (error) => {
+        // Error loading applications
+      }
     });
   }
 
@@ -179,7 +203,7 @@ export class ApplicationsComponent implements OnInit {
       // 6. Forzar render
       this.cdr.detectChanges();
     } else {
-      console.warn('⚠️ Rol no encontrado en DTO tras crear opción');
+      // Rol no encontrado en DTO tras crear opción
     }
   }
 
@@ -194,7 +218,7 @@ export class ApplicationsComponent implements OnInit {
       this.selectedRol = dtoRol;
       this.selectedMenuOptions = [...(dtoRol.menuOptions || [])];
     } else {
-      console.warn('No se encontró el rol en el DTO para sincronizar.');
+      // No se encontró el rol en el DTO para sincronizar.
     }
   }
 
@@ -263,7 +287,7 @@ export class ApplicationsComponent implements OnInit {
 
     // Verificar si hay registros que procesar
     if (!map || map.size === 0) {
-      this.showToast('There are no applications to save.', 'warning', 'A', 1);
+      this.showToast(this.translationService.translate('apps.noApplicationsToSave'), 'warning', 'A', 1);
       return;
     }
 
@@ -279,7 +303,7 @@ export class ApplicationsComponent implements OnInit {
       // Validar que las nuevas tengan imagen
       if (isNewApp && !dto.imageFile) {
         this.showToast(
-          `Application "${dto.strName}" must include an image.`,
+          `${this.translationService.translate('apps.applicationMustIncludeImage')} "${dto.strName}".`,
           'danger',
           'A',
           1
@@ -296,7 +320,7 @@ export class ApplicationsComponent implements OnInit {
     // Si hubo errores o no hay cambios válidos, salir
     if (hasValidationError || validApplications.length === 0) {
       if (!hasValidationError) {
-        this.showToast('No changes to save.', 'warning', 'A', 1);
+        this.showToast(this.translationService.translate('apps.noChangesToSave'), 'warning', 'A', 1);
       }
       return;
     }
@@ -602,7 +626,7 @@ export class ApplicationsComponent implements OnInit {
     if (this.applicationsService.getEditMode() && this.selectedApplicationId) {
       return `Application <b>ID</b> <span class="badge rounded-pill text-bg-light">${this.selectedApplicationId}</span>`;
     } else {
-      return `New <b>Application</b>`;
+      return this.translationService.translate('apps.newApplication');
     }
   }
 
@@ -773,4 +797,52 @@ export class ApplicationsComponent implements OnInit {
     }
   }
   // ----------------------------------------------
+
+  // Métodos de paginación
+  get totalPages(): number {
+    return Math.ceil(this.totalItems / this.itemsPerPage);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.loadApplicationsPage();
+    }
+  }
+
+  previousPage(): void {
+    this.goToPage(this.currentPage - 1);
+  }
+
+  nextPage(): void {
+    this.goToPage(this.currentPage + 1);
+  }
+
+  get startItem(): number {
+    return (this.currentPage - 1) * this.itemsPerPage + 1;
+  }
+
+  get endItem(): number {
+    return Math.min(this.currentPage * this.itemsPerPage, this.totalItems);
+  }
+
+  // Contexto para CYCLON
+  get cyclonContext() {
+    return {
+      currentPage: this.currentPage,
+      totalPages: this.totalPages,
+      totalItems: this.totalItems,
+      selectedApplication: this.selectedApplication?.strName,
+      selectedRole: this.selectedRol?.strName,
+      hasTemporaryChanges: this.hasApplications
+    };
+  }
+
+  // Detectar idioma actual (puedes conectar esto con tu servicio de traducción)
+  get currentLanguage(): string {
+    if (typeof localStorage !== 'undefined') {
+      return localStorage.getItem('language') || 'en';
+    }
+    return 'en';
+  }
 }
