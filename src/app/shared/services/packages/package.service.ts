@@ -13,10 +13,10 @@ import { NewPackageDTO } from '../../model/new-package-dto';
 })
 export class PackageService {
   private baseApiUrl = environment.apiBaseUrl;
-  private packageUrl = this.baseApiUrl + '/api/packages';
+  private packageUrl = this.baseApiUrl + '/packages';
   private checkNameUrl = this.packageUrl + '/check-name';
-  private rolesUrl = this.baseApiUrl + '/api/roles';
-  private applicationUrl = this.baseApiUrl + '/api/applications';
+  private rolesUrl = this.baseApiUrl + '/roles';
+  private applicationUrl = this.baseApiUrl + '/applications';
 
   constructor(private http: HttpClient) {}
 

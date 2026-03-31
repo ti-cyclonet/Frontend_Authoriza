@@ -24,7 +24,7 @@ export interface UserDependency {
   providedIn: 'root'
 })
 export class UserDependenciesService {
-  private apiUrl = `${environment.apiBaseUrl}/api/user-dependencies`;
+  private apiUrl = `${environment.apiBaseUrl}/user-dependencies`;
 
   constructor(private http: HttpClient) {}
 
