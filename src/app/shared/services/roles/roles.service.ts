@@ -17,9 +17,9 @@ export class RolesService {
   applications: Application[] = [];
 
   private baseApiUrl = environment.apiBaseUrl;
-  private validateNameUrl = this.baseApiUrl + '/api/roles/check-name';
-  private searchRolesUrl = this.baseApiUrl + '/api/roles';
-  private searchRolesUrlApp = this.baseApiUrl + '/api/applications';
+  private validateNameUrl = this.baseApiUrl + '/roles/check-name';
+  private searchRolesUrl = this.baseApiUrl + '/roles';
+  private searchRolesUrlApp = this.baseApiUrl + '/applications';
 
 
   constructor(private http: HttpClient) {}

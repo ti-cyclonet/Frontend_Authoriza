@@ -22,7 +22,7 @@ export interface PaginatedResponse<T> {
 export class UserService {
   private baseApiUrl = environment.apiBaseUrl;
 
-  private userUrl = this.baseApiUrl + '/api/users';
+  private userUrl = this.baseApiUrl + '/users';
   private userUrlWithDeleted = this.userUrl + '/without-dependency';
   private userIndependentUrl = this.userUrl + '/independent';
   private usersSubject = new BehaviorSubject<any[]>([]);
@@ -58,7 +58,7 @@ export class UserService {
   // Crear datos básicos asociados a un usuario
   createBasicData(userId: string, basicData: any): Observable<any> {
     return this.http.post<any>(
-      `${this.baseApiUrl}/api/basic-data/${userId}`,
+      `${this.baseApiUrl}/basic-data/${userId}`,
       basicData
     );
   }
@@ -66,7 +66,7 @@ export class UserService {
   // Crear datos de persona natural
   createNaturalPersonData(data: any): Observable<any> {
     return this.http.post<any>(
-      `${this.baseApiUrl}/api/natural-person-data`,
+      `${this.baseApiUrl}/natural-person-data`,
       data
     );
   }
@@ -74,7 +74,7 @@ export class UserService {
   // Crear datos de persona jurídica
   createLegalEntityData(data: any): Observable<any> {
     return this.http.post<any>(
-      `${this.baseApiUrl}/api/legal-entity-data`,
+      `${this.baseApiUrl}/legal-entity-data`,
       data
     );
   }

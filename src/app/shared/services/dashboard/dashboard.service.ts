@@ -34,7 +34,7 @@ export interface DashboardStats {
   providedIn: 'root'
 })
 export class DashboardService {
-  private apiUrl = environment.apiBaseUrl + '/api/dashboard';
+  private apiUrl = environment.apiBaseUrl + '/dashboard';
 
   constructor(private http: HttpClient) {}
 

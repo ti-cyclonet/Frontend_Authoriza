@@ -21,7 +21,7 @@ export interface AssistantAction {
   providedIn: 'root'
 })
 export class CyclonAssistantService {
-  private baseUrl = environment.apiBaseUrl + '/api/assistant';
+  private baseUrl = environment.apiBaseUrl + '/assistant';
   private sessionId = this.generateSessionId();
   
   private messagesSubject = new BehaviorSubject<AssistantMessage[]>([]);

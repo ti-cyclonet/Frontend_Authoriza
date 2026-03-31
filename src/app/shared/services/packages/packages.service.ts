@@ -26,7 +26,7 @@ export interface PackageContract {
   providedIn: 'root'
 })
 export class PackagesService {
-  private apiUrl = `${environment.apiBaseUrl}/api/packages`;
+  private apiUrl = `${environment.apiBaseUrl}/packages`;
 
   constructor(private http: HttpClient) {}
 

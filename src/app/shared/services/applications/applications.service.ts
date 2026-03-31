@@ -53,8 +53,8 @@ export class ApplicationsService {
 
   private baseApiUrl = environment.apiBaseUrl;
 
-  private applicationUrl = this.baseApiUrl + '/api/applications';
-  private validateNameUrl = this.baseApiUrl + '/api/applications/check-name';
+  private applicationUrl = this.baseApiUrl + '/applications';
+  private validateNameUrl = this.baseApiUrl + '/applications/check-name';
 
   public editMode: boolean = false;
   public idApplication: string = '';

@@ -33,7 +33,7 @@ export interface CreateContractDto {
 export class ContractService {
   private baseApiUrl = environment.apiBaseUrl;
 
-  private contractsUrl = this.baseApiUrl + '/api/contracts';
+  private contractsUrl = this.baseApiUrl + '/contracts';
 
   constructor(private http: HttpClient) {}
 

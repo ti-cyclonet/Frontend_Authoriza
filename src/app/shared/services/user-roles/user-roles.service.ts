@@ -22,7 +22,7 @@ export interface RoleAvailability {
   providedIn: 'root'
 })
 export class UserRolesService {
-  private apiUrl = `${environment.apiBaseUrl}/api/user-roles`;
+  private apiUrl = `${environment.apiBaseUrl}/user-roles`;
 
   constructor(private http: HttpClient) {}
 
