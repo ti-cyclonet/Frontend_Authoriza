@@ -146,7 +146,9 @@
   width: 100%;
 }  
 
-/* Botón activo cuando la sidebar está abierta */
-.toggle-button.sidebar-active .toggle-icon {
-  fill: #ffffff;
+/* Botón activo cuando la sidebar está abierta - solo en móvil */
+@media (max-width: 768px) {
+  .toggle-button.sidebar-active .toggle-icon {
+    fill: #ffffff;
+  }
 }
