@@ -556,3 +556,20 @@
     min-height: 250px;
   }
 }
+
+@media (max-width: 576px) {
+  .dashboard-header {
+    margin-bottom: 0.75rem;
+  }
+  .dashboard-title {
+    font-size: 1.4rem;
+    margin-bottom: 0.2rem;
+  }
+  .dashboard-subtitle {
+    font-size: 0.85rem;
+  }
+  .title-container {
+    margin-bottom: 0.4rem;
+    margin-top: 0.5rem;
+  }
+}
