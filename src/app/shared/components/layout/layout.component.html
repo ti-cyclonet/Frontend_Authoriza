@@ -26,7 +26,7 @@
       style="height: 100vh; overflow: hidden"
     >
       <!-- Header with Toggle Button -->
-      <app-header (sidebarToggle)="toggleSidebar()"></app-header>
+      <app-header [isSidebarVisible]="isSidebarVisible" (sidebarToggle)="toggleSidebar()"></app-header>
 
       <!-- Content -->
       <div class="router-outlet-container flex-grow-1">

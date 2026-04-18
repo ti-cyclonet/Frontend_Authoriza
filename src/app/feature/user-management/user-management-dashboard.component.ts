@@ -58,6 +58,7 @@ export class UserManagementDashboardComponent implements OnInit {
   // Vista
   isGridView: boolean = false;
   isLoading: boolean = false;
+  showFilters: boolean = false;
 
   // Estadísticas
   totalUsers: number = 0;

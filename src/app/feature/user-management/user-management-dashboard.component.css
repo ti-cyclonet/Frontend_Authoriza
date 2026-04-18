@@ -5,8 +5,86 @@
   min-height: 100vh;
 }
 
-/* Header */
-.dashboard-header {
+/* Page Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--marine-blue, #1a237e);
+  margin: 0;
+}
+
+/* Breadcrumb */
+.title-container {
+  display: flex;
+  align-items: center;
+  font-size: 1.0rem;
+  color: #6E6E6E;
+  margin-bottom: 0.5rem;
+  margin-top: 1rem;
+  padding-left: 1.5rem;
+}
+
+@media (max-width: 576px) {
+  .title-container {
+    padding-left: 0.5rem;
+    margin-top: 0.5rem;
+  }
+}
+
+.title-link {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #6E6E6E;
+  text-decoration: none;
+}
+
+.title-link svg {
+  width: 16px;
+  height: 16px;
+  fill: #6E6E6E;
+}
+
+.dashboard-container {
+  padding: 0 1.5rem 2rem;
+}
+
+@media (max-width: 576px) {
+  .dashboard-container {
+    padding: 0 0.5rem 1rem;
+  }
+}
+
+/* Filter toggle link */
+.filter-toggle-link {
+  color: var(--sidebar-background-color);
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.filter-toggle-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 576px) {
+  .dashboard-title {
+    font-size: 1.4rem;
+  }
+  .title-container {
+    margin-top: 0.5rem;
+  }
+}
   background: transparent;
   border-radius: var(--border-radius);
   padding: 2rem;
@@ -57,30 +135,27 @@
 }
 
 .btn-create-user {
-  background: var(--purplish-blue);
-  color: var(--white);
-  border: 2px solid var(--purplish-blue);
-  padding: 0.75rem 1.5rem;
+  background: transparent;
+  color: var(--sidebar-background-color);
+  border: 1.5px solid var(--sidebar-background-color);
+  padding: 0.4rem 1rem;
   border-radius: 50px;
-  font-weight: 600;
+  font-weight: 500;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  gap: 0.4rem;
+  transition: all 0.2s ease;
 }
 
 .btn-create-user:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  background: var(--marine-blue);
-  border-color: var(--marine-blue);
-  color: var(--white);
+  background: var(--sidebar-background-color);
+  color: white;
 }
 
 .btn-create-user svg {
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1rem;
+  height: 1rem;
   fill: currentColor;
 }
 
@@ -93,8 +168,8 @@
 .dashboard-filters {
   background: var(--white);
   border-radius: var(--border-radius);
-  padding: 1.5rem;
-  margin-bottom: 2rem;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.75rem;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
   border: 1px solid var(--light-gray);
 }
@@ -102,6 +177,71 @@
 .filter-section {
   display: flex;
   flex-direction: column;
+  gap: 0;
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.filter-header:hover {
+  background-color: rgba(0,0,0,0.04);
+}
+
+.filter-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.filter-icon {
+  width: 16px;
+  height: 16px;
+  fill: var(--sidebar-background-color);
+}
+
+.filter-badge {
+  background-color: var(--sidebar-background-color);
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chevron-icon {
+  width: 14px;
+  height: 14px;
+  fill: #666;
+  transition: transform 0.3s ease;
+}
+
+.chevron-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.filter-body {
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.5rem 0.25rem 0.75rem;
+}
+
+.filter-body.visible {
+  display: flex;
+}
   gap: 1rem;
 }
 
@@ -124,25 +264,24 @@
 
 .status-filters {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.35rem;
   flex-wrap: wrap;
 }
 
 .status-filters .btn {
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 0.75rem;
   background: var(--light-gray);
   color: var(--marine-blue);
   border-radius: 50px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  font-size: 0.78rem;
   font-weight: 500;
-  border: 2px solid transparent;
+  border: 1.5px solid transparent;
 }
 
 .status-filters .btn:hover {
   background: var(--pastel-blue);
-  transform: translateY(-1px);
 }
 
 .status-filters .btn.active {
@@ -158,10 +297,10 @@
 }
 
 .search-input {
-  padding: 0.75rem 1rem 0.75rem 3rem;
-  border: 2px solid var(--light-gray);
+  padding: 0.4rem 1rem 0.4rem 2.5rem;
+  border: 1.5px solid var(--light-gray);
   border-radius: 50px;
-  font-size: 1rem;
+  font-size: 0.85rem;
   transition: all 0.3s ease;
   background: var(--magnolia);
 }
@@ -174,11 +313,11 @@
 
 .search-icon {
   position: absolute;
-  left: 1rem;
+  left: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1rem;
+  height: 1rem;
   fill: var(--cool-gray);
   pointer-events: none;
 }
@@ -279,13 +418,13 @@
 
 /* Tabla de Usuarios */
 .users-table-container {
-  background: var(--white);
+  background: white;
   border-radius: var(--border-radius);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
   border: 1px solid var(--light-gray);
   overflow: hidden;
+  margin: 0 0.25rem;
 }
-
 .table-actions .btn svg {
   width: 1rem;
   height: 1rem;
@@ -296,8 +435,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--light-gray);
+  padding: 1rem 1.5rem;
   background: var(--magnolia);
 }
 
@@ -307,16 +445,41 @@
   font-weight: 600;
 }
 
+.table-responsive {
+  margin: 0.75rem 0.75rem 0.75rem;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--light-gray);
+  background: white;
+}
+
 .users-table {
   margin: 0;
+  background: white;
+}
+
+/* Anchos fijos para columnas que no deben estirarse */
+.users-table th:nth-child(3),
+.users-table td:nth-child(3) { width: 100px; }   /* Estado */
+
+.users-table th:nth-child(4),
+.users-table td:nth-child(4) { width: 150px; white-space: nowrap; text-align: center; }   /* Última Actualización */
+
+.users-table th:nth-child(5),
+.users-table td:nth-child(5) { width: 180px; }   /* Acciones */
+
+@media (max-width: 992px) {
+  .users-table th:nth-child(4),
+  .users-table td:nth-child(4) { display: none; }
+}
 }
 
 .users-table th {
-  background: var(--light-blue);
+  background: var(--magnolia);
   color: var(--marine-blue);
   font-weight: 600;
   border: none;
-  padding: 1rem;
+  padding: 0.75rem 1rem;
   position: sticky;
   top: 0;
   z-index: 10;
