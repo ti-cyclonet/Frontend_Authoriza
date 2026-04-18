@@ -32,14 +32,34 @@
 .custom-btn:active {
   transform: scale(0.98);
 }
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  width: 100vw;
-  padding: 20px;
-  margin: 0;
+.login-form-wrapper {
+  width: 100%;
+  max-width: 420px;
+  padding: 1rem;
+}
+
+@media (max-width: 576px) {
+  .login-form-wrapper {
+    max-width: 100%;
+    padding: 0.25rem;
+  }
+  .custom-welcome {
+    font-size: 22px !important;
+  }
+  .custom-card {
+    font-size: 0.85rem;
+  }
+  .custom-card .form-control,
+  .custom-card .input-group-text {
+    font-size: 0.82rem;
+  }
+  .custom-btn {
+    font-size: 0.85rem;
+    padding: 0.4rem 1.2rem;
+  }
+  .forgot-password-link {
+    font-size: 0.82rem;
+  }
 }
 
 /* Estilos para las notificaciones */
@@ -88,6 +108,8 @@
   border: 2px solid #eafcfb; /* Borde verde oscuro */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra suave */
 }
+
+
 .custom-welcome {
   color: rgb(43, 32, 32); /* Cambia "red" por el color que desees */
   animation: fadeIn 1.5s forwards;
