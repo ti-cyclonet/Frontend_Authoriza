@@ -13,7 +13,7 @@
         overflow: hidden;
       "
     >
-      <app-sidebar [optionsMenu]="optionsMenu"></app-sidebar>
+      <app-sidebar [optionsMenu]="optionsMenu" (sidebarToggle)="toggleSidebar()"></app-sidebar>
     </div>
 
     <!-- Main Content -->
@@ -64,7 +64,7 @@
       </div>
 
       <!-- Footer -->
-      <div class="col-12 p-0">
+      <div class="footer-wrapper">
         <app-footer></app-footer>
       </div>
     </div>

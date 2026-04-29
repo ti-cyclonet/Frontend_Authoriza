@@ -182,7 +182,7 @@
 /* Charts Grid */
 .charts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(400px, 100%), 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -197,6 +197,8 @@
   padding: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   border: 1px solid #e5e7eb;
+  overflow: hidden;
+  max-width: 100%;
 }
 
 .chart-header {
@@ -222,6 +224,8 @@
   justify-content: center;
   align-items: center;
   min-height: 300px;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .chart-container-large {
@@ -558,6 +562,9 @@
 }
 
 @media (max-width: 576px) {
+  .dashboard-container {
+    padding: 0 0.5rem 1.5rem;
+  }
   .dashboard-header {
     margin-bottom: 0.75rem;
   }
@@ -571,5 +578,39 @@
   .title-container {
     margin-bottom: 0.4rem;
     margin-top: 0.5rem;
+    padding-left: 0.75rem;
+  }
+  .chart-card {
+    padding: 1rem 0.75rem;
+  }
+  .chart-container {
+    min-height: 0;
+  }
+  .role-list {
+    gap: 0.4rem;
+  }
+  .role-item {
+    gap: 0.2rem;
+  }
+  .role-name {
+    font-size: 0.8rem;
+  }
+  .role-count {
+    font-size: 0.8rem;
+  }
+  .role-bar {
+    height: 5px;
+  }
+  .status-info {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  .status-info .badge {
+    width: 100%;
+    text-align: left;
+  }
+  .status-count,
+  .status-value {
+    font-size: 0.85rem;
   }
 }

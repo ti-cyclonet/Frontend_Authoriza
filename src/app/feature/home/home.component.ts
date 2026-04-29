@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChartModule } from 'primeng/chart';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -26,12 +26,24 @@ export class HomeComponent implements OnInit {
   invoiceStatusChartData: any;
   monthlyRevenueChartData: any;
   chartOptions: any;
+  chartSize: string = '300px';
 
   constructor(
     private dashboardService: DashboardService,
     private translationService: TranslationService
   ) {
     this.initChartOptions();
+    this.updateChartSize();
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    this.updateChartSize();
+    this.initChartOptions();
+  }
+
+  updateChartSize() {
+    this.chartSize = window.innerWidth <= 576 ? '220px' : '300px';
   }
 
   ngOnInit() {
@@ -150,13 +162,14 @@ export class HomeComponent implements OnInit {
           labels: {
             usePointStyle: true,
             font: {
-              family: 'Ubuntu'
+              family: 'Ubuntu',
+              size: window.innerWidth <= 576 ? 10 : 12
             }
           }
         }
       },
       responsive: true,
-      maintainAspectRatio: false
+      maintainAspectRatio: true
     };
   }
 
