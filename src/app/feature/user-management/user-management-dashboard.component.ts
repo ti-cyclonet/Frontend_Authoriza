@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { UserService } from '../../shared/services/user/user.service';
 import { UserDependenciesService } from '../../shared/services/user-dependencies/user-dependencies.service';
 import { UserRolesService } from '../../shared/services/user-roles/user-roles.service';
@@ -28,6 +29,7 @@ interface ExtendedUser extends User {
   imports: [
     CommonModule,
     FormsModule,
+    RouterLink,
     TranslatePipe,
     UserCreationWizardComponent,
     DependencyManagementComponent,
@@ -365,6 +367,24 @@ export class UserManagementDashboardComponent implements OnInit {
   onViewModalClose(): void {
     this.showViewModal = false;
     this.selectedUser = null;
+  }
+
+  viewAndEdit(): void {
+    const user = this.selectedUser;
+    this.showViewModal = false;
+    if (user) this.editUser(user);
+  }
+
+  viewAndManageDependencies(): void {
+    const user = this.selectedUser;
+    this.showViewModal = false;
+    if (user) this.manageDependencies(user);
+  }
+
+  viewAndDelete(): void {
+    const user = this.selectedUser;
+    this.showViewModal = false;
+    if (user) this.deleteUser(user);
   }
 
   onUserUpdated(user: User): void {

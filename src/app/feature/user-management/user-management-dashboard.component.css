@@ -1,8 +1,6 @@
 /* Dashboard de Gestión Avanzada de Usuarios */
 .user-management-dashboard {
-  padding: 1.5rem;
-  background: var(--magnolia);
-  min-height: 100vh;
+  padding-bottom: 1.5rem;
 }
 
 /* Page Header */
@@ -169,12 +167,9 @@
 
 /* Filtros */
 .dashboard-filters {
-  background: var(--white);
   border-radius: var(--border-radius);
-  padding: 0.5rem 1rem;
-  margin-bottom: 0.75rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--light-gray);
+  padding: 0.5rem 0;
+  margin-bottom: 0;
 }
 
 .filter-section {
@@ -404,13 +399,12 @@
 }
 
 /* Tabla de Usuarios */
+.users-table-section {
+  border-top: 1px solid var(--light-gray);
+}
+
 .users-table-container {
-  background: white;
-  border-radius: var(--border-radius);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--light-gray);
   overflow: hidden;
-  margin: 0 0.25rem;
 }
 .table-actions .btn svg {
   width: 1rem;
@@ -447,7 +441,7 @@
 
 /* Anchos fijos para columnas que no deben estirarse */
 .users-table th:nth-child(3),
-.users-table td:nth-child(3) { width: 100px; }   /* Estado */
+.users-table td:nth-child(3) { width: 140px; text-align: center; }   /* Estado */
 
 .users-table th:nth-child(4),
 .users-table td:nth-child(4) { width: 150px; white-space: nowrap; text-align: center; }   /* Última Actualización */
@@ -805,31 +799,52 @@
 }
 
 .pagination .page-link {
-  border: 2px solid var(--light-gray);
-  color: var(--marine-blue);
+  border: 1.5px solid var(--sidebar-background-color);
+  color: var(--sidebar-background-color);
   padding: 0.5rem 0.75rem;
   margin: 0 0.125rem;
   border-radius: 8px;
   transition: all 0.3s ease;
   font-weight: 500;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination .page-link svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  fill: var(--sidebar-background-color);
 }
 
 .pagination .page-link:hover {
-  background: var(--purplish-blue);
+  background: var(--sidebar-background-color);
   color: var(--white);
-  border-color: var(--purplish-blue);
+  border-color: var(--sidebar-background-color);
   transform: translateY(-1px);
 }
 
+.pagination .page-link:hover svg {
+  fill: white;
+}
+
 .pagination .page-item.active .page-link {
-  background: var(--marine-blue);
-  border-color: var(--marine-blue);
+  background: var(--sidebar-background-color);
+  border-color: var(--sidebar-background-color);
   color: var(--white);
 }
 
 .pagination .page-item.disabled .page-link {
-  opacity: 0.5;
+  opacity: 0.4;
   pointer-events: none;
+  background: #f5f5f5;
+  border-color: #ddd;
+  color: #aaa;
+}
+
+.pagination .page-item.disabled .page-link svg {
+  fill: #aaa;
 }
 
 /* Loading Overlay */
@@ -918,19 +933,21 @@
   animation-delay: 0.4s;
 }
 
+/* Ocultar en desktop (769px+) */
+@media (min-width: 769px) {
+  .hide-desktop {
+    display: none !important;
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .hide-mobile {
     display: none !important;
   }
-  
-  .user-management-dashboard {
-    padding: 1rem;
-  }
-  
-  .dashboard-header {
-    padding: 1.5rem;
-  }
+
+  .users-table th:nth-child(5),
+  .users-table td:nth-child(5) { width: 50px; text-align: center; }
   
   .header-content {
     flex-direction: column;
@@ -997,16 +1014,21 @@
   justify-content: center;
   z-index: 9999;
   backdrop-filter: blur(4px);
+  padding: 1rem;
 }
 
 .user-view-card {
   background: var(--white);
   border-radius: 16px;
-  width: 90%;
+  width: 100%;
   max-width: 500px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   position: relative;
   animation: slideIn 0.3s ease;
+  overflow: hidden;
 }
 
 @keyframes slideIn {
@@ -1022,41 +1044,42 @@
 
 .btn-close-view {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: none;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(255, 255, 255, 0.25);
   border: none;
-  font-size: 2rem;
-  color: var(--cool-gray);
+  font-size: 1.5rem;
+  color: white;
   cursor: pointer;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2rem;
+  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   transition: all 0.3s ease;
+  z-index: 1;
+  line-height: 1;
 }
 
 .btn-close-view:hover {
-  background: var(--light-gray);
-  color: var(--marine-blue);
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .card-header-view {
-  background: linear-gradient(135deg, var(--purplish-blue), var(--marine-blue));
-  padding: 3rem 2rem 2rem;
+  background: var(--sidebar-background-color);
+  padding: 2rem 1.5rem 1.5rem;
   text-align: center;
-  border-radius: 16px 16px 0 0;
   color: var(--white);
+  flex-shrink: 0;
 }
 
 .user-avatar-large {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  margin: 0 auto 1rem;
-  border: 4px solid var(--white);
+  margin: 0 auto 0.75rem;
+  border: 3px solid var(--white);
   overflow: hidden;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
@@ -1069,19 +1092,24 @@
 
 .card-header-view h3 {
   margin: 0 0 0.5rem;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
 }
 
 .card-body-view {
-  padding: 2rem;
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .info-row {
   display: flex;
   justify-content: space-between;
-  padding: 0.75rem 0;
+  align-items: baseline;
+  padding: 0.6rem 0;
   border-bottom: 1px solid var(--light-gray);
+  gap: 0.75rem;
 }
 
 .info-row:last-child {
@@ -1091,37 +1119,63 @@
 .info-row .label {
   font-weight: 600;
   color: var(--cool-gray);
-  font-size: 0.875rem;
+  font-size: 0.85rem;
+  flex-shrink: 0;
 }
 
 .info-row .value {
   color: var(--marine-blue);
   font-weight: 500;
   text-align: right;
+  word-break: break-word;
 }
 
 .card-actions-view {
-  padding: 1.5rem 2rem;
+  padding: 0.75rem 1rem;
   border-top: 1px solid var(--light-gray);
   display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
 .card-actions-view .btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.4rem 0.75rem;
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
   transition: all 0.3s ease;
+  font-size: 0.8rem;
 }
 
 .card-actions-view .btn svg {
-  width: 1rem;
-  height: 1rem;
+  width: 0.9rem;
+  height: 0.9rem;
   fill: currentColor;
+}
+
+.btn-view-action {
+  border: 1.5px solid var(--sidebar-background-color) !important;
+  color: var(--sidebar-background-color) !important;
+  background: white;
+  padding: 0.4rem;
+  border-radius: 6px;
+}
+
+.btn-view-action svg {
+  fill: var(--sidebar-background-color);
+}
+
+.btn-view-action:hover {
+  background: var(--sidebar-background-color);
+  color: white !important;
+}
+
+.btn-view-action:hover svg {
+  fill: white;
 }
 
 .card-actions-view .btn-primary {
@@ -1147,166 +1201,35 @@
   color: var(--white);
 }
 
-
-/* Modal de Vista de Usuario */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  backdrop-filter: blur(4px);
-}
-
-.user-view-card {
-  background: var(--white);
-  border-radius: 16px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  position: relative;
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
+@media (max-width: 576px) {
+  .modal-overlay {
+    padding: 0.5rem;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .user-view-card {
+    max-height: 95vh;
+    border-radius: 12px;
   }
-}
-
-.btn-close-view {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: none;
-  border: none;
-  font-size: 2rem;
-  color: var(--cool-gray);
-  cursor: pointer;
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-}
-
-.btn-close-view:hover {
-  background: var(--light-gray);
-  color: var(--marine-blue);
-}
-
-.card-header-view {
-  background: linear-gradient(135deg, var(--purplish-blue), var(--marine-blue));
-  padding: 3rem 2rem 2rem;
-  text-align: center;
-  border-radius: 16px 16px 0 0;
-  color: var(--white);
-}
-
-.user-avatar-large {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin: 0 auto 1rem;
-  border: 4px solid var(--white);
-  overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-}
-
-.user-avatar-large img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.card-header-view h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
-.card-body-view {
-  padding: 2rem;
-}
-
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid var(--light-gray);
-}
-
-.info-row:last-child {
-  border-bottom: none;
-}
-
-.info-row .label {
-  font-weight: 600;
-  color: var(--cool-gray);
-  font-size: 0.875rem;
-}
-
-.info-row .value {
-  color: var(--marine-blue);
-  font-weight: 500;
-  text-align: right;
-}
-
-.card-actions-view {
-  padding: 1.5rem 2rem;
-  border-top: 1px solid var(--light-gray);
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-}
-
-.card-actions-view .btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-}
-
-.card-actions-view .btn svg {
-  width: 1rem;
-  height: 1rem;
-  fill: currentColor;
-}
-
-.card-actions-view .btn-primary {
-  background: var(--purplish-blue);
-  color: var(--white);
-  border: none;
-}
-
-.card-actions-view .btn-primary:hover {
-  background: var(--marine-blue);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.card-actions-view .btn-secondary {
-  background: var(--light-gray);
-  color: var(--marine-blue);
-  border: none;
-}
-
-.card-actions-view .btn-secondary:hover {
-  background: var(--cool-gray);
-  color: var(--white);
+  .card-header-view {
+    padding: 1.5rem 1rem 1rem;
+  }
+  .user-avatar-large {
+    width: 64px;
+    height: 64px;
+  }
+  .card-header-view h3 {
+    font-size: 1.1rem;
+  }
+  .card-body-view {
+    padding: 1rem;
+  }
+  .info-row {
+    padding: 0.5rem 0;
+  }
+  .info-row .label,
+  .info-row .value {
+    font-size: 0.8rem;
+  }
+  .card-actions-view {
+    padding: 0.75rem 1rem;
+  }
 }

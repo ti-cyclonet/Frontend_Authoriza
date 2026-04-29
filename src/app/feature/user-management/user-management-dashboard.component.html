@@ -3,7 +3,7 @@
 
   <!-- Breadcrumb -->
   <div class="title-container">
-    <a href="/home" class="title-link">
+    <a routerLink="/home" class="title-link">
       <svg viewBox="0 0 16 16">
         <use xlink:href="./assets/icons/bootstrap-icons.svg#house-fill"/>
       </svg>
@@ -11,78 +11,81 @@
     </a>
   </div>
 
-  <!-- Título + Botón -->
-  <div class="dashboard-container">
-    <div class="page-header">
-      <div>
-        <h3 class="dashboard-title">{{ 'userManagement.title' | translate }}</h3>
+  <!-- Contenido principal en tarjeta -->
+  <div class="card shadow m-3">
+    <div class="card-body">
+      <!-- Título + Botón -->
+      <div class="page-header">
+        <div>
+          <h3 class="dashboard-title">{{ 'userManagement.title' | translate }}</h3>
+        </div>
+        <button 
+          class="btn btn-primary btn-create-user"
+          (click)="openCreateUserWizard()"
+          [class.loading]="isLoading">
+          <svg viewBox="0 0 16 16">
+            <use xlink:href="./assets/icons/bootstrap-icons.svg#person-plus-fill" />
+          </svg>
+          {{ 'userManagement.createUser' | translate }}
+        </button>
       </div>
-      <button 
-        class="btn btn-primary btn-create-user"
-        (click)="openCreateUserWizard()"
-        [class.loading]="isLoading">
-        <svg viewBox="0 0 16 16">
-          <use xlink:href="./assets/icons/bootstrap-icons.svg#person-plus-fill" />
-        </svg>
-        {{ 'userManagement.createUser' | translate }}
-      </button>
+
+      <!-- Filtros -->
+      <div class="dashboard-filters">
+        <div class="filter-section">
+          <div class="filter-header">
+            <div class="filter-header-left">
+              <svg viewBox="0 0 16 16" class="filter-icon">
+                <use xlink:href="./assets/icons/bootstrap-icons.svg#funnel-fill" />
+              </svg>
+              <span>Filtros de búsqueda</span>
+            </div>
+            <a class="filter-toggle-link" (click)="showFilters = !showFilters">
+              {{ showFilters ? 'Ocultar filtros' : 'Mostrar filtros' }}
+            </a>
+          </div>
+          <div class="filter-body" [class.visible]="showFilters">
+            <div class="search-container">
+              <input 
+                type="text" 
+                class="form-control search-input"
+                [(ngModel)]="searchTerm"
+                (input)="onSearch()"
+                placeholder="{{ 'userManagement.searchPlaceholder' | translate }}">
+              <svg class="search-icon" viewBox="0 0 16 16">
+                <use xlink:href="./assets/icons/bootstrap-icons.svg#search" />
+              </svg>
+            </div>
+            <div class="status-filters">
+              <button class="btn btn-sm" [class.active]="statusFilter === 'all'" (click)="setStatusFilter('all')">
+                {{ 'userManagement.filters.all' | translate }}
+              </button>
+              <button class="btn btn-sm" [class.active]="statusFilter === 'principals'" (click)="setStatusFilter('principals')">
+                {{ 'userManagement.filters.principals' | translate }}
+              </button>
+              <button class="btn btn-sm" [class.active]="statusFilter === 'ACTIVE'" (click)="setStatusFilter('ACTIVE')">
+                {{ 'users.status.ACTIVE' | translate }}
+              </button>
+              <button class="btn btn-sm" [class.active]="statusFilter === 'INACTIVE'" (click)="setStatusFilter('INACTIVE')">
+                {{ 'users.status.INACTIVE' | translate }}
+              </button>
+              <button class="btn btn-sm" [class.active]="statusFilter === 'UNCONFIRMED'" (click)="setStatusFilter('UNCONFIRMED')">
+                {{ 'users.status.UNCONFIRMED' | translate }}
+              </button>
+              <button class="btn btn-sm" [class.active]="statusFilter === 'EXPIRING'" (click)="setStatusFilter('EXPIRING')">
+                {{ 'users.status.EXPIRING' | translate }}
+              </button>
+              <button class="btn btn-sm" [class.active]="statusFilter === 'DELETED'" (click)="setStatusFilter('DELETED')">
+                {{ 'users.status.DELETED' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-  <!-- Filtros -->
-  <div class="dashboard-filters">
-    <div class="filter-section">
-      <div class="filter-header">
-        <div class="filter-header-left">
-          <svg viewBox="0 0 16 16" class="filter-icon">
-            <use xlink:href="./assets/icons/bootstrap-icons.svg#funnel-fill" />
-          </svg>
-          <span>Filtros de búsqueda</span>
-        </div>
-        <a class="filter-toggle-link" (click)="showFilters = !showFilters">
-          {{ showFilters ? 'Ocultar filtros' : 'Mostrar filtros' }}
-        </a>
-      </div>
-      <div class="filter-body" [class.visible]="showFilters">
-        <div class="search-container">
-          <input 
-            type="text" 
-            class="form-control search-input"
-            [(ngModel)]="searchTerm"
-            (input)="onSearch()"
-            placeholder="{{ 'userManagement.searchPlaceholder' | translate }}">
-          <svg class="search-icon" viewBox="0 0 16 16">
-            <use xlink:href="./assets/icons/bootstrap-icons.svg#search" />
-          </svg>
-        </div>
-        <div class="status-filters">
-          <button class="btn btn-sm" [class.active]="statusFilter === 'all'" (click)="setStatusFilter('all')">
-            {{ 'userManagement.filters.all' | translate }}
-          </button>
-          <button class="btn btn-sm" [class.active]="statusFilter === 'principals'" (click)="setStatusFilter('principals')">
-            {{ 'userManagement.filters.principals' | translate }}
-          </button>
-          <button class="btn btn-sm" [class.active]="statusFilter === 'ACTIVE'" (click)="setStatusFilter('ACTIVE')">
-            {{ 'users.status.ACTIVE' | translate }}
-          </button>
-          <button class="btn btn-sm" [class.active]="statusFilter === 'INACTIVE'" (click)="setStatusFilter('INACTIVE')">
-            {{ 'users.status.INACTIVE' | translate }}
-          </button>
-          <button class="btn btn-sm" [class.active]="statusFilter === 'UNCONFIRMED'" (click)="setStatusFilter('UNCONFIRMED')">
-            {{ 'users.status.UNCONFIRMED' | translate }}
-          </button>
-          <button class="btn btn-sm" [class.active]="statusFilter === 'EXPIRING'" (click)="setStatusFilter('EXPIRING')">
-            {{ 'users.status.EXPIRING' | translate }}
-          </button>
-          <button class="btn btn-sm" [class.active]="statusFilter === 'DELETED'" (click)="setStatusFilter('DELETED')">
-            {{ 'users.status.DELETED' | translate }}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tabla de Usuarios -->
-  <div class="users-table-container animate__animated animate__fadeIn">
+    <!-- Tabla de Usuarios -->
+    <div class="users-table-section">
     <div class="table-header">
       <h5>{{ 'userManagement.usersList' | translate }}</h5>
       <div class="table-actions">
@@ -144,28 +147,28 @@
             <td class="hide-mobile">{{ user.dtmLatestUpdateDate | date:'dd/MM/yyyy' }}</td>
             <td>
               <div class="action-buttons">
-                <button class="btn btn-sm btn-outline-primary" 
+                <button class="btn btn-sm btn-outline-primary hide-desktop" 
                         (click)="viewUser(user)"
                         title="{{ 'userManagement.actions.view' | translate }}">
                   <svg viewBox="0 0 16 16">
                     <use xlink:href="./assets/icons/bootstrap-icons.svg#eye" />
                   </svg>
                 </button>
-                <button class="btn btn-sm btn-outline-secondary" 
+                <button class="btn btn-sm btn-outline-secondary hide-mobile" 
                         (click)="editUser(user)"
                         title="{{ 'userManagement.actions.edit' | translate }}">
                   <svg viewBox="0 0 16 16">
                     <use xlink:href="./assets/icons/bootstrap-icons.svg#pencil" />
                   </svg>
                 </button>
-                <button class="btn btn-sm btn-outline-info" 
+                <button class="btn btn-sm btn-outline-info hide-mobile" 
                         (click)="manageDependencies(user)"
                         title="{{ 'userManagement.actions.dependencies' | translate }}">
                   <svg viewBox="0 0 16 16">
                     <use xlink:href="./assets/icons/bootstrap-icons.svg#diagram-3" />
                   </svg>
                 </button>
-                <button class="btn btn-sm btn-outline-danger" 
+                <button class="btn btn-sm btn-outline-danger hide-mobile" 
                         (click)="deleteUser(user)"
                         title="Eliminar usuario">
                   <svg viewBox="0 0 16 16" fill="currentColor">
@@ -232,8 +235,8 @@
     <nav class="pagination-container" *ngIf="totalPages > 1">
       <ul class="pagination">
         <li class="page-item" [class.disabled]="currentPage === 1">
-          <button class="page-link" (click)="goToPage(currentPage - 1)">
-            <svg viewBox="0 0 16 16">
+          <button class="page-link" (click)="goToPage(currentPage - 1)" title="Anterior">
+            <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14">
               <use xlink:href="./assets/icons/bootstrap-icons.svg#chevron-left" />
             </svg>
           </button>
@@ -244,15 +247,16 @@
           <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
         </li>
         <li class="page-item" [class.disabled]="currentPage === totalPages">
-          <button class="page-link" (click)="goToPage(currentPage + 1)">
-            <svg viewBox="0 0 16 16">
+          <button class="page-link" (click)="goToPage(currentPage + 1)" title="Siguiente">
+            <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14">
               <use xlink:href="./assets/icons/bootstrap-icons.svg#chevron-right" />
             </svg>
           </button>
         </li>
       </ul>
     </nav>
-  </div>
+  </div><!-- /users-table-section -->
+  </div><!-- /card -->
 
   <!-- Modal del Wizard de Creación -->
   <app-user-creation-wizard 
@@ -280,7 +284,6 @@
   <!-- Modal de Vista de Usuario -->
   <div *ngIf="showViewModal && selectedUser" class="modal-overlay" (click)="onViewModalClose()">
     <div class="user-view-card" (click)="$event.stopPropagation()">
-      <button class="btn-close-view" (click)="onViewModalClose()">×</button>
       
       <div class="card-header-view">
         <div class="user-avatar-large">
@@ -376,7 +379,32 @@
       </div>
 
       <div class="card-actions-view">
-        <button class="btn btn-secondary" (click)="onViewModalClose()">Cerrar</button>
+        <button class="btn btn-sm btn-view-action" 
+                (click)="viewAndEdit()"
+                title="{{ 'userManagement.actions.edit' | translate }}">
+          <svg viewBox="0 0 16 16">
+            <use xlink:href="./assets/icons/bootstrap-icons.svg#pencil" />
+          </svg>
+        </button>
+        <button class="btn btn-sm btn-view-action" 
+                (click)="viewAndManageDependencies()"
+                title="{{ 'userManagement.actions.dependencies' | translate }}">
+          <svg viewBox="0 0 16 16">
+            <use xlink:href="./assets/icons/bootstrap-icons.svg#diagram-3" />
+          </svg>
+        </button>
+        <button class="btn btn-sm btn-view-action" 
+                (click)="viewAndDelete()"
+                title="Eliminar usuario">
+          <svg viewBox="0 0 16 16">
+            <use xlink:href="./assets/icons/bootstrap-icons.svg#trash" />
+          </svg>
+        </button>
+        <button class="btn btn-sm btn-view-action" (click)="onViewModalClose()" title="Cerrar">
+          <svg viewBox="0 0 16 16">
+            <use xlink:href="./assets/icons/bootstrap-icons.svg#x-lg" />
+          </svg>
+        </button>
       </div>
     </div>
   </div>

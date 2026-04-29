@@ -145,8 +145,7 @@
               type="doughnut" 
               [data]="userRoleChartData" 
               [options]="chartOptions"
-              width="300"
-              height="300">
+              [style]="{'max-width': chartSize, 'width': '100%', 'aspect-ratio': '1'}">
             </p-chart>
           </div>
           <div class="role-list">
