@@ -67,6 +67,11 @@ export class PackageService {
     formData.append('description', pkgData.description);
     formData.append('configurations', JSON.stringify(pkgData.configurations));
 
+    // Agregar variables de límite de uso
+    if (pkgData.usageLimitVariables) {
+      formData.append('usageLimitVariables', JSON.stringify(pkgData.usageLimitVariables));
+    }
+
     return this.http.post(this.packageUrl, formData);
   }
 
