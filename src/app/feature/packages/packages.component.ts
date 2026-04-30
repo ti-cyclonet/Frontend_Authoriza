@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CurrencyPipe, CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { MockPackage, mockPackages } from '../../shared/mocks/packages.mock';
 import { Package } from '../../shared/model/package.model';
 import { PackageService } from '../../shared/services/packages/package.service';
+import { ContractService } from '../../shared/services/contracts/contract.service';
 import { AddPackageComponent } from './add-package/add-package.component';
 import 'bootstrap';
 import Swal from 'sweetalert2';
@@ -13,20 +15,27 @@ import { TranslationService } from '../../shared/services/translation.service';
 @Component({
   selector: 'app-packages',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, AddPackageComponent, TranslatePipe, CyclonAssistantComponent],
+  imports: [CommonModule, CurrencyPipe, RouterLink, AddPackageComponent, TranslatePipe, CyclonAssistantComponent],
   templateUrl: './packages.component.html',
   styleUrls: ['./packages.component.css'],
 })
 export class PackagesComponent implements OnInit {
   packages: Package[] = [];
   showAddPackageModal: boolean = false;
+  showViewModal: boolean = false;
+  selectedPackage: Package | null = null;
+  selectedPackageContractCount: number = 0;
 
   viewMode: 'list' | 'cards' = 'list';
   currentPage: number = 1;
   itemsPerPageList: number = 10;
   itemsPerPageCards: number = 6;
 
-  constructor(private packageService: PackageService, private translationService: TranslationService) {}
+  constructor(
+    private packageService: PackageService,
+    private translationService: TranslationService,
+    private contractService: ContractService
+  ) {}
 
   ngOnInit(): void {
     this.loadPackages();
@@ -83,6 +92,35 @@ export class PackagesComponent implements OnInit {
 
   openAddPackageModal() {
     this.showAddPackageModal = true;
+  }
+
+  viewPackage(pkg: Package) {
+    this.selectedPackage = pkg;
+    this.selectedPackageContractCount = 0;
+    this.showViewModal = true;
+    
+    // Cargar conteo de contratos
+    this.contractService.findAll(1, 1000).subscribe({
+      next: (result) => {
+        this.selectedPackageContractCount = result.data.filter(
+          (c: any) => c.package?.id === pkg.id || c.packageId === pkg.id
+        ).length;
+      },
+      error: () => {
+        this.selectedPackageContractCount = 0;
+      }
+    });
+  }
+
+  closeViewModal() {
+    this.showViewModal = false;
+    this.selectedPackage = null;
+  }
+
+  viewAndDelete() {
+    const pkg = this.selectedPackage;
+    this.closeViewModal();
+    if (pkg) this.deletePackage(pkg);
   }
 
   getTotalPrice(pkg: Package): number {
