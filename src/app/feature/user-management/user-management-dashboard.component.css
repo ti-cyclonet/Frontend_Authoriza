@@ -447,7 +447,7 @@
 .users-table td:nth-child(4) { width: 150px; white-space: nowrap; text-align: center; }   /* Última Actualización */
 
 .users-table th:nth-child(5),
-.users-table td:nth-child(5) { width: 180px; }   /* Acciones */
+.users-table td:nth-child(5) { width: 70px; text-align: center; }   /* Acciones */
 
 .users-table td { font-size: 0.82rem; }
 
@@ -633,6 +633,7 @@
 .action-buttons {
   display: flex;
   gap: 0.3rem;
+  justify-content: center;
 }
 
 .action-buttons .btn {
@@ -684,7 +685,7 @@
 
 .user-card .card-header {
   background: var(--magnolia);
-  padding: 1rem;
+  padding: 0.5rem 0.75rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -692,8 +693,8 @@
 }
 
 .user-card .user-avatar {
-  width: 3rem;
-  height: 3rem;
+  width: 2.25rem;
+  height: 2.25rem;
 }
 
 .user-status {
@@ -702,8 +703,8 @@
 }
 
 .status-dot {
-  width: 0.75rem;
-  height: 0.75rem;
+  width: 0.6rem;
+  height: 0.6rem;
   border-radius: 50%;
   border: 2px solid var(--white);
 }
@@ -721,19 +722,20 @@
 }
 
 .user-card .card-body {
-  padding: 1rem;
+  padding: 0.5rem 0.75rem;
 }
 
 .user-card .user-name {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.15rem;
   color: var(--marine-blue);
   font-weight: 600;
+  font-size: 0.85rem;
 }
 
 .user-card .user-username {
   color: var(--cool-gray);
-  font-size: 0.875rem;
-  margin-bottom: 0.75rem;
+  font-size: 0.78rem;
+  margin-bottom: 0;
 }
 
 .user-card .user-type {
@@ -752,7 +754,7 @@
 }
 
 .card-actions {
-  padding: 1rem;
+  padding: 0.4rem 0.75rem;
   border-top: 1px solid var(--light-gray);
   display: flex;
   gap: 0.5rem;
@@ -1072,20 +1074,22 @@
 
 .card-header-view {
   background: var(--sidebar-background-color);
-  padding: 2rem 1.5rem 1.5rem;
-  text-align: center;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   color: var(--white);
   flex-shrink: 0;
 }
 
 .user-avatar-large {
-  width: 80px;
-  height: 80px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  margin: 0 auto 0.75rem;
-  border: 3px solid var(--white);
+  border: 2.5px solid rgba(255, 255, 255, 0.5);
   overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
 }
 
 .user-avatar-large img {
@@ -1095,9 +1099,14 @@
 }
 
 .card-header-view h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1.25rem;
-  font-weight: 700;
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .card-body-view {
@@ -1165,11 +1174,13 @@
   border: 1.5px solid var(--sidebar-background-color) !important;
   color: var(--sidebar-background-color) !important;
   background: white;
-  padding: 0.4rem;
+  padding: 0.55rem;
   border-radius: 6px;
 }
 
 .btn-view-action svg {
+  width: 1.1rem;
+  height: 1.1rem;
   fill: var(--sidebar-background-color);
 }
 
@@ -1214,14 +1225,14 @@
     border-radius: 12px;
   }
   .card-header-view {
-    padding: 1.5rem 1rem 1rem;
+    padding: 0.85rem 1rem;
   }
   .user-avatar-large {
-    width: 64px;
-    height: 64px;
+    width: 42px;
+    height: 42px;
   }
   .card-header-view h3 {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
   }
   .card-body-view {
     padding: 1rem;
