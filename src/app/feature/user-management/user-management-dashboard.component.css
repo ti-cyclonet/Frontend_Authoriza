@@ -1171,16 +1171,16 @@
 }
 
 .btn-view-action {
-  border: 1.5px solid var(--sidebar-background-color) !important;
+  border: 2px solid var(--sidebar-background-color) !important;
   color: var(--sidebar-background-color) !important;
   background: white;
-  padding: 0.55rem;
-  border-radius: 6px;
+  padding: 1rem;
+  border-radius: 10px;
 }
 
 .btn-view-action svg {
-  width: 1.1rem;
-  height: 1.1rem;
+  width: 2rem;
+  height: 2rem;
   fill: var(--sidebar-background-color);
 }
 
