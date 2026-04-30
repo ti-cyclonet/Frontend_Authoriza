@@ -211,3 +211,8 @@ h3 + .p-sub-heading {
 .p-dialog {
   margin: 1rem;
 }
+
+/* SweetAlert por encima de modales */
+.swal2-container {
+  z-index: 20000 !important;
+}

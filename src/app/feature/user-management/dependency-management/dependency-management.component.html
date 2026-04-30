@@ -90,57 +90,97 @@
 
         <!-- Dependents -->
         <div *ngIf="activeTab === 'dependents'">
-          <!-- Filtro de búsqueda para usuarios disponibles -->
-          <div class="search-section">
-            <input 
-              type="text" 
-              class="form-control search-input"
-              [(ngModel)]="dependentSearchTerm"
-              (input)="searchAvailableUsers()"
-              placeholder="Buscar usuarios disponibles...">
-          </div>
 
-          <h5>Usuarios Disponibles ({{ filteredAvailableUsers.length }})</h5>
-          <div class="users-list">
-            <div *ngFor="let user of filteredAvailableUsers" class="item">
-              <div class="user-info-dep">
-                <strong>{{ user.displayName }}</strong> - {{ user.strUserName }}
+          <!-- Acordeón: Usuarios Disponibles -->
+          <div class="accordion-section">
+            <button class="accordion-header" (click)="showAvailableUsers = !showAvailableUsers">
+              <span>Usuarios Disponibles ({{ filteredAvailableUsers.length }})</span>
+              <svg viewBox="0 0 16 16" fill="currentColor" [class.rotated]="showAvailableUsers">
+                <use xlink:href="./assets/icons/bootstrap-icons.svg#chevron-down" />
+              </svg>
+            </button>
+            <div class="accordion-body" [class.open]="showAvailableUsers">
+              <!-- Buscador dentro del acordeón -->
+              <div class="search-section">
+                <div class="search-wrapper">
+                  <input 
+                    type="text" 
+                    class="form-control search-input"
+                    [(ngModel)]="dependentSearchTerm"
+                    (input)="searchAvailableUsers()"
+                    placeholder="Buscar usuarios disponibles...">
+                  <button *ngIf="dependentSearchTerm" 
+                          class="btn-clear-search" 
+                          (click)="dependentSearchTerm = ''; searchAvailableUsers()"
+                          title="Limpiar búsqueda">
+                    <svg viewBox="0 0 16 16" fill="currentColor">
+                      <use xlink:href="./assets/icons/bootstrap-icons.svg#x-circle-fill" />
+                    </svg>
+                  </button>
+                </div>
               </div>
-              <div class="assign-controls">
-                <select class="form-select form-select-sm" [(ngModel)]="selectedDependencyStatus">
-                  <option value="ACTIVE">ACTIVE</option>
-                  <option value="INACTIVE">INACTIVE</option>
-                  <option value="UNCONFIRMED">UNCONFIRMED</option>
-                </select>
-                <button class="btn btn-primary btn-sm" (click)="assignUserAsDependent(user)">
-                  Asignar
+              <div class="users-list">
+                <div *ngFor="let user of pagedAvailableUsers" class="item">
+                  <div class="user-info-dep">
+                    <strong>{{ user.displayName }}</strong> - {{ user.strUserName }}
+                  </div>
+                  <div class="assign-controls">
+                    <button class="btn btn-primary btn-sm" (click)="assignUserAsDependent(user)">
+                      Asignar
+                    </button>
+                  </div>
+                </div>
+                <div *ngIf="filteredAvailableUsers.length === 0" class="no-results">
+                  No se encontraron usuarios disponibles
+                </div>
+              </div>
+              <!-- Paginación -->
+              <nav class="mini-pagination" *ngIf="availableUsersTotalPages > 1">
+                <button class="mini-page-btn" 
+                        [disabled]="availableUsersPage === 1" 
+                        (click)="goToAvailableUsersPage(availableUsersPage - 1)">
+                  <svg viewBox="0 0 16 16" fill="currentColor"><use xlink:href="./assets/icons/bootstrap-icons.svg#chevron-left" /></svg>
                 </button>
-              </div>
-            </div>
-            <div *ngIf="filteredAvailableUsers.length === 0" class="no-results">
-              No se encontraron usuarios disponibles
+                <button *ngFor="let p of getAvailableUsersPageNumbers()" 
+                        class="mini-page-btn" 
+                        [class.active]="availableUsersPage === p"
+                        (click)="goToAvailableUsersPage(p)">{{ p }}</button>
+                <button class="mini-page-btn" 
+                        [disabled]="availableUsersPage === availableUsersTotalPages" 
+                        (click)="goToAvailableUsersPage(availableUsersPage + 1)">
+                  <svg viewBox="0 0 16 16" fill="currentColor"><use xlink:href="./assets/icons/bootstrap-icons.svg#chevron-right" /></svg>
+                </button>
+              </nav>
             </div>
           </div>
           
-          <h5 *ngIf="dependentUsers.length > 0">Dependientes Actuales ({{ dependentUsers.length }})</h5>
-          <div class="users-list">
-            <div *ngFor="let dependent of dependentUsers" class="item">
-              <div class="user-info-dep">
-                <strong>{{ dependent.displayName }}</strong> - {{ dependent.strUserName }}
+          <!-- Acordeón: Dependientes Actuales -->
+          <div class="accordion-section" *ngIf="dependentUsers.length > 0">
+            <button class="accordion-header" (click)="showCurrentDependents = !showCurrentDependents">
+              <span>Dependientes Actuales ({{ dependentUsers.length }})</span>
+              <svg viewBox="0 0 16 16" fill="currentColor" [class.rotated]="showCurrentDependents">
+                <use xlink:href="./assets/icons/bootstrap-icons.svg#chevron-down" />
+              </svg>
+            </button>
+            <div class="accordion-body" [class.open]="showCurrentDependents">
+              <div class="users-list">
+                <div *ngFor="let dependent of dependentUsers" class="item">
+                  <div class="user-info-dep">
+                    <strong>{{ dependent.displayName }}</strong> - {{ dependent.strUserName }}
+                  </div>
+                  <div class="assign-controls">
+                    <span class="dependency-status" [class.active]="dependent.dependencyStatus === 'ACTIVE'" [class.inactive]="dependent.dependencyStatus === 'INACTIVE'">
+                      {{ dependent.dependencyStatus }}
+                    </span>
+                    <button class="btn btn-danger btn-sm" (click)="removeDependency(dependent)">
+                      Remover
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div class="assign-controls">
-                <span class="dependency-status" [class.active]="dependent.dependencyStatus === 'ACTIVE'" [class.inactive]="dependent.dependencyStatus === 'INACTIVE'">
-                  {{ dependent.dependencyStatus }}
-                </span>
-                <button class="btn btn-danger btn-sm" (click)="removeDependency(dependent)">
-                  Remover
-                </button>
-              </div>
-            </div>
-          </div>
+            </div><!-- /accordion-body -->
+          </div><!-- /accordion-section -->
         </div>
-      </div>
-    </div>
 
     <div class="modal-footer">
       <button class="btn btn-secondary" (click)="closeModal()">Cerrar</button>
@@ -153,11 +193,16 @@
       <h5>Asignar Rol: {{ selectedRoleForAssignment?.strName }}</h5>
       <p>Seleccione el usuario dependiente:</p>
       <div class="users-list">
-        <div *ngFor="let dependent of dependentUsers" 
-             class="item user-item"
-             (click)="assignRoleToDependent(dependent)">
-          <strong>{{ dependent.displayName }}</strong>
-          <small>{{ dependent.strUserName }}</small>
+        <ng-container *ngFor="let dependent of dependentUsers">
+          <div *ngIf="!hasRole(dependent, selectedRoleForAssignment)"
+               class="item user-item"
+               (click)="assignRoleToDependent(dependent)">
+            <strong>{{ dependent.displayName }}</strong>
+            <small>{{ dependent.strUserName }}</small>
+          </div>
+        </ng-container>
+        <div *ngIf="getEligibleDependentsCount() === 0" class="no-results">
+          Todos los dependientes ya tienen este rol asignado
         </div>
       </div>
       <button class="btn btn-secondary" (click)="showAssignRoleModal = false">Cancelar</button>
@@ -168,14 +213,16 @@
   <div *ngIf="showUnassignRoleModal" class="modal-overlay" (click)="showUnassignRoleModal = false">
     <div class="assign-role-modal" (click)="$event.stopPropagation()">
       <h5>Desasignar Rol: {{ selectedRoleForAssignment?.strName }}</h5>
-      <p>Seleccione el usuario dependiente:</p>
+      <p>Seleccione el usuario al que desea desasignar este rol:</p>
       <div class="users-list">
-        <div *ngFor="let dependent of dependentUsers" 
-             class="item user-item"
-             (click)="unassignRoleFromDependent(dependent)">
-          <strong>{{ dependent.displayName }}</strong>
-          <small>{{ dependent.strUserName }}</small>
-        </div>
+        <ng-container *ngFor="let dependent of dependentUsers">
+          <div *ngIf="hasRole(dependent, selectedRoleForAssignment)"
+               class="item user-item"
+               (click)="unassignRoleFromDependent(dependent)">
+            <strong>{{ dependent.displayName }}</strong>
+            <small>{{ dependent.strUserName }}</small>
+          </div>
+        </ng-container>
       </div>
       <button class="btn btn-secondary" (click)="showUnassignRoleModal = false">Cancelar</button>
     </div>
