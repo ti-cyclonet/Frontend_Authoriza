@@ -56,6 +56,10 @@ export class DependencyManagementComponent implements OnInit {
   @Output() dependencyUpdated = new EventEmitter<void>();
 
   activeTab: string = 'overview';
+  showAvailableUsers: boolean = true;
+  showCurrentDependents: boolean = true;
+  availableUsersPage: number = 1;
+  availableUsersPageSize: number = 4;
   isLoading: boolean = false;
   isSaving: boolean = false;
 
@@ -327,9 +331,16 @@ export class DependencyManagementComponent implements OnInit {
   async unassignRoleFromDependent(dependent: ExtendedUser): Promise<void> {
     if (!this.selectedRoleForAssignment) return;
 
+    const roleName = this.selectedRoleForAssignment.strName;
+    const roleId = this.selectedRoleForAssignment.id;
+
+    // Cerrar la sub-modal antes de mostrar el SweetAlert
+    this.showUnassignRoleModal = false;
+    this.cdr.detectChanges();
+
     const result = await Swal.fire({
       title: '¿Confirmar desasignación?',
-      html: `¿Desea desasignar el rol <strong>${this.selectedRoleForAssignment.strName}</strong> del usuario <strong>${dependent.displayName}</strong>?`,
+      html: `¿Desea desasignar el rol <strong>${roleName}</strong> del usuario <strong>${dependent.displayName}</strong>?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, desasignar',
@@ -339,9 +350,8 @@ export class DependencyManagementComponent implements OnInit {
     if (!result.isConfirmed) return;
 
     try {
-      await this.userRolesService.removeRole(dependent.id, this.selectedRoleForAssignment.id).toPromise();
+      await this.userRolesService.removeRole(dependent.id, roleId).toPromise();
 
-      this.showUnassignRoleModal = false;
       this.selectedRoleForAssignment = null;
       await this.loadDependentUsers();
       await this.loadRoleAvailability();
@@ -443,6 +453,7 @@ export class DependencyManagementComponent implements OnInit {
   }
 
   searchAvailableUsers(): void {
+    this.availableUsersPage = 1;
     if (!this.dependentSearchTerm.trim()) {
       this.filteredAvailableUsers = [...this.availableUsers];
       return;
@@ -645,5 +656,34 @@ export class DependencyManagementComponent implements OnInit {
 
   getTotalAssignedRolesToDependents(): number {
     return this.dependentUsers.reduce((total, dependent) => total + (dependent.roles?.length || 0), 0);
+  }
+
+  hasRole(dependent: ExtendedUser, role: any): boolean {
+    if (!dependent.roles || !role) return false;
+    return dependent.roles.some(r => r.id === role.id);
+  }
+
+  getEligibleDependentsCount(): number {
+    if (!this.selectedRoleForAssignment) return 0;
+    return this.dependentUsers.filter(d => !this.hasRole(d, this.selectedRoleForAssignment)).length;
+  }
+
+  get pagedAvailableUsers(): any[] {
+    const start = (this.availableUsersPage - 1) * this.availableUsersPageSize;
+    return this.filteredAvailableUsers.slice(start, start + this.availableUsersPageSize);
+  }
+
+  get availableUsersTotalPages(): number {
+    return Math.ceil(this.filteredAvailableUsers.length / this.availableUsersPageSize);
+  }
+
+  goToAvailableUsersPage(page: number): void {
+    if (page >= 1 && page <= this.availableUsersTotalPages) {
+      this.availableUsersPage = page;
+    }
+  }
+
+  getAvailableUsersPageNumbers(): number[] {
+    return Array.from({ length: this.availableUsersTotalPages }, (_, i) => i + 1);
   }
 }

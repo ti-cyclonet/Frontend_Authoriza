@@ -801,7 +801,7 @@
 .pagination .page-link {
   border: 1.5px solid var(--sidebar-background-color);
   color: var(--sidebar-background-color);
-  padding: 0.5rem 0.75rem;
+  padding: 0;
   margin: 0 0.125rem;
   border-radius: 8px;
   transition: all 0.3s ease;
@@ -810,6 +810,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  font-size: 0.85rem;
+  line-height: 1;
 }
 
 .pagination .page-link svg {
