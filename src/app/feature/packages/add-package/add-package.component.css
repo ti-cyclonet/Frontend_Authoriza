@@ -1,361 +1,318 @@
-.container {
-  width: 100%;
-  margin: 0 auto;
-}
+/* Modal */
+.modal-backdrop { z-index: 1040; }
+.modal { z-index: 1050; }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  color: #212121;
-}
-
-.form-buttons {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 10px;
-  padding-top: 15px;
-  border-top: 3px solid var(--sidebar-background-color);
-}
-
-.btn-fixed-width {
-  min-width: 100px;
-}
-
-.error {
-  color: red;
-  font-size: 12px;
-  margin-top: 5px;
-}
-
-.status-icon {
-  width: 1em;
-  height: 1em;
-  vertical-align: middle;
-  margin-left: 0.25rem;
-}
-
-.btn-fixed-width {
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-group a {
-  color: var(--sidebar-background-color);
-  cursor: pointer;
-}
-
-.btn-group a:hover {
-  color: black;
-}
-
-.btn-group a:hover svg {
-  fill: black;
-  transform: scale(1.2);
-}
-
-.basic-package-form {
+.modal-content {
   border: none;
-  border-radius: 0 !important;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
-.title-form {
-  font-size: 0.8rem;
-  color: #8a86c4;
-  font-weight: 400;
-  padding-left: 0.25rem;
-}
-
-.small-info {
-  font-size: 0.9rem;
-  color: #333333;
-  background-color: #f9f9f9;
-  padding: 0 1rem 0.5rem 1rem;
-  border-radius: 0;
-  border-bottom: 1px solid var(--sidebar-background-color);
-  margin: 0 0.2rem;
-}
-
-.small-info .highlight {
-  color: #000;
-  font-weight: 600;
-}
-
-@media (max-width: 576px) {
-
-  .form-buttons button {
-    min-width: 40px;
-    font-size: 0.8rem;
-  }
-
-  .form-buttons button span {
-    display: none;
-  }
-}
-
-.custom-btn-group {
-  padding: 5px;
-  padding-top: 2px !important;
-  border: 1px solid var(--sidebar-background-color);
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Estilo de los íconos del título */
-.title-icon {
-  width: 20px;
-  height: 20px;
-  color: #000;
-  transition: color 0.3s ease;
-}
-
-.add-configuration-record {
-  margin-bottom: 1rem;
-}
-
-a.disabled {
-  opacity: 0.4;
-  cursor: not-allowed !important;
-}
-
-.disabled-section {
-  opacity: 0.5;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  position: relative;
-}
-
-.disabled-section::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.6);
-  pointer-events: none;
-}
-
-a.disabled {
-  pointer-events: none;
-  opacity: 0.5;
-}
-
-.btn-outline-purple {
-  color: #6f42c1;
-  border-color: #6f42c1;
-
-  &:hover {
-    background-color: #6f42c1;
-    color: white;
-  }
-}
-/* Clase para los íconos de pasos */
-.step-icons {
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-
-.step-icon {
-  width: 1.5em;
-  height: 1.5em;
-  z-index: 1;
-}
-
-/* Agregar una línea horizontal que conecte los íconos */
-.step-icons::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-color: var(--header-background-color);
-  opacity: 0.3;
-  z-index: 0;
-}
-
-.step-icon:first-child::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 100%;
-  height: 2px;
-  background-color: transparent;
-}
-
-.step-icon:last-child::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 100%;
-  right: 0;
-  height: 2px;
-  background-color: transparent;
+/* Header */
+.modal-header-custom {
+  background: var(--sidebar-background-color, #6600CC);
+  color: white;
+  padding: 0.85rem 1.25rem;
+  border-bottom: none;
 }
 
 .modal-title {
   text-align: right;
   width: 100%;
+  font-size: 1rem !important;
+  font-weight: 600;
 }
 
-.modal-header-custom {
-  background-color: var(--sidebar-background-color);
-  color: #cccccc;
-}
-
-/* Estilo para el enlace en el contenedor del título */
-.title-link {
-  display: flex;
-  align-items: center;
-  color: #585757;
-}
-
-/* Efecto hover para el enlace (opcional) */
-.title-link:hover {
-  color: #4a4a4a;
-}
-
-/* Estilo para la tarjeta de contenido */
-.card {
-  border: 1px solid #cccccc;
-  border-radius: 0.5rem;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-}
-
-.card-body {
-  padding: 1.5rem;
-  margin-top: 0.1rem;
-  /* color: var(--primary-text-color); */
-}
-
-/* Mantener el ancho de 100px en pantallas medianas o más grandes */
-.btn-fixed-width {
-  width: 100px;
-}
-.btn-fixed-width-cnf {
-  width: 100px;
-}
-
-/* Quitar el ancho fijo en pantallas pequeñas */
-@media (max-width: 768px) {
-  .btn-fixed-width {
-    width: auto;
-  }
-}
-
-.custom-modal-header {
-  border-bottom: 2px solid rgb(148, 77, 77);
-}
-/* Modal personalizada para crear rol */
-.custom-role-modal .modal-header-custom {
-  background-color: #7011ce !important;
-  color: white !important;
-  font-weight: bold;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  border-bottom: none !important;
-}
-
-/* Estilo de los iconos de pasos */
+/* Step Icons */
 .step-icons {
   display: flex;
-  gap: 8px;
   align-items: center;
+  gap: 0.35rem;
+  position: relative;
 }
 
 .step-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2px solid white;
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: rgba(255, 255, 255, 0.5);
+  transition: fill 0.3s;
+}
+
+.step-icons .step-icon:first-child { fill: white; }
+
+/* Body */
+.modal-body {
+  padding: 1.25rem;
+}
+
+/* Section Title */
+.title-form {
+  font-size: 0.78rem;
+  color: var(--sidebar-background-color, #6600CC);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Form */
+.form-group {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
+  flex-direction: column;
+  margin-bottom: 0.85rem;
 }
 
-/* Formulario con etiquetas azules */
-.custom-role-modal label {
-  font-weight: bold;
-  color: #0056b3;
-  font-size: 0.9rem;
+.form-group label {
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+  font-size: 0.8rem;
+  color: #555;
 }
 
-/* Campos de entrada */
-.custom-role-modal input,
-.custom-role-modal textarea {
-  width: 100%;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 0.45rem 0.7rem;
+  font-size: 0.85rem;
+  border: 1.5px solid #ddd;
+  border-radius: 6px;
+  color: #333;
+  background: #fafafa;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: var(--sidebar-background-color, #6600CC);
+  box-shadow: 0 0 0 0.15rem rgba(102, 0, 204, 0.12);
   outline: none;
-  font-size: 1rem;
+  background: white;
 }
 
-/* Estilo de los botones */
-.custom-role-modal .btn {
-  border: 2px solid black;
-  background-color: white;
-  color: black;
-  padding: 8px 15px;
-  border-radius: 5px;
-  font-size: 1rem;
+.form-group textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.error {
+  color: #dc3545;
+  font-size: 0.72rem;
+  margin-top: 0.2rem;
+}
+
+/* Summary Info */
+.small-info {
+  font-size: 0.82rem;
+  color: #444;
+  background: #f8f8fc;
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid rgba(102, 0, 204, 0.1);
+  margin-bottom: 0.75rem;
+}
+
+.small-info .highlight {
+  color: var(--sidebar-background-color, #6600CC);
+  font-weight: 600;
+}
+
+/* Add Config Button Group */
+.custom-btn-group {
+  padding: 0.25rem 0.4rem;
+  border: 1.5px solid var(--sidebar-background-color, #6600CC);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.title-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: var(--sidebar-background-color, #6600CC);
+  transition: transform 0.2s;
+}
+
+.title-icon:hover {
+  transform: scale(1.15);
+}
+
+.btn-group a {
+  color: var(--sidebar-background-color, #6600CC);
   cursor: pointer;
 }
 
-.custom-role-modal .btn:hover {
-  background-color: #f8f8f8;
+/* Config Card */
+.add-configuration-record {
+  margin-bottom: 0.75rem;
 }
 
-/* Espaciado entre botones */
-.btn-container {
+.card {
+  border: 1.5px solid #e5e5e5;
+  border-radius: 8px;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.card-header {
+  background: #f8f8fc !important;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid #eee;
+}
+
+.card-body {
+  padding: 0.75rem;
+}
+
+.card-footer {
+  background: #f8f8fc !important;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+/* Tables */
+table.table {
+  font-size: 0.8rem !important;
+  margin: 0;
+}
+
+table.table th {
+  background: var(--magnolia, #f5f5f5);
+  color: var(--marine-blue, #1a237e);
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0.45rem 0.6rem;
+  border: none;
+}
+
+table.table td {
+  padding: 0.4rem 0.6rem;
+  vertical-align: middle;
+}
+
+.status-icon {
+  width: 1rem;
+  height: 1rem;
+  vertical-align: middle;
+  fill: var(--sidebar-background-color, #6600CC);
+}
+
+a.disabled {
+  opacity: 0.35;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.disabled-section {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Search Input */
+.custom-search-input {
+  border: none !important;
+  font-size: 0.82rem;
+  padding: 0.35rem 0.6rem;
+}
+
+.custom-search-input:focus {
+  box-shadow: none;
+}
+
+.subtitle h6 {
+  font-size: 0.75rem;
+  color: #666;
+  margin: 0 0 0.35rem;
+}
+
+/* Footer Buttons */
+.form-buttons {
   display: flex;
   justify-content: space-between;
-  margin-top: 15px;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 2px solid var(--sidebar-background-color, #6600CC);
 }
 
-/* option menu */
-/* Solo la modal optionMenuModal */
-#optionMenuModal .modal-dialog {
-  max-width: 80vw;
-  width: 35%;
-  max-width: 1000px;
+.btn-fixed-width {
+  min-width: 90px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.78rem;
+  border-radius: 6px;
 }
 
-.modal-backdrop {
-  z-index: 1040;
+.btn-outline-dark {
+  border: 1.5px solid var(--sidebar-background-color, #6600CC) !important;
+  color: var(--sidebar-background-color, #6600CC) !important;
+  background: white;
 }
-.modal {
-  z-index: 1050;
+
+.btn-outline-dark:hover:not(:disabled) {
+  background: var(--sidebar-background-color, #6600CC) !important;
+  color: white !important;
+}
+
+.btn-outline-dark:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.btn-outline-purple {
+  color: var(--sidebar-background-color, #6600CC);
+  border-color: var(--sidebar-background-color, #6600CC);
+  font-size: 0.72rem;
+  padding: 0.25rem 0.6rem;
+}
+
+.btn-outline-purple:hover {
+  background: var(--sidebar-background-color, #6600CC);
+  color: white;
+}
+
+/* Step 3 Preview */
+.list-group-item {
+  font-size: 0.82rem;
+  padding: 0.4rem 0.75rem;
+}
+
+.list-group-item .badge {
+  background: var(--sidebar-background-color, #6600CC) !important;
+  font-size: 0.7rem;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .modal-body {
+    padding: 0.85rem;
+  }
+
+  .form-buttons {
+    gap: 0.25rem;
+  }
+
+  .btn-fixed-width {
+    min-width: 40px;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.72rem;
+  }
+
+  .form-buttons button span.d-none {
+    display: none !important;
+  }
+
+  .small-info {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.65rem;
+  }
+
+  .step-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 }
