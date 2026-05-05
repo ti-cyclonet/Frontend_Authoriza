@@ -322,3 +322,17 @@ a.disabled {
   color: #888 !important;
   cursor: not-allowed;
 }
+
+/* Step icons states */
+.step-icon {
+  fill: rgba(255, 255, 255, 0.4);
+  transition: fill 0.3s;
+}
+
+.step-icon.active-step {
+  fill: white;
+}
+
+.step-icon.completed-step {
+  fill: white;
+}
