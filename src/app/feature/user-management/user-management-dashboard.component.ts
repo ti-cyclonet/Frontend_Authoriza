@@ -381,10 +381,49 @@ export class UserManagementDashboardComponent implements OnInit {
     if (user) this.manageDependencies(user);
   }
 
-  viewAndDelete(): void {
+  async viewAndDelete(): Promise<void> {
     const user = this.selectedUser;
+    if (!user) return;
+
+    const result = await Swal.fire({
+      title: '¿Eliminar usuario?',
+      html: `¿Está seguro de eliminar a <strong>${user.displayName}</strong>?<br><small>Esta acción desactivará el usuario y sus dependencias.</small>`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#dc3545'
+    });
+
+    if (!result.isConfirmed) return;
+
     this.showViewModal = false;
-    if (user) this.deleteUser(user);
+    this.isLoading = true;
+
+    try {
+      await this.userService.deleteUser(user.id).toPromise();
+      
+      Swal.fire({
+        icon: 'success',
+        title: 'Usuario eliminado',
+        text: `${user.displayName} ha sido eliminado correctamente`,
+        timer: 2000,
+        showConfirmButton: false
+      });
+
+      this.selectedUser = null;
+      this.loadUsers();
+    } catch (error: any) {
+      console.error('Error deleting user:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error?.error?.message || 'No se pudo eliminar el usuario',
+        confirmButtonText: 'OK'
+      });
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   onUserUpdated(user: User): void {

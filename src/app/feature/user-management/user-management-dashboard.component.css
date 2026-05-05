@@ -1174,13 +1174,18 @@
   border: 2px solid var(--sidebar-background-color) !important;
   color: var(--sidebar-background-color) !important;
   background: white;
-  padding: 0.75rem;
+  padding: 0.65rem;
   border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
 }
 
 .btn-view-action svg {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 1.5rem;
+  height: 1.5rem;
   fill: var(--sidebar-background-color);
 }
 
