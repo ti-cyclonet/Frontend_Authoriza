@@ -6,17 +6,17 @@
       <!-- Header -->
       <div class="modal-header justify-content-between modal-header-custom">
         <div class="step-icons d-flex position-relative">
-          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon">
-            <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + (showStp1 ? '1-circle-fill' : '1-circle')"/>
+          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon" [class.active-step]="step1" [class.completed-step]="showStp1 && !step1">
+            <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + (showStp1 && !step1 ? '1-circle-fill' : '1-circle')"/>
           </svg>
-          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
-            <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + (showStp2 ? '2-circle-fill' : '2-circle')"/>
+          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2" [class.active-step]="step2" [class.completed-step]="showStp2 && !step2">
+            <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + (showStp2 && !step2 ? '2-circle-fill' : '2-circle')"/>
           </svg>
-          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
-            <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + (showStp3 ? '3-circle-fill' : '3-circle')"/>
+          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2" [class.active-step]="step3" [class.completed-step]="showStp3 && !step3">
+            <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + (showStp3 && !step3 ? '3-circle-fill' : '3-circle')"/>
           </svg>
-          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
-            <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + (showStp4 ? '4-circle-fill' : '4-circle')"/>
+          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2" [class.active-step]="step4" [class.completed-step]="showStp4 && !step4">
+            <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + (showStp4 && !step4 ? '4-circle-fill' : '4-circle')"/>
           </svg>
         </div>
         <h1 class="modal-title fs-5">{{ packageToEdit ? 'Editar Paquete' : ('packages.addNew' | translate) }}</h1>
