@@ -67,10 +67,19 @@ export class PackageService {
     formData.append('description', pkgData.description);
     formData.append('configurations', JSON.stringify(pkgData.configurations));
 
+    // Agregar variables de límite de uso
+    if (pkgData.usageLimitVariables) {
+      formData.append('usageLimitVariables', JSON.stringify(pkgData.usageLimitVariables));
+    }
+
     return this.http.post(this.packageUrl, formData);
   }
 
   deletePackage(id: string): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.packageUrl}/${id}`);
+  }
+
+  updatePackage(id: string, data: any): Observable<Package> {
+    return this.http.put<Package>(`${this.packageUrl}/${id}`, data);
   }
 }

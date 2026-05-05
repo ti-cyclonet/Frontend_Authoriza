@@ -15,8 +15,11 @@
           <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
             <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + (showStp3 ? '3-circle-fill' : '3-circle')"/>
           </svg>
+          <svg viewBox="0 0 16 16" fill="currentColor" class="step-icon ms-2">
+            <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + (showStp4 ? '4-circle-fill' : '4-circle')"/>
+          </svg>
         </div>
-        <h1 class="modal-title fs-5">{{ 'packages.addNew' | translate }}</h1>
+        <h1 class="modal-title fs-5">{{ packageToEdit ? 'Editar Paquete' : ('packages.addNew' | translate) }}</h1>
       </div>
 
       <!-- Body -->
@@ -30,11 +33,11 @@
           <form [formGroup]="basicPackageForm">
             <div class="form-group">
               <label for="name">{{ 'packages.createPackage.packageName' | translate }}</label>
-              <input id="name" formControlName="name" type="text" autocomplete="off"/>
-              <div *ngIf="basicPackageForm.get('name')?.invalid && basicPackageForm.get('name')?.touched" class="error">
+              <input id="name" formControlName="name" type="text" autocomplete="off" [attr.disabled]="packageToEdit ? '' : null" [class.disabled-field]="packageToEdit"/>
+              <div *ngIf="basicPackageForm.get('name')?.invalid && basicPackageForm.get('name')?.touched && !packageToEdit" class="error">
                 {{ 'packages.createPackage.nameRequired' | translate }}
               </div>
-              <div class="error" *ngIf="nameExists">
+              <div class="error" *ngIf="nameExists && !packageToEdit">
                 {{ 'packages.createPackage.nameUnavailable' | translate }}
               </div>
             </div>
@@ -183,8 +186,103 @@
           </div>
         </div>
 
-        <!-- STEP 3: Presentación -->
+        <!-- STEP 3: Límites de Uso -->
         <div *ngIf="step3">
+          <div class="d-flex align-items-center pb-3 mb-2" style="border-bottom: 1px solid var(--sidebar-background-color)">
+            <div class="title-form">Límites de Uso</div>
+          </div>
+
+          <form [formGroup]="limitsForm">
+            <h6 class="mt-2 mb-3" style="color: var(--sidebar-background-color); font-weight: 600;">InOut</h6>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="nAdmin">Cuentas Administrador</label>
+                  <input id="nAdmin" formControlName="nAdmin" type="number" min="0" />
+                  <div *ngIf="limitsForm.get('nAdmin')?.invalid && limitsForm.get('nAdmin')?.touched" class="error">
+                    Se requiere un entero positivo (≥ 0).
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="nMateriales">Materiales</label>
+                  <input id="nMateriales" formControlName="nMateriales" type="number" min="0" />
+                  <div *ngIf="limitsForm.get('nMateriales')?.invalid && limitsForm.get('nMateriales')?.touched" class="error">
+                    Se requiere un entero positivo (≥ 0).
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="nMaterialesT">Materiales Compuestos</label>
+                  <input id="nMaterialesT" formControlName="nMaterialesT" type="number" min="0" />
+                  <div *ngIf="limitsForm.get('nMaterialesT')?.invalid && limitsForm.get('nMaterialesT')?.touched" class="error">
+                    Se requiere un entero positivo (≥ 0).
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="nProductos">Productos</label>
+                  <input id="nProductos" formControlName="nProductos" type="number" min="0" />
+                  <div *ngIf="limitsForm.get('nProductos')?.invalid && limitsForm.get('nProductos')?.touched" class="error">
+                    Se requiere un entero positivo (≥ 0).
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="nLotes">Lotes de Producción</label>
+                  <input id="nLotes" formControlName="nLotes" type="number" min="0" />
+                  <div *ngIf="limitsForm.get('nLotes')?.invalid && limitsForm.get('nLotes')?.touched" class="error">
+                    Se requiere un entero positivo (≥ 0).
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="nClientes">Clientes</label>
+                  <input id="nClientes" formControlName="nClientes" type="number" min="0" />
+                  <div *ngIf="limitsForm.get('nClientes')?.invalid && limitsForm.get('nClientes')?.touched" class="error">
+                    Se requiere un entero positivo (≥ 0).
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="nVentas">Ventas</label>
+                  <input id="nVentas" formControlName="nVentas" type="number" min="0" />
+                  <div *ngIf="limitsForm.get('nVentas')?.invalid && limitsForm.get('nVentas')?.touched" class="error">
+                    Se requiere un entero positivo (≥ 0).
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="nSesionesCap">Sesiones de Capacitación</label>
+                  <input id="nSesionesCap" formControlName="nSesionesCap" type="number" min="0" />
+                  <div *ngIf="limitsForm.get('nSesionesCap')?.invalid && limitsForm.get('nSesionesCap')?.touched" class="error">
+                    Se requiere un entero positivo (≥ 0).
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- STEP 4: Presentación -->
+        <div *ngIf="step4">
           <div class="d-flex align-items-center pb-3 mb-2" style="border-bottom: 1px solid var(--sidebar-background-color)">
             <div class="title-form">Configuración de Tarjeta de Presentación del Paquete</div>
           </div>
@@ -233,7 +331,7 @@
 
         <!-- Footer Buttons -->
         <div class="form-buttons">
-          <button type="button" class="btn btn-outline-dark btn-sm me-4 btn-fixed-width" [disabled]="!(step3 || (step2 && !step1))" (click)="onPrevious()">
+          <button type="button" class="btn btn-outline-dark btn-sm me-4 btn-fixed-width" [disabled]="!(step4 || step3 || (step2 && !step1))" (click)="onPrevious()">
             <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
               <use xlink:href="./assets/icons/bootstrap-icons.svg#arrow-left"></use>
             </svg>
@@ -254,7 +352,13 @@
               <use xlink:href="./assets/icons/bootstrap-icons.svg#arrow-right"></use>
             </svg>
           </button>
-          <button *ngIf="step3" type="button" class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width" (click)="submitPackage()">
+          <button *ngIf="step3" type="button" class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width" (click)="formThreeValid()">
+            <span class="d-none d-md-inline">{{ 'packages.createPackage.next' | translate }}</span>
+            <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#arrow-right"></use>
+            </svg>
+          </button>
+          <button *ngIf="step4" type="button" class="btn btn-outline-dark btn-sm ms-4 btn-fixed-width" (click)="submitPackage()">
             <span class="d-none d-md-inline">{{ 'packages.createPackage.send' | translate }}</span>
             <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
               <use xlink:href="./assets/icons/bootstrap-icons.svg#send"></use>

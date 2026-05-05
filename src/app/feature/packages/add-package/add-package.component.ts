@@ -3,6 +3,8 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
+  Input,
+  OnInit,
   Output,
 } from '@angular/core';
 import {
@@ -18,7 +20,9 @@ import Swal from 'sweetalert2';
 import {
   NewPackageDTO,
   RoleConfigurationDTO,
+  UsageLimitVariableDTO,
 } from '../../../shared/model/new-package-dto';
+import { Package } from '../../../shared/model/package.model';
 import { ApplicationsService } from '../../../shared/services/applications/applications.service';
 import { Application } from '../../../shared/model/application.model';
 import { forkJoin } from 'rxjs';
@@ -33,10 +37,12 @@ import { TranslationService } from '../../../shared/services/translation.service
   templateUrl: './add-package.component.html',
   styleUrl: './add-package.component.css',
 })
-export class AddPackageComponent {
+export class AddPackageComponent implements OnInit {
+  @Input() packageToEdit: Package | null = null;
   @Output() close = new EventEmitter<void>();
   @Output() close2 = new EventEmitter<void>();
   basicPackageForm: FormGroup;
+  limitsForm: FormGroup;
   checkingName = false;
   nameExists = false;
   disabled = true;
@@ -45,10 +51,12 @@ export class AddPackageComponent {
   step1: boolean = true;
   step2: boolean = false;
   step3: boolean = false;
+  step4: boolean = false;
 
   showStp1: boolean = false;
   showStp2: boolean = false;
   showStp3: boolean = false;
+  showStp4: boolean = false;
 
   roles: Rol[] = [];
   totalRoles: number = 0;
@@ -81,22 +89,80 @@ export class AddPackageComponent {
       name: ['', Validators.required],
       description: ['', Validators.required],
     });
+
+    this.limitsForm = this.fb.group({
+      nAdmin: [0, [Validators.required, Validators.min(0)]],
+      nMateriales: [0, [Validators.required, Validators.min(0)]],
+      nMaterialesT: [0, [Validators.required, Validators.min(0)]],
+      nProductos: [0, [Validators.required, Validators.min(0)]],
+      nLotes: [0, [Validators.required, Validators.min(0)]],
+      nClientes: [0, [Validators.required, Validators.min(0)]],
+      nVentas: [0, [Validators.required, Validators.min(0)]],
+      nSesionesCap: [0, [Validators.required, Validators.min(0)]],
+    });
   }
 
   ngOnInit(): void {
     this.loadApplicationsAndRoles();
+    this.preloadPackageData();
   }
 
-  showStepIcons(stp1: boolean, stp2: boolean, stp3: boolean): void {
+  /** Precarga los datos del paquete en modo edición */
+  private preloadPackageData(): void {
+    if (!this.packageToEdit) return;
+
+    // Precargar datos básicos
+    this.basicPackageForm.patchValue({
+      name: this.packageToEdit.name,
+      description: this.packageToEdit.description,
+    });
+
+    // Precargar variables de límite de uso
+    if (this.packageToEdit.usageLimitVariables?.length) {
+      const limitsValues: Record<string, number> = {};
+      for (const variable of this.packageToEdit.usageLimitVariables) {
+        if (this.limitsForm.controls[variable.variableName]) {
+          limitsValues[variable.variableName] = variable.maxValue;
+        }
+      }
+      this.limitsForm.patchValue(limitsValues);
+    }
+
+    // Precargar configuraciones de roles
+    if (this.packageToEdit.configurations?.length) {
+      this.roleConfigs = this.packageToEdit.configurations.map((config) => ({
+        rolId: config.rol?.id ?? '',
+        roleName: config.rol?.strName ?? '',
+        totalAccount: config.totalAccount,
+        price: parseFloat(config.price),
+      }));
+      this.updateHasRoleConfigs();
+    }
+  }
+
+  showStepIcons(stp1: boolean, stp2: boolean, stp3: boolean, stp4: boolean = false): void {
     this.showStp1 = stp1;
     this.showStp2 = stp2;
     this.showStp3 = stp3;
+    this.showStp4 = stp4;
   }
 
   formOneValid(): void {
     const name = this.basicPackageForm.value.name?.trim();
 
     if (!name) return;
+
+    // En modo edición, saltar la validación de nombre
+    if (this.packageToEdit) {
+      if (this.basicPackageForm.valid) {
+        this.showStepIcons(true, false, false, false);
+        this.step1 = false;
+        this.step2 = true;
+        this.step3 = false;
+        this.step4 = false;
+      }
+      return;
+    }
 
     this.checkingName = true;
     this.packageService.checkPackageName(name).subscribe({
@@ -105,10 +171,11 @@ export class AddPackageComponent {
         this.checkingName = false;
 
         if (!res.exists && this.basicPackageForm.valid) {
-          this.showStepIcons(true, false, false);
+          this.showStepIcons(true, false, false, false);
           this.step1 = false;
           this.step2 = true;
           this.step3 = false;
+          this.step4 = false;
         }
       },
       error: (err) => {
@@ -119,10 +186,23 @@ export class AddPackageComponent {
   }
 
   formTwoValid(): void {
-    this.showStepIcons(true, true, false);
+    this.showStepIcons(true, true, false, false);
     this.step1 = false;
     this.step2 = false;
     this.step3 = true;
+    this.step4 = false;
+  }
+
+  formThreeValid(): void {
+    if (this.limitsForm.invalid) {
+      this.limitsForm.markAllAsTouched();
+      return;
+    }
+    this.showStepIcons(true, true, true, false);
+    this.step1 = false;
+    this.step2 = false;
+    this.step3 = false;
+    this.step4 = true;
   }
 
   private updateHasRoleConfigs(): void {
@@ -269,14 +349,22 @@ export class AddPackageComponent {
       this.step1 = true;
       this.step2 = false;
       this.step3 = false;
-      this.showStepIcons(false, false, false);
+      this.step4 = false;
+      this.showStepIcons(false, false, false, false);
       this.showConfigurationRecord = false;
-    }
-    if (this.step3) {
+    } else if (this.step3) {
+      this.step1 = false;
       this.step2 = true;
       this.step3 = false;
-      this.showStepIcons(true, false, false);
+      this.step4 = false;
+      this.showStepIcons(true, false, false, false);
       this.showConfigurationRecord = false;
+    } else if (this.step4) {
+      this.step1 = false;
+      this.step2 = false;
+      this.step3 = true;
+      this.step4 = false;
+      this.showStepIcons(true, true, false, false);
     }
   }
 
@@ -294,14 +382,48 @@ export class AddPackageComponent {
     this.roleConfigs = [];
     this.nameExists = false;
     this.basicPackageForm.reset();
-    this.showStepIcons(false, false, false);
+    this.limitsForm.reset({
+      nAdmin: 0,
+      nMateriales: 0,
+      nMaterialesT: 0,
+      nProductos: 0,
+      nLotes: 0,
+      nClientes: 0,
+      nVentas: 0,
+      nSesionesCap: 0,
+    });
+    this.showStepIcons(false, false, false, false);
     this.step1 = true;
     this.step2 = false;
     this.step3 = false;
+    this.step4 = false;
     this.showConfigurationRecord = false;
     this.searchText = '';
     this.updateHasRoleConfigs();
     this.filterRoles();
+  }
+
+  /** Mapeo estático de variableName a displayName para las variables de InOut */
+  private readonly limitVariableDisplayNames: Record<string, string> = {
+    nAdmin: 'Cuentas Administrador',
+    nMateriales: 'Materiales',
+    nMaterialesT: 'Materiales Compuestos',
+    nProductos: 'Productos',
+    nLotes: 'Lotes de Producción',
+    nClientes: 'Clientes',
+    nVentas: 'Ventas',
+    nSesionesCap: 'Sesiones de Capacitación',
+  };
+
+  /** Transforma los valores del limitsForm al formato UsageLimitVariableDTO[] */
+  buildUsageLimitVariables(): UsageLimitVariableDTO[] {
+    const formValues = this.limitsForm.value;
+    return Object.keys(this.limitVariableDisplayNames).map((variableName) => ({
+      variableName,
+      displayName: this.limitVariableDisplayNames[variableName],
+      maxValue: Number(formValues[variableName]) || 0,
+      targetApplication: 'Inout',
+    }));
   }
 
   submitPackage(): void {
@@ -310,23 +432,48 @@ export class AddPackageComponent {
       description: this.basicPackageForm.value.description,
       configurations: this.roleConfigs,
       images: this.images,
+      usageLimitVariables: this.buildUsageLimitVariables(),
     };
 
-    this.packageService.createPackage(dto, this.imageFiles).subscribe({
-      next: () => {
-        this.showStepIcons(true, true, true);
-        this.onSuccess();
-      },
-      error: (error) => {
-        Swal.fire({
-          icon: 'error',
-          title: this.translationService.translate('packages.createPackage.errorCreating'),
-          text: this.translationService.translate('packages.createPackage.errorSaving'),
-          confirmButtonText: this.translationService.translate('common.ok'),
-        });
-        console.error('Error creating package:', error);
-      },
-    });
+    if (this.packageToEdit) {
+      // Modo edición
+      this.packageService.updatePackage(this.packageToEdit.id, {
+        name: dto.name,
+        description: dto.description,
+        usageLimitVariables: dto.usageLimitVariables,
+      }).subscribe({
+        next: () => {
+          this.showStepIcons(true, true, true, true);
+          this.onSuccess();
+        },
+        error: (error) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error al actualizar',
+            text: error?.error?.message || 'No se pudo actualizar el paquete.',
+            confirmButtonText: 'OK',
+          });
+          console.error('Error updating package:', error);
+        },
+      });
+    } else {
+      // Modo creación
+      this.packageService.createPackage(dto, this.imageFiles).subscribe({
+        next: () => {
+          this.showStepIcons(true, true, true, true);
+          this.onSuccess();
+        },
+        error: (error) => {
+          Swal.fire({
+            icon: 'error',
+            title: this.translationService.translate('packages.createPackage.errorCreating'),
+            text: this.translationService.translate('packages.createPackage.errorSaving'),
+            confirmButtonText: this.translationService.translate('common.ok'),
+          });
+          console.error('Error creating package:', error);
+        },
+      });
+    }
   }
 
   getTotalPrice(): number {

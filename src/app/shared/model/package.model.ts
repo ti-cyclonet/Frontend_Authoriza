@@ -1,4 +1,5 @@
 import { Rol } from "./rol";
+import { UsageLimitVariableDTO } from "./new-package-dto";
 
 export interface Image {
   id: string;
@@ -24,5 +25,6 @@ export interface Package {
   name: string;
   description: string;
   configurations: Configuration[];
-  images: Image[]; 
+  images: Image[];
+  usageLimitVariables?: UsageLimitVariableDTO[];
 }

@@ -5,9 +5,17 @@ export interface RoleConfigurationDTO {
   roleName?: string;
 }
 
+export interface UsageLimitVariableDTO {
+  variableName: string;
+  displayName: string;
+  maxValue: number;
+  targetApplication: string;
+}
+
 export interface NewPackageDTO {
   name: string;
   description?: string;
   configurations: RoleConfigurationDTO[];
   images?: File[];
+  usageLimitVariables?: UsageLimitVariableDTO[];
 }

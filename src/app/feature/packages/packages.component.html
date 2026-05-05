@@ -132,6 +132,14 @@
   (close2)="closeModal2()"
 ></app-add-package>
 
+<!-- Modal de Edición de Paquete (reutiliza add-package en modo edición) -->
+<app-add-package
+  *ngIf="showEditModal && selectedPackage"
+  [packageToEdit]="selectedPackage"
+  (close)="closeEditModal(); loadPackages()"
+  (close2)="closeEditModal(); loadPackages(); showEditSuccess()"
+></app-add-package>
+
 <!-- Modal de Vista de Paquete -->
 <div *ngIf="showViewModal && selectedPackage" class="modal-overlay" (click)="closeViewModal()">
   <div class="pkg-view-card" (click)="$event.stopPropagation()">
@@ -187,6 +195,11 @@
     </div>
 
     <div class="pkg-view-actions">
+      <button class="btn-view-action" title="Editar" (click)="viewAndEdit()">
+        <svg viewBox="0 0 16 16" fill="currentColor">
+          <use xlink:href="./assets/icons/bootstrap-icons.svg#pencil" />
+        </svg>
+      </button>
       <button class="btn-view-action" 
               title="{{ selectedPackageContractCount > 0 ? 'No se puede eliminar: tiene contratos asociados' : 'Eliminar' }}" 
               (click)="viewAndDelete()"
