@@ -19,7 +19,7 @@
             <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + (showStp4 ? '4-circle-fill' : '4-circle')"/>
           </svg>
         </div>
-        <h1 class="modal-title fs-5">{{ 'packages.addNew' | translate }}</h1>
+        <h1 class="modal-title fs-5">{{ packageToEdit ? 'Editar Paquete' : ('packages.addNew' | translate) }}</h1>
       </div>
 
       <!-- Body -->
@@ -33,11 +33,11 @@
           <form [formGroup]="basicPackageForm">
             <div class="form-group">
               <label for="name">{{ 'packages.createPackage.packageName' | translate }}</label>
-              <input id="name" formControlName="name" type="text" autocomplete="off"/>
-              <div *ngIf="basicPackageForm.get('name')?.invalid && basicPackageForm.get('name')?.touched" class="error">
+              <input id="name" formControlName="name" type="text" autocomplete="off" [attr.disabled]="packageToEdit ? '' : null" [class.disabled-field]="packageToEdit"/>
+              <div *ngIf="basicPackageForm.get('name')?.invalid && basicPackageForm.get('name')?.touched && !packageToEdit" class="error">
                 {{ 'packages.createPackage.nameRequired' | translate }}
               </div>
-              <div class="error" *ngIf="nameExists">
+              <div class="error" *ngIf="nameExists && !packageToEdit">
                 {{ 'packages.createPackage.nameUnavailable' | translate }}
               </div>
             </div>

@@ -23,6 +23,7 @@ export class PackagesComponent implements OnInit {
   packages: Package[] = [];
   showAddPackageModal: boolean = false;
   showViewModal: boolean = false;
+  showEditModal: boolean = false;
   selectedPackage: Package | null = null;
   selectedPackageContractCount: number = 0;
 
@@ -121,6 +122,30 @@ export class PackagesComponent implements OnInit {
     const pkg = this.selectedPackage;
     this.closeViewModal();
     if (pkg) this.deletePackage(pkg);
+  }
+
+  viewAndEdit() {
+    const pkg = this.selectedPackage;
+    this.closeViewModal();
+    if (pkg) {
+      this.selectedPackage = pkg;
+      this.showEditModal = true;
+    }
+  }
+
+  closeEditModal() {
+    this.showEditModal = false;
+    this.selectedPackage = null;
+  }
+
+  showEditSuccess() {
+    Swal.fire({
+      icon: 'success',
+      title: 'Paquete actualizado',
+      text: 'Los cambios se guardaron correctamente.',
+      timer: 2000,
+      showConfirmButton: false
+    });
   }
 
   getTotalPrice(pkg: Package): number {

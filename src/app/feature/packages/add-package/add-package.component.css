@@ -316,3 +316,9 @@ a.disabled {
     height: 1.25rem;
   }
 }
+
+.disabled-field {
+  background: #f0f0f0 !important;
+  color: #888 !important;
+  cursor: not-allowed;
+}

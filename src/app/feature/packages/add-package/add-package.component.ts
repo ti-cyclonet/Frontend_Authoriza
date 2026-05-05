@@ -152,6 +152,18 @@ export class AddPackageComponent implements OnInit {
 
     if (!name) return;
 
+    // En modo edición, saltar la validación de nombre
+    if (this.packageToEdit) {
+      if (this.basicPackageForm.valid) {
+        this.showStepIcons(true, false, false, false);
+        this.step1 = false;
+        this.step2 = true;
+        this.step3 = false;
+        this.step4 = false;
+      }
+      return;
+    }
+
     this.checkingName = true;
     this.packageService.checkPackageName(name).subscribe({
       next: (res) => {
@@ -423,21 +435,45 @@ export class AddPackageComponent implements OnInit {
       usageLimitVariables: this.buildUsageLimitVariables(),
     };
 
-    this.packageService.createPackage(dto, this.imageFiles).subscribe({
-      next: () => {
-        this.showStepIcons(true, true, true, true);
-        this.onSuccess();
-      },
-      error: (error) => {
-        Swal.fire({
-          icon: 'error',
-          title: this.translationService.translate('packages.createPackage.errorCreating'),
-          text: this.translationService.translate('packages.createPackage.errorSaving'),
-          confirmButtonText: this.translationService.translate('common.ok'),
-        });
-        console.error('Error creating package:', error);
-      },
-    });
+    if (this.packageToEdit) {
+      // Modo edición
+      this.packageService.updatePackage(this.packageToEdit.id, {
+        name: dto.name,
+        description: dto.description,
+        usageLimitVariables: dto.usageLimitVariables,
+      }).subscribe({
+        next: () => {
+          this.showStepIcons(true, true, true, true);
+          this.onSuccess();
+        },
+        error: (error) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error al actualizar',
+            text: error?.error?.message || 'No se pudo actualizar el paquete.',
+            confirmButtonText: 'OK',
+          });
+          console.error('Error updating package:', error);
+        },
+      });
+    } else {
+      // Modo creación
+      this.packageService.createPackage(dto, this.imageFiles).subscribe({
+        next: () => {
+          this.showStepIcons(true, true, true, true);
+          this.onSuccess();
+        },
+        error: (error) => {
+          Swal.fire({
+            icon: 'error',
+            title: this.translationService.translate('packages.createPackage.errorCreating'),
+            text: this.translationService.translate('packages.createPackage.errorSaving'),
+            confirmButtonText: this.translationService.translate('common.ok'),
+          });
+          console.error('Error creating package:', error);
+        },
+      });
+    }
   }
 
   getTotalPrice(): number {

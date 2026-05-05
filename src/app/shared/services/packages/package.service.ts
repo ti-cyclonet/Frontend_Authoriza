@@ -78,4 +78,8 @@ export class PackageService {
   deletePackage(id: string): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.packageUrl}/${id}`);
   }
+
+  updatePackage(id: string, data: any): Observable<Package> {
+    return this.http.put<Package>(`${this.packageUrl}/${id}`, data);
+  }
 }
