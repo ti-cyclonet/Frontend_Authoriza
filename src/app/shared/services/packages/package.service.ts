@@ -65,6 +65,7 @@ export class PackageService {
     // Agregar otros campos
     formData.append('name', pkgData.name);
     formData.append('description', pkgData.description);
+    formData.append('price', String(pkgData.price || 0));
     formData.append('configurations', JSON.stringify(pkgData.configurations));
 
     // Agregar variables de límite de uso

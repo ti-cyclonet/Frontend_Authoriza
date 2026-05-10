@@ -48,6 +48,13 @@
                 {{ 'packages.createPackage.descriptionRequired' | translate }}
               </div>
             </div>
+            <div class="form-group">
+              <label for="price">{{ 'packages.createPackage.price' | translate }}</label>
+              <input id="price" formControlName="price" type="number" min="0" placeholder="0" autocomplete="off"/>
+              <div *ngIf="basicPackageForm.get('price')?.invalid && basicPackageForm.get('price')?.touched" class="error">
+                Se requiere un valor ≥ 0.
+              </div>
+            </div>
           </form>
         </div>
 
@@ -77,10 +84,6 @@
             <div class="d-flex justify-content-between align-items-center">
               {{ 'packages.createPackage.totalRoles' | translate }}
               <strong class="highlight">{{ roleConfigs.length }}</strong>
-            </div>
-            <div class="d-flex justify-content-between align-items-center">
-              {{ 'packages.createPackage.totalPrice' | translate }}
-              <strong class="highlight">$ {{ getTotalPrice() | number : "1.0-0" }} COP/month</strong>
             </div>
           </div>
 
@@ -151,7 +154,6 @@
                     <th class="d-none d-md-table-cell">{{ 'packages.createPackage.application' | translate }}</th>
                     <th>{{ 'packages.createPackage.roleName' | translate }}</th>
                     <th class="d-none d-md-table-cell">{{ 'packages.createPackage.quantity' | translate }}</th>
-                    <th class="d-none d-md-table-cell">{{ 'packages.createPackage.unitPrice' | translate }}</th>
                     <th class="text-center">{{ 'packages.createPackage.actions' | translate }}</th>
                   </tr>
                 </thead>
@@ -161,7 +163,6 @@
                     <td class="d-none d-md-table-cell">{{ getApplicationNameByRoleId(config.rolId) }}</td>
                     <td>{{ config.roleName }}</td>
                     <td class="d-none d-md-table-cell">{{ config.totalAccount }}</td>
-                    <td class="d-none d-md-table-cell">$ {{ config.price | number : "1.0-0" }} COP</td>
                     <td class="text-center">
                       <a (click)="viewRole(config)" title="View" style="color: var(--sidebar-background-color); cursor: pointer;">
                         <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
@@ -186,99 +187,123 @@
           </div>
         </div>
 
-        <!-- STEP 3: Límites de Uso -->
+        <!-- STEP 3: Límites de Uso (Dinámico) -->
         <div *ngIf="step3">
           <div class="d-flex align-items-center pb-3 mb-2" style="border-bottom: 1px solid var(--sidebar-background-color)">
-            <div class="title-form">Límites de Uso</div>
+            <div class="title-form">Variables de Control de Límites</div>
+            <div class="btn-group ms-auto custom-btn-group">
+              <a *ngIf="!showAddLimitRecord" (click)="showAddLimitRecord = true" style="cursor: pointer">
+                <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
+                  <use xlink:href="./assets/icons/bootstrap-icons.svg#plus-square-fill"></use>
+                </svg>
+              </a>
+              <a *ngIf="showAddLimitRecord" (click)="showAddLimitRecord = false" style="cursor: pointer">
+                <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
+                  <use xlink:href="./assets/icons/bootstrap-icons.svg#check-circle-fill"></use>
+                </svg>
+              </a>
+            </div>
           </div>
 
-          <form [formGroup]="limitsForm">
-            <h6 class="mt-2 mb-3" style="color: var(--sidebar-background-color); font-weight: 600;">InOut</h6>
-
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="nAdmin">Cuentas Administrador</label>
-                  <input id="nAdmin" formControlName="nAdmin" type="number" min="0" />
-                  <div *ngIf="limitsForm.get('nAdmin')?.invalid && limitsForm.get('nAdmin')?.touched" class="error">
-                    Se requiere un entero positivo (≥ 0).
-                  </div>
+          <!-- Buscador de variables disponibles -->
+          <div *ngIf="showAddLimitRecord" class="add-configuration-record mb-3">
+            <div class="card text-center">
+              <div class="card-header" style="background-color: #eeeaff !important">
+                <div class="subtitle">
+                  <h6 class="users-titleOne">Buscar por aplicación o variable</h6>
+                </div>
+                <div class="input-group" style="border: 1px solid var(--sidebar-background-color); border-radius: 0.375rem; overflow: hidden;">
+                  <input type="text" class="form-control custom-search-input" placeholder="Escriba para filtrar..." [(ngModel)]="limitSearchText"/>
+                  <button *ngIf="limitSearchText" class="input-group-text bg-transparent border-0 fw-bold text-danger" style="cursor: pointer" (click)="limitSearchText = ''">
+                    <svg fill="currentColor" viewBox="0 0 16 16" style="width: 1rem; height: 1rem">
+                      <use xlink:href="./assets/icons/bootstrap-icons.svg#x-circle"/>
+                    </svg>
+                  </button>
+                  <span class="input-group-text bg-transparent border-0">
+                    <svg fill="currentColor" viewBox="0 0 16 16" style="width: 1rem; height: 1rem; color: var(--primary_active_text_color);">
+                      <use xlink:href="./assets/icons/bootstrap-icons.svg#search"/>
+                    </svg>
+                  </span>
                 </div>
               </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="nMateriales">Materiales</label>
-                  <input id="nMateriales" formControlName="nMateriales" type="number" min="0" />
-                  <div *ngIf="limitsForm.get('nMateriales')?.invalid && limitsForm.get('nMateriales')?.touched" class="error">
-                    Se requiere un entero positivo (≥ 0).
-                  </div>
-                </div>
+              <div class="card-body" style="max-height: 250px; overflow-y: auto;">
+                <table class="table table-hover table-sm" style="font-size: 14px">
+                  <thead class="table-dark">
+                    <tr class="table-light">
+                      <th>Aplicación</th>
+                      <th>Variable</th>
+                      <th class="text-center">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let variable of pagedLimitVariables">
+                      <td>{{ variable.targetApplication }}</td>
+                      <td>{{ variable.displayName }}</td>
+                      <td class="text-center">
+                        <a [title]="isLimitAdded(variable.variableName) ? 'Ya agregada' : 'Agregar variable'" 
+                           style="color: var(--sidebar-background-color); cursor: pointer;" 
+                           [ngClass]="{'disabled': isLimitAdded(variable.variableName)}" 
+                           (click)="!isLimitAdded(variable.variableName) && addLimitVariable(variable)">
+                          <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+                            <use [attr.xlink:href]="isLimitAdded(variable.variableName) ? './assets/icons/bootstrap-icons.svg#check-circle-fill' : './assets/icons/bootstrap-icons.svg#plus-circle-fill'"/>
+                          </svg>
+                        </a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="nMaterialesT">Materiales Compuestos</label>
-                  <input id="nMaterialesT" formControlName="nMaterialesT" type="number" min="0" />
-                  <div *ngIf="limitsForm.get('nMaterialesT')?.invalid && limitsForm.get('nMaterialesT')?.touched" class="error">
-                    Se requiere un entero positivo (≥ 0).
-                  </div>
-                </div>
+              <div class="card-footer text-body-secondary d-flex justify-content-between align-items-center" style="background-color: #eeeaff !important">
+                <button class="btn btn-outline-purple btn-sm" (click)="limitPreviousPage()" [disabled]="limitCurrentPage === 0">
+                  Anterior
+                </button>
+                <span style="font-size: 0.8rem">{{ filteredLimitVariables.length }} resultado{{ filteredLimitVariables.length !== 1 ? 's' : '' }} — Pág. {{ limitCurrentPage + 1 }} de {{ totalLimitPages || 1 }}</span>
+                <button class="btn btn-outline-purple btn-sm" (click)="limitNextPage()" [disabled]="(limitCurrentPage + 1) * LIMIT_PAGE_SIZE >= filteredLimitVariables.length">
+                  Siguiente
+                </button>
               </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="nProductos">Productos</label>
-                  <input id="nProductos" formControlName="nProductos" type="number" min="0" />
-                  <div *ngIf="limitsForm.get('nProductos')?.invalid && limitsForm.get('nProductos')?.touched" class="error">
-                    Se requiere un entero positivo (≥ 0).
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="nLotes">Lotes de Producción</label>
-                  <input id="nLotes" formControlName="nLotes" type="number" min="0" />
-                  <div *ngIf="limitsForm.get('nLotes')?.invalid && limitsForm.get('nLotes')?.touched" class="error">
-                    Se requiere un entero positivo (≥ 0).
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="nClientes">Clientes</label>
-                  <input id="nClientes" formControlName="nClientes" type="number" min="0" />
-                  <div *ngIf="limitsForm.get('nClientes')?.invalid && limitsForm.get('nClientes')?.touched" class="error">
-                    Se requiere un entero positivo (≥ 0).
-                  </div>
-                </div>
+              <div class="card-footer d-flex justify-content-center" style="background-color: transparent; border-top: none; padding-top: 0.5rem;">
+                <a (click)="addCustomLimitVariable()" style="color: var(--sidebar-background-color); cursor: pointer; font-size: 0.82rem; font-weight: 500;">
+                  + Agregar variable personalizada
+                </a>
               </div>
             </div>
+          </div>
 
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="nVentas">Ventas</label>
-                  <input id="nVentas" formControlName="nVentas" type="number" min="0" />
-                  <div *ngIf="limitsForm.get('nVentas')?.invalid && limitsForm.get('nVentas')?.touched" class="error">
-                    Se requiere un entero positivo (≥ 0).
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="nSesionesCap">Sesiones de Capacitación</label>
-                  <input id="nSesionesCap" formControlName="nSesionesCap" type="number" min="0" />
-                  <div *ngIf="limitsForm.get('nSesionesCap')?.invalid && limitsForm.get('nSesionesCap')?.touched" class="error">
-                    Se requiere un entero positivo (≥ 0).
-                  </div>
-                </div>
+          <!-- Lista de variables configuradas -->
+          <div class="card" [class.disabled-section]="showAddLimitRecord">
+            <div class="card-body">
+              <table class="table table-hover table-sm" style="font-size: 14px">
+                <thead class="table-dark">
+                  <tr class="table-light">
+                    <th>Ítem</th>
+                    <th>Aplicación</th>
+                    <th>Variable</th>
+                    <th>Cantidad</th>
+                    <th class="text-center">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let limit of limitVariables; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ limit.targetApplication }}</td>
+                    <td>{{ limit.displayName }}</td>
+                    <td>{{ limit.variableName === 'nDiasUso' ? (limit.maxValue === 0 ? 'Ilimitado' : limit.maxValue + ' días') : limit.maxValue }}</td>
+                    <td class="text-center">
+                      <a (click)="removeLimitVariable(limit.variableName)" title="Eliminar" style="color: var(--sidebar-background-color); cursor: pointer;">
+                        <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+                          <use xlink:href="./assets/icons/bootstrap-icons.svg#trash"/>
+                        </svg>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div *ngIf="limitVariables.length === 0" class="text-center text-muted py-3" style="font-size: 0.85rem">
+                No hay variables configuradas. Use el botón + para agregar.
               </div>
             </div>
-          </form>
+          </div>
         </div>
 
         <!-- STEP 4: Presentación -->

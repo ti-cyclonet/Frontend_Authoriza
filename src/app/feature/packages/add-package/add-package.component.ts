@@ -79,6 +79,13 @@ export class AddPackageComponent implements OnInit {
   searchText: string = '';
   hasRoleConfigs: boolean = false;
 
+  // Variables de límite dinámicas
+  limitVariables: { variableName: string; displayName: string; maxValue: number; targetApplication: string }[] = [];
+  showAddLimitRecord: boolean = false;
+  limitSearchText: string = '';
+  limitCurrentPage: number = 0;
+  readonly LIMIT_PAGE_SIZE = 5;
+
   constructor(
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
@@ -88,18 +95,10 @@ export class AddPackageComponent implements OnInit {
     this.basicPackageForm = this.fb.group({
       name: ['', Validators.required],
       description: ['', Validators.required],
+      price: [0, [Validators.required, Validators.min(0)]],
     });
 
-    this.limitsForm = this.fb.group({
-      nAdmin: [0, [Validators.required, Validators.min(0)]],
-      nMateriales: [0, [Validators.required, Validators.min(0)]],
-      nMaterialesT: [0, [Validators.required, Validators.min(0)]],
-      nProductos: [0, [Validators.required, Validators.min(0)]],
-      nLotes: [0, [Validators.required, Validators.min(0)]],
-      nClientes: [0, [Validators.required, Validators.min(0)]],
-      nVentas: [0, [Validators.required, Validators.min(0)]],
-      nSesionesCap: [0, [Validators.required, Validators.min(0)]],
-    });
+    this.limitsForm = this.fb.group({});
   }
 
   ngOnInit(): void {
@@ -115,17 +114,17 @@ export class AddPackageComponent implements OnInit {
     this.basicPackageForm.patchValue({
       name: this.packageToEdit.name,
       description: this.packageToEdit.description,
+      price: (this.packageToEdit as any).price || 0,
     });
 
-    // Precargar variables de límite de uso
+    // Precargar variables de límite de uso (dinámicas)
     if (this.packageToEdit.usageLimitVariables?.length) {
-      const limitsValues: Record<string, number> = {};
-      for (const variable of this.packageToEdit.usageLimitVariables) {
-        if (this.limitsForm.controls[variable.variableName]) {
-          limitsValues[variable.variableName] = variable.maxValue;
-        }
-      }
-      this.limitsForm.patchValue(limitsValues);
+      this.limitVariables = this.packageToEdit.usageLimitVariables.map((v: any) => ({
+        variableName: v.variableName,
+        displayName: v.displayName,
+        maxValue: v.maxValue,
+        targetApplication: v.targetApplication,
+      }));
     }
 
     // Precargar configuraciones de roles
@@ -194,10 +193,6 @@ export class AddPackageComponent implements OnInit {
   }
 
   formThreeValid(): void {
-    if (this.limitsForm.invalid) {
-      this.limitsForm.markAllAsTouched();
-      return;
-    }
     this.showStepIcons(true, true, true, false);
     this.step1 = false;
     this.step2 = false;
@@ -214,7 +209,6 @@ export class AddPackageComponent implements OnInit {
       title: this.translationService.translate('packages.createPackage.addRoleConfig').replace('{roleName}', `<b>${rol.strName}</b>`),
       html: `
       <input id="swal-quantity" type="number" min="1" class="swal2-input" placeholder="${this.translationService.translate('packages.createPackage.quantity')}">
-      <input id="swal-price" type="number" min="0" step="0.01" class="swal2-input" placeholder="${this.translationService.translate('packages.createPackage.unitPrice')} (COP)">
     `,
       focusConfirm: false,
       showCancelButton: true,
@@ -224,16 +218,13 @@ export class AddPackageComponent implements OnInit {
         const quantity = parseInt(
           (document.getElementById('swal-quantity') as HTMLInputElement)?.value
         );
-        const unitPrice = parseFloat(
-          (document.getElementById('swal-price') as HTMLInputElement)?.value
-        );
 
-        if (!quantity || isNaN(unitPrice) || quantity <= 0 || unitPrice < 0) {
+        if (!quantity || quantity <= 0) {
           Swal.showValidationMessage(this.translationService.translate('packages.createPackage.enterValidValues'));
           return;
         }
 
-        return { quantity, unitPrice };
+        return { quantity };
       },
     });
 
@@ -242,7 +233,7 @@ export class AddPackageComponent implements OnInit {
         rolId: rol.id,
         roleName: rol.strName,
         totalAccount: formValues.quantity,
-        price: formValues.unitPrice,
+        price: 0,
       };
 
       this.roleConfigs.push(newConfig);
@@ -403,26 +394,142 @@ export class AddPackageComponent implements OnInit {
     this.filterRoles();
   }
 
-  /** Mapeo estático de variableName a displayName para las variables de InOut */
-  private readonly limitVariableDisplayNames: Record<string, string> = {
-    nAdmin: 'Cuentas Administrador',
-    nMateriales: 'Materiales',
-    nMaterialesT: 'Materiales Compuestos',
-    nProductos: 'Productos',
-    nLotes: 'Lotes de Producción',
-    nClientes: 'Clientes',
-    nVentas: 'Ventas',
-    nSesionesCap: 'Sesiones de Capacitación',
-  };
+  /** Mapeo de variables disponibles para sugerir */
+  readonly availableLimitVariables: { variableName: string; displayName: string; targetApplication: string }[] = [
+    { variableName: 'nMateriales', displayName: 'Materiales', targetApplication: 'Inout' },
+    { variableName: 'nMaterialesT', displayName: 'Materiales Compuestos', targetApplication: 'Inout' },
+    { variableName: 'nProductos', displayName: 'Productos', targetApplication: 'Inout' },
+    { variableName: 'nLotes', displayName: 'Lotes de Producción', targetApplication: 'Inout' },
+    { variableName: 'nClientes', displayName: 'Clientes', targetApplication: 'Inout' },
+    { variableName: 'nVentas', displayName: 'Ventas', targetApplication: 'Inout' },
+    { variableName: 'nSesionesCap', displayName: 'Sesiones de Capacitación', targetApplication: 'Inout' },
+    { variableName: 'nDiasUso', displayName: 'Límite Temporal de Uso (días)', targetApplication: 'Inout' },
+  ];
 
-  /** Transforma los valores del limitsForm al formato UsageLimitVariableDTO[] */
+  get filteredLimitVariables() {
+    const added = this.limitVariables.map(v => v.variableName);
+    let available = this.availableLimitVariables.filter(v => !added.includes(v.variableName));
+    if (this.limitSearchText.trim()) {
+      const term = this.limitSearchText.toLowerCase();
+      available = available.filter(v => 
+        v.displayName.toLowerCase().includes(term) || 
+        v.variableName.toLowerCase().includes(term) ||
+        v.targetApplication.toLowerCase().includes(term)
+      );
+    }
+    return available;
+  }
+
+  get pagedLimitVariables() {
+    const start = this.limitCurrentPage * this.LIMIT_PAGE_SIZE;
+    return this.filteredLimitVariables.slice(start, start + this.LIMIT_PAGE_SIZE);
+  }
+
+  get totalLimitPages(): number {
+    return Math.ceil(this.filteredLimitVariables.length / this.LIMIT_PAGE_SIZE);
+  }
+
+  limitNextPage() {
+    if ((this.limitCurrentPage + 1) * this.LIMIT_PAGE_SIZE < this.filteredLimitVariables.length) {
+      this.limitCurrentPage++;
+    }
+  }
+
+  limitPreviousPage() {
+    if (this.limitCurrentPage > 0) {
+      this.limitCurrentPage--;
+    }
+  }
+
+  isLimitAdded(variableName: string): boolean {
+    return this.limitVariables.some(v => v.variableName === variableName);
+  }
+
+  async addLimitVariable(variable: { variableName: string; displayName: string; targetApplication: string }) {
+    const placeholder = variable.variableName === 'nDiasUso' ? 'Número de días (0 = ilimitado)' : 'Cantidad máxima';
+
+    const { value: maxValue } = await Swal.fire({
+      title: `Configurar: <b>${variable.displayName}</b>`,
+      html: `<p style="font-size:0.85rem;color:#666">Aplicación: ${variable.targetApplication}</p>
+             <input id="swal-limit-value" type="number" min="0" class="swal2-input" placeholder="${placeholder}">`,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Agregar',
+      cancelButtonText: 'Cancelar',
+      preConfirm: () => {
+        const val = parseInt((document.getElementById('swal-limit-value') as HTMLInputElement)?.value);
+        if (isNaN(val) || val < 0) {
+          Swal.showValidationMessage('Ingrese un valor entero ≥ 0');
+          return;
+        }
+        return val;
+      }
+    });
+
+    if (maxValue !== undefined) {
+      this.limitVariables.push({
+        variableName: variable.variableName,
+        displayName: variable.displayName,
+        maxValue: maxValue,
+        targetApplication: variable.targetApplication
+      });
+      this.cdr.detectChanges();
+    }
+  }
+
+  removeLimitVariable(variableName: string) {
+    this.limitVariables = this.limitVariables.filter(v => v.variableName !== variableName);
+  }
+
+  async addCustomLimitVariable() {
+    const { value: formValues } = await Swal.fire({
+      title: 'Agregar Variable Personalizada',
+      html: `
+        <input id="swal-var-name" type="text" class="swal2-input" placeholder="Nombre de variable (ej: nAlmacenes)">
+        <input id="swal-var-display" type="text" class="swal2-input" placeholder="Nombre visible (ej: Almacenes)">
+        <input id="swal-var-app" type="text" class="swal2-input" placeholder="Aplicación (ej: Inout)" value="Inout">
+        <input id="swal-var-value" type="number" min="0" class="swal2-input" placeholder="Cantidad máxima">
+      `,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Agregar',
+      cancelButtonText: 'Cancelar',
+      preConfirm: () => {
+        const variableName = (document.getElementById('swal-var-name') as HTMLInputElement)?.value.trim();
+        const displayName = (document.getElementById('swal-var-display') as HTMLInputElement)?.value.trim();
+        const targetApplication = (document.getElementById('swal-var-app') as HTMLInputElement)?.value.trim();
+        const maxValue = parseInt((document.getElementById('swal-var-value') as HTMLInputElement)?.value);
+
+        if (!variableName || !displayName || !targetApplication) {
+          Swal.showValidationMessage('Todos los campos son obligatorios');
+          return;
+        }
+        if (isNaN(maxValue) || maxValue < 0) {
+          Swal.showValidationMessage('Ingrese un valor entero ≥ 0');
+          return;
+        }
+        if (this.limitVariables.some(v => v.variableName === variableName)) {
+          Swal.showValidationMessage('Ya existe una variable con ese nombre');
+          return;
+        }
+
+        return { variableName, displayName, targetApplication, maxValue };
+      }
+    });
+
+    if (formValues) {
+      this.limitVariables.push(formValues);
+      this.cdr.detectChanges();
+    }
+  }
+
+  /** Transforma las variables dinámicas al formato UsageLimitVariableDTO[] */
   buildUsageLimitVariables(): UsageLimitVariableDTO[] {
-    const formValues = this.limitsForm.value;
-    return Object.keys(this.limitVariableDisplayNames).map((variableName) => ({
-      variableName,
-      displayName: this.limitVariableDisplayNames[variableName],
-      maxValue: Number(formValues[variableName]) || 0,
-      targetApplication: 'Inout',
+    return this.limitVariables.map(v => ({
+      variableName: v.variableName,
+      displayName: v.displayName,
+      maxValue: v.maxValue,
+      targetApplication: v.targetApplication,
     }));
   }
 
@@ -430,6 +537,7 @@ export class AddPackageComponent implements OnInit {
     const dto: NewPackageDTO = {
       name: this.basicPackageForm.value.name,
       description: this.basicPackageForm.value.description,
+      price: this.basicPackageForm.value.price || 0,
       configurations: this.roleConfigs,
       images: this.images,
       usageLimitVariables: this.buildUsageLimitVariables(),
@@ -440,6 +548,7 @@ export class AddPackageComponent implements OnInit {
       this.packageService.updatePackage(this.packageToEdit.id, {
         name: dto.name,
         description: dto.description,
+        price: dto.price,
         usageLimitVariables: dto.usageLimitVariables,
       }).subscribe({
         next: () => {
