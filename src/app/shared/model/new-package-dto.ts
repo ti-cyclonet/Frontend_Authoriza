@@ -15,6 +15,7 @@ export interface UsageLimitVariableDTO {
 export interface NewPackageDTO {
   name: string;
   description?: string;
+  price?: number;
   configurations: RoleConfigurationDTO[];
   images?: File[];
   usageLimitVariables?: UsageLimitVariableDTO[];

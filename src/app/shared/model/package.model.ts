@@ -24,6 +24,7 @@ export interface Package {
   code?: string;
   name: string;
   description: string;
+  price?: number;
   configurations: Configuration[];
   images: Image[];
   usageLimitVariables?: UsageLimitVariableDTO[];
