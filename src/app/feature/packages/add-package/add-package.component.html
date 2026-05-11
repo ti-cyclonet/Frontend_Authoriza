@@ -191,105 +191,35 @@
         <div *ngIf="step3">
           <div class="d-flex align-items-center pb-3 mb-2" style="border-bottom: 1px solid var(--sidebar-background-color)">
             <div class="title-form">Variables de Control de Límites</div>
-            <div class="btn-group ms-auto custom-btn-group">
-              <a *ngIf="!showAddLimitRecord" (click)="showAddLimitRecord = true" style="cursor: pointer">
-                <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
-                  <use xlink:href="./assets/icons/bootstrap-icons.svg#plus-square-fill"></use>
-                </svg>
-              </a>
-              <a *ngIf="showAddLimitRecord" (click)="showAddLimitRecord = false" style="cursor: pointer">
-                <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
-                  <use xlink:href="./assets/icons/bootstrap-icons.svg#check-circle-fill"></use>
-                </svg>
-              </a>
-            </div>
           </div>
 
-          <!-- Buscador de variables disponibles -->
-          <div *ngIf="showAddLimitRecord" class="add-configuration-record mb-3">
-            <div class="card text-center">
-              <div class="card-header" style="background-color: #eeeaff !important">
-                <div class="subtitle">
-                  <h6 class="users-titleOne">Buscar por aplicación o variable</h6>
-                </div>
-                <div class="input-group" style="border: 1px solid var(--sidebar-background-color); border-radius: 0.375rem; overflow: hidden;">
-                  <input type="text" class="form-control custom-search-input" placeholder="Escriba para filtrar..." [(ngModel)]="limitSearchText"/>
-                  <button *ngIf="limitSearchText" class="input-group-text bg-transparent border-0 fw-bold text-danger" style="cursor: pointer" (click)="limitSearchText = ''">
-                    <svg fill="currentColor" viewBox="0 0 16 16" style="width: 1rem; height: 1rem">
-                      <use xlink:href="./assets/icons/bootstrap-icons.svg#x-circle"/>
-                    </svg>
-                  </button>
-                  <span class="input-group-text bg-transparent border-0">
-                    <svg fill="currentColor" viewBox="0 0 16 16" style="width: 1rem; height: 1rem; color: var(--primary_active_text_color);">
-                      <use xlink:href="./assets/icons/bootstrap-icons.svg#search"/>
-                    </svg>
-                  </span>
-                </div>
-              </div>
-              <div class="card-body" style="max-height: 250px; overflow-y: auto;">
-                <table class="table table-hover table-sm" style="font-size: 14px">
-                  <thead class="table-dark">
-                    <tr class="table-light">
-                      <th>Aplicación</th>
-                      <th>Variable</th>
-                      <th class="text-center">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let variable of pagedLimitVariables">
-                      <td>{{ variable.targetApplication }}</td>
-                      <td>{{ variable.displayName }}</td>
-                      <td class="text-center">
-                        <a [title]="isLimitAdded(variable.variableName) ? 'Ya agregada' : 'Agregar variable'" 
-                           style="color: var(--sidebar-background-color); cursor: pointer;" 
-                           [ngClass]="{'disabled': isLimitAdded(variable.variableName)}" 
-                           (click)="!isLimitAdded(variable.variableName) && addLimitVariable(variable)">
-                          <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
-                            <use [attr.xlink:href]="isLimitAdded(variable.variableName) ? './assets/icons/bootstrap-icons.svg#check-circle-fill' : './assets/icons/bootstrap-icons.svg#plus-circle-fill'"/>
-                          </svg>
-                        </a>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="card-footer text-body-secondary d-flex justify-content-between align-items-center" style="background-color: #eeeaff !important">
-                <button class="btn btn-outline-purple btn-sm" (click)="limitPreviousPage()" [disabled]="limitCurrentPage === 0">
-                  Anterior
-                </button>
-                <span style="font-size: 0.8rem">{{ filteredLimitVariables.length }} resultado{{ filteredLimitVariables.length !== 1 ? 's' : '' }} — Pág. {{ limitCurrentPage + 1 }} de {{ totalLimitPages || 1 }}</span>
-                <button class="btn btn-outline-purple btn-sm" (click)="limitNextPage()" [disabled]="(limitCurrentPage + 1) * LIMIT_PAGE_SIZE >= filteredLimitVariables.length">
-                  Siguiente
-                </button>
-              </div>
-              <div class="card-footer d-flex justify-content-center" style="background-color: transparent; border-top: none; padding-top: 0.5rem;">
-                <a (click)="addCustomLimitVariable()" style="color: var(--sidebar-background-color); cursor: pointer; font-size: 0.82rem; font-weight: 500;">
-                  + Agregar variable personalizada
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Lista de variables configuradas -->
-          <div class="card" [class.disabled-section]="showAddLimitRecord">
-            <div class="card-body">
-              <table class="table table-hover table-sm" style="font-size: 14px">
+          <!-- Acordeón: Variables Configuradas -->
+          <div class="accordion-section">
+            <button class="accordion-header" (click)="showConfiguredLimits = !showConfiguredLimits">
+              <span>Variables Configuradas ({{ limitVariables.length }})</span>
+              <svg fill="currentColor" viewBox="0 0 16 16" [class.rotated]="showConfiguredLimits" class="accordion-chevron">
+                <use xlink:href="./assets/icons/bootstrap-icons.svg#chevron-down"/>
+              </svg>
+            </button>
+            <div class="accordion-body" [class.open]="showConfiguredLimits">
+              <table class="table table-hover table-sm" style="font-size: 14px" *ngIf="limitVariables.length > 0">
                 <thead class="table-dark">
                   <tr class="table-light">
-                    <th>Ítem</th>
-                    <th>Aplicación</th>
                     <th>Variable</th>
                     <th>Cantidad</th>
                     <th class="text-center">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let limit of limitVariables; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ limit.targetApplication }}</td>
+                  <tr *ngFor="let limit of pagedConfiguredLimits">
                     <td>{{ limit.displayName }}</td>
                     <td>{{ limit.variableName === 'nDiasUso' ? (limit.maxValue === 0 ? 'Ilimitado' : limit.maxValue + ' días') : limit.maxValue }}</td>
-                    <td class="text-center">
+                    <td class="text-center" style="white-space: nowrap;">
+                      <a (click)="editLimitVariable(limit)" title="Editar" style="color: var(--sidebar-background-color); cursor: pointer;">
+                        <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+                          <use xlink:href="./assets/icons/bootstrap-icons.svg#pencil-square"/>
+                        </svg>
+                      </a>
                       <a (click)="removeLimitVariable(limit.variableName)" title="Eliminar" style="color: var(--sidebar-background-color); cursor: pointer;">
                         <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
                           <use xlink:href="./assets/icons/bootstrap-icons.svg#trash"/>
@@ -299,8 +229,68 @@
                   </tr>
                 </tbody>
               </table>
-              <div *ngIf="limitVariables.length === 0" class="text-center text-muted py-3" style="font-size: 0.85rem">
-                No hay variables configuradas. Use el botón + para agregar.
+              <div *ngIf="totalConfiguredLimitsPages > 1" class="d-flex justify-content-between align-items-center mt-2 px-1" style="font-size: 0.78rem">
+                <button class="btn btn-outline-purple btn-sm" (click)="configuredLimitsPreviousPage()" [disabled]="configuredLimitsPage === 0">Anterior</button>
+                <span>Pág. {{ configuredLimitsPage + 1 }} de {{ totalConfiguredLimitsPages }}</span>
+                <button class="btn btn-outline-purple btn-sm" (click)="configuredLimitsNextPage()" [disabled]="(configuredLimitsPage + 1) * CONFIGURED_LIMITS_PAGE_SIZE >= limitVariables.length">Siguiente</button>
+              </div>
+              <div *ngIf="limitVariables.length === 0" class="text-center text-muted py-2" style="font-size: 0.82rem">
+                No hay variables configuradas.
+              </div>
+            </div>
+          </div>
+
+          <!-- Acordeón: Variables Disponibles -->
+          <div class="accordion-section">
+            <button class="accordion-header" (click)="showAvailableLimits = !showAvailableLimits">
+              <span>Variables Disponibles ({{ filteredLimitVariables.length }})</span>
+              <svg fill="currentColor" viewBox="0 0 16 16" [class.rotated]="showAvailableLimits" class="accordion-chevron">
+                <use xlink:href="./assets/icons/bootstrap-icons.svg#chevron-down"/>
+              </svg>
+            </button>
+            <div class="accordion-body" [class.open]="showAvailableLimits">
+              <div class="input-group mb-2" style="border: 1px solid var(--sidebar-background-color); border-radius: 0.375rem; overflow: hidden;">
+                <input type="text" class="form-control custom-search-input" placeholder="Filtrar variables..." [(ngModel)]="limitSearchText"/>
+                <button *ngIf="limitSearchText" class="input-group-text bg-transparent border-0 text-danger" style="cursor: pointer" (click)="limitSearchText = ''">
+                  <svg fill="currentColor" viewBox="0 0 16 16" style="width: 1rem; height: 1rem">
+                    <use xlink:href="./assets/icons/bootstrap-icons.svg#x-circle"/>
+                  </svg>
+                </button>
+              </div>
+              <table class="table table-hover table-sm" style="font-size: 14px">
+                <thead class="table-dark">
+                  <tr class="table-light">
+                    <th>Aplicación</th>
+                    <th>Variable</th>
+                    <th class="text-center">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let variable of pagedLimitVariables">
+                    <td>{{ variable.targetApplication }}</td>
+                    <td>{{ variable.displayName }}</td>
+                    <td class="text-center">
+                      <a [title]="isLimitAdded(variable.variableName) ? 'Ya agregada' : 'Agregar'" 
+                         style="color: var(--sidebar-background-color); cursor: pointer;" 
+                         [ngClass]="{'disabled': isLimitAdded(variable.variableName)}" 
+                         (click)="!isLimitAdded(variable.variableName) && addLimitVariable(variable)">
+                        <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
+                          <use [attr.xlink:href]="isLimitAdded(variable.variableName) ? './assets/icons/bootstrap-icons.svg#check-circle-fill' : './assets/icons/bootstrap-icons.svg#plus-circle-fill'"/>
+                        </svg>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="d-flex justify-content-between align-items-center mt-1 px-1" style="font-size: 0.78rem" *ngIf="totalLimitPages > 1">
+                <button class="btn btn-outline-purple btn-sm" (click)="limitPreviousPage()" [disabled]="limitCurrentPage === 0">Anterior</button>
+                <span>Pág. {{ limitCurrentPage + 1 }} de {{ totalLimitPages }}</span>
+                <button class="btn btn-outline-purple btn-sm" (click)="limitNextPage()" [disabled]="(limitCurrentPage + 1) * LIMIT_PAGE_SIZE >= filteredLimitVariables.length">Siguiente</button>
+              </div>
+              <div class="text-center mt-2">
+                <a (click)="addCustomLimitVariable()" style="color: var(--sidebar-background-color); cursor: pointer; font-size: 0.8rem; font-weight: 500;">
+                  + Agregar variable personalizada
+                </a>
               </div>
             </div>
           </div>
@@ -309,46 +299,71 @@
         <!-- STEP 4: Presentación -->
         <div *ngIf="step4">
           <div class="d-flex align-items-center pb-3 mb-2" style="border-bottom: 1px solid var(--sidebar-background-color)">
-            <div class="title-form">Configuración de Tarjeta de Presentación del Paquete</div>
+            <div class="title-form">Vista Previa del Paquete</div>
           </div>
-          <div class="row">
-            <div class="col-md-4">
-              <h6>{{ 'packages.createPackage.addImages' | translate }}</h6>
-              <input type="file" (change)="onImageSelected($event)" accept="image/*" multiple [disabled]="previewImages.length >= 3"/>
-              <div class="mt-2">
-                <div *ngFor="let img of previewImages; let i = index" class="position-relative d-inline-block me-2" style="width: 80px; height: 80px">
-                  <img [src]="img" class="img-thumbnail" style="width: 100%; height: 100%; object-fit: cover"/>
-                  <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0" (click)="removeImage(i)" style="border-radius: 50%; padding: 0.25rem 0.4rem">×</button>
+
+          <!-- Preview Card -->
+          <div class="preview-card">
+            <!-- Image section -->
+            <div class="preview-image-section">
+              <div *ngIf="previewImages.length > 0; else noImagePreview">
+                <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
+                  <div class="carousel-inner">
+                    <div *ngFor="let img of previewImages; let i = index" class="carousel-item" [class.active]="i === 0">
+                      <img [src]="img" class="preview-img" alt="Preview"/>
+                    </div>
+                  </div>
+                  <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev" *ngIf="previewImages.length > 1">
+                    <span class="carousel-control-prev-icon"></span>
+                  </button>
+                  <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next" *ngIf="previewImages.length > 1">
+                    <span class="carousel-control-next-icon"></span>
+                  </button>
                 </div>
               </div>
-            </div>
-            <div class="col-md-8">
-              <h6>{{ 'packages.createPackage.preview' | translate }}</h6>
-              <div class="card shadow-sm" style="background-color: #eeeaff !important; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
-                <div class="card-body p-3">
-                  <div id="imageCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                      <div *ngFor="let img of previewImages.length ? previewImages : [defaultImage]; let i = index" class="carousel-item" [class.active]="i === 0">
-                        <img [src]="img" class="d-block w-100" style="max-height: 200px; object-fit: cover"/>
-                      </div>
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev" *ngIf="previewImages.length > 1">
-                      <span class="carousel-control-prev-icon"></span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next" *ngIf="previewImages.length > 1">
-                      <span class="carousel-control-next-icon"></span>
-                    </button>
-                  </div>
-                  <h5 style="color: var(--sidebar-background-color)">{{ basicPackageForm.get("name")?.value | uppercase }}</h5>
-                  <p class="text-muted">{{ basicPackageForm.get("description")?.value }}</p>
-                  <ul class="list-group mb-2">
-                    <li *ngFor="let config of roleConfigs" class="list-group-item d-flex justify-content-between align-items-center">
-                      {{ config.roleName }}
-                      <span class="badge bg-primary rounded-pill">{{ config.totalAccount }}</span>
-                    </li>
-                  </ul>
-                  <p class="fw-bold">{{ 'packages.createPackage.totalPrice' | translate }} ${{ getTotalPrice() | number : "1.0-0" }} COP/month</p>
+              <ng-template #noImagePreview>
+                <div class="no-image-placeholder">
+                  <svg viewBox="0 0 16 16" fill="currentColor">
+                    <use xlink:href="./assets/icons/bootstrap-icons.svg#image"/>
+                  </svg>
+                  <span>Sin imagen</span>
                 </div>
+              </ng-template>
+            </div>
+
+            <!-- Info section -->
+            <div class="preview-info">
+              <h5 class="preview-name">{{ basicPackageForm.get("name")?.value | uppercase }}</h5>
+              <p class="preview-desc">{{ basicPackageForm.get("description")?.value }}</p>
+              
+              <div class="preview-roles" *ngIf="roleConfigs.length > 0">
+                <div *ngFor="let config of roleConfigs" class="preview-role-item">
+                  <span>{{ config.roleName }}</span>
+                  <span class="preview-role-badge">{{ config.totalAccount }}</span>
+                </div>
+              </div>
+
+              <div class="preview-limits" *ngIf="limitVariables.length > 0">
+                <div *ngFor="let limit of limitVariables" class="preview-limit-item">
+                  <span>{{ limit.displayName }}</span>
+                  <span class="preview-limit-value">{{ limit.variableName === 'nDiasUso' ? (limit.maxValue === 0 ? '∞' : limit.maxValue + 'd') : limit.maxValue }}</span>
+                </div>
+              </div>
+
+              <div class="preview-price">
+                ${{ basicPackageForm.get('price')?.value || 0 | number : "1.0-0" }} COP/mes
+              </div>
+            </div>
+          </div>
+
+          <!-- Upload images -->
+          <div class="upload-section">
+            <label class="upload-label">{{ 'packages.createPackage.addImages' | translate }} (máx. 3)</label>
+            <input type="file" (change)="onImageSelected($event)" accept="image/*" multiple [disabled]="previewImages.length >= 3" class="upload-input"/>
+            <div class="upload-thumbnails" *ngIf="previewImages.length > 0">
+              <div *ngFor="let img of previewImages; let i = index" class="upload-thumb">
+                <img [src]="img" alt="Thumbnail"/>
+                <button type="button" class="thumb-remove" (click)="removeImage(i)">×</button>
               </div>
             </div>
           </div>

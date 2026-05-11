@@ -82,9 +82,13 @@ export class AddPackageComponent implements OnInit {
   // Variables de límite dinámicas
   limitVariables: { variableName: string; displayName: string; maxValue: number; targetApplication: string }[] = [];
   showAddLimitRecord: boolean = false;
+  showConfiguredLimits: boolean = true;
+  showAvailableLimits: boolean = false;
   limitSearchText: string = '';
   limitCurrentPage: number = 0;
   readonly LIMIT_PAGE_SIZE = 5;
+  configuredLimitsPage: number = 0;
+  readonly CONFIGURED_LIMITS_PAGE_SIZE = 5;
 
   constructor(
     private fb: FormBuilder,
@@ -479,6 +483,59 @@ export class AddPackageComponent implements OnInit {
 
   removeLimitVariable(variableName: string) {
     this.limitVariables = this.limitVariables.filter(v => v.variableName !== variableName);
+    // Reset page if needed
+    if (this.configuredLimitsPage > 0 && this.pagedConfiguredLimits.length === 0) {
+      this.configuredLimitsPage--;
+    }
+  }
+
+  get pagedConfiguredLimits() {
+    const start = this.configuredLimitsPage * this.CONFIGURED_LIMITS_PAGE_SIZE;
+    return this.limitVariables.slice(start, start + this.CONFIGURED_LIMITS_PAGE_SIZE);
+  }
+
+  get totalConfiguredLimitsPages(): number {
+    return Math.ceil(this.limitVariables.length / this.CONFIGURED_LIMITS_PAGE_SIZE);
+  }
+
+  configuredLimitsNextPage() {
+    if ((this.configuredLimitsPage + 1) * this.CONFIGURED_LIMITS_PAGE_SIZE < this.limitVariables.length) {
+      this.configuredLimitsPage++;
+    }
+  }
+
+  configuredLimitsPreviousPage() {
+    if (this.configuredLimitsPage > 0) {
+      this.configuredLimitsPage--;
+    }
+  }
+
+  async editLimitVariable(limit: { variableName: string; displayName: string; maxValue: number; targetApplication: string }) {
+    const placeholder = limit.variableName === 'nDiasUso' ? 'Número de días (0 = ilimitado)' : 'Cantidad máxima';
+
+    const { value: newValue } = await Swal.fire({
+      title: `Editar: <b>${limit.displayName}</b>`,
+      input: 'number',
+      inputValue: limit.maxValue,
+      inputAttributes: { min: '0', placeholder },
+      showCancelButton: true,
+      confirmButtonText: 'Guardar',
+      cancelButtonText: 'Cancelar',
+      inputValidator: (value) => {
+        if (value === '' || parseInt(value) < 0) {
+          return 'Ingrese un valor entero ≥ 0';
+        }
+        return null;
+      }
+    });
+
+    if (newValue !== undefined) {
+      const idx = this.limitVariables.findIndex(v => v.variableName === limit.variableName);
+      if (idx >= 0) {
+        this.limitVariables[idx].maxValue = parseInt(newValue);
+        this.cdr.detectChanges();
+      }
+    }
   }
 
   async addCustomLimitVariable() {
