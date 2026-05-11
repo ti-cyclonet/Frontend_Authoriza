@@ -106,6 +106,7 @@ export class TranslationService {
       'users.modal.contactName': 'Contact Name',
       'users.modal.contactEmail': 'Contact Email',
       'users.modal.contactPhone': 'Contact Phone',
+      'users.modal.emailTaken': 'This email is already registered',
       'users.status': 'Status',
       
       // User Wizard
@@ -472,6 +473,7 @@ export class TranslationService {
       'users.modal.contactName': 'Nombre de Contacto',
       'users.modal.contactEmail': 'Correo de Contacto',
       'users.modal.contactPhone': 'Teléfono de Contacto',
+      'users.modal.emailTaken': 'Este correo ya está registrado',
       'users.status': 'Estado',
       
       // User Wizard
