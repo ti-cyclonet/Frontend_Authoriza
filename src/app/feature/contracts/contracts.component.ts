@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { Contract } from '../../shared/model/contract.model';
 import { ContractService, ContractStatus } from '../../shared/services/contracts/contract.service';
 import { CommonModule } from '@angular/common';
@@ -12,25 +14,32 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-contracts',
   standalone: true,
-  imports: [CommonModule, AddContractComponent, CurrencyFormatPipe, TranslatePipe, CyclonAssistantComponent],
+  imports: [CommonModule, RouterLink, FormsModule, AddContractComponent, CurrencyFormatPipe, TranslatePipe, CyclonAssistantComponent],
   templateUrl: './contracts.component.html',
   styleUrl: './contracts.component.css',
 })
 export class ContractsComponent implements OnInit {
   contracts: Contract[] = [];
+  filteredContracts: Contract[] = [];
   total: number = 0;
   page: number = 1;
-  limit: number = 10;
+  limit: number = 8;
   totalPages: number = 0;
 
   ContractStatus = ContractStatus;
   statusOptions = Object.values(ContractStatus);
 
-  statuses: string[] = ['DRAFT', 'ACTIVE', 'EXPIRED'];
-  selectedStatus: string | undefined;
+  statuses: string[] = ['DRAFT', 'PENDING', 'ACTIVE', 'SUSPENDED', 'CANCELLED', 'EXPIRED', 'TERMINATED', 'RENEWED'];
+  selectedStatus: string = '';
+  searchTerm: string = '';
   Math: any = window.Math;
 
   showAddContractModal: boolean = false;
+  showViewModal: boolean = false;
+  showEditModal: boolean = false;
+  selectedContract: Contract | null = null;
+  isEditLoading: boolean = false;
+  editData = { value: 0, payday: 1, startDate: '', endDate: '', status: '', businessSector: '' };
 
   constructor(private contractService: ContractService, private translationService: TranslationService) {}
 
@@ -39,14 +48,41 @@ export class ContractsComponent implements OnInit {
   }
 
   loadContracts(): void {
-    const statusParam = this.selectedStatus || undefined;
     this.contractService
-      .findAll(this.page, this.limit)
+      .findAll(1, 1000)
       .subscribe((response) => {
         this.contracts = response.data;
         this.total = response.total;
-        this.totalPages = response.totalPages;
+        this.applyFilters();
       });
+  }
+
+  applyFilters(): void {
+    let result = [...this.contracts];
+
+    // Filtrar por estado
+    if (this.selectedStatus) {
+      result = result.filter(c => c.status === this.selectedStatus);
+    }
+
+    // Filtrar por búsqueda (usuario o paquete)
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      result = result.filter(c =>
+        c.user?.strUserName?.toLowerCase().includes(term) ||
+        c.package?.name?.toLowerCase().includes(term) ||
+        c.code?.toLowerCase().includes(term)
+      );
+    }
+
+    this.filteredContracts = result;
+    this.totalPages = Math.ceil(this.filteredContracts.length / this.limit);
+    this.page = 1;
+  }
+
+  get pagedContracts(): Contract[] {
+    const start = (this.page - 1) * this.limit;
+    return this.filteredContracts.slice(start, start + this.limit);
   }
 
   openAddContractModal() {
@@ -58,14 +94,18 @@ export class ContractsComponent implements OnInit {
   }
 
   onPageChange(newPage: number): void {
-    this.page = newPage;
-    this.loadContracts();
+    if (newPage >= 1 && newPage <= this.totalPages) {
+      this.page = newPage;
+    }
   }
 
   onStatusChange(status: string): void {
     this.selectedStatus = status;
-    this.page = 1;
-    this.loadContracts();
+    this.applyFilters();
+  }
+
+  onSearch(): void {
+    this.applyFilters();
   }
 
   closeModal() {
@@ -150,7 +190,12 @@ export class ContractsComponent implements OnInit {
       'ACTIVE': { en: 'Active', es: 'Activo' },
       'PENDING': { en: 'Pending', es: 'Pendiente' },
       'DRAFT': { en: 'Draft', es: 'Borrador' },
-      'EXPIRED': { en: 'Expired', es: 'Expirado' }
+      'EXPIRED': { en: 'Expired', es: 'Expirado' },
+      'SUSPENDED': { en: 'Suspended', es: 'Suspendido' },
+      'CANCELLED': { en: 'Cancelled', es: 'Cancelado' },
+      'TERMINATED': { en: 'Terminated', es: 'Terminado' },
+      'RENEWED': { en: 'Renewed', es: 'Renovado' },
+      'DELETED': { en: 'Deleted', es: 'Eliminado' }
     };
     
     return statusTranslations[status]?.[currentLang] || status;
@@ -178,5 +223,99 @@ export class ContractsComponent implements OnInit {
     };
     
     return translations[key]?.[currentLang] || key;
+  }
+
+  viewContract(contract: Contract) {
+    this.selectedContract = contract;
+    this.showViewModal = true;
+  }
+
+  closeViewModal() {
+    this.showViewModal = false;
+    this.selectedContract = null;
+  }
+
+  viewAndActivate() {
+    const contract = this.selectedContract;
+    if (!contract) return;
+    this.closeViewModal();
+    this.activateContract(contract);
+  }
+
+  viewAndEdit() {
+    const contract = this.selectedContract;
+    if (!contract) return;
+    this.closeViewModal();
+    this.selectedContract = contract;
+    
+    this.editData = {
+      value: contract.value || 0,
+      payday: contract.payday || 1,
+      startDate: contract.startDate || '',
+      endDate: contract.endDate || '',
+      status: contract.status || 'DRAFT',
+      businessSector: contract.businessSector || ''
+    };
+    this.showEditModal = true;
+  }
+
+  closeEditModal() {
+    this.showEditModal = false;
+    this.selectedContract = null;
+  }
+
+  saveEdit() {
+    if (!this.selectedContract) return;
+    this.isEditLoading = true;
+
+    this.contractService.updateContract(this.selectedContract.id, this.editData).subscribe({
+      next: () => {
+        this.isEditLoading = false;
+        this.closeEditModal();
+        this.loadContracts();
+        Swal.fire({
+          icon: 'success',
+          title: 'Contrato actualizado',
+          text: 'Los cambios se guardaron correctamente.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      },
+      error: (error) => {
+        this.isEditLoading = false;
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error?.error?.message || 'No se pudo actualizar el contrato.',
+          confirmButtonText: 'OK'
+        });
+      }
+    });
+  }
+
+  viewAndDelete() {
+    const contract = this.selectedContract;
+    if (!contract) return;
+
+    Swal.fire({
+      title: '¿Eliminar contrato?',
+      html: `¿Está seguro de eliminar el contrato <strong>${contract.code || contract.id}</strong>?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#dc3545'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.closeViewModal();
+        Swal.fire({
+          icon: 'info',
+          title: 'Funcionalidad en desarrollo',
+          text: 'La eliminación de contratos estará disponible próximamente.',
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#6600CC'
+        });
+      }
+    });
   }
 }

@@ -60,6 +60,10 @@ export class ContractService {
     return this.http.patch<any>(`${this.contractsUrl}/${contractId}/status`, { status: 'ACTIVE' });
   }
 
+  updateContract(contractId: string, data: any): Observable<any> {
+    return this.http.patch<any>(`${this.contractsUrl}/${contractId}`, data);
+  }
+
   validateCodePrefix(codePrefix: string): Observable<{ isAvailable: boolean; message?: string }> {
     return this.http.get<{ isAvailable: boolean; message?: string }>(
       `${this.contractsUrl}/validate-prefix/${codePrefix}`
