@@ -1,228 +1,253 @@
 <div class="title-container">
-  <a href="/packages" class="title-link">
+  <a routerLink="/home" class="title-link">
     <svg viewBox="0 0 16 16">
       <use xlink:href="./assets/icons/bootstrap-icons.svg#file-earmark-text" />
     </svg>
     /contracts
   </a>
 </div>
+
 <div class="card shadow m-3">
-  <div
-    class="card-body"
-    style="border-bottom: 1px solid var(--sidebar-background-color)"
-  >
-    <div class="d-flex align-items-center w-100">
-      <div>
-        <h5
-          class="card-title text-nowrap bg-body-secondary border"
-          style="width: 5.9rem"
-        >
-          {{ getTranslation('contracts.title') }}
-        </h5>
-        <p class="card-text text-muted" style="font-size: 0.9rem">
-          {{ getTranslation('contracts.description') }}
-        </p>
-      </div>
-      <div class="btn-group ms-auto custom-btn-group">
-        <a
-          title="{{ 'contracts.addNew' | translate }}"
-          style="cursor: pointer"
-          (click)="openAddContractModal()"
-        >
-          <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
-            <use
-              [attr.xlink:href]="
-                './assets/icons/bootstrap-icons.svg#plus-square-fill'
-              "
-            ></use>
-          </svg>
-        </a>
-      </div>
+  <div class="card-body">
+    <!-- Header -->
+    <div class="page-header">
+      <h3 class="dashboard-title">{{ getTranslation('contracts.title') }}</h3>
+      <button class="btn-create" (click)="openAddContractModal()">
+        <svg viewBox="0 0 16 16">
+          <use xlink:href="./assets/icons/bootstrap-icons.svg#plus-lg" />
+        </svg>
+        {{ 'contracts.addNew' | translate }}
+      </button>
     </div>
+    <p class="dashboard-subtitle">{{ getTranslation('contracts.description') }}</p>
   </div>
 
-  <div class="card" style="border-radius: 0; border: none">
-    <div class="card-body">
-      <!-- Filtro de estado -->
-      <div class="mb-3">
-        <select class="form-select">
+  <!-- Content -->
+  <div class="content-section">
+    <div class="table-header">
+      <div class="filters-row">
+        <div class="search-box">
+          <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Buscar por usuario, paquete o código...">
+          <button *ngIf="searchTerm" class="clear-btn" (click)="searchTerm = ''; onSearch()">×</button>
+        </div>
+        <select class="status-filter" (change)="onStatusChange($any($event.target).value)">
           <option value="">{{ getTranslation('contracts.allStatuses') }}</option>
           <option *ngFor="let status of statuses" [value]="status">
             {{ getStatusTranslation(status) }}
           </option>
         </select>
       </div>
+    </div>
 
-      <!-- Tabla de contratos -->
-      <div class="table-responsive px-3">
-        <table
-          class="table table-hover table-sm table-bordered"
-          style="font-size: 14px"
-        >
-          <thead class="table-dark">
-            <tr class="table-light">
-              <th>{{ getTranslation('contracts.code') }}</th>
-              <th>{{ getTranslation('contracts.user') }}</th>
-              <th class="d-none d-md-table-cell">{{ getTranslation('contracts.package') }}</th>
-              <th class="d-none d-md-table-cell text-center">{{ getTranslation('contracts.value') }}</th>
-              <th class="d-none d-md-table-cell text-center">{{ getTranslation('contracts.payday') }}</th>
-              <th class="d-none d-md-table-cell text-center">{{ getTranslation('contracts.startDate') }}</th>
-              <th class="d-none d-md-table-cell text-center">{{ getTranslation('contracts.endDate') }}</th>
-              <th class="d-none d-md-table-cell text-center">{{ getTranslation('contracts.status') }}</th>
-              <th class="text-center">{{ getTranslation('common.actions') }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let contract of contracts">
-              <td>
-                <span class="entity-code-badge" *ngIf="contract?.code; else noCode">
-                  {{ contract?.code }}
-                </span>
-                <ng-template #noCode>
-                  <span class="text-muted">-</span>
-                </ng-template>
-              </td>
-              <td>{{ contract.user.strUserName }}</td>
-              <td class="d-none d-md-table-cell">{{ contract.package.name }}</td>
-              <td class="d-none d-md-table-cell text-end">{{ contract.value | customCurrency }}</td>
-              <td class="d-none d-md-table-cell text-center">{{ contract.payday }}</td>
-              <td class="d-none d-md-table-cell text-center">{{ contract.startDate }}</td>
-              <td class="d-none d-md-table-cell text-center">{{ contract.endDate }}</td>
-              <td class="d-none d-md-table-cell text-center">
-                <span
-                  class="badge"
-                  [ngStyle]="{
-                    'background-color':
-                      contract.status === 'PENDING' ? '#EA6B66' : '',
-                    color: contract.status === 'PENDING' ? 'black' : ''
-                  }"
-                  [class.bg-success]="contract.status === 'ACTIVE'"
-                  [class.bg-warning]="contract.status === 'DRAFT'"
-                  [class.bg-danger]="contract.status === 'EXPIRED'"
-                >
-                  {{ getStatusTranslation(contract.status) }}
-                </span>
-              </td>
-              <td class="text-center">
-                <div
-                  class="btn-group btn-group-sm"
-                  role="group"
-                  aria-label="Small button group"
-                >
-                  <a
-                    style="
-                      color: var(--sidebar-background-color);
-                      cursor: pointer;
-                    "
-                  >
-                    <svg
-                      fill="currentColor"
-                      viewBox="0 0 16 16"
-                      class="status-icon"
-                    >
-                      <use
-                        xlink:href="./assets/icons/bootstrap-icons.svg#eye"
-                      />
-                    </svg>
-                  </a>
-                  <a
-                    style="
-                      color: var(--sidebar-background-color);
-                      cursor: pointer;
-                    "
-                  >
-                    <svg
-                      fill="currentColor"
-                      viewBox="0 0 16 16"
-                      class="status-icon"
-                    >
-                      <use
-                        xlink:href="./assets/icons/bootstrap-icons.svg#pencil-square"
-                      />
-                    </svg>
-                  </a>
-                  <a
-                    style="
-                      color: var(--sidebar-background-color);
-                      cursor: pointer;
-                    "
-                  >
-                    <svg
-                      fill="currentColor"
-                      viewBox="0 0 16 16"
-                      class="status-icon"
-                    >
-                      <use
-                        xlink:href="./assets/icons/bootstrap-icons.svg#trash"
-                      />
-                    </svg>
-                  </a>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <!-- Tabla -->
+    <div class="table-responsive">
+      <table class="table table-hover contracts-table">
+        <thead>
+          <tr>
+            <th>{{ getTranslation('contracts.code') }}</th>
+            <th>{{ getTranslation('contracts.user') }}</th>
+            <th class="d-none d-md-table-cell">{{ getTranslation('contracts.package') }}</th>
+            <th class="d-none d-md-table-cell text-end">{{ getTranslation('contracts.value') }}</th>
+            <th class="d-none d-lg-table-cell text-center">{{ getTranslation('contracts.payday') }}</th>
+            <th class="d-none d-lg-table-cell text-center">{{ getTranslation('contracts.startDate') }}</th>
+            <th class="d-none d-lg-table-cell text-center">{{ getTranslation('contracts.endDate') }}</th>
+            <th class="d-none d-md-table-cell text-center">{{ getTranslation('contracts.status') }}</th>
+            <th class="text-center">{{ getTranslation('common.actions') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let contract of pagedContracts">
+            <td>
+              <span class="entity-code-badge" *ngIf="contract?.code; else noCode">{{ contract?.code }}</span>
+              <ng-template #noCode><span class="text-muted">-</span></ng-template>
+            </td>
+            <td class="user-cell">{{ contract.user.strUserName }}</td>
+            <td class="d-none d-md-table-cell">{{ contract.package.name }}</td>
+            <td class="d-none d-md-table-cell text-end">{{ contract.value | customCurrency }}</td>
+            <td class="d-none d-lg-table-cell text-center">{{ contract.payday }}</td>
+            <td class="d-none d-lg-table-cell text-center">{{ contract.startDate }}</td>
+            <td class="d-none d-lg-table-cell text-center">{{ contract.endDate }}</td>
+            <td class="d-none d-md-table-cell text-center">
+              <span class="status-badge"
+                [class.status-active]="contract.status === 'ACTIVE'"
+                [class.status-draft]="contract.status === 'DRAFT'"
+                [class.status-pending]="contract.status === 'PENDING'"
+                [class.status-expired]="contract.status === 'EXPIRED'">
+                {{ getStatusTranslation(contract.status) }}
+              </span>
+            </td>
+            <td class="text-center">
+              <div class="action-buttons">
+                <button class="btn-action" title="Ver" (click)="viewContract(contract)">
+                  <svg viewBox="0 0 16 16" fill="currentColor">
+                    <use xlink:href="./assets/icons/bootstrap-icons.svg#eye" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Contador + Paginación -->
+    <div class="table-footer">
+      <span class="results-count">{{ getTranslation('contracts.showing') }} {{ pagedContracts.length }} {{ getTranslation('contracts.of') }} {{ filteredContracts.length }} {{ getTranslation('contracts.contracts') }}</span>
+      <nav class="pagination-nav" *ngIf="totalPages > 1">
+      <ul class="pagination">
+        <li class="page-item" [class.disabled]="page === 1">
+          <button class="page-link" (click)="onPageChange(page - 1)" title="Anterior">
+            <svg viewBox="0 0 16 16" fill="currentColor"><use xlink:href="./assets/icons/bootstrap-icons.svg#chevron-left" /></svg>
+          </button>
+        </li>
+        <li class="page-item" *ngFor="let p of pages" [class.active]="page === p">
+          <button class="page-link" (click)="onPageChange(p)">{{ p }}</button>
+        </li>
+        <li class="page-item" [class.disabled]="page === totalPages">
+          <button class="page-link" (click)="onPageChange(page + 1)" title="Siguiente">
+            <svg viewBox="0 0 16 16" fill="currentColor"><use xlink:href="./assets/icons/bootstrap-icons.svg#chevron-right" /></svg>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<!-- Modal Ver Contrato -->
+<div *ngIf="showViewModal && selectedContract" class="modal-overlay" (click)="closeViewModal()">
+  <div class="contract-view-card" (click)="$event.stopPropagation()">
+    <div class="view-header">
+      <div class="view-header-info">
+        <svg viewBox="0 0 16 16" fill="currentColor"><use xlink:href="./assets/icons/bootstrap-icons.svg#file-earmark-text" /></svg>
+        <div>
+          <h4>{{ selectedContract.package.name }}</h4>
+          <span class="entity-code-badge code-light" *ngIf="selectedContract.code">{{ selectedContract.code }}</span>
+        </div>
       </div>
     </div>
-  </div>
-
-  <!-- Controles de paginación -->
-  <div
-    class="d-flex justify-content-between align-items-center mt-3 pagination-wrapper"
-  >
-    <!-- Badge de vista -->
-    <div>
-      <h6 class="view-badge">
-        <!-- <span class="badge badge-list" *ngIf="viewMode === 'list'"
-          >List view</span
-        >
-        <span class="badge badge-cards" *ngIf="viewMode === 'cards'"
-          >Cards view</span
-        > -->
-      </h6>
+    <div class="view-body">
+      <div class="info-row"><span class="label">Usuario:</span><span class="value">{{ selectedContract.user.strUserName }}</span></div>
+      <div class="info-row"><span class="label">Paquete:</span><span class="value">{{ selectedContract.package.name }}</span></div>
+      <div class="info-row"><span class="label">Valor:</span><span class="value">{{ selectedContract.value | customCurrency }}</span></div>
+      <div class="info-row"><span class="label">Día de Pago:</span><span class="value">{{ selectedContract.payday }}</span></div>
+      <div class="info-row"><span class="label">Fecha Inicio:</span><span class="value">{{ selectedContract.startDate }}</span></div>
+      <div class="info-row"><span class="label">Fecha Fin:</span><span class="value">{{ selectedContract.endDate || 'Sin definir' }}</span></div>
+      <div class="info-row"><span class="label">Estado:</span>
+        <span class="status-badge"
+          [class.status-active]="selectedContract.status === 'ACTIVE'"
+          [class.status-draft]="selectedContract.status === 'DRAFT'"
+          [class.status-pending]="selectedContract.status === 'PENDING'"
+          [class.status-expired]="selectedContract.status === 'EXPIRED'">
+          {{ getStatusTranslation(selectedContract.status) }}
+        </span>
+      </div>
     </div>
-
-    <!-- Contador -->
-    <div class="user-counter">
-      {{ getTranslation('contracts.showing') }} {{ contracts.length }} {{ getTranslation('contracts.of') }} {{ contracts.length }} {{ getTranslation('contracts.contracts') }}
-    </div>
-
-    <!-- Paginación -->
-    <div>
-      <nav aria-label="Paginación de tarjetas" class="m-2">
-        <ul class="pagination pagination-sm mb-0 custom-pagination">
-          <!-- Botón Anterior -->
-          <li class="page-item" [class.disabled]="page === 1">
-            <a class="page-link" href="#" aria-label="Anterior">
-              <i class="bi bi-chevron-left"></i>
-            </a>
-          </li>
-
-          <!-- Números de página -->
-          <li
-            class="page-item"
-            *ngFor="let page of pages"
-            [class.active]="page === page"
-          >
-            <a class="page-link" href="#">{{ page }}</a>
-          </li>
-
-          <!-- Botón Siguiente -->
-          <li class="page-item">
-            <a class="page-link" href="#" aria-label="Siguiente">
-              <i class="bi bi-chevron-right"></i>
-            </a>
-          </li>
-        </ul>
-      </nav>
+    <div class="view-actions">
+      <button class="btn-view-action" title="Editar" (click)="viewAndEdit()">
+        <svg viewBox="0 0 16 16" fill="currentColor"><use xlink:href="./assets/icons/bootstrap-icons.svg#pencil" /></svg>
+      </button>
+      <button class="btn-view-action" title="Activar" (click)="viewAndActivate()" *ngIf="selectedContract.status !== 'ACTIVE'">
+        <svg viewBox="0 0 16 16" fill="currentColor"><use xlink:href="./assets/icons/bootstrap-icons.svg#check-circle" /></svg>
+      </button>
+      <button class="btn-view-action" title="{{ selectedContract.status === 'ACTIVE' ? 'No se puede eliminar un contrato activo' : 'Eliminar' }}" 
+              (click)="viewAndDelete()"
+              [disabled]="selectedContract.status === 'ACTIVE'"
+              [class.disabled]="selectedContract.status === 'ACTIVE'">
+        <svg viewBox="0 0 16 16" fill="currentColor"><use xlink:href="./assets/icons/bootstrap-icons.svg#trash" /></svg>
+      </button>
+      <button class="btn-view-action" title="Cerrar" (click)="closeViewModal()">
+        <svg viewBox="0 0 16 16" fill="currentColor"><use xlink:href="./assets/icons/bootstrap-icons.svg#x-lg" /></svg>
+      </button>
     </div>
   </div>
-  <!-- Modal para agregar un nuevo contrato -->
-  <app-add-contract
-    *ngIf="showAddContractModal"
-    (close)="closeModal()"
-  ></app-add-contract>
 </div>
+
+<!-- Modal Editar Contrato -->
+<div *ngIf="showEditModal && selectedContract" class="modal-overlay" (click)="closeEditModal()">
+  <div class="edit-modal" (click)="$event.stopPropagation()">
+    <div class="edit-header">
+      <h4>Editar Contrato</h4>
+      <button class="btn-close-edit" (click)="closeEditModal()">×</button>
+    </div>
+    <div class="edit-body">
+      <!-- Info del contrato (solo lectura) -->
+      <div class="edit-info-section">
+        <div class="edit-info-row">
+          <span class="edit-info-label">Usuario:</span>
+          <strong>{{ selectedContract.user.strUserName }}</strong>
+        </div>
+        <div class="edit-info-row">
+          <span class="edit-info-label">Paquete:</span>
+          <strong>{{ selectedContract.package.name }}</strong>
+        </div>
+      </div>
+
+      <!-- Campos editables -->
+      <div class="edit-form-row">
+        <div class="edit-form-group">
+          <label>Valor del Contrato (COP)</label>
+          <input type="number" [(ngModel)]="editData.value" min="0" placeholder="0">
+        </div>
+        <div class="edit-form-group">
+          <label>Día de Pago</label>
+          <input type="number" [(ngModel)]="editData.payday" min="1" max="31" placeholder="1">
+        </div>
+      </div>
+      <div class="edit-form-row">
+        <div class="edit-form-group">
+          <label>Fecha de Inicio</label>
+          <input type="date" [(ngModel)]="editData.startDate">
+        </div>
+        <div class="edit-form-group">
+          <label>Fecha de Fin</label>
+          <input type="date" [(ngModel)]="editData.endDate">
+        </div>
+      </div>
+      <div class="edit-form-row">
+        <div class="edit-form-group">
+          <label>Estado</label>
+          <select [(ngModel)]="editData.status">
+            <option *ngFor="let s of statusOptions" [value]="s">{{ getStatusTranslation(s) }}</option>
+          </select>
+        </div>
+        <div class="edit-form-group">
+          <label>Sector Empresarial</label>
+          <select [(ngModel)]="editData.businessSector">
+            <option value="">Seleccionar sector</option>
+            <option value="general">General</option>
+            <option value="restaurant">Restaurante</option>
+            <option value="fashion">Moda</option>
+            <option value="hardware">Ferretería</option>
+            <option value="retail">Comercio Minorista</option>
+            <option value="beauty">Belleza</option>
+            <option value="electronics">Electrónica</option>
+            <option value="automotive">Automotriz</option>
+            <option value="health">Salud</option>
+            <option value="sports">Deportes</option>
+            <option value="home">Hogar</option>
+            <option value="services">Servicios</option>
+            <option value="manufacturing">Manufactura</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="edit-footer">
+      <button class="btn-view-action" title="Cancelar" (click)="closeEditModal()">
+        <svg viewBox="0 0 16 16" fill="currentColor"><use xlink:href="./assets/icons/bootstrap-icons.svg#x-lg" /></svg>
+      </button>
+      <button class="btn-view-action btn-save" title="Guardar" (click)="saveEdit()" [disabled]="isEditLoading">
+        <svg viewBox="0 0 16 16" fill="currentColor"><use xlink:href="./assets/icons/bootstrap-icons.svg#check-lg" /></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para agregar un nuevo contrato -->
+<app-add-contract
+  *ngIf="showAddContractModal"
+  (close)="closeModal()"
+></app-add-contract>
+
 <!-- CYCLON Assistant -->
 <app-cyclon-assistant 
   [currentModule]="'contracts'"
