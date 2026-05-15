@@ -176,9 +176,21 @@
           <span class="edit-info-label">Usuario:</span>
           <strong>{{ selectedContract.user.strUserName }}</strong>
         </div>
-        <div class="edit-info-row">
-          <span class="edit-info-label">Paquete:</span>
-          <strong>{{ selectedContract.package.name }}</strong>
+      </div>
+
+      <!-- Selector de Paquete -->
+      <div class="edit-form-row">
+        <div class="edit-form-group edit-form-group-full">
+          <label for="edit-package-select">Paquete / Plan de Servicio</label>
+          <select id="edit-package-select" [(ngModel)]="editData.packageId" title="Seleccionar paquete o plan de servicio">
+            <option value="" disabled>Seleccionar paquete</option>
+            <option *ngFor="let pkg of availablePackages" [value]="pkg.id">
+              {{ pkg.name }} {{ pkg.description ? '- ' + pkg.description : '' }}
+            </option>
+          </select>
+          <small *ngIf="editData.packageId && editData.packageId !== selectedContract.package?.id" class="package-change-warning">
+            ⚠️ El paquete será cambiado de "{{ selectedContract.package.name }}" al nuevo paquete seleccionado.
+          </small>
         </div>
       </div>
 
