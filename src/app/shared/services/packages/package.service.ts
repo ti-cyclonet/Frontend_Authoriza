@@ -66,6 +66,7 @@ export class PackageService {
     formData.append('name', pkgData.name);
     formData.append('description', pkgData.description);
     formData.append('price', String(pkgData.price || 0));
+    formData.append('isBillable', String(pkgData.isBillable !== false));
     formData.append('configurations', JSON.stringify(pkgData.configurations));
 
     // Agregar variables de límite de uso
