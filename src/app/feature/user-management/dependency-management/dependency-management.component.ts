@@ -84,6 +84,7 @@ export class DependencyManagementComponent implements OnInit {
   availableRoles: Role[] = [];
   availablePackages: Package[] = [];
   selectedRoleForAssignment: any | null = null;
+  usersWithSelectedRole: any[] = [];
   
   // Datos para dependientes
   availableUsers: ExtendedUser[] = [];
@@ -176,7 +177,24 @@ export class DependencyManagementComponent implements OnInit {
 
   private async loadContractedPackages(): Promise<void> {
     try {
-      const contracts = await this.contractService.getContractsByUser(this.user.id).toPromise();
+      // Primero intentar cargar contratos propios del usuario
+      let contracts = await this.contractService.getContractsByUser(this.user.id).toPromise();
+      
+      // Si no tiene contratos propios, cargar los contratos de sus principales
+      if (!contracts || contracts.length === 0) {
+        const dependencies = await this.userDependenciesService.getPrincipalsByDependent(this.user.id).toPromise();
+        if (dependencies && dependencies.length > 0) {
+          const allPrincipalContracts: any[] = [];
+          for (const dep of dependencies) {
+            const principalContracts = await this.contractService.getContractsByUser(dep.principalUserId).toPromise();
+            if (principalContracts && principalContracts.length > 0) {
+              allPrincipalContracts.push(...principalContracts);
+            }
+          }
+          contracts = allPrincipalContracts;
+        }
+      }
+      
       this.contractedPackages = contracts || [];
     } catch (error) {
       console.error('Error loading contracted packages:', error);
@@ -196,7 +214,10 @@ export class DependencyManagementComponent implements OnInit {
             const user = await this.userService.getUserById(dep.dependentUserId).toPromise();
             if (user) {
               const userRoles = await this.userRolesService.getUserRoles(dep.dependentUserId).toPromise();
-              const roles = userRoles?.filter(ur => ur.status === 'ACTIVE').map(ur => ur.role) || [];
+              const roles = userRoles?.filter(ur => ur.status === 'ACTIVE').map(ur => ({
+                ...ur.role,
+                contractId: ur.contractId
+              })) || [];
               
               this.dependentUsers.push({
                 ...user,
@@ -276,9 +297,32 @@ export class DependencyManagementComponent implements OnInit {
     this.showAssignRoleModal = true;
   }
 
-  openUnassignRoleModal(role: any): void {
+  async openUnassignRoleModal(role: any): Promise<void> {
     this.selectedRoleForAssignment = role;
+    this.usersWithSelectedRole = [];
+    
+    // Cargar todos los usuarios que tienen este rol en este contrato
+    if (this.selectedContract) {
+      try {
+        const assignedUserRoles = await this.userRolesService.getAssignedUsers(
+          this.selectedContract.id, role.id
+        ).toPromise();
+        
+        this.usersWithSelectedRole = (assignedUserRoles || []).map((ur: any) => {
+          const user = ur.user;
+          return {
+            id: user.id,
+            strUserName: user.strUserName,
+            displayName: this.getUserDisplayName(user),
+          };
+        });
+      } catch (error) {
+        console.error('Error loading assigned users:', error);
+      }
+    }
+    
     this.showUnassignRoleModal = true;
+    this.cdr.detectChanges();
   }
 
   async assignRoleToDependent(dependent: ExtendedUser): Promise<void> {
@@ -333,6 +377,7 @@ export class DependencyManagementComponent implements OnInit {
 
     const roleName = this.selectedRoleForAssignment.strName;
     const roleId = this.selectedRoleForAssignment.id;
+    const contractId = this.selectedContract?.id;
 
     // Cerrar la sub-modal antes de mostrar el SweetAlert
     this.showUnassignRoleModal = false;
@@ -350,7 +395,7 @@ export class DependencyManagementComponent implements OnInit {
     if (!result.isConfirmed) return;
 
     try {
-      await this.userRolesService.removeRole(dependent.id, roleId).toPromise();
+      await this.userRolesService.removeRole(dependent.id, roleId, contractId).toPromise();
 
       this.selectedRoleForAssignment = null;
       await this.loadDependentUsers();
@@ -362,6 +407,54 @@ export class DependencyManagementComponent implements OnInit {
         icon: 'success',
         title: 'Rol desasignado',
         text: `El rol se desasignó correctamente de ${dependent.displayName}`,
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } catch (error: any) {
+      console.error('Error unassigning role:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error?.error?.message || 'Error al desasignar el rol',
+        confirmButtonText: 'OK'
+      });
+    }
+  }
+
+  async unassignRoleFromUser(user: any): Promise<void> {
+    if (!this.selectedRoleForAssignment || !this.selectedContract) return;
+
+    const roleName = this.selectedRoleForAssignment.strName;
+    const roleId = this.selectedRoleForAssignment.id;
+    const contractId = this.selectedContract.id;
+
+    this.showUnassignRoleModal = false;
+    this.cdr.detectChanges();
+
+    const result = await Swal.fire({
+      title: '¿Confirmar desasignación?',
+      html: `¿Desea desasignar el rol <strong>${roleName}</strong> del usuario <strong>${user.displayName}</strong>?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, desasignar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await this.userRolesService.removeRole(user.id, roleId, contractId).toPromise();
+
+      this.selectedRoleForAssignment = null;
+      await this.loadDependentUsers();
+      await this.loadRoleAvailability();
+      this.dependencyUpdated.emit();
+      this.cdr.detectChanges();
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Rol desasignado',
+        text: `El rol se desasignó correctamente de ${user.displayName}`,
         timer: 2000,
         showConfirmButton: false
       });
@@ -660,6 +753,10 @@ export class DependencyManagementComponent implements OnInit {
 
   hasRole(dependent: ExtendedUser, role: any): boolean {
     if (!dependent.roles || !role) return false;
+    // Si hay un contrato seleccionado, verificar que el rol esté asignado desde ESE contrato
+    if (this.selectedContract) {
+      return dependent.roles.some(r => r.id === role.id && (r as any).contractId === this.selectedContract.id);
+    }
     return dependent.roles.some(r => r.id === role.id);
   }
 

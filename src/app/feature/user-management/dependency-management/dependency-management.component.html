@@ -215,14 +215,15 @@
       <h5>Desasignar Rol: {{ selectedRoleForAssignment?.strName }}</h5>
       <p>Seleccione el usuario al que desea desasignar este rol:</p>
       <div class="users-list">
-        <ng-container *ngFor="let dependent of dependentUsers">
-          <div *ngIf="hasRole(dependent, selectedRoleForAssignment)"
-               class="item user-item"
-               (click)="unassignRoleFromDependent(dependent)">
-            <strong>{{ dependent.displayName }}</strong>
-            <small>{{ dependent.strUserName }}</small>
+        <ng-container *ngFor="let user of usersWithSelectedRole">
+          <div class="item user-item" (click)="unassignRoleFromUser(user)">
+            <strong>{{ user.displayName }}</strong>
+            <small>{{ user.strUserName }}</small>
           </div>
         </ng-container>
+        <div *ngIf="usersWithSelectedRole.length === 0" class="no-results">
+          No hay usuarios con este rol asignado en este contrato
+        </div>
       </div>
       <button class="btn btn-secondary" (click)="showUnassignRoleModal = false">Cancelar</button>
     </div>

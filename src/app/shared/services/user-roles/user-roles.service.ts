@@ -38,8 +38,12 @@ export class UserRolesService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
-  removeRole(userId: string, roleId: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${userId}/${roleId}`);
+  removeRole(userId: string, roleId: string, contractId?: string): Observable<void> {
+    let url = `${this.apiUrl}/${userId}/${roleId}`;
+    if (contractId) {
+      url += `?contractId=${contractId}`;
+    }
+    return this.http.delete<void>(url);
   }
 
   getRoleAvailability(contractId: string): Observable<RoleAvailability[]> {
@@ -48,5 +52,9 @@ export class UserRolesService {
 
   getAssignedCount(contractId: string, roleId: string): Observable<number> {
     return this.http.get<number>(`${this.apiUrl}/assigned-count/${contractId}/${roleId}`);
+  }
+
+  getAssignedUsers(contractId: string, roleId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/assigned-users/${contractId}/${roleId}`);
   }
 }
