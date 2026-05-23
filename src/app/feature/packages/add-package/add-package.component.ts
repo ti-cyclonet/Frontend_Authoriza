@@ -100,6 +100,7 @@ export class AddPackageComponent implements OnInit {
       name: ['', Validators.required],
       description: ['', Validators.required],
       price: [0, [Validators.required, Validators.min(0)]],
+      isBillable: [true],
     });
 
     this.limitsForm = this.fb.group({});
@@ -119,6 +120,7 @@ export class AddPackageComponent implements OnInit {
       name: this.packageToEdit.name,
       description: this.packageToEdit.description,
       price: (this.packageToEdit as any).price || 0,
+      isBillable: (this.packageToEdit as any).isBillable !== false,
     });
 
     // Precargar variables de límite de uso (dinámicas)
@@ -595,6 +597,7 @@ export class AddPackageComponent implements OnInit {
       name: this.basicPackageForm.value.name,
       description: this.basicPackageForm.value.description,
       price: this.basicPackageForm.value.price || 0,
+      isBillable: this.basicPackageForm.value.isBillable ?? true,
       configurations: this.roleConfigs,
       images: this.images,
       usageLimitVariables: this.buildUsageLimitVariables(),
@@ -606,6 +609,7 @@ export class AddPackageComponent implements OnInit {
         name: dto.name,
         description: dto.description,
         price: dto.price,
+        isBillable: dto.isBillable,
         usageLimitVariables: dto.usageLimitVariables,
       }).subscribe({
         next: () => {

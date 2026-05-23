@@ -9,6 +9,8 @@ import { CurrencyFormatPipe } from "../../shared/pipes/custom-currency.pipe";
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { CyclonAssistantComponent } from '../../shared/components/cyclon-assistant/cyclon-assistant.component';
 import { TranslationService } from '../../shared/services/translation.service';
+import { PackageService } from '../../shared/services/packages/package.service';
+import { Package } from '../../shared/model/package.model';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -39,9 +41,10 @@ export class ContractsComponent implements OnInit {
   showEditModal: boolean = false;
   selectedContract: Contract | null = null;
   isEditLoading: boolean = false;
-  editData = { value: 0, payday: 1, startDate: '', endDate: '', status: '', businessSector: '' };
+  editData = { value: 0, payday: 1, startDate: '', endDate: '', status: '', businessSector: '', packageId: '' };
+  availablePackages: Package[] = [];
 
-  constructor(private contractService: ContractService, private translationService: TranslationService) {}
+  constructor(private contractService: ContractService, private translationService: TranslationService, private packageService: PackageService) {}
 
   ngOnInit(): void {
     this.loadContracts();
@@ -254,8 +257,21 @@ export class ContractsComponent implements OnInit {
       startDate: contract.startDate || '',
       endDate: contract.endDate || '',
       status: contract.status || 'DRAFT',
-      businessSector: contract.businessSector || ''
+      businessSector: contract.businessSector || '',
+      packageId: contract.package?.id || ''
     };
+
+    // Cargar paquetes disponibles para el selector
+    this.packageService.getAllPackages().subscribe({
+      next: (packages) => {
+        this.availablePackages = packages;
+      },
+      error: (err) => {
+        console.error('Error al cargar paquetes:', err);
+        this.availablePackages = [];
+      }
+    });
+
     this.showEditModal = true;
   }
 
@@ -268,7 +284,21 @@ export class ContractsComponent implements OnInit {
     if (!this.selectedContract) return;
     this.isEditLoading = true;
 
-    this.contractService.updateContract(this.selectedContract.id, this.editData).subscribe({
+    const payload: any = {
+      value: this.editData.value,
+      payday: this.editData.payday,
+      startDate: this.editData.startDate,
+      endDate: this.editData.endDate,
+      status: this.editData.status,
+      businessSector: this.editData.businessSector
+    };
+
+    // Solo incluir packageId si cambió respecto al paquete actual
+    if (this.editData.packageId && this.editData.packageId !== this.selectedContract.package?.id) {
+      payload.packageId = this.editData.packageId;
+    }
+
+    this.contractService.updateContract(this.selectedContract.id, payload).subscribe({
       next: () => {
         this.isEditLoading = false;
         this.closeEditModal();

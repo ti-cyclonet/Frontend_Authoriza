@@ -16,6 +16,7 @@ export interface NewPackageDTO {
   name: string;
   description?: string;
   price?: number;
+  isBillable?: boolean;
   configurations: RoleConfigurationDTO[];
   images?: File[];
   usageLimitVariables?: UsageLimitVariableDTO[];

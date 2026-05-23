@@ -445,3 +445,22 @@
     gap: 0.5rem;
   }
 }
+
+/* Package change warning */
+.package-change-warning {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.72rem;
+  color: #d97706;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  background: #fef3c7;
+  border-radius: 4px;
+  border: 1px solid #fde68a;
+}
+
+/* Full-width form group inside grid row */
+.edit-form-group-full {
+  flex: 1;
+  grid-column: 1 / -1;
+}
