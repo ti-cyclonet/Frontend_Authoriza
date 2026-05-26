@@ -44,7 +44,7 @@
       <table class="table table-hover contracts-table">
         <thead>
           <tr>
-            <th>{{ getTranslation('contracts.code') }}</th>
+            <th class="d-none d-sm-table-cell">{{ getTranslation('contracts.code') }}</th>
             <th>{{ getTranslation('contracts.user') }}</th>
             <th class="d-none d-md-table-cell">{{ getTranslation('contracts.package') }}</th>
             <th class="d-none d-md-table-cell text-end">{{ getTranslation('contracts.value') }}</th>
@@ -57,7 +57,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let contract of pagedContracts">
-            <td>
+            <td class="d-none d-sm-table-cell">
               <span class="entity-code-badge" *ngIf="contract?.code; else noCode">{{ contract?.code }}</span>
               <ng-template #noCode><span class="text-muted">-</span></ng-template>
             </td>
@@ -185,7 +185,7 @@
           <select id="edit-package-select" [(ngModel)]="editData.packageId" title="Seleccionar paquete o plan de servicio">
             <option value="" disabled>Seleccionar paquete</option>
             <option *ngFor="let pkg of availablePackages" [value]="pkg.id">
-              {{ pkg.name }} {{ pkg.description ? '- ' + pkg.description : '' }}
+              {{ pkg.name }}{{ pkg.description ? ' - ' + (pkg.description.length > 30 ? pkg.description.substring(0, 30) + '...' : pkg.description) : '' }}
             </option>
           </select>
           <small *ngIf="editData.packageId && editData.packageId !== selectedContract.package?.id" class="package-change-warning">
