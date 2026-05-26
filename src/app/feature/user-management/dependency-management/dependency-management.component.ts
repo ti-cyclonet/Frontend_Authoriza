@@ -196,7 +196,11 @@ export class DependencyManagementComponent implements OnInit {
             const user = await this.userService.getUserById(dep.dependentUserId).toPromise();
             if (user) {
               const userRoles = await this.userRolesService.getUserRoles(dep.dependentUserId).toPromise();
-              const roles = userRoles?.filter(ur => ur.status === 'ACTIVE').map(ur => ur.role) || [];
+              // Filtrar roles activos que pertenezcan al contrato seleccionado
+              const roles = userRoles?.filter(ur => 
+                ur.status === 'ACTIVE' && 
+                (!this.selectedContract || ur.contractId === this.selectedContract.id)
+              ).map(ur => ur.role) || [];
               
               this.dependentUsers.push({
                 ...user,
@@ -229,6 +233,7 @@ export class DependencyManagementComponent implements OnInit {
   // Gestión de roles
   async selectContract(contract: any): Promise<void> {
     this.selectedContract = contract;
+    await this.loadDependentUsers();
     await this.loadRoleAvailability();
     this.cdr.detectChanges();
   }
