@@ -90,6 +90,8 @@ export class AddPackageComponent implements OnInit {
   configuredLimitsPage: number = 0;
   readonly CONFIGURED_LIMITS_PAGE_SIZE = 5;
 
+  // Landing features (auto-generated from usageLimitVariables)
+
   constructor(
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
@@ -101,6 +103,12 @@ export class AddPackageComponent implements OnInit {
       description: ['', Validators.required],
       price: [0, [Validators.required, Validators.min(0)]],
       isBillable: [true],
+      showInLanding: [false],
+      displayName: [''],
+      displayOrder: [0],
+      isHighlighted: [false],
+      ctaLabel: ['Elegir Plan'],
+      ctaType: ['register'],
     });
 
     this.limitsForm = this.fb.group({});
@@ -121,6 +129,12 @@ export class AddPackageComponent implements OnInit {
       description: this.packageToEdit.description,
       price: (this.packageToEdit as any).price || 0,
       isBillable: (this.packageToEdit as any).isBillable !== false,
+      showInLanding: (this.packageToEdit as any).showInLanding || false,
+      displayName: (this.packageToEdit as any).displayName || '',
+      displayOrder: (this.packageToEdit as any).displayOrder || 0,
+      isHighlighted: (this.packageToEdit as any).isHighlighted || false,
+      ctaLabel: (this.packageToEdit as any).ctaLabel || 'Elegir Plan',
+      ctaType: (this.packageToEdit as any).ctaType || 'register',
     });
 
     // Precargar variables de límite de uso (dinámicas)
@@ -131,6 +145,11 @@ export class AddPackageComponent implements OnInit {
         maxValue: v.maxValue,
         targetApplication: v.targetApplication,
       }));
+    }
+
+    // Precargar imágenes existentes
+    if (this.packageToEdit.images?.length) {
+      this.previewImages = this.packageToEdit.images.map((img: any) => img.url);
     }
 
     // Precargar configuraciones de roles
@@ -592,39 +611,77 @@ export class AddPackageComponent implements OnInit {
     }));
   }
 
+  addFeature(input: HTMLInputElement): void {
+    // Features are now auto-generated from usageLimitVariables
+  }
+
   submitPackage(): void {
+    const formValues = this.basicPackageForm.value;
     const dto: NewPackageDTO = {
-      name: this.basicPackageForm.value.name,
-      description: this.basicPackageForm.value.description,
-      price: this.basicPackageForm.value.price || 0,
-      isBillable: this.basicPackageForm.value.isBillable ?? true,
+      name: formValues.name,
+      description: formValues.description,
+      price: formValues.price || 0,
+      isBillable: formValues.isBillable ?? true,
+      showInLanding: formValues.showInLanding || false,
+      displayName: formValues.displayName || '',
+      displayOrder: formValues.displayOrder || 0,
+      isHighlighted: formValues.isHighlighted || false,
+      ctaLabel: formValues.ctaLabel || 'Elegir Plan',
+      ctaType: formValues.ctaType || 'register',
       configurations: this.roleConfigs,
       images: this.images,
       usageLimitVariables: this.buildUsageLimitVariables(),
     };
 
     if (this.packageToEdit) {
-      // Modo edición
-      this.packageService.updatePackage(this.packageToEdit.id, {
-        name: dto.name,
-        description: dto.description,
-        price: dto.price,
-        isBillable: dto.isBillable,
-        usageLimitVariables: dto.usageLimitVariables,
-      }).subscribe({
-        next: () => {
-          this.showStepIcons(true, true, true, true);
-          this.onSuccess();
-        },
-        error: (error) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error al actualizar',
-            text: error?.error?.message || 'No se pudo actualizar el paquete.',
-            confirmButtonText: 'OK',
-          });
-          console.error('Error updating package:', error);
-        },
+      // Modo edición - subir imágenes nuevas si hay
+      const uploadPromises: Promise<any>[] = [];
+      if (this.imageFiles.length > 0) {
+        for (const file of this.imageFiles) {
+          const formData = new FormData();
+          formData.append('file', file);
+          uploadPromises.push(
+            this.packageService.uploadPackageImage(this.packageToEdit.id, formData).toPromise()
+          );
+        }
+      }
+
+      // Esperar a que se suban las imágenes antes de actualizar
+      Promise.all(uploadPromises).then(() => {
+        this.packageService.updatePackage(this.packageToEdit!.id, {
+          name: dto.name,
+          description: dto.description,
+          price: dto.price,
+          isBillable: dto.isBillable,
+          showInLanding: dto.showInLanding,
+          displayName: dto.displayName,
+          displayOrder: dto.displayOrder,
+          isHighlighted: dto.isHighlighted,
+          ctaLabel: dto.ctaLabel,
+          ctaType: dto.ctaType,
+          usageLimitVariables: dto.usageLimitVariables,
+        }).subscribe({
+          next: () => {
+            this.showStepIcons(true, true, true, true);
+            this.onSuccess();
+          },
+          error: (error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error al actualizar',
+              text: error?.error?.message || 'No se pudo actualizar el paquete.',
+              confirmButtonText: 'OK',
+            });
+          },
+        });
+      }).catch((err) => {
+        console.error('Error uploading images:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al subir imágenes',
+          text: 'No se pudieron subir las imágenes.',
+          confirmButtonText: 'OK',
+        });
       });
     } else {
       // Modo creación
