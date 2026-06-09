@@ -47,6 +47,7 @@
         <thead>
           <tr>
             <th>{{ 'apps.code' | translate }}</th>
+            <th></th>
             <th>{{ 'apps.name' | translate }}</th>
             <th class="d-none d-md-table-cell">{{ 'apps.description' | translate }}</th>
             <th class="d-none d-md-table-cell text-center">{{ 'packages.roles' | translate }}</th>
@@ -59,6 +60,9 @@
             <td>
               <span class="entity-code-badge" *ngIf="pkg?.code; else noCode">{{ pkg?.code }}</span>
               <ng-template #noCode><span class="text-muted">-</span></ng-template>
+            </td>
+            <td class="pkg-img-cell">
+              <img *ngIf="pkg.images?.length" [src]="pkg.images[0].url" [alt]="pkg.name" class="pkg-list-img" />
             </td>
             <td class="pkg-name">{{ pkg.name }}</td>
             <td class="d-none d-md-table-cell pkg-desc">{{ pkg.description }}</td>
@@ -84,6 +88,9 @@
         <div class="pkg-card-header">
           <span class="entity-code-badge" *ngIf="pkg?.code">{{ pkg?.code }}</span>
           <span class="status-dot active"></span>
+        </div>
+        <div class="pkg-card-image" *ngIf="pkg.images?.length">
+          <img [src]="pkg.images[0].url" [alt]="pkg.name" />
         </div>
         <div class="pkg-card-body">
           <h6 class="pkg-card-name">{{ pkg.name }}</h6>
@@ -156,6 +163,10 @@
     </div>
 
     <div class="pkg-view-body">
+      <div class="pkg-view-image" *ngIf="selectedPackage.images?.length">
+        <img [src]="selectedPackage.images[0].url" [alt]="selectedPackage.name" />
+      </div>
+
       <div class="info-row">
         <span class="label">Descripción:</span>
         <span class="value">{{ selectedPackage.description }}</span>

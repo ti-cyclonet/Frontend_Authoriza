@@ -65,6 +65,53 @@
                 <span class="slider round"></span>
               </label>
             </div>
+            <div class="form-group billable-toggle">
+              <label class="toggle-label">
+                <span>Visible en Landing</span>
+                <small class="toggle-hint">Muestra este paquete en la página de planes</small>
+              </label>
+              <label class="switch" for="showInLanding">
+                <input id="showInLanding" type="checkbox" formControlName="showInLanding"/>
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <!-- Campos de Landing (solo si showInLanding está activo) -->
+            <div *ngIf="basicPackageForm.get('showInLanding')?.value" class="landing-fields">
+              <div class="landing-fields-title">Configuración para Landing</div>
+              <div class="form-group">
+                <label for="displayName">Nombre comercial</label>
+                <input id="displayName" formControlName="displayName" type="text" placeholder="Ej: Emprendedor, Business..." autocomplete="off"/>
+              </div>
+              <div class="form-row-inline">
+                <div class="form-group">
+                  <label for="displayOrder">Orden</label>
+                  <input id="displayOrder" formControlName="displayOrder" type="number" min="0" placeholder="1"/>
+                </div>
+                <div class="form-group">
+                  <label for="ctaType">Tipo de acción</label>
+                  <select id="ctaType" formControlName="ctaType" title="Tipo de botón en la landing">
+                    <option value="register">Registro</option>
+                    <option value="contact">Contacto</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="ctaLabel">Texto del botón</label>
+                <input id="ctaLabel" formControlName="ctaLabel" type="text" placeholder="Elegir Plan" autocomplete="off"/>
+              </div>
+              <div class="form-group billable-toggle">
+                <label class="toggle-label">
+                  <span>Destacar plan</span>
+                  <small class="toggle-hint">Borde destacado en la landing</small>
+                </label>
+                <label class="switch" for="isHighlighted">
+                  <input id="isHighlighted" type="checkbox" formControlName="isHighlighted"/>
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <p class="landing-features-note">Las características del plan se generan automáticamente desde las variables de límite configuradas en el paso 3.</p>
+            </div>
           </form>
         </div>
 

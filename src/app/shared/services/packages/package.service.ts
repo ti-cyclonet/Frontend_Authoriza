@@ -67,6 +67,12 @@ export class PackageService {
     formData.append('description', pkgData.description);
     formData.append('price', String(pkgData.price || 0));
     formData.append('isBillable', String(pkgData.isBillable !== false));
+    formData.append('showInLanding', String(pkgData.showInLanding || false));
+    if (pkgData.displayName) formData.append('displayName', pkgData.displayName);
+    formData.append('displayOrder', String(pkgData.displayOrder || 0));
+    formData.append('isHighlighted', String(pkgData.isHighlighted || false));
+    if (pkgData.ctaLabel) formData.append('ctaLabel', pkgData.ctaLabel);
+    if (pkgData.ctaType) formData.append('ctaType', pkgData.ctaType);
     formData.append('configurations', JSON.stringify(pkgData.configurations));
 
     // Agregar variables de límite de uso
@@ -83,5 +89,9 @@ export class PackageService {
 
   updatePackage(id: string, data: any): Observable<Package> {
     return this.http.put<Package>(`${this.packageUrl}/${id}`, data);
+  }
+
+  uploadPackageImage(packageId: string, formData: FormData): Observable<any> {
+    return this.http.post(`${this.baseApiUrl}/images/upload/${packageId}`, formData);
   }
 }

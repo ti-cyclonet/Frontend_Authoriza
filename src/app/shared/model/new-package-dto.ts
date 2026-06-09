@@ -17,6 +17,12 @@ export interface NewPackageDTO {
   description?: string;
   price?: number;
   isBillable?: boolean;
+  showInLanding?: boolean;
+  displayName?: string;
+  displayOrder?: number;
+  isHighlighted?: boolean;
+  ctaLabel?: string;
+  ctaType?: string;
   configurations: RoleConfigurationDTO[];
   images?: File[];
   usageLimitVariables?: UsageLimitVariableDTO[];
