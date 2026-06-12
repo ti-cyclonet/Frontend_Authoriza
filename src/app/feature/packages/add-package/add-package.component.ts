@@ -659,6 +659,7 @@ export class AddPackageComponent implements OnInit {
           isHighlighted: dto.isHighlighted,
           ctaLabel: dto.ctaLabel,
           ctaType: dto.ctaType,
+          configurations: this.roleConfigs,
           usageLimitVariables: dto.usageLimitVariables,
         }).subscribe({
           next: () => {
