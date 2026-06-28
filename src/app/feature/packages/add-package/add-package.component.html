@@ -106,7 +106,10 @@
         <!-- STEP 2: Configuración -->
         <div *ngIf="step2">
           <div class="d-flex align-items-center pb-3 mb-2" style="border-bottom: 1px solid var(--sidebar-background-color)">
-            <div class="title-form">{{ 'packages.createPackage.configuration' | translate }}</div>
+            <div>
+              <div class="title-form">{{ 'packages.createPackage.configuration' | translate }}</div>
+              <small class="text-muted">Define los roles y la cantidad de cuentas permitidas por cada rol en este paquete.</small>
+            </div>
             <div class="btn-group ms-auto custom-btn-group">
               <a *ngIf="!showConfigurationRecord" (click)="showConfigurationRecord = true" style="cursor: pointer">
                 <svg fill="currentColor" viewBox="0 0 16 16" class="title-icon">
