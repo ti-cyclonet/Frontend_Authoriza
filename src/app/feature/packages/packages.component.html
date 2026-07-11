@@ -51,6 +51,7 @@
             <th>{{ 'apps.name' | translate }}</th>
             <th class="d-none d-md-table-cell">{{ 'apps.description' | translate }}</th>
             <th class="d-none d-md-table-cell text-center">{{ 'packages.roles' | translate }}</th>
+            <th class="d-none d-md-table-cell text-center">Facturable</th>
             <th class="d-none d-md-table-cell text-end">{{ 'packages.priceTotal' | translate }}</th>
             <th class="text-center">{{ 'common.actions' | translate }}</th>
           </tr>
@@ -67,6 +68,11 @@
             <td class="pkg-name">{{ pkg.name }}</td>
             <td class="d-none d-md-table-cell pkg-desc">{{ pkg.description }}</td>
             <td class="d-none d-md-table-cell text-center">{{ getNumberOfRoles(pkg) }}</td>
+            <td class="d-none d-md-table-cell text-center">
+              <span class="billable-badge" [class.billable]="$any(pkg).isBillable" [class.non-billable]="!$any(pkg).isBillable">
+                {{ $any(pkg).isBillable ? 'Sí' : 'No' }}
+              </span>
+            </td>
             <td class="d-none d-md-table-cell text-end">${{ pkg.price || 0 | number:"1.2-2" }} COP/mes</td>
             <td class="text-center">
               <div class="action-buttons">
@@ -99,6 +105,10 @@
             <span class="metric"><strong>{{ getNumberOfRoles(pkg) }}</strong> roles</span>
             <span class="metric-sep">·</span>
             <span class="metric"><strong>${{ pkg.price || 0 | number:"1.0-0" }}</strong> COP/mes</span>
+            <span class="metric-sep">·</span>
+            <span class="billable-badge" [class.billable]="$any(pkg).isBillable" [class.non-billable]="!$any(pkg).isBillable">
+              {{ $any(pkg).isBillable ? 'Facturable' : 'No facturable' }}
+            </span>
           </div>
         </div>
         <div class="pkg-card-actions">
@@ -175,6 +185,15 @@
       <div class="info-row">
         <span class="label">Roles:</span>
         <span class="value">{{ getNumberOfRoles(selectedPackage) }}</span>
+      </div>
+
+      <div class="info-row">
+        <span class="label">Facturable:</span>
+        <span class="value">
+          <span class="billable-badge" [class.billable]="$any(selectedPackage).isBillable" [class.non-billable]="!$any(selectedPackage).isBillable">
+            {{ $any(selectedPackage).isBillable ? 'Sí' : 'No' }}
+          </span>
+        </span>
       </div>
 
       <div class="info-row">
