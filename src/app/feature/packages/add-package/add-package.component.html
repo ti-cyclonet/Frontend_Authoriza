@@ -346,72 +346,86 @@
 
         <!-- STEP 4: Presentación -->
         <div *ngIf="step4">
-          <div class="d-flex align-items-center pb-3 mb-2" style="border-bottom: 1px solid var(--sidebar-background-color)">
-            <div class="title-form">Vista Previa del Paquete</div>
+          <div class="d-flex align-items-center pb-3 mb-3" style="border-bottom: 2px solid var(--sidebar-background-color)">
+            <div class="title-form">Resumen y Vista Previa</div>
           </div>
 
-          <!-- Preview Card -->
-          <div class="preview-card">
-            <!-- Image section -->
-            <div class="preview-image-section">
-              <div *ngIf="previewImages.length > 0; else noImagePreview">
-                <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
-                  <div class="carousel-inner">
-                    <div *ngFor="let img of previewImages; let i = index" class="carousel-item" [class.active]="i === 0">
-                      <img [src]="img" class="preview-img" alt="Preview"/>
-                    </div>
+          <div class="step4-layout">
+            <!-- Left: Preview Card -->
+            <div class="step4-preview">
+              <div class="preview-card-v2">
+                <!-- Image -->
+                <div class="preview-card-image">
+                  <div *ngIf="previewImages.length > 0; else noImgV2">
+                    <img [src]="previewImages[0]" alt="Preview" class="preview-card-img"/>
                   </div>
-                  <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev" *ngIf="previewImages.length > 1">
-                    <span class="carousel-control-prev-icon"></span>
-                  </button>
-                  <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next" *ngIf="previewImages.length > 1">
-                    <span class="carousel-control-next-icon"></span>
-                  </button>
+                  <ng-template #noImgV2>
+                    <div class="preview-card-no-img">
+                      <svg viewBox="0 0 16 16" fill="currentColor" width="32" height="32" style="opacity: 0.4;">
+                        <use xlink:href="./assets/icons/bootstrap-icons.svg#image"/>
+                      </svg>
+                    </div>
+                  </ng-template>
+                </div>
+
+                <!-- Name & Description -->
+                <div class="preview-card-body">
+                  <h5 class="preview-card-name">{{ basicPackageForm.get("name")?.value }}</h5>
+                  <p class="preview-card-desc">{{ basicPackageForm.get("description")?.value }}</p>
+
+                  <!-- Price -->
+                  <div class="preview-card-price" *ngIf="basicPackageForm.get('price')?.value > 0">
+                    <span class="price-amount">${{ basicPackageForm.get('price')?.value | number:"1.0-0" }}</span>
+                    <span class="price-period">COP/mes</span>
+                  </div>
+                  <div class="preview-card-price free" *ngIf="!basicPackageForm.get('price')?.value || basicPackageForm.get('price')?.value == 0">
+                    <span class="price-amount">Gratuito</span>
+                  </div>
+                </div>
+
+                <!-- Roles -->
+                <div class="preview-card-section" *ngIf="roleConfigs.length > 0">
+                  <div class="preview-section-title">Roles incluidos</div>
+                  <div *ngFor="let config of roleConfigs" class="preview-role-row">
+                    <span class="preview-role-name">{{ config.roleName }}</span>
+                    <span class="preview-role-count">{{ config.totalAccount }} cuenta{{ config.totalAccount > 1 ? 's' : '' }}</span>
+                  </div>
+                </div>
+
+                <!-- Limits -->
+                <div class="preview-card-section" *ngIf="limitVariables.length > 0">
+                  <div class="preview-section-title">Límites de uso</div>
+                  <div *ngFor="let limit of limitVariables" class="preview-limit-row">
+                    <span>{{ limit.displayName }}</span>
+                    <span class="preview-limit-val">{{ limit.variableName === 'nDiasUso' ? (limit.maxValue === 0 ? 'Ilimitado' : limit.maxValue + ' días') : limit.maxValue }}</span>
+                  </div>
                 </div>
               </div>
-              <ng-template #noImagePreview>
-                <div class="no-image-placeholder">
-                  <svg viewBox="0 0 16 16" fill="currentColor">
-                    <use xlink:href="./assets/icons/bootstrap-icons.svg#image"/>
+            </div>
+
+            <!-- Right: Upload Images -->
+            <div class="step4-upload">
+              <div class="upload-card">
+                <div class="upload-card-title">
+                  <svg viewBox="0 0 16 16" fill="currentColor" width="16" height="16">
+                    <use xlink:href="./assets/icons/bootstrap-icons.svg#images"/>
                   </svg>
-                  <span>Sin imagen</span>
+                  Imagen del paquete
                 </div>
-              </ng-template>
-            </div>
-
-            <!-- Info section -->
-            <div class="preview-info">
-              <h5 class="preview-name">{{ basicPackageForm.get("name")?.value | uppercase }}</h5>
-              <p class="preview-desc">{{ basicPackageForm.get("description")?.value }}</p>
-              
-              <div class="preview-roles" *ngIf="roleConfigs.length > 0">
-                <div *ngFor="let config of roleConfigs" class="preview-role-item">
-                  <span>{{ config.roleName }}</span>
-                  <span class="preview-role-badge">{{ config.totalAccount }}</span>
+                <p class="upload-card-hint">Sube una imagen representativa (máx. 3)</p>
+                <div class="upload-dropzone-mini" (click)="imgInput.click()">
+                  <svg viewBox="0 0 16 16" fill="currentColor" width="24" height="24" style="opacity: 0.5;">
+                    <use xlink:href="./assets/icons/bootstrap-icons.svg#cloud-arrow-up"/>
+                  </svg>
+                  <span>Seleccionar imagen</span>
                 </div>
-              </div>
-
-              <div class="preview-limits" *ngIf="limitVariables.length > 0">
-                <div *ngFor="let limit of limitVariables" class="preview-limit-item">
-                  <span>{{ limit.displayName }}</span>
-                  <span class="preview-limit-value">{{ limit.variableName === 'nDiasUso' ? (limit.maxValue === 0 ? '∞' : limit.maxValue + 'd') : limit.maxValue }}</span>
+                <input #imgInput type="file" (change)="onImageSelected($event)" accept="image/*" multiple [disabled]="previewImages.length >= 3" style="display: none;"/>
+                <div class="upload-thumbnails-v2" *ngIf="previewImages.length > 0">
+                  <div *ngFor="let img of previewImages; let i = index" class="upload-thumb-v2">
+                    <img [src]="img" alt="Thumbnail"/>
+                    <button type="button" class="thumb-remove-v2" (click)="removeImage(i)">×</button>
+                  </div>
                 </div>
-              </div>
-
-              <div class="preview-price">
-                ${{ basicPackageForm.get('price')?.value || 0 | number : "1.0-0" }} COP/mes
-              </div>
-            </div>
-          </div>
-
-          <!-- Upload images -->
-          <div class="upload-section">
-            <label class="upload-label">{{ 'packages.createPackage.addImages' | translate }} (máx. 3)</label>
-            <input type="file" (change)="onImageSelected($event)" accept="image/*" multiple [disabled]="previewImages.length >= 3" class="upload-input"/>
-            <div class="upload-thumbnails" *ngIf="previewImages.length > 0">
-              <div *ngFor="let img of previewImages; let i = index" class="upload-thumb">
-                <img [src]="img" alt="Thumbnail"/>
-                <button type="button" class="thumb-remove" (click)="removeImage(i)">×</button>
               </div>
             </div>
           </div>

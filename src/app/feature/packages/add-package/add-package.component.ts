@@ -230,22 +230,37 @@ export class AddPackageComponent implements OnInit {
   }
 
   async onAddRole(rol: Rol) {
+    const appName = this.getApplicationNameByRoleId(rol.id);
+
     const { value: formValues } = await Swal.fire({
-      title: this.translationService.translate('packages.createPackage.addRoleConfig').replace('{roleName}', `<b>${rol.strName}</b>`),
+      title: 'Agregar rol al paquete',
       html: `
-      <input id="swal-quantity" type="number" min="1" class="swal2-input" placeholder="${this.translationService.translate('packages.createPackage.quantity')}">
-    `,
+        <div style="text-align: left; padding: 0 10px;">
+          <div style="margin-bottom: 16px; padding: 12px; background: #f3f0ff; border-radius: 8px; border: 1px solid #e0d8f7;">
+            <div style="font-size: 13px; color: #6c757d;">Rol seleccionado</div>
+            <div style="font-size: 15px; font-weight: 600; color: #333;">${rol.strName}</div>
+            <div style="font-size: 12px; color: #6c757d;">Aplicación: ${appName}</div>
+          </div>
+          <div>
+            <label style="display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 4px;">¿Cuántas cuentas permitir con este rol?</label>
+            <input id="swal-quantity" type="number" min="1" value="1" class="swal2-input" style="margin: 0; width: 100%;" />
+            <small style="color: #6c757d; font-size: 11px;">Número máximo de usuarios que podrán usar este rol en el paquete</small>
+          </div>
+        </div>
+      `,
       focusConfirm: false,
       showCancelButton: true,
-      confirmButtonText: this.translationService.translate('packages.createPackage.add'),
-      cancelButtonText: this.translationService.translate('common.cancel'),
+      confirmButtonText: 'Agregar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#6c3bbf',
+      width: '420px',
       preConfirm: () => {
         const quantity = parseInt(
           (document.getElementById('swal-quantity') as HTMLInputElement)?.value
         );
 
         if (!quantity || quantity <= 0) {
-          Swal.showValidationMessage(this.translationService.translate('packages.createPackage.enterValidValues'));
+          Swal.showValidationMessage('La cantidad debe ser al menos 1');
           return;
         }
 
@@ -267,8 +282,8 @@ export class AddPackageComponent implements OnInit {
 
       Swal.fire({
         icon: 'success',
-        title: this.translationService.translate('packages.createPackage.roleAdded'),
-        text: this.translationService.translate('packages.createPackage.roleAddedSuccess'),
+        title: '¡Rol agregado!',
+        html: `<p style="font-size: 14px;"><strong>${rol.strName}</strong> con ${formValues.quantity} cuenta${formValues.quantity > 1 ? 's' : ''}</p>`,
         timer: 2000,
         showConfirmButton: false,
       });
@@ -471,16 +486,33 @@ export class AddPackageComponent implements OnInit {
   }
 
   async addLimitVariable(variable: { variableName: string; displayName: string; targetApplication: string }) {
-    const placeholder = variable.variableName === 'nDiasUso' ? 'Número de días (0 = ilimitado)' : 'Cantidad máxima';
+    const isDays = variable.variableName === 'nDiasUso';
+    const hint = isDays 
+      ? 'Número de días que estará disponible el plan (0 = ilimitado)' 
+      : 'Cantidad máxima que el cliente podrá crear/usar';
 
     const { value: maxValue } = await Swal.fire({
-      title: `Configurar: <b>${variable.displayName}</b>`,
-      html: `<p style="font-size:0.85rem;color:#666">Aplicación: ${variable.targetApplication}</p>
-             <input id="swal-limit-value" type="number" min="0" class="swal2-input" placeholder="${placeholder}">`,
+      title: 'Configurar límite',
+      html: `
+        <div style="text-align: left; padding: 0 10px;">
+          <div style="margin-bottom: 16px; padding: 12px; background: #e8f5e9; border-radius: 8px; border: 1px solid #c8e6c9;">
+            <div style="font-size: 13px; color: #6c757d;">Variable</div>
+            <div style="font-size: 15px; font-weight: 600; color: #2e7d32;">${variable.displayName}</div>
+            <div style="font-size: 12px; color: #6c757d;">Aplicación: ${variable.targetApplication}</div>
+          </div>
+          <div>
+            <label style="display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 4px;">${isDays ? 'Días de vigencia' : 'Cantidad máxima'}</label>
+            <input id="swal-limit-value" type="number" min="0" class="swal2-input" style="margin: 0; width: 100%;" placeholder="${isDays ? 'Ej: 15' : 'Ej: 50'}" />
+            <small style="color: #6c757d; font-size: 11px;">${hint}</small>
+          </div>
+        </div>
+      `,
       focusConfirm: false,
       showCancelButton: true,
       confirmButtonText: 'Agregar',
       cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#2e7d32',
+      width: '420px',
       preConfirm: () => {
         const val = parseInt((document.getElementById('swal-limit-value') as HTMLInputElement)?.value);
         if (isNaN(val) || val < 0) {
@@ -730,32 +762,43 @@ export class AddPackageComponent implements OnInit {
   }
 
   editRole(config: RoleConfigurationDTO): void {
+    const roleName = config.roleName || (config as any).rol?.strName || 'Rol';
+    const appName = this.getApplicationNameByRoleId(config.rolId || (config as any).rol?.id || '');
+
     Swal.fire({
-      title: this.translationService.translate('packages.createPackage.editRole'),
+      title: `Editar configuración`,
       html: `
-      <input id="quantity" class="swal2-input" placeholder="${this.translationService.translate('packages.createPackage.quantity')}" value="${config.totalAccount}" />
-      <input id="price" class="swal2-input" placeholder="${this.translationService.translate('packages.createPackage.unitPrice')} (COP)" value="${config.price}" />
-    `,
+        <div style="text-align: left; padding: 0 10px;">
+          <div style="margin-bottom: 16px; padding: 12px; background: #f3f0ff; border-radius: 8px; border: 1px solid #e0d8f7;">
+            <div style="font-size: 13px; color: #6c757d;">Rol</div>
+            <div style="font-size: 15px; font-weight: 600; color: #333;">${roleName}</div>
+            <div style="font-size: 12px; color: #6c757d;">Aplicación: ${appName}</div>
+          </div>
+          <div style="margin-bottom: 12px;">
+            <label style="display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 4px;">Cantidad de cuentas permitidas</label>
+            <input id="quantity" type="number" min="1" class="swal2-input" style="margin: 0; width: 100%;" value="${config.totalAccount}" />
+            <small style="color: #6c757d; font-size: 11px;">Número máximo de usuarios con este rol</small>
+          </div>
+        </div>
+      `,
       showCancelButton: true,
-      confirmButtonText: this.translationService.translate('packages.createPackage.update'),
-      cancelButtonText: this.translationService.translate('common.cancel'),
+      confirmButtonText: 'Actualizar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#6c3bbf',
+      width: '420px',
       preConfirm: () => {
         const quantity = Number(
           (<HTMLInputElement>Swal.getPopup()!.querySelector('#quantity')).value
         );
-        const price = Number(
-          (<HTMLInputElement>Swal.getPopup()!.querySelector('#price')).value
-        );
-        if (isNaN(quantity) || isNaN(price)) {
-          Swal.showValidationMessage(this.translationService.translate('packages.createPackage.enterValidNumbers'));
+        if (isNaN(quantity) || quantity < 1) {
+          Swal.showValidationMessage('La cantidad debe ser al menos 1');
           return;
         }
-        return { quantity, unitPrice: price };
+        return { quantity };
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
         config.totalAccount = result.value.quantity;
-        config.price = result.value.unitPrice;
       }
     });
   }
