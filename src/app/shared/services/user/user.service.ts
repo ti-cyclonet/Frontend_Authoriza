@@ -199,6 +199,10 @@ export class UserService {
     return this.http.patch(`${this.userUrl}/${userId}/remove-dependency`, {});
   }
 
+  setAuthorizedSigner(userId: string, isAuthorizedSigner: boolean): Observable<any> {
+    return this.http.patch(`${this.userUrl}/${userId}/set-authorized-signer`, { isAuthorizedSigner });
+  }
+
   deleteUser(id: string, force: boolean = false): Observable<any> {
     const url = `${this.userUrl}/${id}`;
     let params = new HttpParams();

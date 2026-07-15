@@ -21,6 +21,7 @@ interface ExtendedUser extends User {
   avatar?: string;
   email?: string;
   hasContracts?: boolean;
+  isAuthorizedSigner?: boolean;
 }
 
 @Component({
@@ -379,6 +380,42 @@ export class UserManagementDashboardComponent implements OnInit {
     const user = this.selectedUser;
     this.showViewModal = false;
     if (user) this.manageDependencies(user);
+  }
+
+  toggleAuthorizedSigner(): void {
+    if (!this.selectedUser) return;
+    const newValue = !this.selectedUser.isAuthorizedSigner;
+    const action = newValue ? 'designar como firmante autorizado' : 'quitar la autorización de firma';
+
+    Swal.fire({
+      title: newValue ? 'Designar Firmante' : 'Quitar Firmante',
+      html: `<p>¿Deseas ${action} a <strong>${this.selectedUser.displayName}</strong>?</p>
+             ${newValue ? '<small class="text-muted">Este usuario podrá firmar contratos y autorizaciones.</small>' : ''}`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: newValue ? 'Designar' : 'Quitar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: newValue ? '#0d6efd' : '#dc3545',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.userService.setAuthorizedSigner(this.selectedUser!.id, newValue).subscribe({
+          next: () => {
+            this.selectedUser!.isAuthorizedSigner = newValue;
+            Swal.fire({
+              icon: 'success',
+              title: newValue ? '✍ Firmante designado' : 'Autorización removida',
+              text: `${this.selectedUser!.displayName} ${newValue ? 'ahora puede firmar contratos' : 'ya no puede firmar contratos'}`,
+              timer: 2500,
+              showConfirmButton: false,
+            });
+            this.loadUsers();
+          },
+          error: () => {
+            Swal.fire('Error', 'No se pudo actualizar la autorización', 'error');
+          }
+        });
+      }
+    });
   }
 
   async viewAndDelete(): Promise<void> {
