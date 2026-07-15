@@ -256,6 +256,9 @@
         <span class="status-badge" [class]="getStatusBadgeClass(selectedUser.strStatus)">
           {{ ('users.status.' + selectedUser.strStatus) | translate }}
         </span>
+        <span *ngIf="selectedUser.isAuthorizedSigner" class="badge bg-info ms-2" style="font-size: 0.65rem;">
+          ✍ Firmante Autorizado
+        </span>
       </div>
 
       <div class="card-body-view">
@@ -342,6 +345,14 @@
       </div>
 
       <div class="card-actions-view">
+        <button class="btn-view-action" 
+                (click)="toggleAuthorizedSigner()"
+                [title]="selectedUser.isAuthorizedSigner ? 'Quitar firma autorizada' : 'Designar como firmante'"
+                [class.active-signer]="selectedUser.isAuthorizedSigner">
+          <svg viewBox="0 0 16 16">
+            <use xlink:href="./assets/icons/bootstrap-icons.svg#pen" />
+          </svg>
+        </button>
         <button class="btn-view-action" 
                 (click)="viewAndEdit()"
                 title="{{ 'userManagement.actions.edit' | translate }}">
