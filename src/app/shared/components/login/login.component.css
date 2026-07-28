@@ -16,18 +16,28 @@
     99
   ); /* Mantiene el color blanco también al pasar el ratón */
 }
-.login-container .custom-btn {
-  background-color: rgb(115, 115, 194);
-  color: white;
-  border: none;
-  padding: 0.5rem 1.5rem;
-  border-radius: 0.375rem;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+.login-container .custom-btn,
+.custom-btn {
+  background-color: var(--sidebar-background-color, #5c2d91) !important;
+  color: white !important;
+  border: none !important;
+  padding: 0.75rem 2.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  width: 100%;
+  max-width: 280px;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(92, 45, 145, 0.3);
 }
 .custom-btn:hover {
-  background-color: var(--sidebar-background-color);
-  transform: scale(1.05);
+  background-color: #4a2377 !important;
+  transform: scale(1.03);
   cursor: pointer;
+  color: white !important;
+  box-shadow: 0 6px 16px rgba(92, 45, 145, 0.4);
 }
 .custom-btn:active {
   transform: scale(0.98);
@@ -95,10 +105,7 @@
 }
 /* ------------------------------- */
 
-/* Redondear el botón de "Sign in" */
-.custom-btn {
-  border-radius: 30px; /* Asegúrate de que el botón también sea redondeado */
-}
+/* Card styles */
 .custom-card {
   max-width: 400px; /* Evita que el formulario sea demasiado ancho */
   width: 100%;
