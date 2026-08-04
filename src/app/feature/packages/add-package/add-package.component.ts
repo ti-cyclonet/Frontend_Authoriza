@@ -109,6 +109,7 @@ export class AddPackageComponent implements OnInit {
       isHighlighted: [false],
       ctaLabel: ['Elegir Plan'],
       ctaType: ['register'],
+      targetApplication: [''],
     });
 
     this.limitsForm = this.fb.group({});
@@ -135,6 +136,7 @@ export class AddPackageComponent implements OnInit {
       isHighlighted: (this.packageToEdit as any).isHighlighted || false,
       ctaLabel: (this.packageToEdit as any).ctaLabel || 'Elegir Plan',
       ctaType: (this.packageToEdit as any).ctaType || 'register',
+      targetApplication: (this.packageToEdit as any).targetApplication || '',
     });
 
     // Precargar variables de límite de uso (dinámicas)
@@ -660,6 +662,7 @@ export class AddPackageComponent implements OnInit {
       isHighlighted: formValues.isHighlighted || false,
       ctaLabel: formValues.ctaLabel || 'Elegir Plan',
       ctaType: formValues.ctaType || 'register',
+      targetApplication: formValues.targetApplication || null,
       configurations: this.roleConfigs,
       images: this.images,
       usageLimitVariables: this.buildUsageLimitVariables(),
@@ -691,6 +694,7 @@ export class AddPackageComponent implements OnInit {
           isHighlighted: dto.isHighlighted,
           ctaLabel: dto.ctaLabel,
           ctaType: dto.ctaType,
+          targetApplication: dto.targetApplication,
           configurations: this.roleConfigs,
           usageLimitVariables: dto.usageLimitVariables,
         }).subscribe({

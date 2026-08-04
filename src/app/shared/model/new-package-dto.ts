@@ -23,6 +23,7 @@ export interface NewPackageDTO {
   isHighlighted?: boolean;
   ctaLabel?: string;
   ctaType?: string;
+  targetApplication?: string | null;
   configurations: RoleConfigurationDTO[];
   images?: File[];
   usageLimitVariables?: UsageLimitVariableDTO[];
