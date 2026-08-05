@@ -110,6 +110,17 @@ export class AddPackageComponent implements OnInit {
     { variableName: 'sharedPockets', displayName: 'Bolsillos compartidos' },
     { variableName: 'p2pLoans', displayName: 'Préstamos P2P' },
   ];
+  kiriFeaturesPage = 0;
+  readonly KIRI_FEATURES_PAGE_SIZE = 6;
+
+  get pagedKiriFeatures() {
+    const start = this.kiriFeaturesPage * this.KIRI_FEATURES_PAGE_SIZE;
+    return this.kiriFeatures.slice(start, start + this.KIRI_FEATURES_PAGE_SIZE);
+  }
+
+  get totalKiriFeaturesPages() {
+    return Math.ceil(this.kiriFeatures.length / this.KIRI_FEATURES_PAGE_SIZE);
+  }
 
   constructor(
     private fb: FormBuilder,
