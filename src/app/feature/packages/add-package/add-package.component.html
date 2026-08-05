@@ -256,7 +256,7 @@
               Activa o desactiva las funcionalidades incluidas en este plan de Kiri Finance.
             </p>
             <div class="features-grid">
-              <div *ngFor="let feat of kiriFeatures" class="feature-toggle-row">
+              <div *ngFor="let feat of pagedKiriFeatures" class="feature-toggle-row">
                 <div class="feature-info">
                   <span class="feature-name">{{ feat.displayName }}</span>
                 </div>
@@ -265,6 +265,11 @@
                   <span class="toggle-track"><span class="toggle-thumb"></span></span>
                 </label>
               </div>
+            </div>
+            <div *ngIf="totalKiriFeaturesPages > 1" class="d-flex justify-content-between align-items-center mt-3 px-1" style="font-size: 0.78rem">
+              <button class="btn btn-outline-purple btn-sm" (click)="kiriFeaturesPage = kiriFeaturesPage - 1" [disabled]="kiriFeaturesPage === 0">Anterior</button>
+              <span>Pág. {{ kiriFeaturesPage + 1 }} de {{ totalKiriFeaturesPages }}</span>
+              <button class="btn btn-outline-purple btn-sm" (click)="kiriFeaturesPage = kiriFeaturesPage + 1" [disabled]="kiriFeaturesPage + 1 >= totalKiriFeaturesPages">Siguiente</button>
             </div>
           </div>
 
