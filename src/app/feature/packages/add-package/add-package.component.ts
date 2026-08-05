@@ -92,6 +92,25 @@ export class AddPackageComponent implements OnInit {
 
   // Landing features (auto-generated from usageLimitVariables)
 
+  // Kiri feature definitions for toggle mode
+  kiriFeatures = [
+    { variableName: 'budgetManagement', displayName: 'Gestión de presupuesto' },
+    { variableName: 'debtsTracking', displayName: 'Control de deudas' },
+    { variableName: 'fixedExpenses', displayName: 'Gastos fijos' },
+    { variableName: 'savingsPockets', displayName: 'Bolsillos de ahorro' },
+    { variableName: 'basicReports', displayName: 'Reportes básicos' },
+    { variableName: 'impulseExpenses', displayName: 'Gastos hormiga' },
+    { variableName: 'extraIncomes', displayName: 'Ingresos extras' },
+    { variableName: 'emergencyFund', displayName: 'Fondo de emergencia' },
+    { variableName: 'gamification', displayName: 'Gamificación y jardín virtual' },
+    { variableName: 'advancedReports', displayName: 'Reportes avanzados (PDF/Excel)' },
+    { variableName: 'debtStrategies', displayName: 'Estrategias de deuda' },
+    { variableName: 'aiCoach', displayName: 'Asistente IA financiero' },
+    { variableName: 'socialConnections', displayName: 'Conexiones sociales' },
+    { variableName: 'sharedPockets', displayName: 'Bolsillos compartidos' },
+    { variableName: 'p2pLoans', displayName: 'Préstamos P2P' },
+  ];
+
   constructor(
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
@@ -485,6 +504,34 @@ export class AddPackageComponent implements OnInit {
 
   isLimitAdded(variableName: string): boolean {
     return this.limitVariables.some(v => v.variableName === variableName);
+  }
+
+  // ─── Kiri Feature Mode Methods ────────────────────────────────────────────
+
+  getTargetApplication(): string {
+    return this.basicPackageForm?.get('targetApplication')?.value || '';
+  }
+
+  isFeatureEnabled(variableName: string): boolean {
+    const existing = this.limitVariables.find(v => v.variableName === variableName);
+    return existing ? existing.maxValue === 1 : false;
+  }
+
+  toggleFeature(variableName: string, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    const existing = this.limitVariables.find(v => v.variableName === variableName);
+    const feat = this.kiriFeatures.find(f => f.variableName === variableName);
+
+    if (existing) {
+      existing.maxValue = checked ? 1 : 0;
+    } else {
+      this.limitVariables.push({
+        variableName,
+        displayName: feat?.displayName || variableName,
+        maxValue: checked ? 1 : 0,
+        targetApplication: 'Kiri',
+      });
+    }
   }
 
   async addLimitVariable(variable: { variableName: string; displayName: string; targetApplication: string }) {
