@@ -247,10 +247,30 @@
         <!-- STEP 3: Límites de Uso (Dinámico) -->
         <div *ngIf="step3">
           <div class="d-flex align-items-center pb-3 mb-2" style="border-bottom: 1px solid var(--sidebar-background-color)">
-            <div class="title-form">Variables de Control de Límites</div>
+            <div class="title-form">Variables de Control</div>
           </div>
 
-          <!-- Acordeón: Variables Configuradas -->
+          <!-- Modo Kiri: Features (toggles on/off) -->
+          <div *ngIf="getTargetApplication() === 'Kiri'" class="kiri-features-mode">
+            <p class="text-muted mb-3" style="font-size: 0.82rem">
+              Activa o desactiva las funcionalidades incluidas en este plan de Kiri Finance.
+            </p>
+            <div class="features-grid">
+              <div *ngFor="let feat of kiriFeatures" class="feature-toggle-row">
+                <div class="feature-info">
+                  <span class="feature-name">{{ feat.displayName }}</span>
+                </div>
+                <label class="toggle-inline small-toggle">
+                  <input type="checkbox" [checked]="isFeatureEnabled(feat.variableName)" (change)="toggleFeature(feat.variableName, $event)"/>
+                  <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modo InOut / General: Variables de cantidad -->
+          <div *ngIf="getTargetApplication() !== 'Kiri'">
+            <!-- Acordeón: Variables Configuradas -->
           <div class="accordion-section">
             <button class="accordion-header" (click)="showConfiguredLimits = !showConfiguredLimits">
               <span>Variables Configuradas ({{ limitVariables.length }})</span>
@@ -351,6 +371,7 @@
               </div>
             </div>
           </div>
+          </div><!-- end InOut/General mode -->
         </div>
 
         <!-- STEP 4: Presentación -->

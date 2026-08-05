@@ -965,3 +965,20 @@ a.disabled {
   align-items: center;
   justify-content: center;
 }
+
+/* ─── Kiri Features Mode ─────────────────────────────────────────────────── */
+.kiri-features-mode { padding: 0.5rem 0; }
+.features-grid { display: flex; flex-direction: column; gap: 0.5rem; }
+.feature-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  border: 1px solid #e9ecef;
+  border-radius: 0.5rem;
+  transition: background 0.2s;
+}
+.feature-toggle-row:hover { background: #f8f9fa; }
+.feature-name { font-size: 0.85rem; font-weight: 500; }
+.small-toggle { margin: 0; }
+.small-toggle input[type="checkbox"] { width: 2.2rem; height: 1.2rem; }
