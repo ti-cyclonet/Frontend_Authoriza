@@ -10,6 +10,7 @@ export interface UsageLimitVariableDTO {
   displayName: string;
   maxValue: number;
   targetApplication: string;
+  limitType?: string;
 }
 
 export interface NewPackageDTO {
