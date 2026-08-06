@@ -80,7 +80,7 @@ export class AddPackageComponent implements OnInit {
   hasRoleConfigs: boolean = false;
 
   // Variables de límite dinámicas
-  limitVariables: { variableName: string; displayName: string; maxValue: number; targetApplication: string }[] = [];
+  limitVariables: { variableName: string; displayName: string; maxValue: number; targetApplication: string; limitType?: string }[] = [];
   showAddLimitRecord: boolean = false;
   showConfiguredLimits: boolean = true;
   showAvailableLimits: boolean = false;
@@ -541,6 +541,7 @@ export class AddPackageComponent implements OnInit {
         displayName: feat?.displayName || variableName,
         maxValue: checked ? 1 : 0,
         targetApplication: 'Kiri',
+        limitType: 'feature',
       });
     }
   }
@@ -700,6 +701,7 @@ export class AddPackageComponent implements OnInit {
       displayName: v.displayName,
       maxValue: v.maxValue,
       targetApplication: v.targetApplication,
+      limitType: v.limitType || 'quantity',
     }));
   }
 
