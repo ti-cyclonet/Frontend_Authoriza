@@ -474,6 +474,7 @@ export class AddPackageComponent implements OnInit {
     { variableName: 'nLotes', displayName: 'Lotes de Producción', targetApplication: 'Inout' },
     { variableName: 'nClientes', displayName: 'Clientes', targetApplication: 'Inout' },
     { variableName: 'nVentas', displayName: 'Ventas', targetApplication: 'Inout' },
+    { variableName: 'nPedidos', displayName: 'Pedidos', targetApplication: 'Inout' },
     { variableName: 'nSesionesCap', displayName: 'Sesiones de Capacitación', targetApplication: 'Inout' },
     { variableName: 'nDiasUso', displayName: 'Límite Temporal de Uso (días)', targetApplication: 'Inout' },
   ];
