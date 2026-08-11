@@ -14,6 +14,7 @@ export interface UserDependency {
   principalUserId: string;
   dependentUserId: string;
   status: string;
+  isAuthorizedSigner: boolean;
   createdAt: Date;
   updatedAt: Date;
   principalUser?: any;
@@ -50,5 +51,9 @@ export class UserDependenciesService {
 
   deleteDependency(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  updateSigner(id: string, isAuthorizedSigner: boolean): Observable<UserDependency> {
+    return this.http.patch<UserDependency>(`${this.apiUrl}/${id}/signer`, { isAuthorizedSigner });
   }
 }
