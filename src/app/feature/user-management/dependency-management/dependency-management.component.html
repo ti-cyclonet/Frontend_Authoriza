@@ -33,9 +33,21 @@
                   <span *ngFor="let role of principal.roles" class="role-tag">{{ role.strName }}</span>
                 </div>
               </div>
-              <span class="dependency-status" [class.active]="principal.dependencyStatus === 'ACTIVE'" [class.inactive]="principal.dependencyStatus === 'INACTIVE'">
-                {{ principal.dependencyStatus }}
-              </span>
+              <div class="dependency-actions">
+                <button 
+                  class="signer-toggle" 
+                  [class.active]="principal.isAuthorizedSigner"
+                  (click)="toggleSignerStatus(principal)"
+                  [title]="principal.isAuthorizedSigner ? 'Quitar como firmante' : 'Marcar como firmante'">
+                  <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
+                    <use xlink:href="./assets/icons/bootstrap-icons.svg#pen" />
+                  </svg>
+                  {{ principal.isAuthorizedSigner ? 'Firmante' : 'No firmante' }}
+                </button>
+                <span class="dependency-status" [class.active]="principal.dependencyStatus === 'ACTIVE'" [class.inactive]="principal.dependencyStatus === 'INACTIVE'">
+                  {{ principal.dependencyStatus }}
+                </span>
+              </div>
             </div>
           </div>
         </div>

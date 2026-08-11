@@ -216,6 +216,44 @@
   color: #721c24;
 }
 
+/* Signer toggle */
+.dependency-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.signer-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  background: #f8f9fa;
+  color: #6c757d;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.signer-toggle:hover {
+  border-color: #6600CC;
+  color: #6600CC;
+}
+
+.signer-toggle.active {
+  background: #6600CC;
+  border-color: #6600CC;
+  color: white;
+}
+
+.signer-toggle svg {
+  flex-shrink: 0;
+}
+
 /* Roles tags */
 .roles-in-card {
   display: flex;

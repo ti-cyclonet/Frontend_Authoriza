@@ -18,6 +18,8 @@ interface ExtendedUser {
   roles: any[];
   avatar?: string;
   dependencyStatus?: string;
+  dependencyId?: string;
+  isAuthorizedSigner?: boolean;
 }
 
 interface Package {
@@ -160,7 +162,9 @@ export class DependencyManagementComponent implements OnInit {
                 displayName: this.getUserDisplayName(user),
                 roles: rolesFromThisPrincipal,
                 isPrincipal: true,
-                dependencyStatus: dep.status
+                dependencyStatus: dep.status,
+                dependencyId: dep.id,
+                isAuthorizedSigner: dep.isAuthorizedSigner || false
               });
             }
           } catch (userError) {
@@ -690,5 +694,26 @@ export class DependencyManagementComponent implements OnInit {
 
   getAvailableUsersPageNumbers(): number[] {
     return Array.from({ length: this.availableUsersTotalPages }, (_, i) => i + 1);
+  }
+
+  toggleSignerStatus(principal: ExtendedUser): void {
+    if (!principal.dependencyId) return;
+    const newValue = !principal.isAuthorizedSigner;
+    this.userDependenciesService.updateSigner(principal.dependencyId, newValue).subscribe({
+      next: () => {
+        principal.isAuthorizedSigner = newValue;
+        this.cdr.detectChanges();
+        Swal.fire({
+          icon: 'success',
+          title: newValue ? 'Firmante autorizado' : 'Firmante removido',
+          text: `${this.user.displayName} ${newValue ? 'ahora es' : 'ya no es'} firmante autorizado de ${principal.displayName}`,
+          timer: 2000,
+          showConfirmButton: false
+        });
+      },
+      error: () => {
+        Swal.fire('Error', 'No se pudo actualizar el estado de firmante', 'error');
+      }
+    });
   }
 }
