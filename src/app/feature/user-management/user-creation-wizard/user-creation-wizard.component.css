@@ -204,6 +204,12 @@
   font-weight: 600;
 }
 
+.type-option.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* Document group */
 .document-input-group {
   display: flex;

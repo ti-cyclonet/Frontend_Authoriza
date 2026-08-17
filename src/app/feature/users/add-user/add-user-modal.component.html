@@ -39,17 +39,43 @@
               </div>
             <div class="form-group">
               <label for="applicationName">{{ 'users.modal.userNameLabel' | translate }}</label>
-              <input
-                formControlName="strUserName"
-                placeholder="{{ 'users.modal.emailPlaceholder' | translate }}"
-                class="form-control mb-1"
-              />
+              <div class="d-flex gap-2 align-items-start">
+                <input
+                  formControlName="strUserName"
+                  placeholder="{{ 'users.modal.emailPlaceholder' | translate }}"
+                  class="form-control mb-1 flex-grow-1"
+                />
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  style="white-space: nowrap; height: 38px;"
+                  [disabled]="userForm.get('strUserName')?.invalid || checkingEmail"
+                  (click)="verifyEmail()">
+                  <svg fill="currentColor" viewBox="0 0 16 16" style="width:14px;height:14px;margin-right:4px;" *ngIf="!checkingEmail">
+                    <use xlink:href="./assets/icons/bootstrap-icons.svg#search"></use>
+                  </svg>
+                  <span *ngIf="checkingEmail" class="spinner-border spinner-border-sm me-1"></span>
+                  {{ checkingEmail ? 'Verificando...' : 'Buscar' }}
+                </button>
+              </div>
             </div>
             <div
               class="text-danger mb-2"
-              *ngIf="userForm.get('strUserName')?.touched && userForm.get('strUserName')?.errors?.['taken']"
+              *ngIf="emailTaken"
             >
-              {{ 'users.modal.emailTaken' | translate }}
+              <svg fill="currentColor" viewBox="0 0 16 16" style="width:14px;height:14px;margin-right:4px;">
+                <use xlink:href="./assets/icons/bootstrap-icons.svg#x-circle-fill"></use>
+              </svg>
+              Este correo ya está registrado. No está disponible.
+            </div>
+            <div
+              class="text-success mb-2"
+              *ngIf="emailAvailable"
+            >
+              <svg fill="currentColor" viewBox="0 0 16 16" style="width:14px;height:14px;margin-right:4px;">
+                <use xlink:href="./assets/icons/bootstrap-icons.svg#check-circle-fill"></use>
+              </svg>
+              Correo disponible. Puedes continuar con el registro.
             </div>
             <div
               *ngIf="userForm.get('strUserName')?.touched && userForm.get('strUserName')?.errors?.['required']"
@@ -445,8 +471,8 @@
               *ngIf="currentStep === 1"
               class="btn btn-outline-dark btn-sm me-4 btn-fixed-width"
               type="button"
-              [disabled]="userForm.invalid"
-              (click)="createUser()"
+              [disabled]="!emailAvailable"
+              (click)="nextStep()"
             >
               <span class="d-none d-md-inline">{{ 'common.next' | translate }}</span>
               <svg fill="currentColor" viewBox="0 0 16 16" class="status-icon">
