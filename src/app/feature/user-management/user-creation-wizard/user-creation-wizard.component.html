@@ -27,23 +27,57 @@
         <form [formGroup]="basicInfoForm" class="wizard-form">
           <div class="form-group">
             <label class="form-label required">{{ 'userWizard.step1.username' | translate }}</label>
-            <input 
-              type="email" 
-              class="form-control"
-              formControlName="username"
-              [class.is-invalid]="isFieldInvalid('username')"
-              placeholder="{{ 'userWizard.step1.emailPlaceholder' | translate }}">
-            <div class="invalid-feedback" *ngIf="isFieldInvalid('username')">
+            <div class="d-flex gap-2 align-items-start">
+              <input 
+                type="email" 
+                class="form-control flex-grow-1"
+                formControlName="username"
+                [class.is-invalid]="isFieldInvalid('username')"
+                [class.is-valid]="emailVerified"
+                placeholder="{{ 'userWizard.step1.emailPlaceholder' | translate }}">
+              <button 
+                type="button"
+                class="btn btn-primary"
+                style="white-space: nowrap; height: 38px; min-width: 100px;"
+                [disabled]="basicInfoForm.get('username')?.invalid || checkingEmail"
+                (click)="verifyEmail()">
+                <span *ngIf="!checkingEmail">
+                  <svg viewBox="0 0 16 16" style="width:14px;height:14px;margin-right:4px;" fill="currentColor">
+                    <use xlink:href="./assets/icons/bootstrap-icons.svg#search" />
+                  </svg>
+                  Buscar
+                </span>
+                <span *ngIf="checkingEmail">
+                  <div class="spinner-border spinner-border-sm me-1" role="status"></div>
+                  Verificando...
+                </span>
+              </button>
+            </div>
+            <div class="invalid-feedback d-block" *ngIf="emailError">
+              <svg viewBox="0 0 16 16" style="width:12px;height:12px;margin-right:4px;" fill="currentColor">
+                <use xlink:href="./assets/icons/bootstrap-icons.svg#x-circle-fill" />
+              </svg>
+              {{ emailError }}
+            </div>
+            <div class="valid-feedback d-block" *ngIf="emailVerified" style="color: #198754;">
+              <svg viewBox="0 0 16 16" style="width:12px;height:12px;margin-right:4px;" fill="currentColor">
+                <use xlink:href="./assets/icons/bootstrap-icons.svg#check-circle-fill" />
+              </svg>
+              Correo disponible. Puedes continuar con el registro.
+            </div>
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('username') && !emailError">
               {{ getFieldError('username') | translate }}
             </div>
           </div>
 
+          <fieldset [disabled]="!emailVerified">
           <div class="form-group">
             <label class="form-label required">{{ 'userWizard.step1.personType' | translate }}</label>
             <div class="person-type-selector">
               <div class="type-option" 
                    [class.selected]="basicInfoForm.get('personType')?.value === 'N'"
-                   (click)="selectPersonType('N')">
+                   [class.disabled]="!emailVerified"
+                   (click)="emailVerified && selectPersonType('N')">
                 <svg viewBox="0 0 16 16">
                   <use xlink:href="./assets/icons/bootstrap-icons.svg#person" />
                 </svg>
@@ -51,7 +85,8 @@
               </div>
               <div class="type-option" 
                    [class.selected]="basicInfoForm.get('personType')?.value === 'J'"
-                   (click)="selectPersonType('J')">
+                   [class.disabled]="!emailVerified"
+                   (click)="emailVerified && selectPersonType('J')">
                 <svg viewBox="0 0 16 16">
                   <use xlink:href="./assets/icons/bootstrap-icons.svg#building" />
                 </svg>
@@ -277,6 +312,7 @@
               </div>
             </div>
           </div>
+          </fieldset>
         </form>
       </div>
     </div>
@@ -291,7 +327,7 @@
 
       <button 
         class="btn btn-success"
-        [disabled]="isCreating || !basicInfoForm.valid"
+        [disabled]="isCreating || !basicInfoForm.valid || !emailVerified"
         (click)="createUser()">
         <span *ngIf="!isCreating">
           <svg viewBox="0 0 16 16">

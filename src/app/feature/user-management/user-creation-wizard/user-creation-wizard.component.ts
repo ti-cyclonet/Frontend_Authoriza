@@ -6,6 +6,7 @@ import { UserDependenciesService } from '../../../shared/services/user-dependenc
 import { RolesService } from '../../../shared/services/roles/roles.service';
 import { PackagesService } from '../../../shared/services/packages/packages.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import Swal from 'sweetalert2';
 
 interface WizardStep {
   label: string;
@@ -44,6 +45,9 @@ export class UserCreationWizardComponent implements OnInit {
 
   currentStep: number = 1;
   isCreating: boolean = false;
+  emailVerified: boolean = false;
+  checkingEmail: boolean = false;
+  emailError: string = '';
 
   steps: WizardStep[] = [
     { label: 'userWizard.steps.basicInfo', isValid: false }
@@ -93,11 +97,7 @@ export class UserCreationWizardComponent implements OnInit {
 
   private initializeForms(): void {
     this.basicInfoForm = this.fb.group({
-      username: ['', {
-        validators: [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)],
-        asyncValidators: [this.usernameValidator.bind(this)],
-        updateOn: 'blur'
-      }],
+      username: ['', [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)]],
       personType: ['', Validators.required],
       // Persona Natural
       documentType: [''],
@@ -134,9 +134,46 @@ export class UserCreationWizardComponent implements OnInit {
       this.updatePersonTypeValidators(type);
     });
 
+    // Reset email verification when username changes
+    this.basicInfoForm.get('username')?.valueChanges.subscribe(() => {
+      this.emailVerified = false;
+      this.emailError = '';
+    });
+
     // Suscribirse a cambios en el tipo de usuario
     this.accountConfigForm.get('userType')?.valueChanges.subscribe(type => {
       this.updateUserTypeValidators(type);
+    });
+  }
+
+  verifyEmail(): void {
+    const usernameControl = this.basicInfoForm.get('username');
+    if (!usernameControl || usernameControl.invalid) {
+      usernameControl?.markAsTouched();
+      return;
+    }
+
+    this.checkingEmail = true;
+    this.emailError = '';
+    this.emailVerified = false;
+
+    this.userService.checkUserNameAvailability(usernameControl.value).subscribe({
+      next: (res) => {
+        this.checkingEmail = false;
+        if (res.available) {
+          this.emailVerified = true;
+          this.emailError = '';
+        } else {
+          this.emailVerified = false;
+          this.emailError = 'Este correo ya está registrado. No está disponible.';
+          usernameControl.setErrors({ taken: true });
+        }
+      },
+      error: () => {
+        this.checkingEmail = false;
+        this.emailVerified = false;
+        this.emailError = 'No se pudo verificar el correo. Intenta de nuevo.';
+      }
     });
   }
 
@@ -339,6 +376,15 @@ export class UserCreationWizardComponent implements OnInit {
       error: (error) => {
         console.error('Error creating user:', error);
         this.isCreating = false;
+        
+        const message = error.error?.message || 'Error desconocido al crear el usuario.';
+        Swal.fire({
+          icon: 'error',
+          title: 'No se pudo crear el usuario',
+          text: message,
+          confirmButtonColor: '#6600CC',
+          confirmButtonText: 'Entendido'
+        });
       }
     });
   }

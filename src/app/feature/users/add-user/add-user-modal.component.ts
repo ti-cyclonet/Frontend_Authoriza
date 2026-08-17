@@ -51,6 +51,8 @@ export class AddUserModalComponent {
 
   currentStep = 1;
   emailTaken = false;
+  emailAvailable = false;
+  checkingEmail = false;
 
   userForm: FormGroup;
   basicDataForm: FormGroup;
@@ -114,6 +116,12 @@ export class AddUserModalComponent {
       roleName: [''],
     });
 
+    // Reset email availability when user changes the email
+    this.userForm.get('strUserName')?.valueChanges.subscribe(() => {
+      this.emailAvailable = false;
+      this.emailTaken = false;
+    });
+
     this.basicDataForm.get('strPersonType')?.valueChanges.subscribe(personType => {
       if (personType === 'J') {
         this.documentForm.get('strDocumentType')?.disable();
@@ -145,6 +153,39 @@ export class AddUserModalComponent {
 
   prevStep() {
     this.currentStep--;
+  }
+
+  verifyEmail() {
+    this.emailTaken = false;
+    this.emailAvailable = false;
+
+    if (this.userForm.invalid) {
+      this.userForm.markAllAsTouched();
+      return;
+    }
+
+    this.checkingEmail = true;
+    const userName = this.userForm.value.strUserName;
+
+    this.userService.checkUserNameAvailability(userName).subscribe({
+      next: (res) => {
+        this.checkingEmail = false;
+        if (!res.available) {
+          this.emailTaken = true;
+          this.emailAvailable = false;
+          this.userForm.get('strUserName')?.setErrors({ taken: true });
+        } else {
+          this.emailTaken = false;
+          this.emailAvailable = true;
+        }
+      },
+      error: () => {
+        this.checkingEmail = false;
+        this.emailTaken = true;
+        this.emailAvailable = false;
+        this.userForm.get('strUserName')?.setErrors({ taken: true });
+      },
+    });
   }
 
   createUser() {
