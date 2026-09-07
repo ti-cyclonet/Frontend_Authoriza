@@ -134,10 +134,10 @@ export class AddContractComponent implements OnInit {
       status: ['PENDING', Validators.required],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
-      codeLetter1: ['', Validators.required],
-      codeLetter2: ['', Validators.required],
-      codeLetter3: ['', Validators.required],
-      businessSector: ['general', Validators.required],
+      codeLetter1: [''],
+      codeLetter2: [''],
+      codeLetter3: [''],
+      businessSector: ['general'],
     });
 
     // Validar prefijo con debounce

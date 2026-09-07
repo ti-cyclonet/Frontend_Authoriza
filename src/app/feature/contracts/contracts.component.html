@@ -222,7 +222,9 @@
             <option *ngFor="let s of statusOptions" [value]="s">{{ getStatusTranslation(s) }}</option>
           </select>
         </div>
-        <div class="edit-form-group">
+        <!-- Sector Empresarial solo aplica a contratos de InOut (planes empresariales).
+             Kiri/Shotra son planes personales y no lo usan. -->
+        <div class="edit-form-group" *ngIf="isInoutContract">
           <label>Sector Empresarial</label>
           <select [(ngModel)]="editData.businessSector">
             <option value="">Seleccionar sector</option>
