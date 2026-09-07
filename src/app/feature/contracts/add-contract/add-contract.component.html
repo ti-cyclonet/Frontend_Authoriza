@@ -504,6 +504,8 @@
                 </div>
               </div>
 
+              <!-- Campos exclusivos de InOut (código de materiales + sector empresarial) -->
+              <ng-container *ngIf="selectedPackage?.targetApplication === 'Inout'">
               <div class="row mb-3">
                 <div class="col-md-12">
                   <label class="form-label">{{ 'contracts.codePrefix' | translate }}</label>
@@ -549,6 +551,7 @@
                   <small class="text-muted">{{ 'contracts.businessSectorHelp' | translate }}</small>
                 </div>
               </div>
+              </ng-container>
             </form>
           </div>
 

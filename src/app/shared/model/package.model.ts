@@ -26,6 +26,7 @@ export interface Package {
   description: string;
   price?: number;
   isBillable?: boolean;
+  targetApplication?: string;
   configurations: Configuration[];
   images: Image[];
   usageLimitVariables?: UsageLimitVariableDTO[];
