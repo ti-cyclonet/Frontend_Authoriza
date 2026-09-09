@@ -213,4 +213,17 @@ export class UserService {
 
     return this.http.delete(url, { params });
   }
+
+  /**
+   * Sube la foto de perfil del usuario autenticado. Vive en Authoriza (identidad
+   * central) y se refleja en todas las apps. El interceptor agrega el Bearer.
+   * Se normaliza la base quitando un '/auth' final (prod) para construir
+   * '.../api/users/me/avatar' consistente en dev y prod.
+   */
+  uploadAvatar(file: File): Observable<{ url: string }> {
+    const base = this.baseApiUrl.replace(/\/auth\/?$/, '');
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<{ url: string }>(`${base}/users/me/avatar`, form);
+  }
 }

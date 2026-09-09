@@ -24,6 +24,7 @@ import { ChangePasswordComponent } from '../change-password/change-password.comp
 import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
 import { TranslationService } from '../../services/translation.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { UserService } from '../../services/user/user.service';
 
 let bootstrap: any;
 
@@ -41,6 +42,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   userRol: string | null = null;
   userRolDescription: string | null = null;
   userImage: string | null = null;
+  uploadingAvatar = false;
   private _isSidebarVisible: boolean = false;
   isModalOpen = false;
 
@@ -72,8 +74,36 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     private fb: FormBuilder,
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
-    private translationService: TranslationService
+    private translationService: TranslationService,
+    private userService: UserService
   ) {}
+
+  triggerAvatarInput(): void {
+    document.getElementById('avatarFileInput')?.click();
+  }
+
+  /** Sube la foto de perfil (avatar central de Authoriza) y refresca el header. */
+  onAvatarSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return;
+    this.uploadingAvatar = true;
+    this.userService.uploadAvatar(file).subscribe({
+      next: (res) => {
+        this.uploadingAvatar = false;
+        if (res?.url) {
+          this.userImage = res.url;
+          sessionStorage.setItem('user_image', res.url);
+          this.cdr.detectChanges();
+        }
+      },
+      error: () => {
+        this.uploadingAvatar = false;
+      },
+    });
+  }
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
