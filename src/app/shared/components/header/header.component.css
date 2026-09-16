@@ -89,6 +89,15 @@
 .btn.dropdown-toggle::after {
     display: none;
 }
+
+/* Avatar del usuario en el icono de la cabecera (reemplaza el icono generico) */
+.header-avatar-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+}
 .dropdown-menu .dropdown-item:hover {
   background-color: var(--header-background-color);
   color: var(--sidebar-background-color);
