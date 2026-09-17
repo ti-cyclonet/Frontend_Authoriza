@@ -33,6 +33,7 @@ export interface User {
       birthDate?: string;
       sex?: string;
       maritalStatus?: string;
+      phone?: string;
     };
     legalEntityData?: {
       businessName?: string;

@@ -418,7 +418,8 @@ export class UserCreationWizardComponent implements OnInit {
         secondSurname: basicInfo.secondSurname || '',
         birthDate: basicInfo.birthDate,
         maritalStatus: basicInfo.maritalStatus,
-        sex: basicInfo.sex
+        sex: basicInfo.sex,
+        phone: basicInfo.phone || ''
       };
     } else if (basicInfo.personType === 'J') {
       userData.legalEntityData = {

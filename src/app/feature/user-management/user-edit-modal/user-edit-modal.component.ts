@@ -45,6 +45,7 @@ export class UserEditModalComponent implements OnInit {
       birthDate: [(this.user.basicData?.naturalPersonData as any)?.birthDate || ''],
       sex: [(this.user.basicData?.naturalPersonData as any)?.sex || ''],
       maritalStatus: [(this.user.basicData?.naturalPersonData as any)?.maritalStatus || ''],
+      phone: [(this.user.basicData?.naturalPersonData as any)?.phone || ''],
       // Campos para persona jurídica
       businessName: [(this.user.basicData?.legalEntityData as any)?.businessName || ''],
       webSite: [(this.user.basicData?.legalEntityData as any)?.webSite || ''],
@@ -77,7 +78,8 @@ export class UserEditModalComponent implements OnInit {
         secondSurname: formValue.secondSurname,
         birthDate: formValue.birthDate,
         sex: formValue.sex,
-        maritalStatus: formValue.maritalStatus
+        maritalStatus: formValue.maritalStatus,
+        phone: formValue.phone
       };
     } else if (this.user.basicData?.strPersonType === 'J') {
       updateData.legalEntityData = {
