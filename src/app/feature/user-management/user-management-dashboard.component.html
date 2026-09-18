@@ -297,11 +297,15 @@
           </div>
           <div class="info-row" *ngIf="selectedUser.basicData?.naturalPersonData?.sex">
             <span class="label">Sexo:</span>
-            <span class="value">{{ selectedUser.basicData?.naturalPersonData?.sex === 'M' ? 'Masculino' : 'Femenino' }}</span>
+            <span class="value">{{ getSexLabel(selectedUser.basicData?.naturalPersonData?.sex) }}</span>
           </div>
           <div class="info-row" *ngIf="selectedUser.basicData?.naturalPersonData?.maritalStatus">
             <span class="label">Estado Civil:</span>
-            <span class="value">{{ selectedUser.basicData?.naturalPersonData?.maritalStatus }}</span>
+            <span class="value">{{ getMaritalStatusLabel(selectedUser.basicData?.naturalPersonData?.maritalStatus) }}</span>
+          </div>
+          <div class="info-row" *ngIf="selectedUser.basicData?.naturalPersonData?.phone">
+            <span class="label">Teléfono:</span>
+            <span class="value">{{ selectedUser.basicData?.naturalPersonData?.phone }}</span>
           </div>
         </div>
 

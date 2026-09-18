@@ -106,6 +106,8 @@ export class TranslationService {
       'users.modal.contactName': 'Contact Name',
       'users.modal.contactEmail': 'Contact Email',
       'users.modal.contactPhone': 'Contact Phone',
+      'users.modal.phone': 'Phone',
+      'users.modal.phonePlaceholder': '+57 300 123 4567',
       'users.modal.emailTaken': 'This email is already registered',
       'users.status': 'Status',
       
@@ -473,6 +475,8 @@ export class TranslationService {
       'users.modal.contactName': 'Nombre de Contacto',
       'users.modal.contactEmail': 'Correo de Contacto',
       'users.modal.contactPhone': 'Teléfono de Contacto',
+      'users.modal.phone': 'Teléfono',
+      'users.modal.phonePlaceholder': '+57 300 123 4567',
       'users.modal.emailTaken': 'Este correo ya está registrado',
       'users.status': 'Estado',
       

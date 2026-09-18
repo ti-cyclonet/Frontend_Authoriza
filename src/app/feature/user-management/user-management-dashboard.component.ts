@@ -519,6 +519,36 @@ export class UserManagementDashboardComponent implements OnInit {
     return user.strUserName;
   }
 
+  // Normaliza sexo/estado civil: distintas apps del ecosistema guardaron el
+  // mismo dato con convenciones distintas (código de una letra vs. texto
+  // completo en español), así que se mapean todas las variantes conocidas
+  // en vez de mostrar el código crudo.
+  getSexLabel(value?: string): string {
+    const map: { [key: string]: string } = {
+      M: 'Masculino',
+      F: 'Femenino',
+      O: 'Otro',
+    };
+    return map[value || ''] || value || '';
+  }
+
+  getMaritalStatusLabel(value?: string): string {
+    const map: { [key: string]: string } = {
+      S: 'Soltero(a)',
+      'SOLTERO (a)': 'Soltero(a)',
+      C: 'Casado(a)',
+      M: 'Casado(a)',
+      'CASADO (a)': 'Casado(a)',
+      U: 'Unión Libre',
+      'UNION LIBRE': 'Unión Libre',
+      D: 'Divorciado(a)',
+      V: 'Viudo(a)',
+      O: 'Otro',
+      OTRO: 'Otro',
+    };
+    return map[value || ''] || value || '';
+  }
+
   getUserAvatar(user: ExtendedUser): string {
     if (user.avatar) {
       return user.avatar;
