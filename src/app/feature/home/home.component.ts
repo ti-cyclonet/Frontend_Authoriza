@@ -173,6 +173,32 @@ export class HomeComponent implements OnInit {
     };
   }
 
+  /**
+   * Ícono + color por aplicación del ecosistema, para las tarjetas de "Uso
+   * por aplicación". Se empareja por substring del nombre (case-insensitive)
+   * porque el nombre exacto en la tabla `application` puede variar
+   * ligeramente (ej. "AidCash" vs "Kiri Finance"); cualquier app nueva que no
+   * matchee cae al ícono/color genérico en vez de romper la vista.
+   */
+  private readonly appVisuals: { match: string; icon: string; colorClass: string }[] = [
+    { match: 'authoriza', icon: 'shield-lock-fill', colorClass: 'app-authoriza' },
+    { match: 'inout', icon: 'truck', colorClass: 'app-inout' },
+    { match: 'facto', icon: 'cash-coin', colorClass: 'app-factonet' },
+    { match: 'shotra', icon: 'bicycle', colorClass: 'app-shotra' },
+    { match: 'kiri', icon: 'wallet2', colorClass: 'app-kiri' },
+    { match: 'aidcash', icon: 'wallet2', colorClass: 'app-kiri' },
+  ];
+
+  getAppIcon(appName: string): string {
+    const found = this.appVisuals.find(v => appName?.toLowerCase().includes(v.match));
+    return found?.icon || 'grid-3x3-gap-fill';
+  }
+
+  getAppColorClass(appName: string): string {
+    const found = this.appVisuals.find(v => appName?.toLowerCase().includes(v.match));
+    return found?.colorClass || 'app-generic';
+  }
+
   prepareChartData() {
     if (!this.stats) return;
 

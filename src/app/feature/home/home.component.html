@@ -32,8 +32,41 @@
       <p class="dashboard-subtitle">{{ 'dashboard.subtitle' | translate }}</p>
     </div>
 
+    <!-- Uso por Aplicación: lo primero que se ve, un tile de color por app -->
+    <div class="apps-usage-section" *ngIf="stats.applications?.byApplication?.length">
+      <h5 class="section-title">{{ 'dashboard.usageByApplication' | translate }}</h5>
+      <div class="apps-grid">
+        <div class="app-tile" *ngFor="let app of stats.applications.byApplication" [class]="getAppColorClass(app.name)">
+          <div class="app-tile-icon">
+            <svg viewBox="0 0 16 16">
+              <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + getAppIcon(app.name)"/>
+            </svg>
+          </div>
+          <div class="app-tile-info">
+            <h4>{{ app.userCount }}</h4>
+            <p>{{ app.name }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Stats Cards Row -->
     <div class="stats-grid">
+      <!-- Pending Signature Contracts Card -->
+      <div class="stat-card" *ngIf="stats.contracts">
+        <div class="stat-header">
+          <div class="stat-icon pending-signature-icon">
+            <svg viewBox="0 0 16 16">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#pen-fill"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <h4>{{ stats.contracts.pendingSignature }}</h4>
+            <p>{{ 'dashboard.pendingSignatureContracts' | translate }}</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Applications Card -->
       <div class="stat-card" *ngIf="stats.applications">
         <div class="stat-header">

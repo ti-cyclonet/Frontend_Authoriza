@@ -27,6 +27,13 @@ export interface DashboardStats {
     total: number;
     byPackage: { name: string; contractCount: number; roleCount: number }[];
   };
+  contracts: {
+    total: number;
+    active: number;
+    expired: number;
+    pendingSignature: number;
+    byStatus: { status: string; count: number }[];
+  };
   lastUpdated: Date;
 }
 
