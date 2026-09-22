@@ -32,17 +32,17 @@
       <p class="dashboard-subtitle">{{ 'dashboard.subtitle' | translate }}</p>
     </div>
 
-    <!-- Uso por Aplicación: lo primero que se ve, un tile de color por app -->
+    <!-- Uso por Aplicación: una sola tarjeta blanca, solo el ícono cambia de color por app -->
     <div class="apps-usage-section" *ngIf="stats.applications?.byApplication?.length">
       <h5 class="section-title">{{ 'dashboard.usageByApplication' | translate }}</h5>
-      <div class="apps-grid">
-        <div class="app-tile" *ngFor="let app of stats.applications.byApplication" [class]="getAppColorClass(app.name)">
-          <div class="app-tile-icon">
-            <svg viewBox="0 0 16 16">
+      <div class="apps-usage-card">
+        <div class="app-usage-item" *ngFor="let app of stats.applications.byApplication">
+          <div class="app-usage-icon">
+            <svg viewBox="0 0 16 16" [class]="getAppColorClass(app.name)">
               <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + getAppIcon(app.name)"/>
             </svg>
           </div>
-          <div class="app-tile-info">
+          <div class="app-usage-info">
             <h4>{{ app.userCount }}</h4>
             <p>{{ app.name }}</p>
           </div>
