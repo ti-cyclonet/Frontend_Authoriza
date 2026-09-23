@@ -37,6 +37,16 @@ export interface DashboardStats {
   lastUpdated: Date;
 }
 
+export interface InvoiceStats {
+  total: number;
+  totalValue: number;
+  paid: number;
+  pending: number;
+  overdue: number;
+  byStatus: { status: string; count: number; value: number }[];
+  monthlyRevenue: { month: string; revenue: number }[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -55,5 +65,15 @@ export class DashboardService {
 
   getEntityCodes(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/entity-codes`);
+  }
+
+  /** Estadísticas de facturas en un rango de fechas (ambos opcionales: sin
+   * fechas trae el histórico completo). */
+  getInvoiceStats(startDate?: string, endDate?: string): Observable<InvoiceStats> {
+    let params = '';
+    if (startDate && endDate) {
+      params = `?startDate=${startDate}&endDate=${endDate}`;
+    }
+    return this.http.get<InvoiceStats>(`${this.apiUrl}/invoices/stats${params}`);
   }
 }

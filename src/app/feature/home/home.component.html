@@ -50,54 +50,9 @@
       </div>
     </div>
 
-    <!-- Stats Cards Row -->
+    <!-- Panel de control: 4 tarjetas KPI principales -->
     <div class="stats-grid">
-      <!-- Pending Signature Contracts Card -->
-      <div class="stat-card" *ngIf="stats.contracts">
-        <div class="stat-header">
-          <div class="stat-icon pending-signature-icon">
-            <svg viewBox="0 0 16 16">
-              <use xlink:href="./assets/icons/bootstrap-icons.svg#pen-fill"/>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <h4>{{ stats.contracts.pendingSignature }}</h4>
-            <p>{{ 'dashboard.pendingSignatureContracts' | translate }}</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Applications Card -->
-      <div class="stat-card" *ngIf="stats.applications">
-        <div class="stat-header">
-          <div class="stat-icon invoices-icon">
-            <svg viewBox="0 0 16 16">
-              <use xlink:href="./assets/icons/bootstrap-icons.svg#grid-3x3-gap-fill"/>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <h4>{{ stats.applications.total }}</h4>
-            <p>{{ 'dashboard.applications' | translate }}</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Packages Card -->
-      <div class="stat-card" *ngIf="stats.packages">
-        <div class="stat-header">
-          <div class="stat-icon revenue-icon">
-            <svg viewBox="0 0 16 16">
-              <use xlink:href="./assets/icons/bootstrap-icons.svg#box-seam"/>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <h4>{{ stats.packages.total }}</h4>
-            <p>{{ 'dashboard.packages' | translate }}</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Users Card -->
+      <!-- Usuarios totales -->
       <div class="stat-card">
         <div class="stat-header">
           <div class="stat-icon users-icon">
@@ -108,26 +63,63 @@
           <div class="stat-info">
             <h4>{{ stats.users.total }}</h4>
             <p>{{ 'dashboard.totalUsers' | translate }}</p>
-          </div>
-        </div>
-        <div class="stat-details">
-          <div class="stat-item">
-            <span class="badge badge-success">{{ stats.users.active }}</span>
-            <span>{{ 'dashboard.active' | translate }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="badge badge-secondary">{{ stats.users.inactive }}</span>
-            <span>{{ 'dashboard.inactive' | translate }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="badge badge-warning">{{ stats.users.unconfirmed }}</span>
-            <span>{{ 'dashboard.unconfirmed' | translate }}</span>
+            <span class="stat-sublabel">{{ stats.users.active }} {{ 'dashboard.active' | translate | lowercase }}</span>
           </div>
         </div>
       </div>
 
-      <!-- Principal Users Card -->
-      <div class="stat-card" *ngIf="stats.principalUsers">
+      <!-- Contratos activos -->
+      <div class="stat-card" *ngIf="stats.contracts">
+        <div class="stat-header">
+          <div class="stat-icon contracts-icon">
+            <svg viewBox="0 0 16 16">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#file-earmark-check-fill"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <h4>{{ stats.contracts.active }}</h4>
+            <p>{{ 'dashboard.activeContracts' | translate }}</p>
+            <span class="stat-sublabel">{{ stats.contracts.pendingSignature }} {{ 'dashboard.pendingSignatureContracts' | translate | lowercase }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Facturas pendientes -->
+      <div class="stat-card" *ngIf="invoiceStats">
+        <div class="stat-header">
+          <div class="stat-icon pending-signature-icon">
+            <svg viewBox="0 0 16 16">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#exclamation-triangle-fill"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <h4>{{ invoiceStats.pending }}</h4>
+            <p>{{ 'dashboard.pendingInvoices' | translate }}</p>
+            <span class="stat-sublabel" *ngIf="invoiceStats.overdue > 0">{{ invoiceStats.overdue }} {{ 'dashboard.overdue' | translate | lowercase }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monto facturado este mes -->
+      <div class="stat-card" *ngIf="invoiceStats">
+        <div class="stat-header">
+          <div class="stat-icon revenue-icon">
+            <svg viewBox="0 0 16 16">
+              <use xlink:href="./assets/icons/bootstrap-icons.svg#cash-coin"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <h4>{{ formatCurrency(invoiceStats.totalValue) }}</h4>
+            <p>{{ 'dashboard.monthlyBilled' | translate }}</p>
+            <span class="stat-sublabel">{{ invoiceStats.total }} {{ 'dashboard.invoices' | translate | lowercase }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Usuarios Principales (detalle por estado) -->
+    <div class="stats-grid" *ngIf="stats.principalUsers">
+      <div class="stat-card">
         <div class="stat-header">
           <div class="stat-icon contracts-icon">
             <svg viewBox="0 0 16 16">
@@ -201,16 +193,31 @@
           <h5>{{ 'dashboard.applicationsByUsers' | translate }}</h5>
         </div>
         <div class="chart-content">
-          <div class="role-list">
-            <div *ngFor="let app of stats.applications.byApplication" class="role-item">
-              <div class="role-info">
-                <span class="role-name">{{ app.name }}</span>
-                <span class="role-count">{{ app.userCount }} usuarios</span>
-              </div>
-              <div class="role-bar">
-                <div class="role-progress" [style.width.%]="(app.userCount / stats.users.total) * 100"></div>
-              </div>
-            </div>
+          <div class="bar-chart-container">
+            <p-chart
+              *ngIf="appsByUsersChartData"
+              type="bar"
+              [data]="appsByUsersChartData"
+              [options]="barChartOptions">
+            </p-chart>
+          </div>
+        </div>
+      </div>
+
+      <!-- Facturas por Estado -->
+      <div class="chart-card" *ngIf="invoiceStats">
+        <div class="chart-header">
+          <h5>{{ 'dashboard.invoiceStatus' | translate }}</h5>
+        </div>
+        <div class="chart-content">
+          <div class="chart-container">
+            <p-chart
+              *ngIf="invoiceStatusChartData"
+              type="doughnut"
+              [data]="invoiceStatusChartData"
+              [options]="chartOptions"
+              [style]="{'max-width': chartSize, 'width': '100%', 'aspect-ratio': '1'}">
+            </p-chart>
           </div>
         </div>
       </div>
@@ -229,6 +236,74 @@
                 <span class="status-value">{{ pkg.roleCount }} roles</span>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumen operativo: tasa de pago, contratos por estado, resumen -->
+    <div class="summary-grid">
+      <!-- Tasa de facturas pagadas (gauge) -->
+      <div class="chart-card" *ngIf="invoiceStats">
+        <div class="chart-header">
+          <h5>{{ 'dashboard.paidRate' | translate }}</h5>
+        </div>
+        <div class="gauge-container">
+          <p-chart
+            *ngIf="paidRateChartData"
+            type="doughnut"
+            [data]="paidRateChartData"
+            [options]="gaugeChartOptions"
+            styleClass="gauge-chart">
+          </p-chart>
+          <div class="gauge-label">
+            <span class="gauge-percent">{{ paidRatePercent }}%</span>
+            <span class="gauge-caption">{{ 'dashboard.paid' | translate }}</span>
+          </div>
+        </div>
+        <p class="gauge-footnote" *ngIf="invoiceStats">{{ invoiceStats.paid }} {{ 'dashboard.of' | translate }} {{ invoiceStats.total }} {{ 'dashboard.invoices' | translate | lowercase }}</p>
+      </div>
+
+      <!-- Contratos por estado -->
+      <div class="chart-card" *ngIf="stats.contracts?.byStatus?.length">
+        <div class="chart-header">
+          <h5>{{ 'dashboard.contractsByStatus' | translate }}</h5>
+        </div>
+        <div class="small-bar-container">
+          <p-chart
+            *ngIf="contractsByStatusChartData"
+            type="bar"
+            [data]="contractsByStatusChartData"
+            [options]="smallBarChartOptions">
+          </p-chart>
+        </div>
+      </div>
+
+      <!-- Resumen operativo -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h5>{{ 'dashboard.operationalSummary' | translate }}</h5>
+        </div>
+        <div class="op-summary-list">
+          <div class="op-summary-item" *ngIf="stats.applications">
+            <div class="op-summary-icon"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#grid-3x3-gap-fill"/></svg></div>
+            <span class="op-summary-label">{{ 'dashboard.applications' | translate }}</span>
+            <span class="op-summary-value">{{ stats.applications.total }}</span>
+          </div>
+          <div class="op-summary-item" *ngIf="stats.packages">
+            <div class="op-summary-icon"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#box-seam"/></svg></div>
+            <span class="op-summary-label">{{ 'dashboard.packages' | translate }}</span>
+            <span class="op-summary-value">{{ stats.packages.total }}</span>
+          </div>
+          <div class="op-summary-item" *ngIf="stats.users.unconfirmed > 0">
+            <div class="op-summary-icon"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#person-exclamation"/></svg></div>
+            <span class="op-summary-label">{{ 'dashboard.unconfirmed' | translate }}</span>
+            <span class="op-summary-value op-summary-warning">{{ stats.users.unconfirmed }}</span>
+          </div>
+          <div class="op-summary-item" *ngIf="invoiceStats && invoiceStats.overdue > 0">
+            <div class="op-summary-icon"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#exclamation-octagon-fill"/></svg></div>
+            <span class="op-summary-label">{{ 'dashboard.overdue' | translate }}</span>
+            <span class="op-summary-value op-summary-danger">{{ invoiceStats.overdue }}</span>
           </div>
         </div>
       </div>
