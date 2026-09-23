@@ -213,6 +213,13 @@ export class TranslationService {
       'dashboard.invoiceStatuses.Issued': 'Issued',
       'dashboard.invoiceStatuses.Unconfirmed': 'Unconfirmed',
       'dashboard.invoiceStatuses.In arrears': 'Overdue',
+      'dashboard.activeContracts': 'Active Contracts',
+      'dashboard.pendingInvoices': 'Pending Invoices',
+      'dashboard.monthlyBilled': 'Billed This Month',
+      'dashboard.paidRate': 'Payment Rate',
+      'dashboard.contractsByStatus': 'Contracts by Status',
+      'dashboard.operationalSummary': 'Operational Summary',
+      'dashboard.of': 'of',
       
       // Applications
       'apps.title': 'Application Management',
@@ -584,6 +591,13 @@ export class TranslationService {
       'dashboard.invoiceStatuses.Issued': 'Emitido',
       'dashboard.invoiceStatuses.Unconfirmed': 'Sin confirmar',
       'dashboard.invoiceStatuses.In arrears': 'Vencido',
+      'dashboard.activeContracts': 'Contratos Activos',
+      'dashboard.pendingInvoices': 'Facturas Pendientes',
+      'dashboard.monthlyBilled': 'Facturado Este Mes',
+      'dashboard.paidRate': 'Tasa de Facturas Pagadas',
+      'dashboard.contractsByStatus': 'Contratos por Estado',
+      'dashboard.operationalSummary': 'Resumen Operativo',
+      'dashboard.of': 'de',
       
       // Applications
       'apps.title': 'Gestión de Aplicaciones',
