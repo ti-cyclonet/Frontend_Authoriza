@@ -6,11 +6,12 @@ import { CardModule } from 'primeng/card';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { DashboardService, DashboardStats, InvoiceStats } from '../../shared/services/dashboard/dashboard.service';
 import { TranslationService } from '../../shared/services/translation.service';
+import { PlatformCostsComponent } from './platform-costs/platform-costs.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, ChartModule, CardModule, ProgressBarModule, TranslatePipe],
+  imports: [CommonModule, ChartModule, CardModule, ProgressBarModule, TranslatePipe, PlatformCostsComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
@@ -34,6 +35,8 @@ export class HomeComponent implements OnInit {
   smallBarChartOptions: any;
   chartOptions: any;
   chartSize: string = '300px';
+  /** Costos de plataformas externas: solo administradores de Authoriza. */
+  readonly isPlatformAdmin = sessionStorage.getItem('user_rol') === 'adminAuthoriza';
 
   constructor(
     private dashboardService: DashboardService,
