@@ -1,0 +1,202 @@
+<section class="pc-section">
+  <div class="pc-header">
+    <div>
+      <h3 class="pc-title">
+        <svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#speedometer2"/></svg>
+        {{ 'pc.title' | translate }}
+      </h3>
+      <p class="pc-subtitle">{{ 'pc.subtitle' | translate }}</p>
+    </div>
+    <div class="pc-actions">
+      <input type="month" class="form-control form-control-sm" [(ngModel)]="month" (change)="load()" />
+      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="toggleSettings()">
+        {{ (showSettings ? 'pc.hideSettings' : 'pc.settings') | translate }}
+      </button>
+      <button type="button" class="btn btn-sm btn-primary" (click)="sync()" [disabled]="syncing">
+        {{ (syncing ? 'pc.syncing' : 'pc.syncNow') | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger py-2">{{ error }}</div>
+  <div *ngIf="message" class="alert alert-info py-2">{{ message }}</div>
+  <div *ngIf="loading" class="pc-loading">{{ 'dashboard.loading' | translate }}</div>
+
+  <!-- ═════ Configuración ═════ -->
+  <div *ngIf="showSettings && settings" class="pc-settings">
+    <div class="pc-settings-grid">
+      <div class="pc-field">
+        <label>{{ 'pc.usdToCop' | translate }}</label>
+        <input type="number" min="1" class="form-control form-control-sm" [(ngModel)]="settings.usdToCop" />
+      </div>
+      <div class="pc-field">
+        <label>{{ 'pc.cloudinaryPlan' | translate }}</label>
+        <input type="number" min="0" step="0.01" class="form-control form-control-sm" [(ngModel)]="settings.cloudinaryMonthlyUsd" />
+      </div>
+      <div class="pc-field">
+        <label>{{ 'pc.cloudinaryCredit' | translate }}</label>
+        <input type="number" min="0" step="0.0001" class="form-control form-control-sm" [(ngModel)]="settings.cloudinaryUsdPerCredit" />
+      </div>
+    </div>
+
+    <h6>{{ 'pc.budgets' | translate }}</h6>
+    <div class="pc-settings-grid">
+      <div class="pc-field" *ngFor="let p of platformNames">
+        <label>{{ platformLabel(p) }} (USD)</label>
+        <input type="number" min="0" step="0.01" class="form-control form-control-sm" [(ngModel)]="settings.budgets[p]" />
+      </div>
+    </div>
+
+    <h6>{{ 'pc.awsAllocation' | translate }} <small [class.text-danger]="allocationTotal() !== 100">({{ allocationTotal() }} %)</small></h6>
+    <div class="pc-settings-grid">
+      <div class="pc-field" *ngFor="let a of applications">
+        <label>{{ a }} (%)</label>
+        <input type="number" min="0" max="100" class="form-control form-control-sm" [(ngModel)]="settings.awsAllocation[a]" />
+      </div>
+    </div>
+
+    <h6>{{ 'pc.rates' | translate }}</h6>
+    <div class="pc-settings-grid">
+      <div class="pc-field" *ngFor="let r of settings.rates">
+        <label>{{ r.label || (r.platform + ' · ' + r.metric) }} (USD)</label>
+        <input type="number" min="0" step="0.000001" class="form-control form-control-sm" [(ngModel)]="r.usdPerUnit" />
+      </div>
+    </div>
+
+    <div class="text-end">
+      <button type="button" class="btn btn-sm btn-primary" (click)="saveSettings()" [disabled]="saving">
+        {{ (saving ? 'pc.saving' : 'pc.save') | translate }}
+      </button>
+    </div>
+  </div>
+
+  <ng-container *ngIf="data && !loading">
+    <!-- ═════ Resumen ═════ -->
+    <div class="pc-kpis">
+      <div class="pc-kpi">
+        <span class="pc-kpi-label">{{ 'pc.totalMonth' | translate }}</span>
+        <span class="pc-kpi-value">{{ usd(data.totals.costUsd) }}</span>
+        <span class="pc-kpi-sub">{{ cop(data.totals.costCop) }}</span>
+      </div>
+      <div class="pc-kpi">
+        <span class="pc-kpi-label">{{ 'pc.projection' | translate }}</span>
+        <span class="pc-kpi-value">{{ usd(data.totals.projectedUsd) }}</span>
+        <span class="pc-kpi-sub">{{ 'pc.day' | translate }} {{ data.daysElapsed }} / {{ data.daysInMonth }}</span>
+      </div>
+      <div class="pc-kpi">
+        <span class="pc-kpi-label">{{ 'pc.previousMonth' | translate }}</span>
+        <span class="pc-kpi-value">{{ usd(data.totals.previousUsd) }}</span>
+        <span class="pc-kpi-sub" *ngIf="variation(data.totals.projectedUsd, data.totals.previousUsd) as v"
+              [class.up]="v > 0" [class.down]="v < 0">
+          {{ v > 0 ? '▲' : '▼' }} {{ v }} % {{ 'pc.vsProjection' | translate }}
+        </span>
+      </div>
+      <div class="pc-kpi">
+        <span class="pc-kpi-label">{{ 'pc.revenue' | translate }}</span>
+        <span class="pc-kpi-value">{{ cop(data.totals.revenueCop) }}</span>
+        <span class="pc-kpi-sub">{{ 'pc.margin' | translate }}: {{ cop(data.totals.revenueCop - data.totals.costCop) }}</span>
+      </div>
+    </div>
+
+    <!-- ═════ Plataformas ═════ -->
+    <div class="pc-platforms">
+      <div class="pc-card" *ngFor="let p of data.platforms" [class.pc-alert]="p.alert" [ngClass]="'pc-' + p.platform.toLowerCase()">
+        <div class="pc-card-head">
+          <span class="pc-icon"><svg viewBox="0 0 16 16"><use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + platformIcon(p.platform)"/></svg></span>
+          <div class="pc-card-title">
+            <strong>{{ platformLabel(p.platform) }}</strong>
+            <span class="pc-badge" [class.pc-badge-est]="p.estimated">{{ (p.estimated ? 'pc.estimated' : 'pc.real') | translate }}</span>
+          </div>
+        </div>
+        <div class="pc-card-amount">{{ usd(p.costUsd) }}</div>
+        <div class="pc-card-cop">{{ cop(p.costCop) }}</div>
+        <div class="pc-card-row"><span>{{ 'pc.projection' | translate }}</span><span>{{ usd(p.projectedUsd) }}</span></div>
+        <div class="pc-card-row"><span>{{ 'pc.previousMonth' | translate }}</span><span>{{ usd(p.previousUsd) }}</span></div>
+
+        <div *ngIf="p.budgetUsd > 0" class="pc-budget">
+          <div class="pc-card-row"><span>{{ 'pc.budget' | translate }} {{ usd(p.budgetUsd) }}</span><span>{{ p.budgetPct }} %</span></div>
+          <div class="pc-bar"><div class="pc-bar-fill" [style.width.%]="barWidth(p.budgetPct)" [class.warn]="p.alert"></div></div>
+          <small *ngIf="p.alert" class="pc-alert-text">{{ 'pc.budgetAlert' | translate }}</small>
+        </div>
+
+        <div *ngIf="p.platform === 'CLOUDINARY' && data.cloudinary" class="pc-budget">
+          <div class="pc-card-row">
+            <span>{{ 'pc.credits' | translate }} {{ data.cloudinary.creditsUsed | number:'1.0-2' }} / {{ data.cloudinary.creditsLimit | number:'1.0-0' }}</span>
+            <span>{{ data.cloudinary.usedPercent | number:'1.0-1' }} %</span>
+          </div>
+          <div class="pc-bar"><div class="pc-bar-fill" [style.width.%]="barWidth(data.cloudinary.usedPercent)" [class.warn]="data.cloudinary.usedPercent >= 80"></div></div>
+        </div>
+
+        <ul *ngIf="p.services?.length" class="pc-services">
+          <li *ngFor="let s of p.services!.slice(0, 5)"><span>{{ s.service }}</span><span>{{ usd(s.usd) }}</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ═════ Consumo medido ═════ -->
+    <div class="pc-usage">
+      <div class="pc-usage-item"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#envelope-fill"/></svg><strong>{{ int(data.usage.emails) }}</strong><span>{{ 'pc.emails' | translate }}</span></div>
+      <div class="pc-usage-item"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#cloud-upload-fill"/></svg><strong>{{ int(data.usage.uploads) }}</strong><span>{{ 'pc.uploads' | translate }}</span></div>
+      <div class="pc-usage-item"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#hdd-fill"/></svg><strong>{{ mb(data.usage.uploadBytes) }}</strong><span>{{ 'pc.uploaded' | translate }}</span></div>
+      <div class="pc-usage-item"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#bank2"/></svg><strong>{{ int(data.usage.belvoCalls) }}</strong><span>{{ 'pc.belvoCalls' | translate }}</span></div>
+    </div>
+
+    <!-- ═════ Por aplicación ═════ -->
+    <h5 class="pc-block-title">{{ 'pc.byApplication' | translate }}</h5>
+    <div class="pc-apps">
+      <div class="pc-app" *ngFor="let a of data.byApplication">
+        <div class="pc-app-head">
+          <span class="pc-app-dot" [ngClass]="appClass(a.application)"></span>
+          <strong>{{ a.application }}</strong>
+          <span class="pc-app-total">{{ usd(a.totalUsd) }}</span>
+        </div>
+        <div class="pc-card-row"><span>AWS</span><span>{{ usd(a.awsUsd) }}</span></div>
+        <div class="pc-card-row"><span>SES</span><span>{{ usd(a.sesUsd) }}</span></div>
+        <div class="pc-card-row"><span>Cloudinary</span><span>{{ usd(a.cloudinaryUsd) }}</span></div>
+        <div class="pc-card-row" *ngIf="a.belvoUsd > 0 || a.application === 'Kiri'"><span>Belvo</span><span>{{ usd(a.belvoUsd) }}</span></div>
+        <div class="pc-app-foot">
+          <div class="pc-card-row"><span>{{ 'pc.cost' | translate }}</span><span>{{ cop(a.costCop) }}</span></div>
+          <div class="pc-card-row"><span>{{ 'pc.revenue' | translate }}</span><span>{{ cop(a.revenueCop) }}</span></div>
+          <div class="pc-card-row pc-margin" [class.neg]="a.marginCop < 0">
+            <span>{{ 'pc.margin' | translate }}</span>
+            <span>{{ cop(a.marginCop) }}<ng-container *ngIf="a.marginPct !== null"> ({{ a.marginPct }} %)</ng-container></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═════ Clientes con mayor consumo ═════ -->
+    <h5 class="pc-block-title">{{ 'pc.topTenants' | translate }}</h5>
+    <div class="table-responsive" *ngIf="data.topTenants.length; else noTenants">
+      <table class="table table-sm pc-table">
+        <thead>
+          <tr><th>{{ 'pc.client' | translate }}</th><th class="text-end">{{ 'pc.cost' | translate }}</th><th class="text-end">{{ 'pc.revenue' | translate }}</th><th class="text-end">{{ 'pc.margin' | translate }}</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of data.topTenants">
+            <td>{{ t.name }}</td>
+            <td class="text-end">{{ usd(t.costUsd, 4) }}<br /><small>{{ cop(t.costCop) }}</small></td>
+            <td class="text-end">{{ cop(t.revenueCop) }}</td>
+            <td class="text-end" [class.text-danger]="t.marginCop < 0">{{ cop(t.marginCop) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ng-template #noTenants><p class="pc-muted">{{ 'pc.noTenants' | translate }}</p></ng-template>
+
+    <!-- ═════ Fuentes ═════ -->
+    <div class="pc-sources">
+      <span>
+        AWS Cost Explorer ({{ 'pc.awsWeekly' | translate }}):
+        <ng-container *ngIf="!data.sources.aws.configured">{{ 'pc.notConfigured' | translate }}</ng-container>
+        <ng-container *ngIf="data.sources.aws.configured">{{ data.sources.aws.lastSync ? (data.sources.aws.lastSync | date:'dd/MM/yyyy HH:mm') : ('pc.neverSynced' | translate) }}</ng-container>
+        <span *ngIf="data.sources.aws.error" class="text-danger"> · {{ data.sources.aws.error }}</span>
+      </span>
+      <span>
+        Cloudinary: {{ data.sources.cloudinary.lastSync ? (data.sources.cloudinary.lastSync | date:'dd/MM/yyyy HH:mm') : ('pc.neverSynced' | translate) }}
+        <span *ngIf="data.sources.cloudinary.error" class="text-danger"> · {{ data.sources.cloudinary.error }}</span>
+      </span>
+      <span>1 USD = {{ cop(data.usdToCop) }}</span>
+    </div>
+  </ng-container>
+</section>
