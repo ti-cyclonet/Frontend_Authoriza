@@ -200,10 +200,15 @@ export class DependencyManagementComponent implements OnInit {
             const user = await this.userService.getUserById(dep.dependentUserId).toPromise();
             if (user) {
               const userRoles = await this.userRolesService.getUserRoles(dep.dependentUserId).toPromise();
-              // Filtrar roles activos que pertenezcan al contrato seleccionado
-              const roles = userRoles?.filter(ur => 
-                ur.status === 'ACTIVE' && 
-                (!this.selectedContract || ur.contractId === this.selectedContract.id)
+              // Roles activos del dependiente dentro de los contratos de ESTE
+              // principal (o del contrato seleccionado). Un usuario puede estar
+              // en varios tenants: los roles que le dio otro principal no cuentan aquí.
+              const ownContractIds = this.contractedPackages.map(c => c.id);
+              const roles = userRoles?.filter(ur =>
+                ur.status === 'ACTIVE' &&
+                (this.selectedContract
+                  ? ur.contractId === this.selectedContract.id
+                  : !!ur.contractId && ownContractIds.includes(ur.contractId))
               ).map(ur => ur.role) || [];
               
               this.dependentUsers.push({
@@ -434,11 +439,15 @@ export class DependencyManagementComponent implements OnInit {
       
       if (allUsers && allUsers.length > 0) {
         const currentDependentIds = this.dependentUsers.map(d => d.id);
+        // Sus principales no pueden ser a la vez sus dependientes (ciclo);
+        // el backend valida también los ciclos transitivos.
+        const principalIds = this.principalUsers.map(p => p.id);
         
         this.availableUsers = allUsers
           .filter(user => {
             return user.id !== this.user.id && 
                    !currentDependentIds.includes(user.id) &&
+                   !principalIds.includes(user.id) &&
                    (user.strStatus === 'ACTIVE' || user.strStatus === 'UNCONFIRMED');
           })
           .map(user => ({
@@ -491,7 +500,8 @@ export class DependencyManagementComponent implements OnInit {
       
       this.dependentUsers.push({
         ...this.selectedUserForDependency,
-        isPrincipal: false
+        isPrincipal: false,
+        dependencyStatus: this.selectedDependencyStatus
       });
       
       this.availableUsers = this.availableUsers.filter(u => u.id !== this.selectedUserForDependency!.id);
@@ -510,11 +520,11 @@ export class DependencyManagementComponent implements OnInit {
         confirmButtonText: 'OK'
       });
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating dependency:', error);
       Swal.fire({
         title: 'Error',
-        text: 'Error al crear la dependencia.',
+        text: error?.error?.message || 'Error al crear la dependencia.',
         icon: 'error',
         confirmButtonText: 'OK'
       });
@@ -661,6 +671,14 @@ export class DependencyManagementComponent implements OnInit {
     if (!this.showAssignRoleModal && !this.showUnassignRoleModal && !this.showContractPackageModal && !this.showAddDependentModal) {
       this.closeModal();
     }
+  }
+
+  get activeContractsCount(): number {
+    return this.contractedPackages.filter(c => c.status === 'ACTIVE').length;
+  }
+
+  get activeDependentsCount(): number {
+    return this.dependentUsers.filter(d => d.dependencyStatus === 'ACTIVE').length;
   }
 
   getTotalAssignedRolesToDependents(): number {
