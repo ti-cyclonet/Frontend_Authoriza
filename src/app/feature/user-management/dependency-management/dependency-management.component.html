@@ -19,9 +19,11 @@
         <!-- Overview -->
         <div *ngIf="activeTab === 'overview'">
           <h5>Estadísticas</h5>
-          <p>Roles asignados: {{ getTotalAssignedRolesToDependents() }}</p>
-          <p>Contratos: {{ contractedPackages.length }}</p>
-          <p>Número de dependientes: {{ dependentUsers.length }}</p>
+          <p>Roles propios: {{ userRoles.length }}</p>
+          <p>Roles asignados a dependientes: {{ getTotalAssignedRolesToDependents() }}</p>
+          <p>Contratos: {{ activeContractsCount }} activos (de {{ contractedPackages.length }})</p>
+          <p>Número de dependientes: {{ activeDependentsCount }} activos (de {{ dependentUsers.length }})</p>
+          <p>Depende de: {{ principalUsers.length }} {{ principalUsers.length === 1 ? 'principal' : 'principales' }}</p>
           
           <div *ngIf="principalUsers.length > 0" class="principals-list">
             <h6>Depende de:</h6>
