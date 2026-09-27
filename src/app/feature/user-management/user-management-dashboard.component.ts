@@ -326,6 +326,41 @@ export class UserManagementDashboardComponent implements OnInit {
     this.showViewModal = true;
   }
 
+  async resetUserPassword(user: ExtendedUser): Promise<void> {
+    const result = await Swal.fire({
+      title: '¿Resetear contraseña?',
+      html: `La contraseña de <strong>${user.displayName}</strong> se restablecerá a <strong>1234567890</strong> y deberá cambiarla al iniciar sesión.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, resetear',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#dc3545'
+    });
+
+    if (!result.isConfirmed) return;
+
+    this.userService.resetPassword(user.id).subscribe({
+      next: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Contraseña restablecida',
+          text: `La contraseña de ${user.displayName} ahora es 1234567890`,
+          timer: 2500,
+          showConfirmButton: false
+        });
+      },
+      error: (error: any) => {
+        console.error('Error resetting password:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error?.error?.message || 'No se pudo restablecer la contraseña',
+          confirmButtonText: 'OK'
+        });
+      }
+    });
+  }
+
   editUser(user: ExtendedUser): void {
     this.selectedUser = user;
     this.showEditModal = true;
