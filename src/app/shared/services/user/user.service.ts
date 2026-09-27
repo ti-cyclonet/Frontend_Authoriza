@@ -109,6 +109,11 @@ export class UserService {
     });
   }
 
+  // Restablecer la contraseña del usuario a la genérica (admin)
+  resetPassword(userId: string): Observable<any> {
+    return this.http.post(`${this.userUrl}/${userId}/reset-password`, {});
+  }
+
   // Obtener usuarios con paginación
   getAllPaginated(limit: number, offset: number) {
     return this.http.get(`${this.userUrl}?limit=${limit}&offset=${offset}`);
