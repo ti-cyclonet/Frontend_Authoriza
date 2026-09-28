@@ -8,6 +8,7 @@ import {
   Output,
   PLATFORM_ID,
   AfterViewInit,
+  HostListener,
 } from '@angular/core';
 import { DESCRIPTION_APP } from '../../../config/config';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
@@ -117,7 +118,27 @@ export class HeaderComponent implements OnInit, AfterViewInit {
       this.userRol = sessionStorage.getItem('user_rol');
       this.userRolDescription = sessionStorage.getItem('user_rolDescription');
       this.userImage = sessionStorage.getItem('user_image');
+      this.refreshAvatar();
     }
+  }
+
+  /**
+   * El avatar de sessionStorage viene del login y no se entera si la foto se
+   * cambió en otra app: se consulta la vigente al cargar y al volver a la pestaña.
+   */
+  @HostListener('window:focus')
+  refreshAvatar(): void {
+    if (!isPlatformBrowser(this.platformId) || !sessionStorage.getItem('user_email')) return;
+    this.userService.getMyAvatar().subscribe({
+      next: (res) => {
+        if (res?.url && res.url !== this.userImage) {
+          this.userImage = res.url;
+          sessionStorage.setItem('user_image', res.url);
+          this.cdr.detectChanges();
+        }
+      },
+      error: () => { /* se conserva el avatar del login */ },
+    });
   }
 
   async ngAfterViewInit(): Promise<void> {

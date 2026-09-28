@@ -231,4 +231,10 @@ export class UserService {
     form.append('file', file);
     return this.http.post<{ url: string }>(`${base}/users/me/avatar`, form);
   }
+
+  /** Avatar vigente en Authoriza (puede haberse cambiado desde otra app). */
+  getMyAvatar(): Observable<{ url: string | null }> {
+    const base = this.baseApiUrl.replace(/\/auth\/?$/, '');
+    return this.http.get<{ url: string | null }>(`${base}/users/me/avatar`);
+  }
 }
