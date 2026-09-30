@@ -1,392 +1,215 @@
 <div class="title-container">
   <a href="/home" class="title-link">
-    <svg viewBox="0 0 16 16">
-      <use xlink:href="./assets/icons/bootstrap-icons.svg#house-fill"/>
-    </svg>
+    <svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#house-fill"/></svg>
     /home
   </a>
 </div>
 
-<div class="dashboard-container">
-  <!-- Loading State -->
-  <div *ngIf="loading" class="text-center p-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">{{ 'dashboard.loading' | translate }}</span>
+<div class="dash">
+  <!-- Encabezado -->
+  <header class="dash-head">
+    <div>
+      <h1 class="dash-title">{{ greeting }}<span *ngIf="userName">, {{ userName }}</span></h1>
+      <p class="dash-sub">Así va el ecosistema CycloNet · {{ monthLabel }}</p>
     </div>
-    <p class="mt-2">{{ 'dashboard.loadingStats' | translate }}</p>
+    <div class="dash-live" *ngIf="!loading">
+      <span class="live-pill" [class.stale]="stale" [title]="stale ? 'No se pudo actualizar; se reintentará' : 'Se actualiza cada 30 segundos'">
+        <span class="live-dot"></span>{{ stale ? 'Sin conexión' : 'En vivo' }}
+      </span>
+      <span class="live-updated">Actualizado {{ updatedLabel }}</span>
+      <button type="button" class="icon-btn" (click)="refresh()" [disabled]="refreshing" title="Actualizar ahora">
+        <svg viewBox="0 0 16 16" [class.spin]="refreshing"><use xlink:href="./assets/icons/bootstrap-icons.svg#arrow-clockwise"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Cargando: esqueleto -->
+  <div class="kpi-grid" *ngIf="loading">
+    <div class="kpi skeleton" *ngFor="let i of [1, 2, 3, 4]"></div>
   </div>
 
-  <!-- Error State -->
-  <div *ngIf="error" class="alert alert-danger m-3" role="alert">
-    <svg viewBox="0 0 16 16" class="me-2">
-      <use xlink:href="./assets/icons/bootstrap-icons.svg#exclamation-triangle-fill"/>
-    </svg>
+  <div class="dash-error" *ngIf="error && !loading">
+    <svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#exclamation-triangle-fill"/></svg>
     {{ error }}
+    <button type="button" class="link-btn" (click)="refresh()">Reintentar</button>
   </div>
 
-  <!-- Dashboard Content -->
-  <div *ngIf="!loading && !error && stats" class="dashboard-content">
-    <!-- Header -->
-    <div class="dashboard-header">
-      <h3 class="dashboard-title">{{ 'dashboard.title' | translate }}</h3>
-      <p class="dashboard-subtitle">{{ 'dashboard.subtitle' | translate }}</p>
-    </div>
-
-    <!-- Uso por Aplicación: una sola tarjeta blanca, solo el ícono cambia de color por app -->
-    <div class="apps-usage-section" *ngIf="stats.applications?.byApplication?.length">
-      <h5 class="section-title">{{ 'dashboard.usageByApplication' | translate }}</h5>
-      <div class="apps-usage-card">
-        <div class="app-usage-item" *ngFor="let app of stats.applications.byApplication">
-          <div class="app-usage-icon">
-            <svg viewBox="0 0 16 16" [class]="getAppColorClass(app.name)">
-              <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + getAppIcon(app.name)"/>
-            </svg>
-          </div>
-          <div class="app-usage-info">
-            <h4>{{ app.userCount }}</h4>
-            <p>{{ app.name }}</p>
-          </div>
+  <ng-container *ngIf="overview as o">
+    <!-- KPIs principales -->
+    <section class="kpi-grid">
+      <article class="kpi">
+        <div class="kpi-top">
+          <span class="kpi-icon g-violet"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#cash-coin"/></svg></span>
+          <span class="kpi-label">Recaudado este mes</span>
         </div>
+        <div class="kpi-value" [title]="money(o.revenue.collectedMonth)">{{ compactMoney(o.revenue.collectedMonth) }}</div>
+        <div class="kpi-foot">
+          <ng-container *ngTemplateOutlet="deltaTpl; context: { d: delta(o.revenue.collectedMonth, o.revenue.collectedPrevMonth) }"></ng-container>
+          <span>vs. mes anterior · {{ o.revenue.paymentsMonth }} pago(s)</span>
+        </div>
+      </article>
+
+      <article class="kpi">
+        <div class="kpi-top">
+          <span class="kpi-icon g-blue"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#arrow-repeat"/></svg></span>
+          <span class="kpi-label">Ingreso recurrente mensual</span>
+        </div>
+        <div class="kpi-value" [title]="money(o.revenue.mrr)">{{ compactMoney(o.revenue.mrr) }}</div>
+        <div class="kpi-foot"><span>{{ o.clients.activeContracts }} contrato(s) activo(s) · valor anual ÷ 12</span></div>
+      </article>
+
+      <article class="kpi" [class.kpi-alert]="o.receivables.overdueCount > 0">
+        <div class="kpi-top">
+          <span class="kpi-icon g-rose"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#receipt-cutoff"/></svg></span>
+          <span class="kpi-label">Cartera por cobrar</span>
+        </div>
+        <div class="kpi-value" [title]="money(o.receivables.pendingValue)">{{ compactMoney(o.receivables.pendingValue) }}</div>
+        <div class="kpi-foot">
+          <span class="chip" [class.chip-danger]="o.receivables.overdueCount > 0" [class.chip-ok]="!o.receivables.overdueCount">
+            {{ o.receivables.overdueCount ? compactMoney(o.receivables.overdueValue) + ' vencida' : 'Nada vencido' }}
+          </span>
+          <span>{{ o.receivables.pendingCount }} factura(s) abiertas</span>
+        </div>
+      </article>
+
+      <article class="kpi">
+        <div class="kpi-top">
+          <span class="kpi-icon g-green"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#building-check"/></svg></span>
+          <span class="kpi-label">Clientes activos</span>
+        </div>
+        <div class="kpi-value">{{ o.clients.active }}</div>
+        <div class="kpi-foot">
+          <ng-container *ngTemplateOutlet="deltaTpl; context: { d: delta(o.clients.newContractsMonth, o.clients.newContractsPrevMonth) }"></ng-container>
+          <span>{{ o.clients.newContractsMonth }} contrato(s) nuevo(s) este mes</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- Indicadores secundarios -->
+    <section class="mini-grid">
+      <div class="mini">
+        <div class="ring" [style.--p]="o.revenue.collectionRate ?? 0">
+          <span>{{ o.revenue.collectionRate === null ? '—' : o.revenue.collectionRate + '%' }}</span>
+        </div>
+        <div><strong>Tasa de cobro</strong><small>{{ o.revenue.invoicesMonth }} factura(s) emitidas este mes · {{ compactMoney(o.revenue.billedMonth) }}</small></div>
       </div>
-    </div>
-
-    <!-- Panel de control: 4 tarjetas KPI principales -->
-    <div class="stats-grid">
-      <!-- Usuarios totales -->
-      <div class="stat-card">
-        <div class="stat-header">
-          <div class="stat-icon users-icon">
-            <svg viewBox="0 0 16 16">
-              <use xlink:href="./assets/icons/bootstrap-icons.svg#people-fill"/>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <h4>{{ stats.users.total }}</h4>
-            <p>{{ 'dashboard.totalUsers' | translate }}</p>
-            <span class="stat-sublabel">{{ stats.users.active }} {{ 'dashboard.active' | translate | lowercase }}</span>
-          </div>
-        </div>
+      <div class="mini">
+        <span class="mini-icon g-blue"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#people-fill"/></svg></span>
+        <div><strong>{{ o.users.total }} usuarios</strong><small>{{ o.users.active }} activos · {{ o.users.unconfirmed }} sin confirmar</small></div>
       </div>
-
-      <!-- Contratos activos -->
-      <div class="stat-card" *ngIf="stats.contracts">
-        <div class="stat-header">
-          <div class="stat-icon contracts-icon">
-            <svg viewBox="0 0 16 16">
-              <use xlink:href="./assets/icons/bootstrap-icons.svg#file-earmark-check-fill"/>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <h4>{{ stats.contracts.active }}</h4>
-            <p>{{ 'dashboard.activeContracts' | translate }}</p>
-            <span class="stat-sublabel">{{ stats.contracts.pendingSignature }} {{ 'dashboard.pendingSignatureContracts' | translate | lowercase }}</span>
-          </div>
-        </div>
+      <div class="mini">
+        <span class="mini-icon g-violet"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#box-arrow-in-right"/></svg></span>
+        <div><strong>{{ o.users.logins24h }} accesos · 24 h</strong><small>{{ o.users.activeUsers24h }} usuario(s) distinto(s)</small></div>
       </div>
-
-      <!-- Facturas pendientes -->
-      <div class="stat-card" *ngIf="invoiceStats">
-        <div class="stat-header">
-          <div class="stat-icon pending-signature-icon">
-            <svg viewBox="0 0 16 16">
-              <use xlink:href="./assets/icons/bootstrap-icons.svg#exclamation-triangle-fill"/>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <h4>{{ invoiceStats.pending }}</h4>
-            <p>{{ 'dashboard.pendingInvoices' | translate }}</p>
-            <span class="stat-sublabel" *ngIf="invoiceStats.overdue > 0">{{ invoiceStats.overdue }} {{ 'dashboard.overdue' | translate | lowercase }}</span>
-          </div>
-        </div>
+      <div class="mini">
+        <span class="mini-icon g-green"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#person-plus-fill"/></svg></span>
+        <div><strong>{{ o.users.newToday }} registro(s) hoy</strong><small>{{ o.users.newWeek }} en los últimos 7 días</small></div>
       </div>
+    </section>
 
-      <!-- Monto facturado este mes -->
-      <div class="stat-card" *ngIf="invoiceStats">
-        <div class="stat-header">
-          <div class="stat-icon revenue-icon">
-            <svg viewBox="0 0 16 16">
-              <use xlink:href="./assets/icons/bootstrap-icons.svg#cash-coin"/>
-            </svg>
+    <!-- Requiere atención + ingresos -->
+    <section class="row-2">
+      <article class="panel">
+        <header class="panel-head">
+          <h2>Requiere atención</h2>
+          <span class="count-badge" *ngIf="attention.length">{{ attention.length }}</span>
+        </header>
+        <ul class="attn" *ngIf="attention.length; else allGood">
+          <li *ngFor="let a of attention; trackBy: trackByLabel" [class]="'attn-' + a.tone">
+            <a [routerLink]="a.link">
+              <span class="attn-icon"><svg viewBox="0 0 16 16"><use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + a.icon"/></svg></span>
+              <span class="attn-body"><strong>{{ a.label }}</strong><small>{{ a.detail }}</small></span>
+              <span class="attn-count">{{ a.count }}</span>
+            </a>
+          </li>
+        </ul>
+        <ng-template #allGood>
+          <div class="all-good">
+            <svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#check-circle-fill"/></svg>
+            <strong>Todo al día</strong>
+            <small>No hay pagos por verificar, facturas vencidas ni contratos por vencer.</small>
           </div>
-          <div class="stat-info">
-            <h4>{{ formatCurrency(invoiceStats.totalValue) }}</h4>
-            <p>{{ 'dashboard.monthlyBilled' | translate }}</p>
-            <span class="stat-sublabel">{{ invoiceStats.total }} {{ 'dashboard.invoices' | translate | lowercase }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
+        </ng-template>
 
-    <!-- Usuarios Principales (detalle por estado) -->
-    <div class="stats-grid" *ngIf="stats.principalUsers">
-      <div class="stat-card">
-        <div class="stat-header">
-          <div class="stat-icon contracts-icon">
-            <svg viewBox="0 0 16 16">
-              <use xlink:href="./assets/icons/bootstrap-icons.svg#person-badge-fill"/>
-            </svg>
+        <div class="attn-list" *ngIf="o.alerts.overdueInvoices.length || o.alerts.expiringContracts.length">
+          <div class="attn-row" *ngFor="let i of o.alerts.overdueInvoices; trackBy: trackById">
+            <span class="dot dot-danger"></span>
+            <span class="attn-row-main">{{ i.code || 'Factura' }} · {{ i.client }}</span>
+            <span class="attn-row-meta">{{ money(i.value) }} · {{ i.daysOverdue }} d vencida</span>
           </div>
-          <div class="stat-info">
-            <h4>{{ stats.principalUsers.total }}</h4>
-            <p>{{ 'dashboard.principalUsers' | translate }}</p>
+          <div class="attn-row" *ngFor="let c of o.alerts.expiringContracts; trackBy: trackById">
+            <span class="dot dot-warning"></span>
+            <span class="attn-row-main">{{ c.code }} · {{ c.client }}</span>
+            <span class="attn-row-meta">{{ c.package }} · vence en {{ c.daysLeft }} d</span>
           </div>
         </div>
-        <div class="stat-details">
-          <div class="stat-item" *ngIf="stats.principalUsers.unconfirmed > 0">
-            <span class="badge badge-warning">{{ stats.principalUsers.unconfirmed }}</span>
-            <span>{{ 'users.status.UNCONFIRMED' | translate }}</span>
-          </div>
-          <div class="stat-item" *ngIf="stats.principalUsers.active > 0">
-            <span class="badge badge-success">{{ stats.principalUsers.active }}</span>
-            <span>{{ 'users.status.ACTIVE' | translate }}</span>
-          </div>
-          <div class="stat-item" *ngIf="stats.principalUsers.suspended > 0">
-            <span class="badge badge-secondary">{{ stats.principalUsers.suspended }}</span>
-            <span>{{ 'users.status.SUSPENDED' | translate }}</span>
-          </div>
-          <div class="stat-item" *ngIf="stats.principalUsers.expiring > 0">
-            <span class="badge badge-info">{{ stats.principalUsers.expiring }}</span>
-            <span>{{ 'users.status.EXPIRING' | translate }}</span>
-          </div>
-          <div class="stat-item" *ngIf="stats.principalUsers.delinquent > 0">
-            <span class="badge badge-danger">{{ stats.principalUsers.delinquent }}</span>
-            <span>{{ 'users.status.DELINQUENT' | translate }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
+      </article>
 
-    <!-- Charts and Details Row -->
-    <div class="charts-grid">
-      <!-- Users by Role Chart -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h5>{{ 'dashboard.usersByRole' | translate }}</h5>
+      <article class="panel">
+        <header class="panel-head">
+          <h2>Facturado vs. recaudado</h2>
+          <small>Últimos 6 meses</small>
+        </header>
+        <div class="chart-box chart-lg">
+          <p-chart type="bar" [data]="revenueChart" [options]="barOptions" height="100%"></p-chart>
         </div>
-        <div class="chart-content">
-          <div class="chart-container">
-            <p-chart 
-              *ngIf="userRoleChartData" 
-              type="doughnut" 
-              [data]="userRoleChartData" 
-              [options]="chartOptions"
-              [style]="{'max-width': chartSize, 'width': '100%', 'aspect-ratio': '1'}">
-            </p-chart>
-          </div>
-          <div class="role-list">
-            <div *ngFor="let role of stats.users.byRole" class="role-item">
-              <div class="role-info">
-                <span class="role-name">{{ role.role }}</span>
-                <span class="role-count">{{ role.count }}</span>
-              </div>
-              <div class="role-bar">
-                <div class="role-progress" [style.width.%]="(role.count / stats.users.total) * 100"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      </article>
+    </section>
 
-      <!-- Applications by Users Chart -->
-      <div class="chart-card" *ngIf="stats.applications">
-        <div class="chart-header">
-          <h5>{{ 'dashboard.applicationsByUsers' | translate }}</h5>
-        </div>
-        <div class="chart-content">
-          <div class="bar-chart-container">
-            <p-chart
-              *ngIf="appsByUsersChartData"
-              type="bar"
-              [data]="appsByUsersChartData"
-              [options]="barChartOptions">
-            </p-chart>
-          </div>
-        </div>
-      </div>
+    <!-- Crecimiento, apps y contratos -->
+    <section class="row-3">
+      <article class="panel">
+        <header class="panel-head"><h2>Nuevos registros</h2><small>Últimos 14 días</small></header>
+        <div class="chart-box"><p-chart type="line" [data]="signupsChart" [options]="lineOptions" height="100%"></p-chart></div>
+      </article>
 
-      <!-- Facturas por Estado -->
-      <div class="chart-card" *ngIf="invoiceStats">
-        <div class="chart-header">
-          <h5>{{ 'dashboard.invoiceStatus' | translate }}</h5>
-        </div>
-        <div class="chart-content">
-          <div class="chart-container">
-            <p-chart
-              *ngIf="invoiceStatusChartData"
-              type="doughnut"
-              [data]="invoiceStatusChartData"
-              [options]="chartOptions"
-              [style]="{'max-width': chartSize, 'width': '100%', 'aspect-ratio': '1'}">
-            </p-chart>
-          </div>
-        </div>
-      </div>
+      <article class="panel">
+        <header class="panel-head"><h2>Usuarios por aplicación</h2></header>
+        <ul class="apps">
+          <li *ngFor="let a of topApps; trackBy: trackByName">
+            <span class="app-icon" [style.color]="appColor(a.name)" [style.background]="appColor(a.name) + '14'">
+              <svg viewBox="0 0 16 16"><use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + appIcon(a.name)"/></svg>
+            </span>
+            <span class="app-name">{{ a.name }}</span>
+            <span class="app-bar"><span [style.width.%]="a.share" [style.background]="appColor(a.name)"></span></span>
+            <strong class="app-count">{{ a.userCount }}</strong>
+          </li>
+        </ul>
+      </article>
 
-      <!-- Packages Chart -->
-      <div class="chart-card" *ngIf="stats.packages">
-        <div class="chart-header">
-          <h5>{{ 'dashboard.packagesByContracts' | translate }}</h5>
+      <article class="panel">
+        <header class="panel-head"><h2>Contratos por estado</h2><small *ngIf="stats">{{ stats.contracts.total }} en total</small></header>
+        <div class="chart-box" *ngIf="contractsChart; else noContracts">
+          <p-chart type="doughnut" [data]="contractsChart" [options]="vbarOptions" height="100%"></p-chart>
         </div>
-        <div class="chart-content">
-          <div class="status-list">
-            <div *ngFor="let pkg of stats.packages.byPackage" class="status-item">
-              <div class="status-info">
-                <span class="badge badge-primary">{{ pkg.name }}</span>
-                <span class="status-count">{{ pkg.contractCount }} contratos</span>
-                <span class="status-value">{{ pkg.roleCount }} roles</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+        <ng-template #noContracts><p class="empty">Sin contratos todavía.</p></ng-template>
+      </article>
+    </section>
 
-    <!-- Resumen operativo: tasa de pago, contratos por estado, resumen -->
-    <div class="summary-grid">
-      <!-- Tasa de facturas pagadas (gauge) -->
-      <div class="chart-card" *ngIf="invoiceStats">
-        <div class="chart-header">
-          <h5>{{ 'dashboard.paidRate' | translate }}</h5>
-        </div>
-        <div class="gauge-container">
-          <p-chart
-            *ngIf="paidRateChartData"
-            type="doughnut"
-            [data]="paidRateChartData"
-            [options]="gaugeChartOptions"
-            styleClass="gauge-chart">
-          </p-chart>
-          <div class="gauge-label">
-            <span class="gauge-percent">{{ paidRatePercent }}%</span>
-            <span class="gauge-caption">{{ 'dashboard.paid' | translate }}</span>
-          </div>
-        </div>
-        <p class="gauge-footnote" *ngIf="invoiceStats">{{ invoiceStats.paid }} {{ 'dashboard.of' | translate }} {{ invoiceStats.total }} {{ 'dashboard.invoices' | translate | lowercase }}</p>
-      </div>
-
-      <!-- Contratos por estado -->
-      <div class="chart-card" *ngIf="stats.contracts?.byStatus?.length">
-        <div class="chart-header">
-          <h5>{{ 'dashboard.contractsByStatus' | translate }}</h5>
-        </div>
-        <div class="small-bar-container">
-          <p-chart
-            *ngIf="contractsByStatusChartData"
-            type="bar"
-            [data]="contractsByStatusChartData"
-            [options]="smallBarChartOptions">
-          </p-chart>
-        </div>
-      </div>
-
-      <!-- Resumen operativo -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h5>{{ 'dashboard.operationalSummary' | translate }}</h5>
-        </div>
-        <div class="op-summary-list">
-          <div class="op-summary-item" *ngIf="stats.applications">
-            <div class="op-summary-icon"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#grid-3x3-gap-fill"/></svg></div>
-            <span class="op-summary-label">{{ 'dashboard.applications' | translate }}</span>
-            <span class="op-summary-value">{{ stats.applications.total }}</span>
-          </div>
-          <div class="op-summary-item" *ngIf="stats.packages">
-            <div class="op-summary-icon"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#box-seam"/></svg></div>
-            <span class="op-summary-label">{{ 'dashboard.packages' | translate }}</span>
-            <span class="op-summary-value">{{ stats.packages.total }}</span>
-          </div>
-          <div class="op-summary-item" *ngIf="stats.users.unconfirmed > 0">
-            <div class="op-summary-icon"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#person-exclamation"/></svg></div>
-            <span class="op-summary-label">{{ 'dashboard.unconfirmed' | translate }}</span>
-            <span class="op-summary-value op-summary-warning">{{ stats.users.unconfirmed }}</span>
-          </div>
-          <div class="op-summary-item" *ngIf="invoiceStats && invoiceStats.overdue > 0">
-            <div class="op-summary-icon"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#exclamation-octagon-fill"/></svg></div>
-            <span class="op-summary-label">{{ 'dashboard.overdue' | translate }}</span>
-            <span class="op-summary-value op-summary-danger">{{ invoiceStats.overdue }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Recent Activity -->
-    <div *ngIf="recentActivity" class="activity-section">
-      <h5 class="section-title">{{ 'dashboard.recentActivity' | translate }}</h5>
-      
-      <div class="logs-container">
-        <div *ngFor="let log of recentActivity.recentLogs" class="log-entry" [class]="'log-' + log.level.toLowerCase()">
-          <div class="log-icon">
-            <svg viewBox="0 0 16 16">
-              <use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + getLogIcon(log.action)"/>
-            </svg>
-          </div>
-          <div class="log-content">
-            <div class="log-message">{{ log.message }}</div>
-            <div class="log-meta">
-              <span class="log-action">{{ getLogActionLabel(log.action) }}</span>
-              <span class="log-time">{{ formatDate(log.createdAt) }}</span>
-            </div>
-          </div>
-          <div class="log-badge" [class]="'badge-' + log.level.toLowerCase()">{{ log.level }}</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Entity Codes Section - HIDDEN -->
-    <!-- <div *ngIf="entityCodes" class="codes-section">
-      <h5 class="section-title">{{ 'dashboard.recentEntityCodes' | translate }}</h5>
-      
-      <div class="codes-grid">
-        <div class="codes-card">
-          <div class="codes-header">
-            <svg viewBox="0 0 16 16">
-              <use xlink:href="./assets/icons/bootstrap-icons.svg#person-badge"/>
-            </svg>
-            <h6>{{ 'dashboard.userCodes' | translate }}</h6>
-          </div>
-          <div class="codes-list">
-            <div *ngFor="let user of entityCodes.users" class="code-item">
-              <span class="entity-code">{{ user.code }}</span>
-              <span class="entity-name">{{ user.strUserName }}</span>
-              <small class="entity-date">{{ formatDate(user.dtmCreateDate) }}</small>
-            </div>
-          </div>
-        </div>
-
-        <div class="codes-card">
-          <div class="codes-header">
-            <svg viewBox="0 0 16 16">
-              <use xlink:href="./assets/icons/bootstrap-icons.svg#receipt-cutoff"/>
-            </svg>
-            <h6>{{ 'dashboard.invoiceCodes' | translate }}</h6>
-          </div>
-          <div class="codes-list">
-            <div *ngFor="let invoice of entityCodes.invoices" class="code-item">
-              <span class="entity-code">{{ invoice.code }}</span>
-              <span class="entity-name">{{ formatCurrency(invoice.value) }}</span>
-              <small class="entity-date">{{ formatDate(invoice.createdAt) }}</small>
-            </div>
-          </div>
-        </div>
-
-        <div class="codes-card">
-          <div class="codes-header">
-            <svg viewBox="0 0 16 16">
-              <use xlink:href="./assets/icons/bootstrap-icons.svg#file-earmark-code"/>
-            </svg>
-            <h6>{{ 'dashboard.contractCodes' | translate }}</h6>
-          </div>
-          <div class="codes-list">
-            <div *ngFor="let contract of entityCodes.contracts" class="code-item">
-              <span class="entity-code">{{ contract.code }}</span>
-              <span class="entity-name">{{ formatCurrency(contract.value) }}</span>
-              <small class="entity-date">{{ formatDate(contract.createdAt) }}</small>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
-  </div>
+    <!-- Actividad en vivo -->
+    <section class="panel">
+      <header class="panel-head">
+        <h2>Actividad reciente</h2>
+        <small>Se actualiza sola</small>
+      </header>
+      <ul class="feed" *ngIf="o.activity.length; else noActivity">
+        <li *ngFor="let a of o.activity; trackBy: trackById" [class.fresh]="freshActivity.has(a.id)" [class]="'lvl-' + (a.level || '').toLowerCase()">
+          <span class="feed-icon"><svg viewBox="0 0 16 16"><use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + logIcon(a.action)"/></svg></span>
+          <span class="feed-body"><strong>{{ logLabel(a.action) }}</strong><small>{{ a.message }}</small></span>
+          <time class="feed-time" [attr.datetime]="a.createdAt">{{ relativeTime(a.createdAt) }}</time>
+        </li>
+      </ul>
+      <ng-template #noActivity><p class="empty">Aún no hay actividad registrada.</p></ng-template>
+    </section>
+  </ng-container>
 
   <app-platform-costs *ngIf="isPlatformAdmin"></app-platform-costs>
 </div>
+
+<!-- Variación contra el mes anterior -->
+<ng-template #deltaTpl let-d="d">
+  <span class="chip" *ngIf="d === null" title="Sin base de comparación en el mes anterior">Nuevo</span>
+  <span class="chip" *ngIf="d !== null" [class.chip-up]="d > 0" [class.chip-down]="d < 0">
+    {{ d > 0 ? '▲' : d < 0 ? '▼' : '•' }} {{ d > 0 ? '+' : '' }}{{ d }}%
+  </span>
+</ng-template>
