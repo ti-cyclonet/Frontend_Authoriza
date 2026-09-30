@@ -12,7 +12,7 @@
       <h1 class="dash-title">{{ greeting }}<span *ngIf="userName">, {{ userName }}</span></h1>
       <p class="dash-sub">Así va el ecosistema CycloNet · {{ monthLabel }}</p>
     </div>
-    <div class="dash-live" *ngIf="!loading">
+    <div class="dash-live" *ngIf="!loading && !sessionEnded">
       <span class="live-pill" [class.stale]="stale" [title]="stale ? 'No se pudo actualizar; se reintentará' : 'Se actualiza cada 30 segundos'">
         <span class="live-dot"></span>{{ stale ? 'Sin conexión' : 'En vivo' }}
       </span>
@@ -28,7 +28,13 @@
     <div class="kpi skeleton" *ngFor="let i of [1, 2, 3, 4]"></div>
   </div>
 
-  <div class="dash-error" *ngIf="error && !loading">
+  <div class="dash-error dash-session" *ngIf="sessionEnded">
+    <svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#clock-history"/></svg>
+    Tu sesión llegó a su duración máxima (12 horas). Inicia sesión de nuevo para seguir viendo los indicadores en vivo.
+    <button type="button" class="link-btn" (click)="goToLogin()">Iniciar sesión</button>
+  </div>
+
+  <div class="dash-error" *ngIf="error && !loading && !sessionEnded">
     <svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#exclamation-triangle-fill"/></svg>
     {{ error }}
     <button type="button" class="link-btn" (click)="refresh()">Reintentar</button>
