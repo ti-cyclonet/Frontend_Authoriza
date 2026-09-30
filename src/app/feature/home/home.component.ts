@@ -9,6 +9,8 @@ import { PlatformCostsComponent } from './platform-costs/platform-costs.componen
 
 /** Cada cuánto se refrescan los indicadores (solo con la pestaña visible). */
 const REFRESH_MS = 30_000;
+/** Cada cuánto se revisa el token, aunque la pestaña esté oculta. */
+const KEEPALIVE_MS = 60_000;
 
 interface AttentionItem {
   icon: string;
@@ -40,6 +42,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   error: string | null = null;
   /** La última actualización falló (se conservan los datos anteriores). */
   stale = false;
+  /** La sesión llegó a su duración máxima (o el usuario fue desactivado). */
+  sessionEnded = false;
   lastUpdated: Date | null = null;
   now = Date.now();
   /** Ids de eventos que llegaron en la última actualización (se resaltan). */
@@ -55,11 +59,19 @@ export class HomeComponent implements OnInit, OnDestroy {
   vbarOptions: any;
 
   readonly isPlatformAdmin = typeof sessionStorage !== 'undefined' && sessionStorage.getItem('user_rol') === 'adminAuthoriza';
-  readonly userName = typeof sessionStorage !== 'undefined'
-    ? (sessionStorage.getItem('user_firstName') || sessionStorage.getItem('user_name') || '').split(' ')[0]
-    : '';
+  /** Nombre para el saludo: el de pila, o la razón social; nunca el correo. */
+  readonly userName = (() => {
+    if (typeof sessionStorage === 'undefined') return '';
+    const first = sessionStorage.getItem('user_firstName');
+    if (first) return first.split(' ')[0];
+    const business = sessionStorage.getItem('user_businessName');
+    if (business) return business;
+    const name = sessionStorage.getItem('user_name') || '';
+    return name.includes('@') ? '' : name.split(' ')[0];
+  })();
 
   private refreshTimer: any;
+  private keepAliveTimer: any;
   private clockTimer: any;
   private sub?: Subscription;
   private seenActivity = new Set<string>();
@@ -79,6 +91,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (!this.isBrowser) return;
     this.refresh(true);
     this.refreshTimer = setInterval(() => { if (!document.hidden) this.refresh(); }, REFRESH_MS);
+    // El token se renueva también con la pestaña en segundo plano: antes solo
+    // se renovaba al actualizar los indicadores (que se pausan si la pestaña
+    // está oculta) y al volver después de 1 h el token ya había vencido.
+    this.keepAliveTimer = setInterval(() => this.keepAlive(), KEEPALIVE_MS);
     // "Actualizado hace N s": reloj de la vista, fuera de Angular salvo el tic
     this.zone.runOutsideAngular(() => {
       this.clockTimer = setInterval(() => this.zone.run(() => (this.now = Date.now())), 5_000);
@@ -87,6 +103,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     clearInterval(this.refreshTimer);
+    clearInterval(this.keepAliveTimer);
     clearInterval(this.clockTimer);
     this.sub?.unsubscribe();
   }
@@ -97,8 +114,26 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (this.isBrowser && !document.hidden && this.lastUpdated && Date.now() - this.lastUpdated.getTime() > 10_000) this.refresh();
   }
 
+  private keepAlive(): void {
+    if (this.sessionEnded) return;
+    this.authService.renewSessionIfNeeded().subscribe(() => {
+      if (this.authService.sessionExpired()) this.endSession();
+    });
+  }
+
+  private endSession(): void {
+    this.sessionEnded = true;
+    clearInterval(this.refreshTimer);
+    clearInterval(this.keepAliveTimer);
+  }
+
+  goToLogin(): void {
+    sessionStorage.clear();
+    window.location.href = '/login';
+  }
+
   refresh(first = false): void {
-    if (this.refreshing) return;
+    if (this.refreshing || this.sessionEnded) return;
     this.refreshing = true;
     this.sub?.unsubscribe();
     this.sub = this.authService.renewSessionIfNeeded().pipe(
@@ -124,6 +159,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       error: () => {
         this.refreshing = false;
         this.loading = false;
+        if (this.authService.sessionExpired()) { this.endSession(); return; }
         if (this.overview) this.stale = true;
         else this.error = 'No se pudieron cargar los indicadores. Se reintentará automáticamente.';
       },

@@ -100,7 +100,14 @@ export class AuthService {
     return this.http.post<{ access_token: string }>(environment.apiBaseUrl + '/auth/renew', {}).pipe(
       tap((r) => { if (r?.access_token) sessionStorage.setItem('authToken', r.access_token); }),
       map(() => true),
+      // Falla de red: se reintenta en el siguiente ciclo. 401: la sesión terminó
+      // (duración máxima o usuario desactivado) y no se puede renovar.
       catchError(() => of(false)),
     );
+  }
+
+  /** El token ya venció y no se pudo renovar. */
+  sessionExpired(): boolean {
+    return !!this.getToken() && this.tokenSecondsLeft() === 0;
   }
 }

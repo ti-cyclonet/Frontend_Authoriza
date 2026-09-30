@@ -48,6 +48,7 @@
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .dash-error { display: flex; align-items: center; gap: 0.6rem; padding: 0.9rem 1.1rem; border-radius: 12px; background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; margin-bottom: 1.25rem; }
+.dash-session { background: #eef2ff; color: #3730a3; border-color: #c7d2fe; }
 .link-btn { margin-left: auto; border: none; background: none; color: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
 
 /* Degradados de la paleta del Dashboard */
