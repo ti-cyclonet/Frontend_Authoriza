@@ -59,9 +59,16 @@ export class HomeComponent implements OnInit, OnDestroy {
   vbarOptions: any;
 
   readonly isPlatformAdmin = typeof sessionStorage !== 'undefined' && sessionStorage.getItem('user_rol') === 'adminAuthoriza';
-  readonly userName = typeof sessionStorage !== 'undefined'
-    ? (sessionStorage.getItem('user_firstName') || sessionStorage.getItem('user_name') || '').split(' ')[0]
-    : '';
+  /** Nombre para el saludo: el de pila, o la razón social; nunca el correo. */
+  readonly userName = (() => {
+    if (typeof sessionStorage === 'undefined') return '';
+    const first = sessionStorage.getItem('user_firstName');
+    if (first) return first.split(' ')[0];
+    const business = sessionStorage.getItem('user_businessName');
+    if (business) return business;
+    const name = sessionStorage.getItem('user_name') || '';
+    return name.includes('@') ? '' : name.split(' ')[0];
+  })();
 
   private refreshTimer: any;
   private keepAliveTimer: any;
