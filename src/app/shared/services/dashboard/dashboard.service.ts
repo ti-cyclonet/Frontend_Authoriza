@@ -47,6 +47,28 @@ export interface InvoiceStats {
   monthlyRevenue: { month: string; revenue: number }[];
 }
 
+/** Resumen del Dashboard (GET /dashboard/overview), se consulta cada 30 s. */
+export interface DashboardOverview {
+  generatedAt: string;
+  revenue: {
+    collectedMonth: number; collectedPrevMonth: number; paymentsMonth: number;
+    billedMonth: number; billedPrevMonth: number; invoicesMonth: number;
+    collectionRate: number | null; mrr: number;
+  };
+  receivables: { pendingValue: number; pendingCount: number; overdueValue: number; overdueCount: number; paymentReported: number };
+  clients: { active: number; activeContracts: number; newContractsMonth: number; newContractsPrevMonth: number; pendingSignature: number };
+  users: { total: number; active: number; unconfirmed: number; newToday: number; newWeek: number; logins24h: number; activeUsers24h: number };
+  alerts: {
+    expiringContracts: { id: string; code: string; endDate: string; client: string; package: string; daysLeft: number }[];
+    overdueInvoices: { id: number; code: string; value: number; expirationDate: string; client: string; daysOverdue: number }[];
+  };
+  series: {
+    months: { key: string; label: string; billed: number; collected: number }[];
+    signups: { date: string; count: number }[];
+  };
+  activity: { id: string; level: string; action: string; message: string; createdAt: string }[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -57,6 +79,10 @@ export class DashboardService {
 
   getStats(): Observable<DashboardStats> {
     return this.http.get<DashboardStats>(`${this.apiUrl}/stats`);
+  }
+
+  getOverview(): Observable<DashboardOverview> {
+    return this.http.get<DashboardOverview>(`${this.apiUrl}/overview`);
   }
 
   getRecentActivity(): Observable<any> {
