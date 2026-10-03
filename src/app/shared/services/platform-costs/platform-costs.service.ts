@@ -25,6 +25,9 @@ export interface PlatformCostCard {
   alert: boolean;
   estimated: boolean;
   services?: { service: string; usd: number }[];
+  /** AWS: costo etiquetado con una app (va directo) y compartido (se reparte por %). */
+  taggedUsd?: number;
+  sharedUsd?: number;
   credits?: number;
 }
 
@@ -37,14 +40,14 @@ export interface PlatformCostsDashboard {
   totals: { costUsd: number; costCop: number; previousUsd: number; projectedUsd: number; revenueCop: number };
   platforms: PlatformCostCard[];
   byApplication: {
-    application: string; awsUsd: number; sesUsd: number; cloudinaryUsd: number; belvoUsd: number; totalUsd: number;
+    application: string; awsUsd: number; awsDirectUsd: number; awsSharedUsd: number; sesUsd: number; cloudinaryUsd: number; belvoUsd: number; totalUsd: number;
     costCop: number; revenueCop: number; marginCop: number; marginPct: number | null;
   }[];
   topTenants: { tenantId: string; name: string; costUsd: number; costCop: number; revenueCop: number; marginCop: number }[];
   usage: { emails: number; uploads: number; uploadBytes: number; belvoCalls: number };
   cloudinary: { creditsUsed: number; creditsLimit: number; usedPercent: number; plan: string | null } | null;
   sources: {
-    aws: { configured: boolean; lastSync: string | null; error: string | null };
+    aws: { configured: boolean; appTag: string; lastSync: string | null; error: string | null };
     cloudinary: { lastSync: string | null; error: string | null };
   };
 }
