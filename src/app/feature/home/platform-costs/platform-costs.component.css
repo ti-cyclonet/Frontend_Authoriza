@@ -211,3 +211,7 @@
   .pc-actions { width: 100%; }
   .pc-actions input { flex: 1; width: auto; }
 }
+
+/* AWS de cada app: lo etiquetado (directo) y lo repartido por porcentaje */
+.pc-card-row.pc-sub { font-size: 0.72rem; color: #6b7280; margin-top: -0.15rem; }
+.pc-hint { font-size: 0.78rem; color: #6b7280; margin: -0.25rem 0 0.5rem; }

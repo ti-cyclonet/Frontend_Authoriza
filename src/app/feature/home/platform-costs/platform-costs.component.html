@@ -48,6 +48,7 @@
     </div>
 
     <h6>{{ 'pc.awsAllocation' | translate }} <small [class.text-danger]="allocationTotal() !== 100">({{ allocationTotal() }} %)</small></h6>
+    <p class="pc-hint">{{ 'pc.awsAllocationHint' | translate }}</p>
     <div class="pc-settings-grid">
       <div class="pc-field" *ngFor="let a of applications">
         <label>{{ a }} (%)</label>
@@ -127,6 +128,10 @@
           <div class="pc-bar"><div class="pc-bar-fill" [style.width.%]="barWidth(data.cloudinary.usedPercent)" [class.warn]="data.cloudinary.usedPercent >= 80"></div></div>
         </div>
 
+        <ng-container *ngIf="p.platform === 'AWS' && !p.estimated">
+          <div class="pc-card-row"><span>{{ 'pc.awsTagged' | translate }}</span><span>{{ usd(p.taggedUsd || 0) }}</span></div>
+          <div class="pc-card-row"><span>{{ 'pc.awsShared' | translate }}</span><span>{{ usd(p.sharedUsd || 0) }}</span></div>
+        </ng-container>
         <ul *ngIf="p.services?.length" class="pc-services">
           <li *ngFor="let s of p.services!.slice(0, 5)"><span>{{ s.service }}</span><span>{{ usd(s.usd) }}</span></li>
         </ul>
@@ -151,6 +156,10 @@
           <span class="pc-app-total">{{ usd(a.totalUsd) }}</span>
         </div>
         <div class="pc-card-row"><span>AWS</span><span>{{ usd(a.awsUsd) }}</span></div>
+        <div class="pc-card-row pc-sub" *ngIf="a.awsDirectUsd > 0">
+          <span>{{ 'pc.awsDirect' | translate }} · {{ usd(a.awsDirectUsd) }}</span>
+          <span>{{ 'pc.awsSharedShort' | translate }} · {{ usd(a.awsSharedUsd) }}</span>
+        </div>
         <div class="pc-card-row"><span>SES</span><span>{{ usd(a.sesUsd) }}</span></div>
         <div class="pc-card-row"><span>Cloudinary</span><span>{{ usd(a.cloudinaryUsd) }}</span></div>
         <div class="pc-card-row" *ngIf="a.belvoUsd > 0 || a.application === 'Kiri'"><span>Belvo</span><span>{{ usd(a.belvoUsd) }}</span></div>
@@ -191,6 +200,7 @@
         <ng-container *ngIf="!data.sources.aws.configured">{{ 'pc.notConfigured' | translate }}</ng-container>
         <ng-container *ngIf="data.sources.aws.configured">{{ data.sources.aws.lastSync ? (data.sources.aws.lastSync | date:'dd/MM/yyyy HH:mm') : ('pc.neverSynced' | translate) }}</ng-container>
         <span *ngIf="data.sources.aws.error" class="text-danger"> · {{ data.sources.aws.error }}</span>
+        <ng-container *ngIf="data.sources.aws.configured"> · {{ 'pc.awsTagKey' | translate }} <code>{{ data.sources.aws.appTag }}</code></ng-container>
       </span>
       <span>
         Cloudinary: {{ data.sources.cloudinary.lastSync ? (data.sources.cloudinary.lastSync | date:'dd/MM/yyyy HH:mm') : ('pc.neverSynced' | translate) }}
