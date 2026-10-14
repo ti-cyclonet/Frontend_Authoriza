@@ -67,6 +67,13 @@ export interface DashboardOverview {
     signups: { date: string; count: number }[];
   };
   activity: { id: string; level: string; action: string; message: string; createdAt: string }[];
+  /** Lo último de cada tipo: el panel lo compara con la consulta anterior para avisar. */
+  news?: {
+    contracts: { id: string; code: string; status: string; monthly: number; client: string; package: string }[];
+    invoices: { id: number; code: string; value: number; status: string; client: string }[];
+    users: { id: string; name: string }[];
+    payments: { key: string; id: number; code: string; value: number; status: string; client: string }[];
+  };
 }
 
 @Injectable({

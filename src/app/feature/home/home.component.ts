@@ -6,11 +6,14 @@ import { forkJoin, of, Subscription, catchError, switchMap } from 'rxjs';
 import { DashboardOverview, DashboardService, DashboardStats } from '../../shared/services/dashboard/dashboard.service';
 import { AuthService } from '../../shared/services/auth/auth.service';
 import { PlatformCostsComponent } from './platform-costs/platform-costs.component';
+import { NewsBubble, NewsKind, bubblesFor, newKeys, playNewsSound } from '../../shared/utils/news-bubbles';
 
 /** Cada cuánto se refrescan los indicadores (solo con la pestaña visible). */
 const REFRESH_MS = 30_000;
 /** Cada cuánto se revisa el token, aunque la pestaña esté oculta. */
 const KEEPALIVE_MS = 60_000;
+const SOUND_KEY = 'authoriza_dash_sound';
+const NEWS_ROUTES: Record<NewsKind, string> = { contract: '/contracts', invoice: '/contracts', payment: '/contracts', user: '/users' };
 
 interface AttentionItem {
   icon: string;
@@ -48,6 +51,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   now = Date.now();
   /** Ids de eventos que llegaron en la última actualización (se resaltan). */
   freshActivity = new Set<string>();
+  /** Burbujas de novedades (contrato, factura, pago o registro nuevo) y su sonido. */
+  bubbles: NewsBubble[] = [];
+  soundOn = true;
+  private seen: Record<NewsKind, Set<string> | null> = { contract: null, invoice: null, payment: null, user: null };
 
   revenueChart: any;
   signupsChart: any;
@@ -89,6 +96,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (!this.isBrowser) return;
+    try { this.soundOn = localStorage.getItem(SOUND_KEY) !== 'off'; } catch { /* sin almacenamiento */ }
     this.refresh(true);
     this.refreshTimer = setInterval(() => { if (!document.hidden) this.refresh(); }, REFRESH_MS);
     // El token se renueva también con la pestaña en segundo plano: antes solo
@@ -144,6 +152,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: ({ overview, stats }) => {
         this.markFreshActivity(overview, first);
+        this.detectNews(overview);
         this.overview = overview;
         this.stats = stats;
         this.buildCharts();
@@ -280,6 +289,47 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.freshActivity = new Set(first ? [] : o.activity.filter((a) => !this.seenActivity.has(a.id)).map((a) => a.id));
     o.activity.forEach((a) => this.seenActivity.add(a.id));
   }
+
+  // ─── Novedades: burbujas con sonido ─────────────────────────────────────
+
+  /** Compara lo último de cada tipo con la consulta anterior; la primera carga no avisa. */
+  private detectNews(o: DashboardOverview): void {
+    const n = o.news;
+    if (!n) return;
+    const take = <T>(kind: NewsKind, rows: T[], key: (r: T) => string): T[] => {
+      const keys = rows.map(key);
+      const fresh = new Set(newKeys(this.seen[kind], keys));
+      this.seen[kind] = new Set([...(this.seen[kind] || []), ...keys]);
+      return rows.filter((r) => fresh.has(key(r)));
+    };
+    const fresh = [
+      ...bubblesFor('contract', take('contract', n.contracts, (c) => c.id), (c) => ({ title: 'Nuevo contrato', detail: `${c.code || 'Sin código'} · ${c.client} · ${c.package}` })),
+      ...bubblesFor('payment', take('payment', n.payments, (p) => p.key), (p) => ({
+        title: p.status === 'Paid' ? 'Pago recibido' : 'Pago reportado',
+        detail: `${p.code} · ${p.client} · ${this.money(p.value)}`,
+      })),
+      ...bubblesFor('invoice', take('invoice', n.invoices, (i) => String(i.id)), (i) => ({ title: 'Nueva factura', detail: `${i.code} · ${i.client} · ${this.money(i.value)}` })),
+      ...bubblesFor('user', take('user', n.users, (u) => u.id), (u) => ({ title: 'Nuevo registro', detail: u.name })),
+    ];
+    if (!fresh.length) return;
+    this.bubbles = [...fresh, ...this.bubbles].slice(0, 5);
+    if (this.soundOn) playNewsSound(fresh[0].kind);
+    for (const b of fresh) setTimeout(() => this.dismissBubble(b.id), 9000);
+  }
+
+  dismissBubble(id: string): void {
+    this.bubbles = this.bubbles.filter((b) => b.id !== id);
+  }
+
+  toggleSound(): void {
+    this.soundOn = !this.soundOn;
+    try { localStorage.setItem(SOUND_KEY, this.soundOn ? 'on' : 'off'); } catch { /* sin almacenamiento */ }
+    if (this.soundOn) playNewsSound('invoice');
+  }
+
+  newsRoute = (b: NewsBubble) => NEWS_ROUTES[b.kind];
+  newsIcon = (b: NewsBubble) => ({ contract: '📝', invoice: '🧾', payment: '💰', user: '👤' })[b.kind];
+  trackByBubble = (_: number, b: NewsBubble) => b.id;
 
   /** Solo se reemplaza la gráfica si cambiaron sus datos (evita parpadeos cada 30 s). */
   private keep(current: any, next: any): any {
