@@ -17,6 +17,9 @@
         <span class="live-dot"></span>{{ stale ? 'Sin conexión' : 'En vivo' }}
       </span>
       <span class="live-updated">Actualizado {{ updatedLabel }}</span>
+      <button type="button" class="icon-btn" (click)="toggleSound()" [title]="soundOn ? 'Sonido de novedades activado' : 'Sonido de novedades desactivado'" [attr.aria-pressed]="soundOn">
+        <svg viewBox="0 0 16 16"><use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + (soundOn ? 'bell-fill' : 'bell-slash-fill')"/></svg>
+      </button>
       <button type="button" class="icon-btn" (click)="refresh()" [disabled]="refreshing" title="Actualizar ahora">
         <svg viewBox="0 0 16 16" [class.spin]="refreshing"><use xlink:href="./assets/icons/bootstrap-icons.svg#arrow-clockwise"/></svg>
       </button>
@@ -219,3 +222,12 @@
     {{ d > 0 ? '▲' : d < 0 ? '▼' : '•' }} {{ d > 0 ? '+' : '' }}{{ d }}%
   </span>
 </ng-template>
+
+<!-- Novedades: burbujas con sonido (contrato, factura, pago o registro nuevo) -->
+<div class="news-stack" aria-live="polite">
+  <div class="news-bubble" *ngFor="let b of bubbles; trackBy: trackByBubble" [class]="'news-bubble news-' + b.kind" role="status">
+    <span class="news-icon">{{ newsIcon(b) }}</span>
+    <a class="news-body" [routerLink]="newsRoute(b)" (click)="dismissBubble(b.id)"><strong>{{ b.title }}</strong><small>{{ b.detail }}</small></a>
+    <button type="button" class="news-close" (click)="dismissBubble(b.id)" aria-label="Cerrar"><svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#x-lg"/></svg></button>
+  </div>
+</div>
