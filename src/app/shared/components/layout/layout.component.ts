@@ -20,6 +20,7 @@ import { SpinnerComponent } from '../spinner/spinner.component';
 import { LoadingService } from '../../services/loading.service';
 import { NotificationsComponent } from '../notifications/notifications.component';
 import { TranslationService } from '../../services/translation.service';
+import { BottomNavComponent } from '../bottom-nav/bottom-nav.component';
 
 @Component({
   selector: 'app-layout',
@@ -32,6 +33,7 @@ import { TranslationService } from '../../services/translation.service';
     FooterComponent,
     RouterOutlet,
     NotificationsComponent,
+    BottomNavComponent,
   ],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css'],

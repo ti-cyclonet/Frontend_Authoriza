@@ -93,9 +93,10 @@
 /* Status badges */
 .status-badge { padding: 0.2rem 0.55rem; border-radius: 12px; font-size: 0.68rem; font-weight: 600; text-transform: uppercase; }
 .status-active { background: #d4edda; color: #155724; }
-.status-draft { background: #fef3c7; color: #92400e; }
-.status-pending { background: #fee2e2; color: #991b1b; }
-.status-expired { background: #f3f4f6; color: #374151; }
+.status-draft { background: #e8f0fe; color: #1d4ed8; }
+.status-pending { background: #fff4dc; color: #92400e; }
+.status-expired { background: #eef0f4; color: #475569; }
+.status-cancelled { background: #fde8e8; color: #b91c1c; }
 
 /* Action Button */
 .action-buttons { display: flex; justify-content: center; }

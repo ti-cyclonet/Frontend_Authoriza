@@ -187,7 +187,7 @@
       </article>
 
       <article class="panel">
-        <header class="panel-head"><h2>Contratos por estado</h2><small *ngIf="stats">{{ stats.contracts.total }} en total</small></header>
+        <header class="panel-head"><h2>Contratos por estado</h2><small *ngIf="stats?.contracts as sc">{{ sc.total }} en total</small></header>
         <div class="chart-box" *ngIf="contractsChart; else noContracts">
           <p-chart type="doughnut" [data]="contractsChart" [options]="vbarOptions" height="100%"></p-chart>
         </div>

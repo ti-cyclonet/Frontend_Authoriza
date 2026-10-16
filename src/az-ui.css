@@ -1,0 +1,235 @@
+/*
+ * Authoriza · capa visual común (se carga DESPUÉS de Bootstrap y PrimeNG).
+ * Unifica tarjetas, tablas, formularios, botones, estados, modales y
+ * paginación de todas las vistas, con el morado de la app
+ * (--sidebar-background-color). Las vistas siguen usando sus clases de
+ * Bootstrap; aquí solo se les da un acabado coherente.
+ */
+:root {
+  --az-primary: var(--sidebar-background-color, #6600cc);
+  --az-primary-soft: rgba(102, 0, 204, 0.08);
+  --az-primary-ring: rgba(102, 0, 204, 0.16);
+  --az-ink: #0f1d3a;
+  --az-text: #334155;
+  --az-muted: #64748b;
+  --az-line: #e6e3ef;
+  --az-surface: #ffffff;
+  --az-soft: #f7f5fc;
+  --az-radius: 14px;
+  --az-radius-sm: 10px;
+  --az-shadow: 0 1px 2px rgba(15, 29, 58, 0.04), 0 8px 24px rgba(15, 29, 58, 0.06);
+  --az-shadow-lg: 0 24px 60px rgba(15, 29, 58, 0.18);
+  --az-ok-bg: #e7f6ee;   --az-ok: #166534;
+  --az-warn-bg: #fff4dc; --az-warn: #92400e;
+  --az-bad-bg: #fde8e8;  --az-bad: #b91c1c;
+  --az-off-bg: #eef0f4;  --az-off: #475569;
+  --az-info-bg: #e8f0fe; --az-info: #1d4ed8;
+}
+
+/* ───────────── Tarjetas ───────────── */
+.router-outlet-container .card {
+  border: 1px solid var(--az-line);
+  border-radius: var(--az-radius);
+  box-shadow: var(--az-shadow) !important;
+}
+.router-outlet-container .card .card { box-shadow: none !important; }
+.router-outlet-container .card > .card-header {
+  background: var(--az-surface);
+  border-bottom: 1px solid var(--az-line);
+  border-radius: var(--az-radius) var(--az-radius) 0 0;
+  padding: 0.95rem 1.25rem;
+  color: var(--az-ink);
+  font-weight: 700;
+}
+.router-outlet-container .card > .card-header h5,
+.router-outlet-container .card > .card-header .h5 { margin: 0; font-size: 1.02rem; font-weight: 700; color: var(--az-ink); }
+
+/* Encabezado de página (mismo patrón en todas las vistas) */
+.az-page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem 1rem; flex-wrap: wrap; }
+.az-page-title { margin: 0; font-size: clamp(1.35rem, 2.4vw, 1.75rem); font-weight: 700; color: var(--marine-blue, var(--az-ink)); }
+.az-page-subtitle { margin: 0.15rem 0 0; color: var(--az-muted); font-size: 0.9rem; }
+.az-page-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+/* ───────────── Tablas ───────────── */
+.router-outlet-container .table { --bs-table-hover-bg: var(--az-soft); color: var(--az-text); margin-bottom: 0; }
+.router-outlet-container .table > thead > tr > th,
+.router-outlet-container .table > thead > tr.table-light > th {
+  background: var(--az-soft);
+  color: var(--az-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--az-line);
+  padding: 0.7rem 0.8rem;
+  vertical-align: middle;
+}
+.router-outlet-container .table > tbody > tr > * {
+  padding: 0.7rem 0.8rem;
+  vertical-align: middle;
+  border-bottom-color: var(--az-line);
+  font-size: 0.86rem;
+}
+.router-outlet-container .table > tbody > tr:last-child > * { border-bottom: 0; }
+/* Tablas "bordered": solo líneas horizontales, más limpias */
+.router-outlet-container .table-bordered > :not(caption) > * { border-width: 0; }
+.router-outlet-container .table-bordered > :not(caption) > * > * { border-width: 0 0 1px; }
+.router-outlet-container .table-responsive { border-radius: 12px; }
+.router-outlet-container .entity-code-badge { white-space: nowrap; }
+
+/* ───────────── Formularios ───────────── */
+.router-outlet-container .form-label,
+.modal .form-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--az-ink);
+  margin-bottom: 0.35rem;
+}
+.router-outlet-container .form-control,
+.router-outlet-container .form-select,
+.modal .form-control,
+.modal .form-select {
+  border: 1px solid #d9d5e6;
+  border-radius: var(--az-radius-sm);
+  min-height: 42px;
+  font-size: 0.9rem;
+  color: var(--az-ink);
+  background-color: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.router-outlet-container textarea.form-control,
+.modal textarea.form-control { min-height: 88px; }
+.router-outlet-container .form-control-sm,
+.router-outlet-container .form-select-sm,
+.modal .form-control-sm,
+.modal .form-select-sm { min-height: 36px; font-size: 0.84rem; }
+.router-outlet-container .form-control::placeholder,
+.modal .form-control::placeholder { color: #9aa3b2; }
+.router-outlet-container .form-control:focus,
+.router-outlet-container .form-select:focus,
+.modal .form-control:focus,
+.modal .form-select:focus {
+  border-color: var(--az-primary);
+  box-shadow: 0 0 0 4px var(--az-primary-ring);
+}
+.router-outlet-container .form-control:disabled,
+.router-outlet-container .form-control[readonly],
+.modal .form-control:disabled,
+.modal .form-control[readonly] { background: var(--az-soft); color: var(--az-muted); }
+.router-outlet-container .form-check-input:checked,
+.modal .form-check-input:checked { background-color: var(--az-primary); border-color: var(--az-primary); }
+.router-outlet-container .form-check-input:focus,
+.modal .form-check-input:focus { box-shadow: 0 0 0 4px var(--az-primary-ring); border-color: var(--az-primary); }
+.router-outlet-container .input-group-text,
+.modal .input-group-text { background: var(--az-soft); border-color: #d9d5e6; color: var(--az-muted); }
+.router-outlet-container .invalid-feedback,
+.modal .invalid-feedback { font-size: 0.76rem; }
+
+/* ───────────── Botones ───────────── */
+.router-outlet-container .btn,
+.modal .btn { border-radius: var(--az-radius-sm); font-weight: 600; font-size: 0.86rem; padding: 0.5rem 1rem; transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.1s; }
+.router-outlet-container .btn-sm,
+.modal .btn-sm { border-radius: 8px; padding: 0.3rem 0.7rem; font-size: 0.78rem; }
+.router-outlet-container .btn:active,
+.modal .btn:active { transform: translateY(1px); }
+.router-outlet-container .btn-primary,
+.modal .btn-primary { background: var(--az-primary); border-color: var(--az-primary); color: #fff; }
+.router-outlet-container .btn-primary:hover,
+.modal .btn-primary:hover { background: #5200a8; border-color: #5200a8; }
+.router-outlet-container .btn-primary:disabled,
+.modal .btn-primary:disabled { background: #b9a6dc; border-color: #b9a6dc; }
+.router-outlet-container .btn-outline-primary,
+.modal .btn-outline-primary { color: var(--az-primary); border-color: var(--az-primary); }
+.router-outlet-container .btn-outline-primary:hover,
+.modal .btn-outline-primary:hover { background: var(--az-primary); color: #fff; }
+.router-outlet-container .btn-secondary,
+.modal .btn-secondary,
+.router-outlet-container .btn-outline-secondary,
+.modal .btn-outline-secondary { background: #fff; color: var(--az-text); border: 1px solid #d9d5e6; }
+.router-outlet-container .btn-secondary:hover,
+.modal .btn-secondary:hover,
+.router-outlet-container .btn-outline-secondary:hover,
+.modal .btn-outline-secondary:hover { background: var(--az-soft); color: var(--az-ink); border-color: #c9c2dc; }
+.router-outlet-container .btn:focus-visible,
+.modal .btn:focus-visible { box-shadow: 0 0 0 4px var(--az-primary-ring); }
+/* Acciones dentro de tablas: suaves, no bloques de color */
+.router-outlet-container .table .btn-warning { background: var(--az-warn-bg); color: var(--az-warn); border-color: transparent; }
+.router-outlet-container .table .btn-warning:hover { background: #fde7b0; color: #78350f; }
+.router-outlet-container .table .btn-danger { background: var(--az-bad-bg); color: var(--az-bad); border-color: transparent; }
+.router-outlet-container .table .btn-danger:hover { background: #f9caca; color: #991b1b; }
+.router-outlet-container .table .btn-success { background: var(--az-ok-bg); color: var(--az-ok); border-color: transparent; }
+
+/* Botón de icono (ver, editar, borrar) */
+.az-icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; padding: 0; border-radius: 9px; cursor: pointer;
+  border: 1px solid var(--az-line); background: #fff; color: var(--az-primary);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.az-icon-btn svg { width: 16px; height: 16px; fill: currentColor; }
+.az-icon-btn:hover { background: var(--az-primary); border-color: var(--az-primary); color: #fff; }
+.az-icon-btn.danger { color: var(--az-bad); }
+.az-icon-btn.danger:hover { background: var(--az-bad); border-color: var(--az-bad); color: #fff; }
+.az-icon-btn:disabled, .az-icon-btn.disabled { opacity: 0.4; pointer-events: none; }
+.az-actions { display: inline-flex; gap: 0.35rem; }
+
+/* ───────────── Estados (pastillas suaves) ───────────── */
+.router-outlet-container .badge,
+.modal .badge { font-weight: 700; letter-spacing: 0.02em; border-radius: 999px; padding: 0.35em 0.7em; }
+.router-outlet-container .badge.bg-success, .modal .badge.bg-success { background: var(--az-ok-bg) !important; color: var(--az-ok) !important; }
+.router-outlet-container .badge.bg-warning, .modal .badge.bg-warning { background: var(--az-warn-bg) !important; color: var(--az-warn) !important; }
+.router-outlet-container .badge.bg-danger, .modal .badge.bg-danger { background: var(--az-bad-bg) !important; color: var(--az-bad) !important; }
+.router-outlet-container .badge.bg-secondary, .modal .badge.bg-secondary { background: var(--az-off-bg) !important; color: var(--az-off) !important; }
+.router-outlet-container .badge.bg-info, .modal .badge.bg-info,
+.router-outlet-container .badge.bg-primary, .modal .badge.bg-primary { background: var(--az-info-bg) !important; color: var(--az-info) !important; }
+.az-status { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.65rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
+.az-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.az-status.ok { background: var(--az-ok-bg); color: var(--az-ok); }
+.az-status.warn { background: var(--az-warn-bg); color: var(--az-warn); }
+.az-status.bad { background: var(--az-bad-bg); color: var(--az-bad); }
+.az-status.off { background: var(--az-off-bg); color: var(--az-off); }
+.az-chip { display: inline-block; margin: 0.1rem 0.2rem 0.1rem 0; padding: 0.15rem 0.55rem; border-radius: 999px; background: var(--az-primary-soft); color: var(--az-primary); font-size: 0.72rem; font-weight: 600; white-space: nowrap; }
+
+/* ───────────── Modales ───────────── */
+.modal-content { border: 0; border-radius: 18px; box-shadow: var(--az-shadow-lg); overflow: hidden; }
+.modal-header { border-bottom: 1px solid var(--az-line); padding: 1rem 1.25rem; }
+.modal-title { font-weight: 700; }
+.modal-body { padding: 1.25rem; }
+.modal-footer { border-top: 1px solid var(--az-line); background: #fbfafe; padding: 0.85rem 1.25rem; gap: 0.5rem; }
+.modal-backdrop.show { opacity: 0.45; }
+
+/* ───────────── Paginación ───────────── */
+.router-outlet-container .pagination { gap: 0.25rem; }
+.router-outlet-container .pagination .page-link {
+  min-width: 2.1rem; height: 2.1rem; padding: 0 0.6rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--az-line) !important; border-radius: 9px !important;
+  color: var(--az-primary); background: #fff; font-weight: 600; font-size: 0.84rem;
+}
+.router-outlet-container .pagination .page-link:hover { background: var(--az-primary-soft); }
+.router-outlet-container .pagination .page-item.active .page-link { background: var(--az-primary); border-color: var(--az-primary) !important; color: #fff; }
+.router-outlet-container .pagination .page-item.disabled .page-link { opacity: 0.45; background: #fff; }
+
+/* ───────────── Ruta (breadcrumb) ───────────── */
+.router-outlet-container .title-container { margin: 0.9rem 0 0.25rem; padding-left: 1.25rem; font-size: 0.86rem; }
+.router-outlet-container .title-link { gap: 0.35rem; padding: 0.25rem 0.7rem 0.25rem 0.55rem; border-radius: 999px; background: rgba(255, 255, 255, 0.75); color: var(--az-muted) !important; text-decoration: none !important; box-shadow: 0 1px 2px rgba(15, 29, 58, 0.06); }
+.router-outlet-container .title-link svg { width: 15px !important; height: 15px !important; margin: 0 !important; fill: var(--az-primary) !important; }
+
+/* Estado vacío */
+.az-empty { padding: 2.5rem 1rem; text-align: center; color: var(--az-muted); }
+.az-empty svg { width: 40px; height: 40px; fill: #c4b5e8; margin-bottom: 0.6rem; }
+.az-empty strong { display: block; color: var(--az-ink); font-size: 1rem; margin-bottom: 0.2rem; }
+
+/* ───────────── Móvil: barra inferior en lugar del menú lateral ───────────── */
+@media (max-width: 767.98px) {
+  #sidebar { display: none !important; }
+  .main-content { width: 100% !important; margin-left: 0 !important; }
+  .footer-wrapper { display: none !important; }
+  app-header .toggle-button { display: none !important; }
+  /* El asistente CYCLON sube por encima de la barra inferior */
+  .cyclon-widget { bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important; }
+  .router-outlet-container { padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important; }
+  .router-outlet-container .card.m-3 { margin: 0.6rem !important; }
+  .router-outlet-container .table > tbody > tr > * { font-size: 0.84rem; }
+}

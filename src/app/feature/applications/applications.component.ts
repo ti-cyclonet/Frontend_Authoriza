@@ -35,6 +35,7 @@ import { TranslationService } from '../../shared/services/translation.service';
 
 declare var bootstrap: any;
 
+import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-applications',
   standalone: true,
@@ -49,6 +50,7 @@ declare var bootstrap: any;
     CuOptionMenuComponent,
     TranslatePipe,
     CyclonAssistantComponent,
+    RouterLink,
   ],
   templateUrl: './applications.component.html',
   styleUrls: ['./applications.component.css'],
@@ -824,6 +826,22 @@ export class ApplicationsComponent implements OnInit {
 
   get endItem(): number {
     return Math.min(this.currentPage * this.itemsPerPage, this.totalItems);
+  }
+
+  /** "Mostrando 1–5 de 6 aplicaciones". */
+  get showingText(): string {
+    return this.translationService
+      .translate('apps.showing')
+      .replace('{start}', String(this.totalItems ? this.startItem : 0))
+      .replace('{end}', String(this.endItem))
+      .replace('{total}', String(this.totalItems));
+  }
+
+  /** Etiquetas como lista (llegan como arreglo o texto separado por comas). */
+  tagsOf(application: any): string[] {
+    const raw = application?.strTags;
+    const list = Array.isArray(raw) ? raw : typeof raw === 'string' ? raw.split(',') : [];
+    return list.map((t: any) => String(t).trim()).filter(Boolean);
   }
 
   // Contexto para CYCLON

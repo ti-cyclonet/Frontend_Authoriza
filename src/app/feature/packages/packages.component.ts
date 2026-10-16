@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CurrencyPipe, CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { onQuickCreate } from '../../shared/utils/quick-create';
 import { MockPackage, mockPackages } from '../../shared/mocks/packages.mock';
 import { Package } from '../../shared/model/package.model';
 import { PackageService } from '../../shared/services/packages/package.service';
@@ -12,10 +13,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { CyclonAssistantComponent } from '../../shared/components/cyclon-assistant/cyclon-assistant.component';
 import { TranslationService } from '../../shared/services/translation.service';
 
+import { CurrencyFormatPipe } from '../../shared/pipes/custom-currency.pipe';
+
 @Component({
   selector: 'app-packages',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, RouterLink, AddPackageComponent, TranslatePipe, CyclonAssistantComponent],
+  imports: [CommonModule, CurrencyPipe, CurrencyFormatPipe, RouterLink, AddPackageComponent, TranslatePipe, CyclonAssistantComponent],
   templateUrl: './packages.component.html',
   styleUrls: ['./packages.component.css'],
 })
@@ -31,6 +34,9 @@ export class PackagesComponent implements OnInit {
   currentPage: number = 1;
   itemsPerPageList: number = 10;
   itemsPerPageCards: number = 6;
+
+  /** Acción rápida "Nuevo paquete" del menú inferior. */
+  private readonly quickCreate = onQuickCreate(() => this.openAddPackageModal());
 
   constructor(
     private packageService: PackageService,
