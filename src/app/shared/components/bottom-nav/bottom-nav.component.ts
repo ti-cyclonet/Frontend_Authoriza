@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { MenuOption } from '../../model/menu_option';
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { TranslationService } from '../../services/translation.service';
+import { menuLabel } from '../../utils/menu-label';
 
 /** Acción rápida del botón central (abre el formulario de creación de la vista). */
 interface QuickAction {
@@ -20,7 +23,7 @@ interface QuickAction {
 @Component({
   selector: 'app-bottom-nav',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   templateUrl: './bottom-nav.component.html',
   styleUrl: './bottom-nav.component.css',
 })
@@ -35,12 +38,12 @@ export class BottomNavComponent {
   private static readonly PREFERRED = ['/home', '/users', '/contracts', '/packages'];
 
   private static readonly QUICK: (QuickAction & { route: string })[] = [
-    { route: '/users', label: 'Nuevo usuario', icon: 'person-plus', url: '/users' },
-    { route: '/contracts', label: 'Nuevo contrato', icon: 'file-earmark-plus', url: '/contracts' },
-    { route: '/packages', label: 'Nuevo paquete', icon: 'box-seam', url: '/packages' },
+    { route: '/users', label: 'nav.newUser', icon: 'person-plus', url: '/users' },
+    { route: '/contracts', label: 'nav.newContract', icon: 'file-earmark-plus', url: '/contracts' },
+    { route: '/packages', label: 'nav.newPackage', icon: 'box-seam', url: '/packages' },
   ];
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private translations: TranslationService) {
     this.currentUrl = this.router.url;
     this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe((e) => {
       this.currentUrl = (e as NavigationEnd).urlAfterRedirects;
@@ -97,6 +100,11 @@ export class BottomNavComponent {
 
   get moreActive(): boolean {
     return this.moreItems.some((o) => this.isActive(o));
+  }
+
+  /** Texto visible: la descripción traducida (strName es un id interno, p. ej. "homeAuthoriza"). */
+  label(option: MenuOption): string {
+    return menuLabel(option.strDescription, this.translations, option.strName);
   }
 
   link(option: MenuOption): string {

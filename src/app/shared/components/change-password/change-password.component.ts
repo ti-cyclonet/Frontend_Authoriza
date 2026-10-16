@@ -25,7 +25,7 @@ import Swal from 'sweetalert2';
   selector: 'app-change-password',
   templateUrl: './change-password.component.html',
   styleUrls: ['./change-password.component.css'],
-  imports: [ReactiveFormsModule, CommonModule, FormsModule],
+  imports: [ReactiveFormsModule, CommonModule, FormsModule, TranslatePipe],
 })
 export class ChangePasswordComponent implements OnInit {
   @Output() passwordChanged = new EventEmitter<void>();
@@ -67,8 +67,8 @@ export class ChangePasswordComponent implements OnInit {
 
   get strengthLabel(): string {
     const v: string = this.form.get('newPassword')?.value || '';
-    if (v.length < 6) return `Faltan ${6 - v.length} caracteres`;
-    return ['', 'Débil', 'Aceptable', 'Buena', 'Muy buena'][this.strength];
+    if (v.length < 6) return this.translationService.translate('cp.missing').replace('{n}', String(6 - v.length));
+    return this.translationService.translate(['', 'cp.weak', 'cp.fair', 'cp.good', 'cp.great'][this.strength]);
   }
 
   /** Como página, "Cancelar" vuelve atrás (en el modal lo cierra Bootstrap). */

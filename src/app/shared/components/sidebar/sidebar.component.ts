@@ -3,6 +3,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule, NgStyle } from '@angular/common';
 import { MenuOption } from '../../model/menu_option';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { menuLabel } from '../../utils/menu-label';
 import { TranslationService } from '../../services/translation.service';
 
 @Component({
@@ -80,21 +81,6 @@ export class SidebarComponent implements OnInit {
   }
 
   getTranslatedMenuText(description: string): string {
-    const menuMap: { [key: string]: string } = {
-      'Home': 'menu.home',
-      'Users': 'menu.users',
-      'Applications': 'menu.applications',
-      'Packages': 'menu.packages',
-      'Contracts': 'menu.contracts',
-      'Settings': 'menu.settings',
-      'Dashboard': 'menu.dashboard',
-      'Materials': 'menu.materials',
-      'Kardex': 'menu.kardex',
-      'Invoices': 'menu.invoices',
-      'Parameters': 'menu.parameters'
-    };
-    
-    const translationKey = menuMap[description];
-    return translationKey ? this.translationService.translate(translationKey) : description;
+    return menuLabel(description, this.translationService);
   }
 }

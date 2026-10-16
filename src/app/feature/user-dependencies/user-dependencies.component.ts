@@ -5,11 +5,13 @@ import { RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 import { UserDependenciesService } from '../../shared/services/user-dependencies/user-dependencies.service';
 import { UserService } from '../../shared/services/user/user.service';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { TranslationService } from '../../shared/services/translation.service';
 
 @Component({
   selector: 'app-user-dependencies',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <div class="title-container">
       <a routerLink="/user-dependencies" class="title-link">
@@ -22,40 +24,40 @@ import { UserService } from '../../shared/services/user/user.service';
       <div class="card-body">
         <div class="az-page-header">
           <div>
-            <h3 class="az-page-title">Dependencias de usuarios</h3>
-            <p class="az-page-subtitle">Quién depende de quién: el principal administra a sus dependientes y puede autorizarlos a firmar.</p>
+            <h3 class="az-page-title">{{ 'deps.title' | translate }}</h3>
+            <p class="az-page-subtitle">{{ 'deps.subtitle' | translate }}</p>
           </div>
         </div>
 
         <!-- Nueva dependencia -->
         <div class="dep-create">
           <div class="dep-field">
-            <label class="form-label" for="dep-principal">Usuario principal</label>
+            <label class="form-label" for="dep-principal">{{ 'deps.principal' | translate }}</label>
             <select id="dep-principal" [(ngModel)]="selectedPrincipal" class="form-select">
-              <option value="">Selecciona el principal</option>
+              <option value="">{{ 'deps.selectPrincipal' | translate }}</option>
               <option *ngFor="let user of users" [value]="user.id">{{ optionLabel(user) }}</option>
             </select>
           </div>
           <svg class="dep-arrow" viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="./assets/icons/bootstrap-icons.svg#arrow-right" /></svg>
           <div class="dep-field">
-            <label class="form-label" for="dep-dependent">Usuario dependiente</label>
+            <label class="form-label" for="dep-dependent">{{ 'deps.dependent' | translate }}</label>
             <select id="dep-dependent" [(ngModel)]="selectedDependent" class="form-select">
-              <option value="">Selecciona el dependiente</option>
+              <option value="">{{ 'deps.selectDependent' | translate }}</option>
               <option *ngFor="let user of users" [value]="user.id" [disabled]="user.id === selectedPrincipal">{{ optionLabel(user) }}</option>
             </select>
           </div>
           <button class="btn btn-primary dep-submit" (click)="createDependency()" [disabled]="!selectedPrincipal || !selectedDependent || creating">
             <svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="./assets/icons/bootstrap-icons.svg#link-45deg" /></svg>
-            {{ creating ? 'Creando…' : 'Crear dependencia' }}
+            {{ (creating ? 'deps.creating' : 'deps.create') | translate }}
           </button>
         </div>
       </div>
 
       <div class="dep-toolbar">
-        <strong>{{ filtered.length }} {{ filtered.length === 1 ? 'dependencia' : 'dependencias' }}</strong>
+        <strong>{{ filtered.length }} {{ (filtered.length === 1 ? 'deps.countOne' : 'deps.countMany') | translate }}</strong>
         <div class="dep-search">
           <svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="./assets/icons/bootstrap-icons.svg#search" /></svg>
-          <input class="form-control form-control-sm" type="search" [(ngModel)]="search" placeholder="Buscar por nombre o correo" aria-label="Buscar dependencias">
+          <input class="form-control form-control-sm" type="search" [(ngModel)]="search" [placeholder]="'deps.search' | translate" [attr.aria-label]="'deps.search' | translate">
         </div>
       </div>
 
@@ -63,11 +65,11 @@ import { UserService } from '../../shared/services/user/user.service';
         <table class="table table-hover">
           <thead>
             <tr>
-              <th>Principal</th>
-              <th>Dependiente</th>
-              <th class="text-center">Estado</th>
-              <th class="d-none d-md-table-cell">Creada</th>
-              <th class="text-end">Acciones</th>
+              <th>{{ 'deps.colPrincipal' | translate }}</th>
+              <th>{{ 'deps.colDependent' | translate }}</th>
+              <th class="text-center">{{ 'common.status' | translate }}</th>
+              <th class="d-none d-md-table-cell">{{ 'deps.colCreated' | translate }}</th>
+              <th class="text-end">{{ 'common.actions' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -82,23 +84,23 @@ import { UserService } from '../../shared/services/user/user.service';
                 <div class="dep-person">
                   <span class="dep-avatar alt">{{ initials(dependency.dependentUser) }}</span>
                   <span>
-                    <strong>{{ nameOf(dependency.dependentUser) }} <span class="az-chip" *ngIf="dependency.isAuthorizedSigner">Firmante</span></strong>
+                    <strong>{{ nameOf(dependency.dependentUser) }} <span class="az-chip" *ngIf="dependency.isAuthorizedSigner">{{ 'deps.signer' | translate }}</span></strong>
                     <small>{{ dependency.dependentUser?.strUserName }}</small>
                   </span>
                 </div>
               </td>
               <td class="text-center">
                 <span class="az-status" [class.ok]="dependency.status === 'ACTIVE'" [class.off]="dependency.status !== 'ACTIVE'">
-                  {{ dependency.status === 'ACTIVE' ? 'Activa' : 'Inactiva' }}
+                  {{ (dependency.status === 'ACTIVE' ? 'deps.active' : 'deps.inactive') | translate }}
                 </span>
               </td>
               <td class="d-none d-md-table-cell text-nowrap">{{ fmtDate(dependency.createdAt) }}</td>
               <td class="text-end">
                 <span class="az-actions">
-                  <button *ngIf="dependency.status === 'ACTIVE'" class="az-icon-btn" (click)="deactivateDependency(dependency)" title="Desactivar" aria-label="Desactivar dependencia">
+                  <button *ngIf="dependency.status === 'ACTIVE'" class="az-icon-btn" (click)="deactivateDependency(dependency)" [title]="'deps.deactivate' | translate" [attr.aria-label]="'deps.deactivate' | translate">
                     <svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#pause-circle" /></svg>
                   </button>
-                  <button class="az-icon-btn danger" (click)="deleteDependency(dependency)" title="Eliminar" aria-label="Eliminar dependencia">
+                  <button class="az-icon-btn danger" (click)="deleteDependency(dependency)" [title]="'deps.delete' | translate" [attr.aria-label]="'deps.delete' | translate">
                     <svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#trash" /></svg>
                   </button>
                 </span>
@@ -108,8 +110,8 @@ import { UserService } from '../../shared/services/user/user.service';
         </table>
         <div class="az-empty" *ngIf="!filtered.length">
           <svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="./assets/icons/bootstrap-icons.svg#diagram-3" /></svg>
-          <strong>{{ search ? 'Sin resultados' : 'Aún no hay dependencias' }}</strong>
-          {{ search ? 'Prueba con otro nombre o correo.' : 'Crea la primera con el formulario de arriba.' }}
+          <strong>{{ (search ? 'deps.noResultsTitle' : 'deps.emptyTitle') | translate }}</strong>
+          {{ (search ? 'deps.noResultsText' : 'deps.emptyText') | translate }}
         </div>
       </div>
     </div>
@@ -150,8 +152,13 @@ export class UserDependenciesComponent implements OnInit {
 
   constructor(
     private userDependenciesService: UserDependenciesService,
-    private userService: UserService
+    private userService: UserService,
+    private translations: TranslationService
   ) {}
+
+  private t(key: string): string {
+    return this.translations.translate(key);
+  }
 
   ngOnInit() {
     this.loadUsers();
@@ -209,7 +216,7 @@ export class UserDependenciesComponent implements OnInit {
   fmtDate(value: string | Date | null | undefined): string {
     if (!value) return '—';
     const d = new Date(value);
-    return isNaN(d.getTime()) ? '—' : d.toLocaleString('es-CO', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+    return isNaN(d.getTime()) ? '—' : d.toLocaleString(this.translations.getCurrentLanguage() === 'en' ? 'en-US' : 'es-CO', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' });
   }
 
   optionLabel(user: any): string {
@@ -221,7 +228,7 @@ export class UserDependenciesComponent implements OnInit {
     if (!this.selectedPrincipal || !this.selectedDependent) return;
 
     if (this.selectedPrincipal === this.selectedDependent) {
-      Swal.fire({ icon: 'warning', title: 'No es posible', text: 'Un usuario no puede ser dependiente de sí mismo.' });
+      Swal.fire({ icon: 'warning', title: this.t('deps.selfTitle'), text: this.t('deps.selfText') });
       return;
     }
 
@@ -235,12 +242,12 @@ export class UserDependenciesComponent implements OnInit {
         this.selectedPrincipal = '';
         this.selectedDependent = '';
         this.loadDependencies();
-        Swal.fire({ icon: 'success', title: 'Dependencia creada', timer: 1600, showConfirmButton: false, toast: true, position: 'top-end' });
+        Swal.fire({ icon: 'success', title: this.t('deps.created'), timer: 1600, showConfirmButton: false, toast: true, position: 'top-end' });
       },
       error: (error) => {
         this.creating = false;
         console.error('Error creating dependency:', error);
-        Swal.fire({ icon: 'error', title: 'No se pudo crear', text: error?.error?.message || 'Error al crear la dependencia.' });
+        Swal.fire({ icon: 'error', title: this.t('deps.createError'), text: error?.error?.message || '' });
       }
     });
   }
@@ -249,11 +256,11 @@ export class UserDependenciesComponent implements OnInit {
     this.userDependenciesService.deactivateDependency(dependency.id).subscribe({
       next: () => {
         this.loadDependencies();
-        Swal.fire({ icon: 'success', title: 'Dependencia desactivada', timer: 1600, showConfirmButton: false, toast: true, position: 'top-end' });
+        Swal.fire({ icon: 'success', title: this.t('deps.deactivated'), timer: 1600, showConfirmButton: false, toast: true, position: 'top-end' });
       },
       error: (error) => {
         console.error('Error deactivating dependency:', error);
-        Swal.fire({ icon: 'error', title: 'No se pudo desactivar', text: error?.error?.message || 'Error al desactivar la dependencia.' });
+        Swal.fire({ icon: 'error', title: this.t('deps.deactivateError'), text: error?.error?.message || '' });
       }
     });
   }
@@ -261,22 +268,22 @@ export class UserDependenciesComponent implements OnInit {
   deleteDependency(dependency: any) {
     Swal.fire({
       icon: 'warning',
-      title: '¿Eliminar la dependencia?',
-      text: `${this.nameOf(dependency.dependentUser)} dejará de depender de ${this.nameOf(dependency.principalUser)}.`,
+      title: this.t('deps.confirmDeleteTitle'),
+      text: this.t('deps.confirmDeleteText').replace('{dependent}', this.nameOf(dependency.dependentUser)).replace('{principal}', this.nameOf(dependency.principalUser)),
       showCancelButton: true,
-      confirmButtonText: 'Eliminar',
-      cancelButtonText: 'Cancelar',
+      confirmButtonText: this.t('deps.delete'),
+      cancelButtonText: this.t('deps.cancel'),
       confirmButtonColor: '#b91c1c',
     }).then((r) => {
       if (!r.isConfirmed) return;
       this.userDependenciesService.deleteDependency(dependency.id).subscribe({
         next: () => {
           this.loadDependencies();
-          Swal.fire({ icon: 'success', title: 'Dependencia eliminada', timer: 1600, showConfirmButton: false, toast: true, position: 'top-end' });
+          Swal.fire({ icon: 'success', title: this.t('deps.deleted'), timer: 1600, showConfirmButton: false, toast: true, position: 'top-end' });
         },
         error: (error) => {
           console.error('Error deleting dependency:', error);
-          Swal.fire({ icon: 'error', title: 'No se pudo eliminar', text: error?.error?.message || 'Error al eliminar la dependencia.' });
+          Swal.fire({ icon: 'error', title: this.t('deps.deleteError'), text: error?.error?.message || '' });
         }
       });
     });

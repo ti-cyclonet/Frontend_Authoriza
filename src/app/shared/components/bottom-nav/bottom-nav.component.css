@@ -83,7 +83,8 @@
 }
 .bn-grabber { display: block; width: 40px; height: 4px; border-radius: 4px; background: #d9d5e6; margin: 0 auto 0.75rem; }
 .bn-sheet-title { margin: 0 0 0.75rem; font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
-.bn-sheet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+.bn-sheet-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem; }
+.bn-sheet-item > span:last-child { max-width: 100%; overflow-wrap: anywhere; line-height: 1.2; }
 .bn-sheet-item {
   display: flex; flex-direction: column; align-items: center; gap: 0.4rem; text-align: center;
   padding: 0.85rem 0.4rem; border-radius: 16px; background: #f7f5fc;
