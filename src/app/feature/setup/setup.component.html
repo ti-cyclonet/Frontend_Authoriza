@@ -1,13 +1,35 @@
 <div class="title-container">
-    <a href="/setup" class="title-link">
-      <svg viewBox="0 0 16 16">
-        <use xlink:href="./assets/icons/bootstrap-icons.svg#gear-fill"/>
-      </svg>
-      /settings
-    </a>
-  </div>
-  <div class="card shadow m-3">
-    <div class="card-body">
-      Settings container
+  <a routerLink="/setup" class="title-link">
+    <svg viewBox="0 0 16 16">
+      <use xlink:href="./assets/icons/bootstrap-icons.svg#gear-fill"/>
+    </svg>
+    /setup
+  </a>
+</div>
+
+<div class="card shadow m-3">
+  <div class="card-body">
+    <div class="az-page-header">
+      <div>
+        <h3 class="az-page-title">Configuración</h3>
+        <p class="az-page-subtitle">Todo lo que se configura en Authoriza, en un solo lugar.</p>
+      </div>
     </div>
+
+    <section class="setup-group" *ngFor="let group of groups">
+      <h6 class="setup-group-title">{{ group.title }}</h6>
+      <div class="setup-grid">
+        <a class="setup-card" *ngFor="let item of group.items" [routerLink]="item.url">
+          <span class="setup-icon" [style.background]="item.tint">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + item.icon"></use></svg>
+          </span>
+          <span class="setup-text">
+            <strong>{{ item.title }}</strong>
+            <small>{{ item.description }}</small>
+          </span>
+          <svg class="setup-go" viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="./assets/icons/bootstrap-icons.svg#chevron-right"></use></svg>
+        </a>
+      </div>
+    </section>
   </div>
+</div>

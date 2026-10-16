@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { onQuickCreate } from '../../shared/utils/quick-create';
 import { FormsModule } from '@angular/forms';
 import { Contract } from '../../shared/model/contract.model';
 import { ContractService, ContractStatus } from '../../shared/services/contracts/contract.service';
@@ -44,10 +45,21 @@ export class ContractsComponent implements OnInit {
   editData = { value: 0, payday: 1, startDate: '', endDate: '', status: '', businessSector: '', packageId: '' };
   availablePackages: Package[] = [];
 
+  /** Acción rápida "Nuevo contrato" del menú inferior. */
+  private readonly quickCreate = onQuickCreate(() => this.openAddContractModal());
+
   constructor(private contractService: ContractService, private translationService: TranslationService, private packageService: PackageService) {}
 
   ngOnInit(): void {
     this.loadContracts();
+  }
+
+  /** "30 mar 2026" (las fechas llegan como AAAA-MM-DD). */
+  fmtDate(value: string | null | undefined): string {
+    if (!value) return '—';
+    const [y, m, d] = String(value).slice(0, 10).split('-').map(Number);
+    if (!y || !m || !d) return String(value);
+    return new Date(y, m - 1, d).toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
   loadContracts(): void {

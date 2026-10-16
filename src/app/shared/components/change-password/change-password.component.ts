@@ -30,6 +30,8 @@ import Swal from 'sweetalert2';
 export class ChangePasswordComponent implements OnInit {
   @Output() passwordChanged = new EventEmitter<void>();
   form!: FormGroup;
+  /** Mostrar/ocultar cada contraseña. */
+  show = { old: false, new: false, repeat: false };
 
   constructor(
     private fb: FormBuilder,
@@ -45,6 +47,34 @@ export class ChangePasswordComponent implements OnInit {
       newPassword: ['', [Validators.required, Validators.minLength(6)]],
       repeatPassword: ['', Validators.required],
     });
+  }
+
+  get mismatch(): boolean {
+    const repeat = this.form.get('repeatPassword');
+    return !!repeat?.value && !!repeat?.touched && repeat.value !== this.form.get('newPassword')?.value;
+  }
+
+  /** 1-4 según largo y variedad de caracteres. */
+  get strength(): number {
+    const v: string = this.form.get('newPassword')?.value || '';
+    let s = 0;
+    if (v.length >= 6) s++;
+    if (v.length >= 10) s++;
+    if (/[A-Z]/.test(v) && /[a-z]/.test(v)) s++;
+    if (/\d/.test(v) && /[^A-Za-z0-9]/.test(v)) s++;
+    return Math.max(1, s);
+  }
+
+  get strengthLabel(): string {
+    const v: string = this.form.get('newPassword')?.value || '';
+    if (v.length < 6) return `Faltan ${6 - v.length} caracteres`;
+    return ['', 'Débil', 'Aceptable', 'Buena', 'Muy buena'][this.strength];
+  }
+
+  /** Como página, "Cancelar" vuelve atrás (en el modal lo cierra Bootstrap). */
+  cancel(): void {
+    this.form.reset();
+    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/change-password')) window.history.back();
   }
 
   closeModal(): void {
