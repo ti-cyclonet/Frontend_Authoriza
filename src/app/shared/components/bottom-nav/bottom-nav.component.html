@@ -1,0 +1,54 @@
+<!-- Acciones rápidas del botón central -->
+<div class="bn-overlay" *ngIf="actionsOpen" (click)="actionsOpen = false">
+  <div class="bn-actions" (click)="$event.stopPropagation()">
+    <button type="button" class="bn-action" *ngFor="let a of quickActions; let i = index" [style.animation-delay]="i * 40 + 'ms'" (click)="runQuick(a)">
+      <span class="bn-action-icon">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + a.icon"></use></svg>
+      </span>
+      <span class="bn-action-label">{{ a.label }}</span>
+    </button>
+    <p class="bn-empty" *ngIf="!quickActions.length">No hay acciones rápidas para tu rol.</p>
+  </div>
+</div>
+
+<!-- "Más": el resto del menú -->
+<div class="bn-overlay bn-overlay--sheet" *ngIf="moreOpen" (click)="moreOpen = false">
+  <div class="bn-sheet" role="dialog" aria-label="Más opciones" (click)="$event.stopPropagation()">
+    <span class="bn-grabber" aria-hidden="true"></span>
+    <p class="bn-sheet-title">Más opciones</p>
+    <div class="bn-sheet-grid">
+      <a class="bn-sheet-item" *ngFor="let o of moreItems" [routerLink]="link(o)" [class.active]="isActive(o)">
+        <span class="bn-sheet-icon"><svg viewBox="0 0 16 16" aria-hidden="true"><use [attr.xlink:href]="icon(o)"></use></svg></span>
+        <span>{{ o.strName }}</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Barra inferior -->
+<nav class="bn-bar" aria-label="Menú principal">
+  <a class="bn-item" *ngFor="let o of leftItems" [routerLink]="link(o)" [class.active]="isActive(o)" [attr.aria-current]="isActive(o) ? 'page' : null">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><use [attr.xlink:href]="icon(o)"></use></svg>
+    <span>{{ o.strName }}</span>
+  </a>
+
+  <!-- Lugar del botón central -->
+  <span class="bn-gap" aria-hidden="true"></span>
+
+  <a class="bn-item" *ngFor="let o of rightItems" [routerLink]="link(o)" [class.active]="isActive(o)" [attr.aria-current]="isActive(o) ? 'page' : null">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><use [attr.xlink:href]="icon(o)"></use></svg>
+    <span>{{ o.strName }}</span>
+  </a>
+
+  <button type="button" class="bn-item" *ngIf="hasMore" [class.active]="moreOpen || moreActive" (click)="toggleMore()" [attr.aria-expanded]="moreOpen">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="./assets/icons/bootstrap-icons.svg#grid-3x3-gap"></use></svg>
+    <span>Más</span>
+  </button>
+</nav>
+
+<!-- Botón central "+" (gira a "×" con las acciones abiertas) -->
+<div class="bn-fab-wrap" [class.raised]="actionsOpen">
+  <button type="button" class="bn-fab" [class.open]="actionsOpen" (click)="toggleActions()" [attr.aria-expanded]="actionsOpen" aria-label="Acciones rápidas">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><use xlink:href="./assets/icons/bootstrap-icons.svg#plus-lg"></use></svg>
+  </button>
+</div>

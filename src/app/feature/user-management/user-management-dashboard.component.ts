@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { onQuickCreate } from '../../shared/utils/quick-create';
 import { UserService } from '../../shared/services/user/user.service';
 import { UserDependenciesService } from '../../shared/services/user-dependencies/user-dependencies.service';
 import { UserRolesService } from '../../shared/services/user-roles/user-roles.service';
@@ -74,6 +75,9 @@ export class UserManagementDashboardComponent implements OnInit {
   showDependencyModal: boolean = false;
   showEditModal: boolean = false;
   showViewModal: boolean = false;
+
+  /** Acción rápida "Nuevo usuario" del menú inferior. */
+  private readonly quickCreate = onQuickCreate(() => this.openCreateUserWizard());
 
   constructor(
     private userService: UserService,
@@ -594,9 +598,11 @@ export class UserManagementDashboardComponent implements OnInit {
 
   private generateAvatar(user: User): string {
     const name = this.getUserDisplayName(user);
-    const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8'];
-    const color = colors[name.length % colors.length];
+    const initials = name.split(' ').filter(Boolean).map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?';
+    // Colores con buen contraste para texto blanco; el mismo nombre siempre da el mismo color
+    const colors = ['#7c3aed', '#2563eb', '#0d9488', '#db2777', '#ea580c', '#4f46e5', '#059669', '#9333ea'];
+    const hash = [...name].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7);
+    const color = colors[hash % colors.length];
     
     // Crear SVG avatar
     const svg = `
@@ -606,7 +612,8 @@ export class UserManagementDashboardComponent implements OnInit {
       </svg>
     `;
     
-    return `data:image/svg+xml;base64,${btoa(svg)}`;
+    // encodeURIComponent (no btoa): btoa falla con tildes ("Á", "Ñ")
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   }
 
   getUserTypeBadgeClass(user: ExtendedUser): string {

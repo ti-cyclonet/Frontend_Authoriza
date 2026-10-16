@@ -44,7 +44,7 @@
       <table class="table table-hover contracts-table">
         <thead>
           <tr>
-            <th class="d-none d-sm-table-cell">{{ getTranslation('contracts.code') }}</th>
+            <th class="d-none d-md-table-cell">{{ getTranslation('contracts.code') }}</th>
             <th>{{ getTranslation('contracts.user') }}</th>
             <th class="d-none d-md-table-cell">{{ getTranslation('contracts.package') }}</th>
             <th class="d-none d-md-table-cell text-end">{{ getTranslation('contracts.value') }}</th>
@@ -57,7 +57,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let contract of pagedContracts">
-            <td class="d-none d-sm-table-cell">
+            <td class="d-none d-md-table-cell">
               <span class="entity-code-badge" *ngIf="contract?.code; else noCode">{{ contract?.code }}</span>
               <ng-template #noCode><span class="text-muted">-</span></ng-template>
             </td>
@@ -65,14 +65,15 @@
             <td class="d-none d-md-table-cell">{{ contract.package.name }}</td>
             <td class="d-none d-md-table-cell text-end">{{ contract.value | customCurrency }}</td>
             <td class="d-none d-lg-table-cell text-center">{{ contract.payday }}</td>
-            <td class="d-none d-lg-table-cell text-center">{{ contract.startDate }}</td>
-            <td class="d-none d-lg-table-cell text-center">{{ contract.endDate }}</td>
+            <td class="d-none d-lg-table-cell text-center text-nowrap">{{ fmtDate(contract.startDate) }}</td>
+            <td class="d-none d-lg-table-cell text-center text-nowrap">{{ fmtDate(contract.endDate) }}</td>
             <td class="d-none d-md-table-cell text-center">
               <span class="status-badge"
                 [class.status-active]="contract.status === 'ACTIVE'"
                 [class.status-draft]="contract.status === 'DRAFT'"
                 [class.status-pending]="contract.status === 'PENDING'"
-                [class.status-expired]="contract.status === 'EXPIRED'">
+                [class.status-expired]="contract.status === 'EXPIRED' || contract.status === 'TERMINATED' || contract.status === 'RENEWED'"
+                [class.status-cancelled]="contract.status === 'CANCELLED' || contract.status === 'SUSPENDED'">
                 {{ getStatusTranslation(contract.status) }}
               </span>
             </td>
@@ -137,7 +138,8 @@
           [class.status-active]="selectedContract.status === 'ACTIVE'"
           [class.status-draft]="selectedContract.status === 'DRAFT'"
           [class.status-pending]="selectedContract.status === 'PENDING'"
-          [class.status-expired]="selectedContract.status === 'EXPIRED'">
+          [class.status-expired]="selectedContract.status === 'EXPIRED' || selectedContract.status === 'TERMINATED' || selectedContract.status === 'RENEWED'"
+          [class.status-cancelled]="selectedContract.status === 'CANCELLED' || selectedContract.status === 'SUSPENDED'">
           {{ getStatusTranslation(selectedContract.status) }}
         </span>
       </div>

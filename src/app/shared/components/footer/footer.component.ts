@@ -12,5 +12,6 @@ import { CommonModule } from '@angular/common';
 export class FooterComponent {
 
   nombreApp = NAME_APP_SHORT;
+  year = new Date().getFullYear();
 
 }

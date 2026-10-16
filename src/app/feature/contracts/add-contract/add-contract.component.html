@@ -201,14 +201,14 @@
                   <li class="page-item" [class.disabled]="currentPage === 1">
                     <a class="page-link" (click)="prevPage()">
                       <app-icon
-                        name="caret-left-square-fill"
+                        name="chevron-left"
                         size="16"
                       ></app-icon>
                     </a>
                   </li>
                   <li class="page-item disabled">
                     <span class="page-link pt-2" style="font-size: 13px">
-                      Page {{ currentPage }} of {{ totalPages }}
+                      Página {{ currentPage }} de {{ totalPages }}
                     </span>
                   </li>
                   <li
@@ -217,7 +217,7 @@
                   >
                     <a class="page-link" (click)="nextPage()">
                       <app-icon
-                        name="caret-right-square-fill"
+                        name="chevron-right"
                         size="16"
                       ></app-icon>
                     </a>
@@ -356,14 +356,14 @@
                   >
                     <a class="page-link" (click)="prevPackagePage()">
                       <app-icon
-                        name="caret-left-square-fill"
+                        name="chevron-left"
                         size="16"
                       ></app-icon>
                     </a>
                   </li>
                   <li class="page-item disabled">
                     <span class="page-link pt-2" style="font-size: 13px">
-                      Page {{ currentPackagePage }} of {{ totalPackagePages }}
+                      Página {{ currentPackagePage }} de {{ totalPackagePages }}
                     </span>
                   </li>
                   <li
@@ -372,7 +372,7 @@
                   >
                     <a class="page-link" (click)="nextPackagePage()">
                       <app-icon
-                        name="caret-right-square-fill"
+                        name="chevron-right"
                         size="16"
                       ></app-icon>
                     </a>
