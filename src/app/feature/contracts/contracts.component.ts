@@ -293,15 +293,17 @@ export class ContractsComponent implements OnInit {
   }
 
   /**
-   * El "Sector Empresarial" (y el prefijo de código) solo aplican a contratos
-   * de InOut. Los planes personales (Kiri/Shotra) no los usan, así que se
-   * ocultan en el formulario de edición.
+   * El "Sector Empresarial" (y el prefijo de código) aplican a las tiendas
+   * (InOut). Se oculta solo en los planes de otras aplicaciones (Kiri, Shotra,
+   * FactoNet); un paquete "sin especificar" o escrito con otras mayúsculas
+   * ("InOut") también lo muestra.
    */
   get isInoutContract(): boolean {
     const app = this.selectedContract?.package?.targetApplication;
     // Si se está cambiando el paquete en el selector, respetar la selección actual.
     const selected = this.availablePackages?.find(p => p.id === this.editData.packageId);
-    return (selected?.targetApplication || app) === 'Inout';
+    const target = String(selected?.targetApplication || app || '').trim().toLowerCase();
+    return !['kiri', 'shotra', 'factonet'].includes(target);
   }
 
   saveEdit() {
