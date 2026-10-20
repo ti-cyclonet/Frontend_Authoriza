@@ -16,6 +16,16 @@ export class AuthService {
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
+  /** "¿Olvidaste tu contraseña?": Authoriza envía el enlace al correo (a la pantalla de Authoriza). */
+  forgotPassword(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${environment.apiBaseUrl}/auth/forgot-password`, { email, app: 'authoriza' });
+  }
+
+  /** Fija la nueva contraseña con el token del enlace del correo. */
+  resetPassword(token: string, newPassword: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${environment.apiBaseUrl}/auth/reset-password`, { token, newPassword });
+  }
+
   login(credentials: { email: string; password: string }): Observable<any> {
     return this.http.post<any>(this.apiUrl, credentials).pipe(
       tap((response) => {
