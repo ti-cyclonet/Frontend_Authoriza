@@ -20,6 +20,14 @@ export const routes: Routes = [
       ),
   },
   {
+    // Enlace del correo de "¿Olvidaste tu contraseña?"
+    path: 'reset-password',
+    loadComponent: () =>
+      import('./shared/components/reset-password/reset-password.component').then(
+        (m) => m.ResetPasswordComponent
+      ),
+  },
+  {
     path: ROOT_REGISTER,
     loadComponent: () =>
       import('./shared/components/register/register.component').then(

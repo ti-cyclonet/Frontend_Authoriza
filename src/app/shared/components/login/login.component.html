@@ -167,10 +167,33 @@
           </div>
 
           <!-- Link -->
-          <div class="text-center mt-3">
-            <a href="#" class="forgot-password-link">
+          <div class="text-center mt-3" *ngIf="!forgotOpen">
+            <a href="#" class="forgot-password-link" (click)="openForgot($event)">
               {{ currentLanguage === 'es' ? '¿Olvidaste tu contraseña?' : 'Forgot your password?' }}
             </a>
+          </div>
+
+          <!-- ¿Olvidaste tu contraseña?: se envía un enlace al correo -->
+          <div class="forgot-box" *ngIf="forgotOpen">
+            <h6>{{ currentLanguage === 'es' ? 'Restablecer contraseña' : 'Reset your password' }}</h6>
+            <ng-container *ngIf="!forgotMessage; else forgotSent">
+              <p>{{ currentLanguage === 'es' ? 'Escribe el correo con el que inicias sesión y te enviaremos un enlace para crear una nueva contraseña.' : 'Enter your sign-in email and we will send you a link to create a new password.' }}</p>
+              <input type="email" class="form-control" placeholder="correo@empresa.com" autocomplete="email"
+                     [(ngModel)]="forgotEmail" [ngModelOptions]="{standalone: true}" (keydown.enter)="$event.preventDefault(); sendForgot()">
+              <small class="forgot-error" *ngIf="forgotError">{{ forgotError }}</small>
+              <div class="forgot-actions">
+                <button type="button" class="forgot-cancel" (click)="forgotOpen = false">{{ currentLanguage === 'es' ? 'Cancelar' : 'Cancel' }}</button>
+                <button type="button" class="custom-btn" [disabled]="forgotLoading" (click)="sendForgot()">
+                  {{ forgotLoading ? (currentLanguage === 'es' ? 'Enviando…' : 'Sending…') : (currentLanguage === 'es' ? 'Enviar enlace' : 'Send link') }}
+                </button>
+              </div>
+            </ng-container>
+            <ng-template #forgotSent>
+              <p class="forgot-ok">{{ forgotMessage }}</p>
+              <div class="forgot-actions">
+                <button type="button" class="custom-btn" (click)="forgotOpen = false">{{ currentLanguage === 'es' ? 'Volver a iniciar sesión' : 'Back to sign in' }}</button>
+              </div>
+            </ng-template>
           </div>
         </div>
       </form>
