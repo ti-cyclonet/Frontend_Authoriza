@@ -26,6 +26,7 @@ export class SetupComponent {
         { title: 'Aplicaciones y roles', description: 'Apps, roles y opciones de menú de cada rol', icon: 'grid', url: '/applications', tint: 'linear-gradient(135deg, #8b5cf6, #6600cc)' },
         { title: 'Paquetes', description: 'Planes, precios y límites de uso', icon: 'box-seam', url: '/packages', tint: 'linear-gradient(135deg, #f59e0b, #ea580c)' },
         { title: 'Contratos', description: 'Contratos de los clientes y su estado', icon: 'file-earmark-text', url: '/contracts', tint: 'linear-gradient(135deg, #38bdf8, #2563eb)' },
+        { title: 'Cotizador de la landing', description: 'Especialidades, normativa, servicios externos y horas por paquete', icon: 'calculator', url: '/cotizador', tint: 'linear-gradient(135deg, #22d3ee, #0e7490)' },
       ],
     },
     {
