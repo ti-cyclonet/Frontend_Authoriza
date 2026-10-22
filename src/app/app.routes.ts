@@ -74,6 +74,12 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
       },
       {
+        // Parámetros del cotizador de la landing (solo adminAuthoriza)
+        path: 'cotizador',
+        loadComponent: () => import('./feature/cotizador/cotizador.component').then((m) => m.CotizadorComponent),
+        canActivate: [AuthGuard],
+      },
+      {
         path: 'change-password',
         loadComponent: () =>
           import(

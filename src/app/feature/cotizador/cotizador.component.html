@@ -1,0 +1,164 @@
+<div class="title-container">
+  <a routerLink="/setup" class="title-link">
+    <svg viewBox="0 0 16 16"><use xlink:href="./assets/icons/bootstrap-icons.svg#calculator"/></svg>
+    /setup/cotizador
+  </a>
+</div>
+
+<div class="card shadow m-3">
+  <div class="card-body">
+    <div class="az-page-header">
+      <div>
+        <h3 class="az-page-title">Cotizador de la landing</h3>
+        <p class="az-page-subtitle">El precio que ve el cliente sale de estas especialidades, la normativa colombiana, los servicios externos y las horas de cada paquete.</p>
+      </div>
+      <div class="cz-actions" *ngIf="cfg && isAdmin">
+        <button type="button" class="btn btn-outline-secondary btn-sm" (click)="reset()">Valores por defecto</button>
+        <button type="button" class="btn btn-primary btn-sm" [disabled]="saving || !dirty" (click)="save()">{{ saving ? 'Guardando…' : dirty ? 'Guardar cambios' : 'Guardado' }}</button>
+      </div>
+    </div>
+
+    <p class="cz-muted" *ngIf="!isAdmin">Solo los administradores de Authoriza pueden ver y editar el cotizador.</p>
+    <p class="cz-muted" *ngIf="loading">Cargando…</p>
+
+    <div class="cz-errors" *ngIf="errors.length">
+      <strong>Revisa estos datos:</strong>
+      <ul><li *ngFor="let e of errors">{{ e }}</li></ul>
+    </div>
+
+    <ng-container *ngIf="cfg && isAdmin">
+      <nav class="cz-tabs" role="tablist">
+        <button type="button" role="tab" [class.on]="tab === 'ley'" (click)="tab = 'ley'">Normativa y empresa</button>
+        <button type="button" role="tab" [class.on]="tab === 'roles'" (click)="tab = 'roles'">Especialidades ({{ cfg.roles.length }})</button>
+        <button type="button" role="tab" [class.on]="tab === 'servicios'" (click)="tab = 'servicios'">Servicios externos ({{ cfg.servicios.length }})</button>
+        <button type="button" role="tab" [class.on]="tab === 'paquetes'" (click)="tab = 'paquetes'">Paquetes de horas</button>
+      </nav>
+
+      <!-- Normativa colombiana y parámetros de la empresa -->
+      <section *ngIf="tab === 'ley'" class="cz-grid2">
+        <fieldset>
+          <legend>Normativa colombiana <small>(actualízala cada año)</small></legend>
+          <label>Salario mínimo (SMMLV) <input type="number" [(ngModel)]="cfg.ley.smmlv" (ngModelChange)="touch()"></label>
+          <label>Auxilio de transporte <input type="number" [(ngModel)]="cfg.ley.auxTransporte" (ngModelChange)="touch()"></label>
+          <label>UVT <input type="number" [(ngModel)]="cfg.ley.uvt" (ngModelChange)="touch()"></label>
+          <label>Jornada semanal (h) <input type="number" [(ngModel)]="cfg.ley.jornadaSemanal" (ngModelChange)="touch()"></label>
+          <label>Semanas por mes <input type="number" step="0.01" [(ngModel)]="cfg.ley.semanasMes" (ngModelChange)="touch()"></label>
+          <label>Productividad (% de horas facturables) <input type="number" [(ngModel)]="cfg.ley.productividad" (ngModelChange)="touch()"></label>
+          <h6>Prestaciones sociales (%)</h6>
+          <div class="cz-row4">
+            <label>Cesantías <input type="number" step="0.01" [(ngModel)]="cfg.ley.prestaciones.cesantias" (ngModelChange)="touch()"></label>
+            <label>Intereses <input type="number" step="0.01" [(ngModel)]="cfg.ley.prestaciones.interesesCesantias" (ngModelChange)="touch()"></label>
+            <label>Prima <input type="number" step="0.01" [(ngModel)]="cfg.ley.prestaciones.prima" (ngModelChange)="touch()"></label>
+            <label>Vacaciones <input type="number" step="0.01" [(ngModel)]="cfg.ley.prestaciones.vacaciones" (ngModelChange)="touch()"></label>
+          </div>
+          <h6>Seguridad social y aportes del empleador (%)</h6>
+          <div class="cz-row4">
+            <label>Salud <input type="number" step="0.01" [(ngModel)]="cfg.ley.seguridadSocial.salud" (ngModelChange)="touch()"></label>
+            <label>Pensión <input type="number" step="0.01" [(ngModel)]="cfg.ley.seguridadSocial.pension" (ngModelChange)="touch()"></label>
+            <label>Caja <input type="number" step="0.01" [(ngModel)]="cfg.ley.parafiscales.caja" (ngModelChange)="touch()"></label>
+            <label>ICBF <input type="number" step="0.01" [(ngModel)]="cfg.ley.parafiscales.icbf" (ngModelChange)="touch()"></label>
+            <label>SENA <input type="number" step="0.01" [(ngModel)]="cfg.ley.parafiscales.sena" (ngModelChange)="touch()"></label>
+            <label *ngFor="let c of arlClases">ARL {{ c }} <input type="number" step="0.001" [(ngModel)]="cfg.ley.arl[c]" (ngModelChange)="touch()"></label>
+          </div>
+          <label class="cz-check"><input type="checkbox" [(ngModel)]="cfg.ley.exoneracion114" (ngModelChange)="touch()"> Exoneración del art. 114-1 E.T. (sin salud, ICBF ni SENA por quien gane menos de 10 SMMLV)</label>
+          <label>IBC del contratista (% de los honorarios) <input type="number" [(ngModel)]="cfg.ley.ibcContratista" (ngModelChange)="touch()"></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Empresa</legend>
+          <label>Gastos generales (% sobre el costo del equipo) <input type="number" [(ngModel)]="cfg.empresa.gastosGenerales" (ngModelChange)="touch()"></label>
+          <label>Margen de utilidad (%) <input type="number" [(ngModel)]="cfg.empresa.margen" (ngModelChange)="touch()"></label>
+          <label>Imprevistos (%) <input type="number" [(ngModel)]="cfg.empresa.imprevistos" (ngModelChange)="touch()"></label>
+          <label>IVA (%) <input type="number" [(ngModel)]="cfg.empresa.iva" (ngModelChange)="touch()"></label>
+          <label class="cz-check"><input type="checkbox" [(ngModel)]="cfg.empresa.ivaAplica" (ngModelChange)="touch()"> Cobrar IVA sobre los servicios (valídalo con el contador)</label>
+          <label class="cz-check"><input type="checkbox" [(ngModel)]="cfg.empresa.ivaServiciosExternos" (ngModelChange)="touch()"> Los servicios externos se refacturan con IVA</label>
+          <label>Administración de servicios externos (%) <input type="number" [(ngModel)]="cfg.empresa.recargoServicios" (ngModelChange)="touch()"></label>
+          <label>TRM de respaldo <input type="number" [(ngModel)]="cfg.empresa.trm" (ngModelChange)="touch()"></label>
+          <label class="cz-check"><input type="checkbox" [(ngModel)]="cfg.empresa.trmAutomatica" (ngModelChange)="touch()"> Usar la TRM del día (datos.gov.co){{ cfg.empresa.trmFecha ? ' · hoy ' + money(cfg.empresa.trm) + ' (' + cfg.empresa.trmFecha + ')' : '' }}</label>
+          <label>Retención que suele practicar el cliente (%) <input type="number" step="0.1" [(ngModel)]="cfg.empresa.retencionCliente" (ngModelChange)="touch()"></label>
+          <label>Vigencia que se muestra <input type="text" [(ngModel)]="cfg.vigencia" (ngModelChange)="touch()"></label>
+          <p class="cz-hint">Horas facturables al mes por persona: <b>{{ horasMes() | number:'1.0-1' }} h</b> (jornada × semanas × productividad).</p>
+        </fieldset>
+      </section>
+
+      <!-- Especialidades -->
+      <section *ngIf="tab === 'roles'">
+        <div class="table-responsive">
+          <table class="table table-sm align-middle cz-table">
+            <thead><tr><th>Id</th><th>Especialidad</th><th>Modalidad</th><th class="text-end">Salario u honorario mensual</th><th>ARL</th><th class="text-end">Factor</th><th class="text-end">Costo/hora</th><th class="text-end">Tarifa/hora</th><th></th></tr></thead>
+            <tbody>
+              <tr *ngFor="let r of cfg.roles; let i = index">
+                <td><input class="cz-id" [(ngModel)]="r.id" (ngModelChange)="touch()"></td>
+                <td><input [(ngModel)]="r.nombre" (ngModelChange)="touch()"></td>
+                <td><select [(ngModel)]="r.modalidad" (ngModelChange)="touch()"><option value="empleado">Empleado</option><option value="contratista">Contratista</option></select></td>
+                <td class="text-end"><input type="number" class="cz-num" [(ngModel)]="r.mensual" (ngModelChange)="touch()"></td>
+                <td><select [(ngModel)]="r.arl" (ngModelChange)="touch()" [disabled]="r.modalidad !== 'empleado'"><option *ngFor="let c of arlClases" [value]="c">{{ c }}</option></select></td>
+                <td class="text-end">{{ factor(r) | number:'1.2-2' }}</td>
+                <td class="text-end">{{ money(costoHora(r)) }}</td>
+                <td class="text-end"><b>{{ money(tarifa(r)) }}</b></td>
+                <td><button type="button" class="btn btn-link btn-sm text-danger" (click)="removeRol(i)" aria-label="Quitar">✕</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="addRol()">+ Especialidad</button>
+        <p class="cz-hint">Empleado: salario + auxilio de transporte + prestaciones + seguridad social y aportes de ley. Contratista: sus honorarios (él paga su seguridad social). La tarifa suma gastos generales ({{ cfg.empresa.gastosGenerales }}%) y margen ({{ cfg.empresa.margen }}%).</p>
+      </section>
+
+      <!-- Servicios externos -->
+      <section *ngIf="tab === 'servicios'">
+        <div class="table-responsive">
+          <table class="table table-sm align-middle cz-table">
+            <thead><tr><th>Id</th><th>Servicio</th><th>Moneda</th><th class="text-end">Precio</th><th>Periodo</th><th>Del exterior (IVA)</th><th class="text-end">En pesos</th><th></th></tr></thead>
+            <tbody>
+              <tr *ngFor="let s of cfg.servicios; let i = index">
+                <td><input class="cz-id" [(ngModel)]="s.id" (ngModelChange)="touch()"></td>
+                <td><input [(ngModel)]="s.nombre" (ngModelChange)="touch()"></td>
+                <td><select [(ngModel)]="s.moneda" (ngModelChange)="touch()"><option>COP</option><option>USD</option></select></td>
+                <td class="text-end"><input type="number" step="0.01" class="cz-num" [(ngModel)]="s.precio" (ngModelChange)="touch()"></td>
+                <td><select [(ngModel)]="s.periodo" (ngModelChange)="touch()"><option value="mensual">Mensual</option><option value="anual">Anual</option><option value="unico">Único</option></select></td>
+                <td class="text-center"><input type="checkbox" [(ngModel)]="s.exterior" (ngModelChange)="touch()"></td>
+                <td class="text-end">{{ money(enPesos(s)) }}</td>
+                <td><button type="button" class="btn btn-link btn-sm text-danger" (click)="removeServicio(i)" aria-label="Quitar">✕</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="addServicio()">+ Servicio</button>
+        <p class="cz-hint">En pesos = precio × TRM (si es en dólares) × IVA de servicios digitales del exterior × administración ({{ cfg.empresa.recargoServicios }}%). El cotizador usa los ids: no cambies los que ya existen.</p>
+      </section>
+
+      <!-- Paquetes de horas -->
+      <section *ngIf="tab === 'paquetes'">
+        <input class="cz-search" placeholder="Buscar paquete (ej. app.modulo, landing, IA)…" [(ngModel)]="filtro">
+        <p class="cz-hint">Horas por especialidad: optimista, probable y pesimista. El valor usa el promedio PERT ((O + 4P + Pe) ÷ 6) con las tarifas actuales e imprevistos.</p>
+        <article class="cz-pk" *ngFor="let id of paqueteIds" [class.open]="abierto === id">
+          <header (click)="abierto = abierto === id ? null : id">
+            <code>{{ id }}</code>
+            <span>{{ cfg.paquetes[id].nombre }}</span>
+            <small>{{ horasPaquete(id) | number:'1.0-0' }} h · {{ money(valorPaquete(id)) }}</small>
+          </header>
+          <div class="cz-pk-body" *ngIf="abierto === id">
+            <label>Nombre <input [(ngModel)]="cfg.paquetes[id].nombre" (ngModelChange)="touch()"></label>
+            <table class="table table-sm align-middle cz-table">
+              <thead><tr><th>Especialidad</th><th class="text-end">Optimista</th><th class="text-end">Probable</th><th class="text-end">Pesimista</th><th></th></tr></thead>
+              <tbody>
+                <tr *ngFor="let rol of rolesDe(id)">
+                  <td>{{ nombreRol(rol) }}</td>
+                  <td *ngFor="let k of [0, 1, 2]" class="text-end"><input type="number" class="cz-h" [(ngModel)]="cfg.paquetes[id].horas[rol][k]" (ngModelChange)="touch()"></td>
+                  <td><button type="button" class="btn btn-link btn-sm text-danger" (click)="removeHoras(id, rol)" aria-label="Quitar">✕</button></td>
+                </tr>
+              </tbody>
+            </table>
+            <select #nuevo (change)="addHoras(id, nuevo.value); nuevo.value = ''" *ngIf="rolesDisponibles(id).length">
+              <option value="">+ Agregar especialidad…</option>
+              <option *ngFor="let r of rolesDisponibles(id)" [value]="r.id">{{ r.nombre }}</option>
+            </select>
+          </div>
+        </article>
+      </section>
+
+      <p class="cz-hint" *ngIf="cfg.actualizado">Última actualización: {{ cfg.actualizado | date:'medium' }}</p>
+    </ng-container>
+  </div>
+</div>
