@@ -9,7 +9,9 @@ import { environment } from '../../../environments/environment';
 type Tab = 'ley' | 'roles' | 'servicios' | 'paquetes';
 type Horas = [number, number, number];
 
-interface Rol { id: string; nombre: string; modalidad: 'empleado' | 'contratista'; mensual: number; arl?: string }
+type Nivel = 'junior' | 'semi' | 'senior';
+const NIVELES: Nivel[] = ['junior', 'semi', 'senior'];
+interface Rol { id: string; nombre: string; modalidad: 'empleado' | 'contratista'; niveles: Record<Nivel, number>; nivelMinimo?: Nivel; mensual?: number; arl?: string }
 interface Servicio { id: string; nombre: string; moneda: 'COP' | 'USD'; precio: number; periodo: 'mensual' | 'anual' | 'unico'; exterior: boolean }
 interface Paquete { nombre: string; horas: Record<string, Horas> }
 
@@ -41,6 +43,8 @@ export class CotizadorComponent implements OnInit {
   filtro = '';
   abierto: string | null = null;
   readonly arlClases = ['I', 'II', 'III', 'IV', 'V'];
+  readonly niveles = NIVELES;
+  readonly nombreNivel: Record<string, string> = { junior: 'Junior', semi: 'Semi senior', senior: 'Senior' };
   readonly isAdmin = typeof sessionStorage !== 'undefined' && sessionStorage.getItem('user_rol') === 'adminAuthoriza';
 
   ngOnInit(): void {
@@ -50,12 +54,35 @@ export class CotizadorComponent implements OnInit {
   load(): void {
     this.loading = true;
     this.http.get<any>(this.url).subscribe({
-      next: (c) => { this.cfg = c; this.loading = false; this.dirty = false; this.errors = []; },
+      next: (c) => { this.cfg = this.normalize(c); this.loading = false; this.dirty = false; this.errors = []; },
       error: () => { this.loading = false; Swal.fire({ icon: 'error', title: 'No se pudieron cargar los parámetros' }); },
     });
   }
 
   touch(): void { this.dirty = true; }
+
+  /** Parámetros anteriores a los niveles: el valor único pasa a los tres niveles. */
+  private normalize(c: any): any {
+    (c?.roles || []).forEach((r: Rol) => {
+      if (!r.niveles) { const m = Number(r.mensual) || 0; r.niveles = { junior: m, semi: m, senior: m }; }
+      delete r.mensual;
+    });
+    c.factores = c.factores || {};
+    c.factores.horasNivel = c.factores.horasNivel || { junior: 1, semi: 1, senior: 1 };
+    c.empresa.nivelBase = c.empresa.nivelBase || 'junior';
+    return c;
+  }
+
+  /** Nivel con que se asigna la especialidad: el base, sin bajar de su mínimo. */
+  nivelDe(r: Rol): Nivel {
+    const base: Nivel = NIVELES.includes(this.cfg?.empresa?.nivelBase) ? this.cfg.empresa.nivelBase : 'junior';
+    const min: Nivel = r.nivelMinimo && NIVELES.includes(r.nivelMinimo) ? r.nivelMinimo : 'junior';
+    return NIVELES.indexOf(base) >= NIVELES.indexOf(min) ? base : min;
+  }
+
+  salario(r: Rol): number { return Number(r.niveles?.[this.nivelDe(r)]) || 0; }
+
+  factorHoras(r: Rol): number { return Number(this.cfg?.factores?.horasNivel?.[this.nivelDe(r)]) || 1; }
 
   // ─── Costo por hora (misma fórmula que el backend y la landing) ───
   horasMes(): number {
@@ -64,7 +91,7 @@ export class CotizadorComponent implements OnInit {
   }
 
   costoMensual(r: Rol): number {
-    const ley = this.cfg?.ley || {}, m = Number(r.mensual) || 0;
+    const ley = this.cfg?.ley || {}, m = this.salario(r);
     if (r.modalidad !== 'empleado') return m;
     const smmlv = Number(ley.smmlv) || 0;
     const aux = smmlv > 0 && m <= 2 * smmlv ? Number(ley.auxTransporte) || 0 : 0;
@@ -84,11 +111,11 @@ export class CotizadorComponent implements OnInit {
     return this.costoHora(r) * (1 + pct(e.gastosGenerales)) * (1 + pct(e.margen));
   }
 
-  factor(r: Rol): number { return r.mensual ? this.costoMensual(r) / r.mensual : 0; }
+  factor(r: Rol): number { const m = this.salario(r); return m ? this.costoMensual(r) / m : 0; }
 
   // ─── Especialidades ───
   addRol(): void {
-    this.cfg.roles.push({ id: 'nuevo' + (this.cfg.roles.length + 1), nombre: 'Nueva especialidad', modalidad: 'contratista', mensual: 0, arl: 'I' });
+    this.cfg.roles.push({ id: 'nuevo' + (this.cfg.roles.length + 1), nombre: 'Nueva especialidad', modalidad: 'contratista', niveles: { junior: 0, semi: 0, senior: 0 }, arl: 'I' });
     this.touch();
   }
 
@@ -139,7 +166,7 @@ export class CotizadorComponent implements OnInit {
     let total = 0;
     for (const [rol, h] of Object.entries(p.horas || {})) {
       const r = this.cfg.roles.find((x: Rol) => x.id === rol);
-      if (r) total += ((h[0] + 4 * h[1] + h[2]) / 6) * this.tarifa(r);
+      if (r) total += ((h[0] + 4 * h[1] + h[2]) / 6) * this.factorHoras(r) * this.tarifa(r);
     }
     return total * (1 + pct(e.imprevistos));
   }
@@ -154,7 +181,7 @@ export class CotizadorComponent implements OnInit {
     this.errors = [];
     this.http.put<any>(this.url, this.cfg).subscribe({
       next: (c) => {
-        this.cfg = c; this.saving = false; this.dirty = false;
+        this.cfg = this.normalize(c); this.saving = false; this.dirty = false;
         Swal.fire({ icon: 'success', title: 'Parámetros guardados', text: 'El cotizador de la landing ya calcula con estos valores.', timer: 2200, showConfirmButton: false });
       },
       error: (err) => {
@@ -168,7 +195,7 @@ export class CotizadorComponent implements OnInit {
     Swal.fire({ icon: 'warning', title: '¿Volver a los valores por defecto?', text: 'Se pierden los cambios guardados del cotizador.', showCancelButton: true, confirmButtonText: 'Sí, restablecer', cancelButtonText: 'Cancelar' })
       .then((r) => {
         if (!r.isConfirmed) return;
-        this.http.delete<any>(this.url).subscribe({ next: (c) => { this.cfg = c; this.dirty = false; this.errors = []; } });
+        this.http.delete<any>(this.url).subscribe({ next: (c) => { this.cfg = this.normalize(c); this.dirty = false; this.errors = []; } });
       });
   }
 

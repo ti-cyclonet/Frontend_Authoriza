@@ -17,7 +17,7 @@ fieldset input[type=number], fieldset input[type=text] { padding: 5px 8px; borde
 .cz-hint { font-size: 0.82rem; color: #64748b; margin: 10px 0 0; }
 .cz-table input, .cz-table select { padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; width: 100%; }
 .cz-table .cz-id { width: 110px; font-family: ui-monospace, Consolas, monospace; font-size: 0.8rem; }
-.cz-table .cz-num { width: 130px; text-align: right; }
+.cz-table .cz-num { width: 105px; text-align: right; }
 .cz-table .cz-h { width: 80px; text-align: right; }
 .cz-search { width: 100%; max-width: 420px; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 8px; }
 .cz-pk { border: 1px solid #e5e7eb; border-radius: 10px; margin-top: 8px; }
@@ -30,3 +30,5 @@ fieldset input[type=number], fieldset input[type=text] { padding: 5px 8px; borde
 .cz-pk-body label input { padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 8px; }
 .cz-pk-body select { max-width: 280px; padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 8px; }
 @media (max-width: 900px) { .cz-grid2 { grid-template-columns: 1fr; } .cz-row4 { grid-template-columns: repeat(2, 1fr); } .cz-pk header { grid-template-columns: 1fr; } }
+.cz-nivel { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #ede9fe; color: #5b21b6; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+fieldset label select { padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 8px; }
