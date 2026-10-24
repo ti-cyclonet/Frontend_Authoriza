@@ -45,6 +45,8 @@ export class CotizadorComponent implements OnInit {
   readonly arlClases = ['I', 'II', 'III', 'IV', 'V'];
   readonly niveles = NIVELES;
   readonly nombreNivel: Record<string, string> = { junior: 'Junior', semi: 'Semi senior', senior: 'Senior' };
+  readonly perfiles = [['negocio', 'Dueño o gerente'], ['funcional', 'Responsable del proyecto'], ['tecnico', 'Perfil técnico']];
+  readonly alcances = [['listo', 'documentado'], ['parcial', 'claro'], ['no', 'por definir']];
   readonly isAdmin = typeof sessionStorage !== 'undefined' && sessionStorage.getItem('user_rol') === 'adminAuthoriza';
 
   ngOnInit(): void {
@@ -69,6 +71,10 @@ export class CotizadorComponent implements OnInit {
     });
     c.factores = c.factores || {};
     c.factores.horasNivel = c.factores.horasNivel || { junior: 1, semi: 1, senior: 1 };
+    const pr = (c.factores.precision = c.factores.precision || {});
+    pr.perfil = pr.perfil || { negocio: 1, funcional: 1, tecnico: 1 };
+    pr.alcance = pr.alcance || { listo: 1, parcial: 1, no: 1 };
+    pr.casosDescritos = pr.casosDescritos ?? 1;
     c.empresa.nivelBase = c.empresa.nivelBase || 'junior';
     return c;
   }
