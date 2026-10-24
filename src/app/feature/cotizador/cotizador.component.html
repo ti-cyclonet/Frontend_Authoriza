@@ -75,6 +75,15 @@
             <label *ngFor="let n of niveles">Horas {{ nombreNivel[n] | lowercase }} (×) <input type="number" step="0.05" [(ngModel)]="cfg.factores.horasNivel[n]" (ngModelChange)="touch()"></label>
           </div>
           <p class="cz-hint">Cada especialidad usa este nivel salvo que su mínimo sea mayor. Un nivel más bajo cuesta menos por hora pero tarda más: sus horas se multiplican por el factor.</p>
+          <h6>Precisión del rango según quién cotiza</h6>
+          <div class="cz-row4">
+            <label *ngFor="let p of perfiles">{{ p[1] }} (×) <input type="number" step="0.1" [(ngModel)]="cfg.factores.precision.perfil[p[0]]" (ngModelChange)="touch()"></label>
+          </div>
+          <div class="cz-row4">
+            <label *ngFor="let p of alcances">Alcance {{ p[1] }} (×) <input type="number" step="0.05" [(ngModel)]="cfg.factores.precision.alcance[p[0]]" (ngModelChange)="touch()"></label>
+            <label>Casos de uso descritos (×) <input type="number" step="0.05" [(ngModel)]="cfg.factores.precision.casosDescritos" (ngModelChange)="touch()"></label>
+          </div>
+          <p class="cz-hint">El ancho del rango de precio se multiplica por estos factores: entre menos detalle dé el cliente, más amplio. Hasta 1 la landing muestra precisión alta; hasta 2, media; por encima, orientativa.</p>
           <label>Gastos generales (% sobre el costo del equipo) <input type="number" [(ngModel)]="cfg.empresa.gastosGenerales" (ngModelChange)="touch()"></label>
           <label>Margen de utilidad (%) <input type="number" [(ngModel)]="cfg.empresa.margen" (ngModelChange)="touch()"></label>
           <label>Imprevistos (%) <input type="number" [(ngModel)]="cfg.empresa.imprevistos" (ngModelChange)="touch()"></label>
