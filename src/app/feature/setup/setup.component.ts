@@ -27,6 +27,7 @@ export class SetupComponent {
         { title: 'Paquetes', description: 'Planes, precios y límites de uso', icon: 'box-seam', url: '/packages', tint: 'linear-gradient(135deg, #f59e0b, #ea580c)' },
         { title: 'Contratos', description: 'Contratos de los clientes y su estado', icon: 'file-earmark-text', url: '/contracts', tint: 'linear-gradient(135deg, #38bdf8, #2563eb)' },
         { title: 'Cotizador de la landing', description: 'Especialidades, normativa, servicios externos y horas por paquete', icon: 'calculator', url: '/cotizador', tint: 'linear-gradient(135deg, #22d3ee, #0e7490)' },
+        { title: 'Opiniones de los clientes', description: 'Aprueba las opiniones que salen en las landings y mira la satisfacción', icon: 'chat-quote', url: '/opiniones', tint: 'linear-gradient(135deg, #fbbf24, #d97706)' },
       ],
     },
     {
