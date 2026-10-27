@@ -86,6 +86,12 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
       },
       {
+        // Servicios recomendados (aliados) que salen en InOut (solo adminAuthoriza)
+        path: 'aliados',
+        loadComponent: () => import('./feature/aliados/aliados.component').then((m) => m.AliadosComponent),
+        canActivate: [AuthGuard],
+      },
+      {
         path: 'change-password',
         loadComponent: () =>
           import(
