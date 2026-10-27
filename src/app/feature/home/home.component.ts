@@ -6,6 +6,7 @@ import { forkJoin, of, Subscription, catchError, switchMap } from 'rxjs';
 import { DashboardOverview, DashboardService, DashboardStats } from '../../shared/services/dashboard/dashboard.service';
 import { AuthService } from '../../shared/services/auth/auth.service';
 import { PlatformCostsComponent } from './platform-costs/platform-costs.component';
+import { PartnerIncomeComponent } from './partner-income/partner-income.component';
 import { NewsBubble, NewsKind, bubblesFor, newKeys, playNewsSound } from '../../shared/utils/news-bubbles';
 
 /** Cada cuánto se refrescan los indicadores (solo con la pestaña visible). */
@@ -33,7 +34,7 @@ interface AttentionItem {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, ChartModule, PlatformCostsComponent],
+  imports: [CommonModule, RouterLink, ChartModule, PlatformCostsComponent, PartnerIncomeComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })

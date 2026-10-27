@@ -28,6 +28,7 @@ export class SetupComponent {
         { title: 'Contratos', description: 'Contratos de los clientes y su estado', icon: 'file-earmark-text', url: '/contracts', tint: 'linear-gradient(135deg, #38bdf8, #2563eb)' },
         { title: 'Cotizador de la landing', description: 'Especialidades, normativa, servicios externos y horas por paquete', icon: 'calculator', url: '/cotizador', tint: 'linear-gradient(135deg, #22d3ee, #0e7490)' },
         { title: 'Opiniones de los clientes', description: 'Aprueba las opiniones que salen en las landings y mira la satisfacción', icon: 'chat-quote', url: '/opiniones', tint: 'linear-gradient(135deg, #fbbf24, #d97706)' },
+        { title: 'Servicios recomendados', description: 'Aliados que se recomiendan en InOut con tu enlace de referido, y sus clics', icon: 'stars', url: '/aliados', tint: 'linear-gradient(135deg, #34d399, #059669)' },
       ],
     },
     {
