@@ -18,6 +18,7 @@ interface Oferta {
   id?: string; name: string; category: string; description: string; benefit: string | null; url: string; logoUrl: string | null;
   applications: string[]; placements: string[]; isAffiliate: boolean; active: boolean; sortOrder: number;
   clicks?: { total: number; last30: number; tenants: number };
+  earned?: number;
 }
 
 const vacia = (): Oferta => ({
@@ -119,6 +120,7 @@ const vacia = (): Oferta => ({
             <div class="al-stats">
               <b>{{ o.clicks?.last30 || 0 }}</b><small>clics 30 días</small>
               <button type="button" class="btn btn-link btn-sm p-0" (click)="verClics(o)" [disabled]="!o.clicks?.total">{{ o.clicks?.tenants || 0 }} negocio(s)</button>
+              <small class="al-earned" *ngIf="o.earned" title="Total recibido de este aliado">{{ money(o.earned) }} recibidos</small>
             </div>
             <div class="al-btns">
               <button type="button" class="btn btn-outline-secondary btn-sm" (click)="editar(o)">Editar</button>
@@ -162,6 +164,7 @@ const vacia = (): Oferta => ({
     .al-url { color: #94a3b8; font-size: .72rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .al-stats { display: grid; justify-items: center; text-align: center; min-width: 90px; }
     .al-stats b { font-size: 1.3rem; } .al-stats small { color: #64748b; font-size: .72rem; }
+    .al-stats .al-earned { color: #047857; font-weight: 700; }
     .al-btns { display: flex; flex-direction: column; gap: 6px; }
     @media (max-width: 900px) { .al-grid { grid-template-columns: 1fr; } .al-card { grid-template-columns: 48px 1fr; } .al-btns { flex-direction: row; grid-column: 1 / -1; } }
   `],
@@ -205,7 +208,7 @@ export class AliadosComponent implements OnInit {
 
   guardar(): void {
     if (!this.form) return;
-    const { id, clicks, ...body } = this.form;
+    const { id, clicks, earned, ...body } = this.form;
     this.saving = true;
     const req = id ? this.http.patch<Oferta>(`${this.url}/${id}`, body) : this.http.post<Oferta>(this.url, body);
     req.subscribe({
@@ -247,6 +250,8 @@ export class AliadosComponent implements OnInit {
       error: () => Swal.fire({ icon: 'error', title: 'No se pudieron cargar los clics' }),
     });
   }
+
+  money(v: number): string { return '$' + new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(Math.round(v || 0)); }
 
   nombresPantallas(ps: string[]): string { return ps.map((p) => PANTALLAS[p] || p).join(', '); }
 }
