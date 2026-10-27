@@ -80,6 +80,12 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
       },
       {
+        // Opiniones de los clientes para las landings (solo adminAuthoriza)
+        path: 'opiniones',
+        loadComponent: () => import('./feature/opiniones/opiniones.component').then((m) => m.OpinionesComponent),
+        canActivate: [AuthGuard],
+      },
+      {
         path: 'change-password',
         loadComponent: () =>
           import(
