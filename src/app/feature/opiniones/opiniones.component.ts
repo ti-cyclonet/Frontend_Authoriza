@@ -135,7 +135,7 @@ const SITIOS = [['inout', 'Landing de InOut'], ['cyclonet', 'Landing de CycloNet
     .op-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
     .op-chips span { font-size: .75rem; background: #ede9fe; color: #5b21b6; padding: 2px 8px; border-radius: 999px; }
     .op-consent { font-size: .78rem; color: #64748b; margin: 4px 0 0; }
-    .op-card footer { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e5e7eb; }
+    .op-card footer { position: static; width: auto; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e5e7eb; }
     .op-check { font-size: .82rem; display: inline-flex; gap: 5px; align-items: center; }
     .op-sp { flex: 1; }
     @media (max-width: 900px) { .op-kpis { grid-template-columns: 1fr 1fr; } .op-row { grid-template-columns: 1fr; } .op-card header { grid-template-columns: auto 1fr; } }
