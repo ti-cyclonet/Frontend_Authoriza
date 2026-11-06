@@ -24,179 +24,112 @@
   </ng-container>
 </div>
 
-<div class="d-flex justify-content-center align-items-center min-vh-100">
-  <div class="login-form-wrapper">
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" autocomplete="on">
-        <div class="card shadow-lg p-4 custom-card cuadroPrincipal">
-          <div class="row justify-content-center w-130">
-            <a
-              class="navbar-brand mb-2 mb-lg-0 d-flex justify-content-center"
-              href="#"
-            >
-              <img
-                src="./assets/img/logo_authoriza_v2.png"
-                alt="Logo"
-                class="logo-img"
-              />
-            </a>
-          </div>
-          <br />
-          <h3 class="text-center custom-welcome">{{ currentLanguage === 'es' ? 'Bienvenido' : 'Welcome' }}</h3>
-          <hr style="border: 2px solid rgb(255, 255, 255)" />
+<!-- Mismo diseño que el inicio de sesión de InOut, con la identidad de Authoriza -->
+<div class="login-wrapper">
+  <div class="login-top-message">
+    {{ currentLanguage === 'es'
+      ? 'Authoriza: identidad, accesos y contratos de las aplicaciones de CycloNet.'
+      : 'Authoriza: identity, access and contracts for CycloNet applications.' }}
+  </div>
+  <div class="login-bottom-message">
+    {{ currentLanguage === 'es' ? 'Conoce las aplicaciones de CycloNet en' : 'Learn about CycloNet applications at' }}
+    <a href="https://www.cyclonet.com.co/" target="_blank" rel="noopener">https://www.cyclonet.com.co/</a>
+    {{ currentLanguage === 'es' ? 'o escríbenos a' : 'or write to' }}
+    <a href="mailto:ti.cyclonet.sas&#64;gmail.com">ti.cyclonet.sas&#64;gmail.com</a>
+  </div>
 
-          <!-- Campo Email -->
-          <div class="mb-3 fieldsForm">
-            <div class="input-group">
-              <span class="input-group-text bg-transparent border-end-0">
-                <svg
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                  style="
-                    width: 1rem;
-                    height: 1rem;
-                    color: var(--primary_active_text_color);
-                  "
-                >
-                  <use
-                    xlink:href="./assets/icons/bootstrap-icons.svg#envelope"
-                  />
-                </svg>
-              </span>
-              <input
-                type="email"
-                class="form-control custom-search-input border-start-0"
-                [placeholder]="currentLanguage === 'es' ? 'Correo electrónico' : 'Email'"
-                formControlName="username"
-                autocomplete="username"
-              />
+  <div class="login-container">
+    <!-- Ancho fijo: solo se adapta cuando la pantalla es más angosta que el formulario -->
+    <div class="login-col">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" autocomplete="on">
+        <div class="card custom-card">
+          <div class="card-top">
+            <img src="./assets/img/logo_authoriza_v2.png" alt="Authoriza" class="logo-img" />
+            <h3 class="custom-welcome">{{ currentLanguage === 'es' ? 'Bienvenido' : 'Welcome' }}</h3>
+          </div>
+
+          <!-- Sección inferior (formulario) con fondo gris claro -->
+          <div class="card-bottom">
+            <!-- Correo -->
+            <div class="fieldsForm">
+              <div class="input-group">
+                <span class="input-group-text">
+                  <svg fill="currentColor" viewBox="0 0 16 16" class="field-ico"><use xlink:href="./assets/icons/bootstrap-icons.svg#envelope" /></svg>
+                </span>
+                <input type="email" class="form-control" [placeholder]="currentLanguage === 'es' ? 'Correo electrónico' : 'Email'"
+                  formControlName="username" autocomplete="username" />
+              </div>
+              <div class="custom-error-box" *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.invalid">
+                <span *ngIf="loginForm.get('username')?.errors?.['required']">{{ currentLanguage === 'es' ? 'El correo electrónico es requerido.' : 'Email is required.' }}</span>
+                <span *ngIf="loginForm.get('username')?.errors?.['email']">{{ currentLanguage === 'es' ? 'Formato de correo inválido.' : 'Invalid email format.' }}</span>
+              </div>
             </div>
-            <div
-              class="errorMsg mt-1"
-              *ngIf="
-                loginForm.get('username')?.touched &&
-                loginForm.get('username')?.invalid
-              "
-            >
-              <small *ngIf="loginForm.get('username')?.errors?.['required']">
-                {{ currentLanguage === 'es' ? 'El correo electrónico es requerido.' : 'Email is required.' }}
-              </small>
-              <small *ngIf="loginForm.get('username')?.errors?.['email']">
-                {{ currentLanguage === 'es' ? 'Formato de correo inválido.' : 'Invalid email format.' }}
-              </small>
-            </div>
-          </div>
 
-          <!-- Campo Contraseña -->
-          <div class="mb-3 fieldsForm">
-            <div class="input-group">
-              <span class="input-group-text bg-transparent border-end-0">
-                <svg
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                  style="
-                    width: 1rem;
-                    height: 1rem;
-                    color: var(--primary_active_text_color);
-                  "
-                >
-                  <use xlink:href="./assets/icons/bootstrap-icons.svg#lock" />
-                </svg>
-              </span>
-              <input
-                [type]="showPassword ? 'text' : 'password'"
-                class="form-control custom-search-input border-start-0 border-end-0"
-                [placeholder]="currentLanguage === 'es' ? 'Contraseña' : 'Password'"
-                formControlName="password"
-                autocomplete="current-password"
-              />
-              <button
-                type="button"
-                class="input-group-text bg-transparent border-start-0"
-                (click)="togglePasswordVisibility()"
-              >
-                <svg
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                  style="
-                    width: 1rem;
-                    height: 1rem;
-                    color: var(--primary_active_text_color);
-                  "
-                >
-                  <use
-                    [attr.xlink:href]="
-                      showPassword
-                        ? './assets/icons/bootstrap-icons.svg#eye-slash'
-                        : './assets/icons/bootstrap-icons.svg#eye'
-                    "
-                  />
-                </svg>
-              </button>
-            </div>
-            <div
-              class="errorMsg mt-1"
-              *ngIf="
-                loginForm.get('password')?.touched &&
-                loginForm.get('password')?.invalid
-              "
-            >
-              <small *ngIf="loginForm.get('password')?.errors?.['required']">
-                {{ currentLanguage === 'es' ? 'La contraseña es requerida.' : 'Password is required.' }}
-              </small>
-              <small *ngIf="loginForm.get('password')?.errors?.['minlength']">
-                {{ currentLanguage === 'es' ? 'Mínimo 6 caracteres.' : 'Minimum 6 characters.' }}
-              </small>
-            </div>
-          </div>
-
-          <hr style="border: 2px solid rgb(255, 255, 255)" />
-
-          <!-- Botón -->
-          <div class="d-flex justify-content-center">
-            <button
-              type="submit"
-              class="custom-btn"
-              [disabled]="loginForm.invalid"
-            >
-              <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 6px; vertical-align: -3px;">
-                <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0z"/>
-                <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
-              </svg>
-              {{ currentLanguage === 'es' ? 'Iniciar sesión' : 'Sign in' }}
-            </button>
-          </div>
-
-          <!-- Link -->
-          <div class="text-center mt-3" *ngIf="!forgotOpen">
-            <a href="#" class="forgot-password-link" (click)="openForgot($event)">
-              {{ currentLanguage === 'es' ? '¿Olvidaste tu contraseña?' : 'Forgot your password?' }}
-            </a>
-          </div>
-
-          <!-- ¿Olvidaste tu contraseña?: se envía un enlace al correo -->
-          <div class="forgot-box" *ngIf="forgotOpen">
-            <h6>{{ currentLanguage === 'es' ? 'Restablecer contraseña' : 'Reset your password' }}</h6>
-            <ng-container *ngIf="!forgotMessage; else forgotSent">
-              <p>{{ currentLanguage === 'es' ? 'Escribe el correo con el que inicias sesión y te enviaremos un enlace para crear una nueva contraseña.' : 'Enter your sign-in email and we will send you a link to create a new password.' }}</p>
-              <input type="email" class="form-control" placeholder="correo@empresa.com" autocomplete="email"
-                     [(ngModel)]="forgotEmail" [ngModelOptions]="{standalone: true}" (keydown.enter)="$event.preventDefault(); sendForgot()">
-              <small class="forgot-error" *ngIf="forgotError">{{ forgotError }}</small>
-              <div class="forgot-actions">
-                <button type="button" class="forgot-cancel" (click)="forgotOpen = false">{{ currentLanguage === 'es' ? 'Cancelar' : 'Cancel' }}</button>
-                <button type="button" class="custom-btn" [disabled]="forgotLoading" (click)="sendForgot()">
-                  {{ forgotLoading ? (currentLanguage === 'es' ? 'Enviando…' : 'Sending…') : (currentLanguage === 'es' ? 'Enviar enlace' : 'Send link') }}
+            <!-- Contraseña -->
+            <div class="fieldsForm">
+              <div class="input-group">
+                <span class="input-group-text">
+                  <svg fill="currentColor" viewBox="0 0 16 16" class="field-ico"><use xlink:href="./assets/icons/bootstrap-icons.svg#lock" /></svg>
+                </span>
+                <input [type]="showPassword ? 'text' : 'password'" class="form-control" [placeholder]="currentLanguage === 'es' ? 'Contraseña' : 'Password'"
+                  formControlName="password" autocomplete="current-password" />
+                <button type="button" class="input-group-text eye-btn" (click)="togglePasswordVisibility()"
+                  [attr.aria-label]="showPassword ? (currentLanguage === 'es' ? 'Ocultar contraseña' : 'Hide password') : (currentLanguage === 'es' ? 'Ver contraseña' : 'Show password')">
+                  <svg fill="currentColor" viewBox="0 0 16 16" class="field-ico">
+                    <use [attr.xlink:href]="showPassword ? './assets/icons/bootstrap-icons.svg#eye-slash' : './assets/icons/bootstrap-icons.svg#eye'" />
+                  </svg>
                 </button>
               </div>
-            </ng-container>
-            <ng-template #forgotSent>
-              <p class="forgot-ok">{{ forgotMessage }}</p>
-              <div class="forgot-actions">
-                <button type="button" class="custom-btn" (click)="forgotOpen = false">{{ currentLanguage === 'es' ? 'Volver a iniciar sesión' : 'Back to sign in' }}</button>
+              <div class="custom-error-box" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
+                <span *ngIf="loginForm.get('password')?.errors?.['required']">{{ currentLanguage === 'es' ? 'La contraseña es requerida.' : 'Password is required.' }}</span>
+                <span *ngIf="loginForm.get('password')?.errors?.['minlength']">{{ currentLanguage === 'es' ? 'Mínimo 6 caracteres.' : 'Minimum 6 characters.' }}</span>
               </div>
-            </ng-template>
-          </div>
+            </div>
+
+            <div class="form-divider"></div>
+
+            <div class="d-flex justify-content-center">
+              <button type="submit" class="custom-btn" [disabled]="loginForm.invalid">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 6px; vertical-align: -3px;">
+                  <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0z"/>
+                  <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
+                </svg>
+                {{ currentLanguage === 'es' ? 'Iniciar sesión' : 'Sign in' }}
+              </button>
+            </div>
+
+            <div class="text-center mt-3" *ngIf="!forgotOpen">
+              <a href="#" class="forgot-password-link" (click)="openForgot($event)">
+                {{ currentLanguage === 'es' ? '¿Olvidaste tu contraseña?' : 'Forgot your password?' }}
+              </a>
+            </div>
+
+            <!-- ¿Olvidaste tu contraseña?: se envía un enlace al correo -->
+            <div class="forgot-box" *ngIf="forgotOpen">
+              <h6>{{ currentLanguage === 'es' ? 'Restablecer contraseña' : 'Reset your password' }}</h6>
+              <ng-container *ngIf="!forgotMessage; else forgotSent">
+                <p>{{ currentLanguage === 'es' ? 'Escribe el correo con el que inicias sesión y te enviaremos un enlace para crear una nueva contraseña.' : 'Enter your sign-in email and we will send you a link to create a new password.' }}</p>
+                <input type="email" class="form-control" placeholder="correo@empresa.com" autocomplete="email"
+                       [(ngModel)]="forgotEmail" [ngModelOptions]="{standalone: true}" (keydown.enter)="$event.preventDefault(); sendForgot()">
+                <small class="forgot-error" *ngIf="forgotError">{{ forgotError }}</small>
+                <div class="forgot-actions">
+                  <button type="button" class="forgot-cancel" (click)="forgotOpen = false">{{ currentLanguage === 'es' ? 'Cancelar' : 'Cancel' }}</button>
+                  <button type="button" class="custom-btn" [disabled]="forgotLoading" (click)="sendForgot()">
+                    {{ forgotLoading ? (currentLanguage === 'es' ? 'Enviando…' : 'Sending…') : (currentLanguage === 'es' ? 'Enviar enlace' : 'Send link') }}
+                  </button>
+                </div>
+              </ng-container>
+              <ng-template #forgotSent>
+                <p class="forgot-ok">{{ forgotMessage }}</p>
+                <div class="forgot-actions">
+                  <button type="button" class="custom-btn" (click)="forgotOpen = false">{{ currentLanguage === 'es' ? 'Volver a iniciar sesión' : 'Back to sign in' }}</button>
+                </div>
+              </ng-template>
+            </div>
+          </div><!-- /card-bottom -->
         </div>
       </form>
+    </div>
   </div>
 </div>
 <!-- CYCLON Assistant -->
