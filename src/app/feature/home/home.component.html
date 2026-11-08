@@ -180,10 +180,14 @@
               <svg viewBox="0 0 16 16"><use [attr.xlink:href]="'./assets/icons/bootstrap-icons.svg#' + appIcon(a.name)"/></svg>
             </span>
             <span class="app-name">{{ a.name }}</span>
-            <span class="app-bar"><span [style.width.%]="a.share" [style.background]="appColor(a.name)"></span></span>
-            <strong class="app-count">{{ a.userCount }}</strong>
+            <span class="app-bar" [title]="a.clientCount ? a.userCount + ' de equipo y ' + a.clientCount + ' clientes de tiendas' : a.userCount + ' usuarios'">
+              <span [style.width.%]="a.share" [style.background]="appColor(a.name)"></span>
+              <span *ngIf="a.clientCount" class="app-bar-clients" [style.width.%]="a.clientShare" [style.background]="appColor(a.name) + '66'"></span>
+            </span>
+            <strong class="app-count">{{ a.userCount }}<small *ngIf="a.clientCount" class="app-clients">+{{ a.clientCount }} clientes</small></strong>
           </li>
         </ul>
+        <p class="apps-note" *ngIf="topApps.length">Equipo de cada app; en tono claro, los clientes de las tiendas online.</p>
       </article>
 
       <article class="panel">
@@ -192,6 +196,42 @@
           <p-chart type="doughnut" [data]="contractsChart" [options]="vbarOptions" height="100%"></p-chart>
         </div>
         <ng-template #noContracts><p class="empty">Sin contratos todavía.</p></ng-template>
+      </article>
+    </section>
+
+    <!-- Clientes de las tiendas online (InOut) -->
+    <section class="row-2" *ngIf="o.customers as cu">
+      <article class="panel">
+        <header class="panel-head"><h2>Usuarios únicos del ecosistema</h2><small>Cada persona cuenta una vez</small></header>
+        <div class="uniq">
+          <div class="uniq-total"><strong>{{ cu.uniqueUsers.total }}</strong><small>personas</small></div>
+          <ul class="uniq-list">
+            <li><span class="dot" style="background:#4facfe"></span>Negocios y equipos<strong>{{ cu.uniqueUsers.staffOnly }}</strong></li>
+            <li><span class="dot" style="background:#f2994a"></span>Clientes de tiendas<strong>{{ cu.uniqueUsers.clientsOnly }}</strong></li>
+            <li><span class="dot" style="background:#7c3aed"></span>Son las dos cosas<strong>{{ cu.uniqueUsers.both }}</strong></li>
+            <li *ngIf="cu.uniqueUsers.noRole"><span class="dot" style="background:#9ca3af"></span>Sin rol activo<strong>{{ cu.uniqueUsers.noRole }}</strong></li>
+          </ul>
+        </div>
+        <div class="uniq-foot">
+          <span><strong>{{ cu.multiStoreClients }}</strong> {{ cu.multiStoreClients === 1 ? 'cliente compra' : 'clientes compran' }} en más de una tienda</span>
+          <span [class.warn]="cu.pendingTotal > 0"><strong>{{ cu.pendingTotal }}</strong> {{ cu.pendingTotal === 1 ? 'registro sin terminar' : 'registros sin terminar' }}</span>
+        </div>
+      </article>
+
+      <article class="panel">
+        <header class="panel-head"><h2>Clientes por tienda</h2><small>Tiendas online de InOut</small></header>
+        <ul class="stores" *ngIf="topStores.length; else noStores">
+          <li *ngFor="let s of topStores; trackBy: trackByStore">
+            <span class="store-name" [title]="s.email || ''">{{ s.name }}<small *ngIf="s.email">{{ s.email }}</small></span>
+            <span class="app-bar"><span [style.width.%]="s.share" style="background:#f2994a"></span></span>
+            <strong class="app-count">{{ s.clients }}</strong>
+            <span class="store-meta">
+              <span class="chip chip-up" *ngIf="s.new30" title="Clientes nuevos en los últimos 30 días">+{{ s.new30 }} en 30 días</span>
+              <span class="chip" *ngIf="s.pending" title="Empezaron el registro y no confirmaron el código del correo">{{ s.pending }} sin terminar</span>
+            </span>
+          </li>
+        </ul>
+        <ng-template #noStores><p class="empty">Aún no hay clientes registrados en las tiendas.</p></ng-template>
       </article>
     </section>
 

@@ -159,6 +159,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.buildCharts();
         this.attention = this.buildAttention();
         this.topApps = this.buildTopApps();
+        this.topStores = this.buildTopStores();
         this.lastUpdated = new Date();
         this.now = Date.now();
         this.loading = false;
@@ -205,7 +206,9 @@ export class HomeComponent implements OnInit, OnDestroy {
    * al actualizar, no en cada detección de cambios: así el *ngFor no recrea
    * la lista cada vez que corre el reloj de la vista). */
   attention: AttentionItem[] = [];
-  topApps: { name: string; userCount: number; share: number }[] = [];
+  topApps: { name: string; userCount: number; clientCount: number; share: number; clientShare: number }[] = [];
+  /** Clientes por tienda, con la barra relativa a la tienda con más clientes. */
+  topStores: { storeId: string; name: string; email: string | null; clients: number; new30: number; pending: number; share: number }[] = [];
 
   private buildAttention(): AttentionItem[] {
     const o = this.overview;
@@ -273,11 +276,27 @@ export class HomeComponent implements OnInit, OnDestroy {
   appIcon(name: string): string { return this.appVisuals.find((v) => name?.toLowerCase().includes(v.match))?.icon || 'grid-3x3-gap-fill'; }
   appColor(name: string): string { return this.appVisuals.find((v) => name?.toLowerCase().includes(v.match))?.color || '#636e72'; }
 
-  private buildTopApps(): { name: string; userCount: number; share: number }[] {
-    const apps = [...(this.stats?.applications?.byApplication || [])].sort((a, b) => b.userCount - a.userCount);
-    const max = Math.max(1, ...apps.map((a) => a.userCount));
-    return apps.map((a) => ({ name: a.name, userCount: a.userCount, share: Math.round((a.userCount / max) * 100) }));
+  /** Equipo y, aparte, clientes de las tiendas online (antes se sumaban en InOut). */
+  private buildTopApps(): { name: string; userCount: number; clientCount: number; share: number; clientShare: number }[] {
+    const total = (a: { userCount: number; clientCount?: number }) => a.userCount + (a.clientCount || 0);
+    const apps = [...(this.stats?.applications?.byApplication || [])].sort((a, b) => total(b) - total(a));
+    const max = Math.max(1, ...apps.map(total));
+    return apps.map((a) => ({
+      name: a.name,
+      userCount: a.userCount,
+      clientCount: a.clientCount || 0,
+      share: Math.round((a.userCount / max) * 100),
+      clientShare: Math.round(((a.clientCount || 0) / max) * 100),
+    }));
   }
+
+  private buildTopStores() {
+    const stores = this.overview?.customers?.stores || [];
+    const max = Math.max(1, ...stores.map((s) => s.clients));
+    return stores.map((s) => ({ ...s, share: Math.round((s.clients / max) * 100) }));
+  }
+
+  trackByStore = (_: number, s: { storeId: string }) => s.storeId;
 
   private readonly contractStatusLabels: Record<string, string> = {
     DRAFT: 'Borrador', PENDING: 'Pendiente', ACTIVE: 'Activo', SUSPENDED: 'Suspendido', CANCELLED: 'Cancelado',
@@ -348,10 +367,17 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
     this.signupsChart = this.keep(this.signupsChart, {
       labels: o.series.signups.map((d) => new Date(d.date + 'T12:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'short' })),
-      datasets: [{
-        label: 'Registros', data: o.series.signups.map((d) => d.count), fill: true, tension: 0.35,
-        borderColor: '#4facfe', backgroundColor: 'rgba(79, 172, 254, 0.15)', pointRadius: 0, pointHoverRadius: 4, borderWidth: 2,
-      }],
+      // Por tipo: clientes de las tiendas online y negocios con sus equipos
+      datasets: [
+        {
+          label: 'Clientes de tiendas', data: o.series.signups.map((d) => d.clients ?? 0), fill: true, tension: 0.35,
+          borderColor: '#f2994a', backgroundColor: 'rgba(242, 153, 74, 0.15)', pointRadius: 0, pointHoverRadius: 4, borderWidth: 2,
+        },
+        {
+          label: 'Negocios y equipos', data: o.series.signups.map((d) => d.others ?? d.count), fill: true, tension: 0.35,
+          borderColor: '#4facfe', backgroundColor: 'rgba(79, 172, 254, 0.15)', pointRadius: 0, pointHoverRadius: 4, borderWidth: 2,
+        },
+      ],
     });
     const byStatus = [...(this.stats?.contracts?.byStatus || [])].sort((a, b) => b.count - a.count);
     const palette: Record<string, string> = {
@@ -378,7 +404,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     };
     this.lineOptions = {
       responsive: true, maintainAspectRatio: false, animation: { duration: 400 },
-      plugins: { legend: { display: false } },
+      plugins: { legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 8, font } } },
       scales: { x: { grid: { display: false }, ticks: { font, maxTicksLimit: 7 } }, y: { beginAtZero: true, grid, ticks: { font, precision: 0 } } },
     };
     this.vbarOptions = {
