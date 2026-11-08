@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { MenuOption } from '../../model/menu_option';
+import { TranslationService } from '../../services/translation.service';
 
 /** Acción rápida del botón central (abre el formulario de creación de la vista). */
 interface QuickAction {
@@ -40,7 +41,7 @@ export class BottomNavComponent {
     { route: '/packages', label: 'Nuevo paquete', icon: 'box-seam', url: '/packages' },
   ];
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private translationService: TranslationService) {
     this.currentUrl = this.router.url;
     this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe((e) => {
       this.currentUrl = (e as NavigationEnd).urlAfterRedirects;
@@ -97,6 +98,11 @@ export class BottomNavComponent {
 
   get moreActive(): boolean {
     return this.moreItems.some((o) => this.isActive(o));
+  }
+
+  /** Texto de la opción traducido, como en el menú lateral (strName es la clave interna, p. ej. homeAuthoriza). */
+  label(option: MenuOption): string {
+    return this.translationService.menuLabel(option.strDescription || option.strName);
   }
 
   link(option: MenuOption): string {
