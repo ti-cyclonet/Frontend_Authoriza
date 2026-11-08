@@ -21,7 +21,8 @@ export interface DashboardStats {
   };
   applications: {
     total: number;
-    byApplication: { name: string; userCount: number; roleCount: number }[];
+    /** userCount: equipo; clientCount: clientes de las tiendas online (rol clienteInout). */
+    byApplication: { name: string; userCount: number; clientCount?: number; roleCount: number }[];
   };
   packages: {
     total: number;
@@ -48,6 +49,14 @@ export interface InvoiceStats {
 }
 
 /** Resumen del Dashboard (GET /dashboard/overview), se consulta cada 30 s. */
+/** Clientes de las tiendas online de InOut (rol clienteInout en el contrato de cada tienda). */
+export interface CustomerStats {
+  uniqueUsers: { total: number; clientsOnly: number; staffOnly: number; both: number; noRole: number };
+  multiStoreClients: number;
+  stores: { storeId: string; name: string; email: string | null; clients: number; new30: number; pending: number }[];
+  pendingTotal: number;
+}
+
 export interface DashboardOverview {
   generatedAt: string;
   revenue: {
@@ -64,8 +73,10 @@ export interface DashboardOverview {
   };
   series: {
     months: { key: string; label: string; billed: number; collected: number }[];
-    signups: { date: string; count: number }[];
+    /** clients: clientes de las tiendas online; others: negocios y sus equipos. */
+    signups: { date: string; count: number; clients?: number; others?: number }[];
   };
+  customers?: CustomerStats;
   activity: { id: string; level: string; action: string; message: string; createdAt: string }[];
   /** Lo último de cada tipo: el panel lo compara con la consulta anterior para avisar. */
   news?: {

@@ -143,6 +143,32 @@
 .app-bar span { display: block; height: 100%; border-radius: 999px; transition: width 0.6s ease; }
 .app-count { font-variant-numeric: tabular-nums; font-size: 0.9rem; min-width: 1.5rem; text-align: right; }
 
+.app-bar { display: flex; }
+.app-bar span { border-radius: 0; }
+.app-bar span:first-child { border-radius: 999px 0 0 999px; }
+.app-bar span:last-child { border-radius: 0 999px 999px 0; }
+.app-bar span:only-child { border-radius: 999px; }
+.app-clients { display: block; font-size: 0.68rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.apps-note { margin: 0.8rem 0 0; font-size: 0.72rem; color: var(--muted); }
+
+/* Usuarios únicos y clientes por tienda */
+.uniq { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+.uniq-total { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 110px; height: 110px; border-radius: 50%; background: #f4f1fe; color: #4c1d95; flex-shrink: 0; }
+.uniq-total strong { font-size: 2rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.uniq-total small { font-size: 0.75rem; color: var(--muted); }
+.uniq-list { list-style: none; margin: 0; padding: 0; flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 0.45rem; }
+.uniq-list li { display: flex; align-items: center; gap: 0.5rem; font-size: 0.84rem; }
+.uniq-list strong { margin-left: auto; font-variant-numeric: tabular-nums; }
+.uniq-foot { margin-top: 1rem; padding-top: 0.8rem; border-top: 1px dashed var(--line); display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; font-size: 0.8rem; color: var(--muted); }
+.uniq-foot strong { color: var(--ink); }
+.uniq-foot .warn strong { color: #d97706; }
+.stores { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.8rem; }
+.stores li { display: grid; grid-template-columns: minmax(90px, 1.2fr) minmax(60px, 1.4fr) auto; align-items: center; gap: 0.3rem 0.6rem; }
+.store-name { font-size: 0.85rem; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.store-name small { display: block; font-weight: 400; font-size: 0.7rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; }
+.store-meta { grid-column: 1 / -1; display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.store-meta:empty { display: none; }
+
 /* Actividad */
 .feed { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.25rem 1.5rem; }
 .feed li { display: flex; align-items: center; gap: 0.7rem; padding: 0.6rem 0.4rem; border-bottom: 1px solid #f3f4f8; border-radius: 8px; }
