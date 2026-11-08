@@ -80,21 +80,6 @@ export class SidebarComponent implements OnInit {
   }
 
   getTranslatedMenuText(description: string): string {
-    const menuMap: { [key: string]: string } = {
-      'Home': 'menu.home',
-      'Users': 'menu.users',
-      'Applications': 'menu.applications',
-      'Packages': 'menu.packages',
-      'Contracts': 'menu.contracts',
-      'Settings': 'menu.settings',
-      'Dashboard': 'menu.dashboard',
-      'Materials': 'menu.materials',
-      'Kardex': 'menu.kardex',
-      'Invoices': 'menu.invoices',
-      'Parameters': 'menu.parameters'
-    };
-    
-    const translationKey = menuMap[description];
-    return translationKey ? this.translationService.translate(translationKey) : description;
+    return this.translationService.menuLabel(description);
   }
 }

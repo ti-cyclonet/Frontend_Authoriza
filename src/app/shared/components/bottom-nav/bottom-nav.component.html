@@ -19,7 +19,7 @@
     <div class="bn-sheet-grid">
       <a class="bn-sheet-item" *ngFor="let o of moreItems" [routerLink]="link(o)" [class.active]="isActive(o)">
         <span class="bn-sheet-icon"><svg viewBox="0 0 16 16" aria-hidden="true"><use [attr.xlink:href]="icon(o)"></use></svg></span>
-        <span>{{ o.strName }}</span>
+        <span>{{ label(o) }}</span>
       </a>
     </div>
   </div>
@@ -29,7 +29,7 @@
 <nav class="bn-bar" aria-label="Menú principal">
   <a class="bn-item" *ngFor="let o of leftItems" [routerLink]="link(o)" [class.active]="isActive(o)" [attr.aria-current]="isActive(o) ? 'page' : null">
     <svg viewBox="0 0 16 16" aria-hidden="true"><use [attr.xlink:href]="icon(o)"></use></svg>
-    <span>{{ o.strName }}</span>
+    <span>{{ label(o) }}</span>
   </a>
 
   <!-- Lugar del botón central -->
@@ -37,7 +37,7 @@
 
   <a class="bn-item" *ngFor="let o of rightItems" [routerLink]="link(o)" [class.active]="isActive(o)" [attr.aria-current]="isActive(o) ? 'page' : null">
     <svg viewBox="0 0 16 16" aria-hidden="true"><use [attr.xlink:href]="icon(o)"></use></svg>
-    <span>{{ o.strName }}</span>
+    <span>{{ label(o) }}</span>
   </a>
 
   <button type="button" class="bn-item" *ngIf="hasMore" [class.active]="moreOpen || moreActive" (click)="toggleMore()" [attr.aria-expanded]="moreOpen">
