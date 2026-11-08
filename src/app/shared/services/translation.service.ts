@@ -929,6 +929,30 @@ export class TranslationService {
     return this.currentLanguage.value;
   }
 
+  /**
+   * Texto de una opción del menú (lateral o inferior) en el idioma actual, a
+   * partir de su descripción en inglés ('Home', 'Users'…). Si no hay
+   * traducción, la descripción tal cual.
+   */
+  menuLabel(description: string | null | undefined): string {
+    const key = TranslationService.MENU_KEYS[description || ''];
+    return key ? this.translate(key) : description || '';
+  }
+
+  private static readonly MENU_KEYS: Record<string, string> = {
+    Home: 'menu.home',
+    Users: 'menu.users',
+    Applications: 'menu.applications',
+    Packages: 'menu.packages',
+    Contracts: 'menu.contracts',
+    Settings: 'menu.settings',
+    Dashboard: 'menu.dashboard',
+    Materials: 'menu.materials',
+    Kardex: 'menu.kardex',
+    Invoices: 'menu.invoices',
+    Parameters: 'menu.parameters',
+  };
+
   translate(key: string): string {
     const lang = this.getCurrentLanguage();
     const translation = this.translations[lang]?.[key];
