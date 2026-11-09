@@ -140,7 +140,7 @@
           </div>
         </ng-template>
 
-        <div class="attn-list" *ngIf="o.alerts.overdueInvoices.length || o.alerts.expiringContracts.length">
+        <div class="attn-list" *ngIf="o.alerts.overdueInvoices.length || o.alerts.expiringContracts.length || o.alerts.einvoicingRequests?.length">
           <div class="attn-row" *ngFor="let i of o.alerts.overdueInvoices; trackBy: trackById">
             <span class="dot dot-danger"></span>
             <span class="attn-row-main">{{ i.code || 'Factura' }} · {{ i.client }}</span>
@@ -150,6 +150,14 @@
             <span class="dot dot-warning"></span>
             <span class="attn-row-main">{{ c.code }} · {{ c.client }}</span>
             <span class="attn-row-meta">{{ c.package }} · vence en {{ c.daysLeft }} d</span>
+          </div>
+          <div class="attn-row" *ngFor="let r of o.alerts.einvoicingRequests || []; trackBy: trackById" [title]="r.email">
+            <span class="dot dot-info"></span>
+            <span class="attn-row-main">🧾 {{ r.client }} · plan {{ tierName(r.tier) }}</span>
+            <span class="attn-row-meta">
+              {{ r.daysWaiting ? 'hace ' + r.daysWaiting + ' d' : 'hoy' }} ·
+              datos {{ r.dataReady ? '✓' : '✗' }} · numeración {{ r.numberingReady ? '✓' : '✗' }}
+            </span>
           </div>
         </div>
       </article>

@@ -70,6 +70,8 @@ export interface DashboardOverview {
   alerts: {
     expiringContracts: { id: string; code: string; endDate: string; client: string; package: string; daysLeft: number }[];
     overdueInvoices: { id: number; code: string; value: number; expirationDate: string; client: string; daysOverdue: number }[];
+    /** Negocios que solicitaron la facturación electrónica (aún sin activar) y su avance. */
+    einvoicingRequests?: { id: string; client: string; email: string; tier: string; requestedAt: string; daysWaiting: number; dataReady: boolean; numberingReady: boolean }[];
   };
   series: {
     months: { key: string; label: string; billed: number; collected: number }[];

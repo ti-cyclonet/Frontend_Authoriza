@@ -218,11 +218,20 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (o.receivables.overdueCount) items.push({ icon: 'exclamation-octagon-fill', tone: 'danger', count: o.receivables.overdueCount, label: 'Facturas vencidas', detail: `${this.money(o.receivables.overdueValue)} en mora`, link: '/contracts' });
     if (o.alerts.expiringContracts.length) items.push({ icon: 'hourglass-split', tone: 'warning', count: o.alerts.expiringContracts.length, label: 'Contratos por vencer (30 días)', detail: `El más próximo en ${o.alerts.expiringContracts[0].daysLeft} día(s)`, link: '/contracts' });
     if (o.clients.pendingSignature) items.push({ icon: 'pen-fill', tone: 'info', count: o.clients.pendingSignature, label: 'Contratos pendientes de firma', detail: 'Falta la firma del cliente o del administrador', link: '/contracts' });
+    const ei = o.alerts.einvoicingRequests || [];
+    if (ei.length) {
+      const listos = ei.filter((r) => r.dataReady && r.numberingReady).length;
+      items.push({ icon: 'receipt', tone: 'info', count: ei.length, label: 'Solicitudes de facturación electrónica',
+        detail: listos ? `${listos} con datos y numeración listos` : 'Negocios esperando la activación', link: '/contracts' });
+    }
     if (o.users.unconfirmed) items.push({ icon: 'person-exclamation', tone: 'info', count: o.users.unconfirmed, label: 'Usuarios sin confirmar', detail: 'No han verificado su correo', link: '/users' });
     return items;
   }
 
   trackByLabel = (_: number, a: AttentionItem) => a.label;
+
+  private readonly tierNames: Record<string, string> = { BASICO: 'Básico', MEDIO: 'Medio', ALTO: 'Alto' };
+  tierName(t: string): string { return this.tierNames[t] || t; }
   trackByName = (_: number, a: { name: string }) => a.name;
   trackById = (_: number, a: { id: string | number }) => a.id;
 
